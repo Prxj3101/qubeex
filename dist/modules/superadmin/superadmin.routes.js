@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const superadmin_controller_1 = require("./superadmin.controller");
+const router = (0, express_1.Router)();
+router.post("/institutions", superadmin_controller_1.createInstitution);
+router.get("/institutions", superadmin_controller_1.getInstitutions);
+router.get("/institutions/:id", superadmin_controller_1.getInstitution);
+router.put("/institutions/:id", superadmin_controller_1.updataInstitution);
+router.patch("/institutions/:id/status", superadmin_controller_1.toggleStatus);
+router.post("/institutions/:id/resend-invite", superadmin_controller_1.resendInvite);
+exports.default = router;

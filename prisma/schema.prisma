@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+}
+
+enum InstitutionType {
+  SCHOOL
+  COLLEGE
+  COACHING
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  EXPIRED
+}
+
+enum InstitutionStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model Institution {
+  id    String          @id @default(uuid())
+  name  String
+  email String          @unique
+  type  InstitutionType
+
+  status InstitutionStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users        User[]
+  subscription Subscription?
+  invites      Invite[]
+}
+
+model User {
+  id       String  @id @default(uuid())
+  name     String?
+  email    String  @unique
+  password String?
+  role     Role
+  isActive Boolean @default(false)
+
+  institutionId String?
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Plan {
+  id              String @id @default(uuid())
+  name            String
+  basePrice       Float
+  perStudentPrice Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id String @id @default(uuid())
+
+  institutionId String      @unique
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  planId String
+  plan   Plan   @relation(fields: [planId], references: [id])
+
+  status SubscriptionStatus @default(TRIAL)
+
+  startDate DateTime
+  endDate   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invite {
+  id String @id @default(uuid())
+
+  email String
+  token String @unique
+  role  Role
+
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id       String  @id @default(uuid())
+  action   String
+  userId   String?
+  metadata Json?
+
+  createdAt DateTime @default(now())
+}

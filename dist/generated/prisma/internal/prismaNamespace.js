@@ -160,7 +160,7 @@ exports.SubscriptionScalarFieldEnum = {
 exports.InviteScalarFieldEnum = {
     id: 'id',
     email: 'email',
-    token: 'token',
+    tokenHash: 'tokenHash',
     role: 'role',
     institutionId: 'institutionId',
     expiresAt: 'expiresAt',

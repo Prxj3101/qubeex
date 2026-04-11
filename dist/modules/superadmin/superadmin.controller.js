@@ -34,97 +34,69 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resendInvite = exports.toggleStatus = exports.updataInstitution = exports.getInstitution = exports.getInstitutions = exports.createInstitution = void 0;
-const service = __importStar(require("../superadmin/superadmin.service"));
-const superadmin_schema_1 = require("../superadmin/superadmin.schema");
-const createInstitution = async (req, res) => {
+const service = __importStar(require("./superadmin.service"));
+const superadmin_schema_1 = require("./superadmin.schema");
+const createInstitution = async (req, res, next) => {
     try {
         const data = superadmin_schema_1.createInstitutionSchema.parse(req.body);
         const result = await service.createInstitutionService(data);
-        res.status(201).json({
-            success: true,
-            data: result,
-        });
+        res.status(201).json({ success: true, data: result });
     }
     catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        next(error);
     }
 };
 exports.createInstitution = createInstitution;
-const getInstitutions = async (_req, res) => {
-    const data = await service.getInstitution();
-    res.json({
-        success: true,
-        data,
-    });
+const getInstitutions = async (_req, res, next) => {
+    try {
+        const data = await service.getInstitution();
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
 };
 exports.getInstitutions = getInstitutions;
-const getInstitution = async (req, res) => {
+const getInstitution = async (req, res, next) => {
     try {
         const data = await service.getInstitutionById(req.params.id);
-        res.json({
-            success: true,
-            data
-        });
+        res.json({ success: true, data });
     }
-    catch (e) {
-        res.status(404).json({
-            success: false,
-            message: e.message,
-        });
+    catch (error) {
+        next(error);
     }
 };
 exports.getInstitution = getInstitution;
-const updataInstitution = async (req, res) => {
+const updataInstitution = async (req, res, next) => {
     try {
         const data = superadmin_schema_1.updateInstitutionSchema.parse(req.body);
         const result = await service.updateInstitution(req.params.id, data);
-        res.json({
-            success: true,
-            data: result
-        });
+        res.json({ success: true, data: result });
     }
-    catch (e) {
-        res.status(400).json({
-            success: false,
-            message: e.message,
-        });
+    catch (error) {
+        next(error);
     }
 };
 exports.updataInstitution = updataInstitution;
-const toggleStatus = async (req, res) => {
+const toggleStatus = async (req, res, next) => {
     try {
         const { status } = superadmin_schema_1.toggleStatusSchema.parse(req.body);
         const result = await service.toggleInstitutionStatus(req.params.id, status);
-        res.json({
-            success: true,
-            data: result
-        });
+        res.json({ success: true, data: result });
     }
-    catch (e) {
-        res.status(400).json({
-            success: false,
-            message: e.message
-        });
+    catch (error) {
+        next(error);
     }
 };
 exports.toggleStatus = toggleStatus;
-const resendInvite = async (req, res) => {
+const resendInvite = async (req, res, next) => {
     try {
         const { email } = req.body;
         const result = await service.resendInvite(email);
-        res.json({
-            success: true,
-            data: result
-        });
+        res.json({ success: true, data: result });
     }
-    catch (e) {
-        res.status(400).json({
-            success: false,
-            message: e.message
-        });
+    catch (error) {
+        next(error);
     }
 };
 exports.resendInvite = resendInvite;

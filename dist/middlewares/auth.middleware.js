@@ -5,23 +5,53 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authMiddleware = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const redis_1 = require("../utils/redis");
 const JWT_SECRET = process.env.JWT_SECRET;
 const authMiddleware = (roles = []) => {
-    return (req, res, next) => {
+    return async (req, res, next) => {
         try {
             const authHeader = req.headers.authorization;
-            if (!authHeader)
-                throw new Error("Unauthorized");
+            if (!authHeader || !/^Bearer\s[\w-]+\.[\w-]+\.[\w-]+$/.test(authHeader)) {
+                res.status(401).json({ success: false, message: "Missing or malformed token" });
+                return;
+            }
             const token = authHeader.split(" ")[1];
-            const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
-            if (roles.length && !roles.includes(decoded.role)) {
-                throw new Error("Forbidden");
+            let decoded;
+            try {
+                decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
+            }
+            catch (err) {
+                if (err instanceof jsonwebtoken_1.default.TokenExpiredError) {
+                    res.status(401).json({ success: false, message: "Token expired" });
+                    return;
+                }
+                if (err instanceof jsonwebtoken_1.default.JsonWebTokenError) {
+                    res.status(401).json({ success: false, message: "Invalid token" });
+                    return;
+                }
+                res.status(401).json({ success: false, message: "Token verification failed" });
+                return;
+            }
+            if (!decoded.userId || !decoded.role) {
+                res.status(401).json({ success: false, message: "Invalid token payload" });
+                return;
+            }
+            if (redis_1.redis && decoded.jti) {
+                const isBlacklisted = await redis_1.redis.get(`bl:${decoded.jti}`);
+                if (isBlacklisted) {
+                    res.status(401).json({ success: false, message: "Token has been revoked" });
+                    return;
+                }
             }
             req.user = decoded;
+            if (roles.length && !roles.includes(decoded.role)) {
+                res.status(403).json({ success: false, message: "Insufficient permissions" });
+                return;
+            }
             next();
         }
-        catch (e) {
-            res.status(401).json({ success: false, message: e.message });
+        catch (error) {
+            res.status(401).json({ success: false, message: "Authentication failed" });
         }
     };
 };

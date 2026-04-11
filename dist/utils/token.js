@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateToken = void 0;
+exports.hashToken = exports.generateToken = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const generateToken = () => {
-    return crypto_1.default.randomBytes(32).toString('hex');
+    return crypto_1.default.randomBytes(32).toString("hex");
 };
 exports.generateToken = generateToken;
-// export const verifyToken = (token:string) => {
-//     return crypto.verify(token);
-// }
+const hashToken = (token) => {
+    return crypto_1.default.createHash("sha256").update(token).digest("hex");
+};
+exports.hashToken = hashToken;

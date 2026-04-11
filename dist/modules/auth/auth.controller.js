@@ -33,57 +33,66 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.acceptInvite = exports.verifyInvite = void 0;
+exports.logout = exports.login = exports.acceptInvite = exports.verifyInvite = void 0;
 const service = __importStar(require("./auth.service"));
 const auth_schema_1 = require("./auth.schema");
-const verifyInvite = async (req, res) => {
+const verifyInvite = async (req, res, next) => {
     try {
         const token = req.query.token;
+        if (!token) {
+            res.status(400).json({ success: false, message: "Token is required" });
+            return;
+        }
         const data = await service.verifyInvite(token);
-        res.status(200).json({
-            success: true,
-            data,
-        });
+        res.status(200).json({ success: true, data });
     }
-    catch (e) {
-        res.status(400).json({
-            success: false,
-            message: e.message
-        });
+    catch (error) {
+        next(error);
     }
 };
 exports.verifyInvite = verifyInvite;
-const acceptInvite = async (req, res) => {
+const acceptInvite = async (req, res, next) => {
     try {
         const { token, password } = auth_schema_1.acceptInviteSchema.parse(req.body);
         const data = await service.acceptInvite(token, password);
-        res.status(200).json({
-            success: true,
-            data,
-        });
+        res.status(200).json({ success: true, data });
     }
-    catch (e) {
-        res.status(400).json({
-            success: false,
-            message: e.message
-        });
+    catch (error) {
+        next(error);
     }
 };
 exports.acceptInvite = acceptInvite;
-const login = async (req, res) => {
+const login = async (req, res, next) => {
     try {
         const { email, password } = auth_schema_1.loginSchema.parse(req.body);
         const data = await service.login(email, password);
-        res.json({
-            status: true,
-            data
-        });
+        res.json({ success: true, data });
     }
-    catch (e) {
-        res.status(400).json({
-            success: false,
-            message: e.message,
-        });
+    catch (error) {
+        next(error);
     }
 };
 exports.login = login;
+/**
+ * POST /auth/logout
+ * Requires authentication. Blacklists the JWT so it can't be reused.
+ */
+const logout = async (req, res, next) => {
+    try {
+        const user = req.user;
+        if (!user.jti) {
+            res.json({ success: true, data: { message: "Logged out (stateless)" } });
+            return;
+        }
+        // Decode the raw token to get exp
+        const authHeader = req.headers.authorization;
+        const token = authHeader.split(" ")[1];
+        const decoded = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
+        const data = await service.logout(user.jti, decoded.exp);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.logout = logout;

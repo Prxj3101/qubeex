@@ -93,9 +93,9 @@ model Subscription {
 model Invite {
   id String @id @default(uuid())
 
-  email String
-  token String @unique
-  role  Role
+  email     String
+  tokenHash String @unique
+  role      Role
 
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])

@@ -1,11 +1,26 @@
-import {z} from 'zod';
+import { z } from "zod";
+
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .max(100, "Password must be at most 100 characters")
+  .regex(/[A-Z]/, "Must include at least one uppercase letter")
+  .regex(/[0-9]/, "Must include at least one number")
+  .regex(/[^A-Za-z0-9]/, "Must include at least one special character");
+
+export const emailSchema = z
+  .string()
+  .email("Invalid email address")
+  .max(255, "Email is too long")
+  .toLowerCase()
+  .trim();
 
 export const acceptInviteSchema = z.object({
-    token : z.string(),
-    password : z.string().min(8).max(100).regex(/[A-Z]/, "Must include uppercase").regex(/[0-9]/, "Must include number").regex(/[^A-Za-z0-9]/, "Must include special character"),
+  token: z.string().min(1, "Token is required"),
+  password: passwordSchema,
 });
 
 export const loginSchema = z.object({
-    email : z.string().email().toLowerCase().trim(),
-    password : z.string().min(8).max(100).regex(/[A-Z]/, "Must include uppercase").regex(/[0-9]/, "Must include number").regex(/[^A-Za-z0-9]/, "Must include special character"),
-})
+  email: emailSchema,
+  password: passwordSchema,
+});

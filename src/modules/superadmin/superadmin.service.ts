@@ -1,146 +1,166 @@
-import { fa } from "zod/v4/locales";
 import { prisma } from "../../utils/prisma";
-import { generateToken } from "../../utils/token";
+import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail } from "../../services/email.service";
+import { logAudit } from "../../services/audit.service";
+import { ConflictError, NotFoundError } from "../../utils/errors";
 
 export const createInstitutionService = async (data: any) => {
+  const { name, email, type, adminName, adminEmail } = data;
 
-    const { name, email, type, adminName, adminEmail } = data;
+  const existingInstitution = await prisma.institution.findUnique({
+    where: { email },
+  });
 
-    const existingInstitution = await prisma.institution.findUnique({
-        where:{email},
+  if (existingInstitution) {
+    throw new ConflictError("Institution with this email already exists");
+  }
+
+  const existingAdmin = await prisma.user.findUnique({
+    where: { email: adminEmail },
+  });
+
+  if (existingAdmin) {
+    throw new ConflictError("A user with this email already exists");
+  }
+
+  const rawToken = generateToken();
+  console.log("RAW TOKEN", rawToken);
+  const tokenHash = hashToken(rawToken);
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  const institution = await prisma.$transaction(async (tx) => {
+    const newInstitution = await tx.institution.create({
+      data: { name, email, type },
     });
 
-    if(existingInstitution){
-        throw new Error("Institution already exists");
-    }
-
-    const existingAdmin = await prisma.user.findUnique({
-        where :{email:adminEmail},
-    })
-
-    if(existingAdmin){
-        throw new Error("Admin already exists");
-    }
-
-    const token = generateToken();
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-    const institution = await prisma.$transaction(async(tx) => {
-        const newInstitution = await tx.institution.create({
-            data:{
-                name,
-                email,
-                type,
-            }
-        });
-
-        await tx.user.create({
-            data:{
-                name:adminName,
-                email:adminEmail,
-                role:"ADMIN",
-                institutionId : newInstitution.id,
-                isActive:false,
-            },
-        });
-
-        await tx.invite.create({
-            data:{
-                email:adminEmail,
-                token,
-                role:"ADMIN",
-                institutionId:newInstitution.id,
-                expiresAt,
-            },
-        });
-
-        return newInstitution;
+    await tx.user.create({
+      data: {
+        name: adminName,
+        email: adminEmail,
+        role: "ADMIN",
+        institutionId: newInstitution.id,
+        isActive: false,
+      },
     });
 
-    const inviteLink = `${process.env.FRONTEND_URL}/setup-password?token=${token}`;
-
-    await sendInviteEmail({
-        to:adminEmail,
-        inviteLink,
+    await tx.invite.create({
+      data: {
+        email: adminEmail,
+        tokenHash,
+        role: "ADMIN",
+        institutionId: newInstitution.id,
+        expiresAt,
+      },
     });
 
-    return institution;
-}
+    return newInstitution;
+  });
 
-export const getInstitution = async () => {
-    return prisma.institution.findMany({
-        include:{
-            users:true,
-            subscription:true,
-        },
-        orderBy: {createdAt : "desc"},
-    });
+  const inviteLink = `${process.env.FRONTEND_URL}/setup-password?token=${rawToken}`;
+
+  await sendInviteEmail({
+    to: adminEmail,
+    inviteLink,
+  });
+
+  await logAudit("INSTITUTION_CREATED", undefined, {
+    institutionId: institution.id,
+    institutionName: name,
+    adminEmail,
+  });
+
+  return institution;
 };
 
-export const getInstitutionById = async (id:string) => {
-    const institution = await prisma.institution.findUnique({
-        where : {id},
-        include:{
-            users:true,
-            subscription:true,
-        },
-    });
+export const getInstitution = async () => {
+  return prisma.institution.findMany({
+    include: {
+      users: {
+        omit: { password: true },
+      },
+      subscription: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
 
-    if(!institution){
-        throw new Error("Institution not found");
-    }
+export const getInstitutionById = async (id: string) => {
+  const institution = await prisma.institution.findUnique({
+    where: { id },
+    include: {
+      users: {
+        omit: { password: true },
+      },
+      subscription: true,
+    },
+  });
 
-    return institution;
-}
+  if (!institution) {
+    throw new NotFoundError("Institution not found");
+  }
 
-export const updateInstitution = async (id:string,data:any) => {
-    return prisma.institution.update({
-        where: {id},
-        data,
-    });
+  return institution;
+};
+
+export const updateInstitution = async (id: string, data: any) => {
+  const existing = await prisma.institution.findUnique({ where: { id } });
+  if (!existing) throw new NotFoundError("Institution not found");
+
+  return prisma.institution.update({
+    where: { id },
+    data,
+  });
 };
 
 export const toggleInstitutionStatus = async (
-    id:string,
-    status : "ACTIVE" | "SUSPENDED"
+  id: string,
+  status: "ACTIVE" | "SUSPENDED"
 ) => {
-    return prisma.institution.update({
-        where: {id},
-        data: {status},
-    });
+  const existing = await prisma.institution.findUnique({ where: { id } });
+  if (!existing) throw new NotFoundError("Institution not found");
+
+  const result = await prisma.institution.update({
+    where: { id },
+    data: { status },
+  });
+
+  await logAudit("INSTITUTION_STATUS_CHANGED", undefined, {
+    institutionId: id,
+    newStatus: status,
+  });
+
+  return result;
 };
 
-export const resendInvite = async (email:string) => {
-    const user = await prisma.user.findUnique({
-        where : {email}
-    })
+export const resendInvite = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
 
-    if(!user){
-        throw new Error("User not found");
-    }
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
 
-    const token = generateToken();
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const rawToken = generateToken();
+  const tokenHash = hashToken(rawToken);
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    await prisma.invite.create({
-        data:{
-            email,
-            token,
-            role:"ADMIN",
-            institutionId:user.institutionId!,
-            expiresAt,
-        },
-    });
+  await prisma.invite.create({
+    data: {
+      email,
+      tokenHash,
+      role: "ADMIN",
+      institutionId: user.institutionId!,
+      expiresAt,
+    },
+  });
 
-    const inviteLink = `${process.env.FRONTEND_URL}/setup-password?token=${token}`;
+  const inviteLink = `${process.env.FRONTEND_URL}/setup-password?token=${rawToken}`;
 
-    await sendInviteEmail({
-        to:user.email,
-        inviteLink,
-    });
+  await sendInviteEmail({
+    to: user.email,
+    inviteLink,
+  });
 
-    return {
-        message:"Invite resent successfully",
-    };
-}
+  return { message: "Invite resent successfully" };
+};

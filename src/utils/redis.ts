@@ -3,21 +3,27 @@ import Redis from "ioredis";
 const REDIS_URL = process.env.REDIS_URL;
 
 if (!REDIS_URL) {
-  console.warn("REDIS_URL not set — rate limiting and JWT blacklist will be unavailable");
+  console.warn("⚠️  REDIS_URL not set — rate limiting will be in-memory only");
 }
 
 export const redis = REDIS_URL
   ? new Redis(REDIS_URL, {
-      maxRetriesPerRequest: 3,
-      retryStrategy(times) {
-        const delay = Math.min(times * 200, 2000);
-        return delay;
-      },
+      maxRetriesPerRequest: null, // Queue commands until connected (required by rate-limit-redis)
+      retryStrategy: (times) => Math.min(times * 500, 10_000), // Always retry, backoff to 10s max
+      reconnectOnError: () => true,                             // Reconnect on any socket error
       tls: REDIS_URL.startsWith("rediss://") ? {} : undefined,
     })
   : null;
 
 if (redis) {
-  redis.on("connect", () => console.log("Redis connected"));
-  redis.on("error", (err) => console.error("Redis error:", err.message));
+  let connected = false;
+  redis.on("connect", () => {
+    if (!connected) { console.log("✅  Redis connected"); connected = true; }
+  });
+  redis.on("error", (err) => {
+    const msg = err.message ?? "";
+    if (!msg.includes("ECONNRESET") && !msg.includes("ENOTFOUND") && !msg.includes("Connection is closed")) {
+      console.warn("⚠️  Redis:", msg);
+    }
+  });
 }

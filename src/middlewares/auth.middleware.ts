@@ -47,10 +47,18 @@ export const authMiddleware = (roles: string[] = []) => {
       }
 
       if (redis && decoded.jti) {
-        const isBlacklisted = await redis.get(`bl:${decoded.jti}`);
-        if (isBlacklisted) {
-          res.status(401).json({ success: false, message: "Token has been revoked" });
-          return;
+        try {
+          // Timeout after 500ms — if Redis is reconnecting, fail open rather than hang
+          const isBlacklisted = await Promise.race([
+            redis.get(`bl:${decoded.jti}`),
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 500)),
+          ]);
+          if (isBlacklisted) {
+            res.status(401).json({ success: false, message: "Token has been revoked" });
+            return;
+          }
+        } catch {
+          // Redis unavailable — allow request through (fail open)
         }
       }
 

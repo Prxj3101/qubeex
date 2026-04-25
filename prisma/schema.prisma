@@ -7,6 +7,8 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
 enum Role {
   SUPER_ADMIN
   ADMIN
@@ -18,31 +20,56 @@ enum InstitutionType {
   COACHING
 }
 
+enum InstitutionStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING
+}
+
 enum SubscriptionStatus {
   TRIAL
   ACTIVE
   EXPIRED
 }
 
-enum InstitutionStatus {
-  ACTIVE
-  SUSPENDED
+enum PaymentStatus {
+  PAID
+  PENDING
+  FAILED
 }
 
-model Institution {
-  id    String          @id @default(uuid())
-  name  String
-  email String          @unique
-  type  InstitutionType
+// ─── Models ───────────────────────────────────────────────────────────────────
 
-  status InstitutionStatus @default(ACTIVE)
+model Institution {
+  id      String          @id @default(uuid())
+  name    String
+  email   String          @unique
+  type    InstitutionType
+  status  InstitutionStatus @default(PENDING)
+
+  // Contact & Location
+  phone   String?
+  city    String?
+  state   String?
+  address String?
+  pincode String?
+  country String?         @default("India")
+
+  // Academic Info
+  board   String?
+  medium  String?
+  logoUrl String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users        User[]
-  subscription Subscription?
-  invites      Invite[]
+  users         User[]
+  subscription  Subscription?
+  invites       Invite[]
+  auditLogs     AuditLog[]
+  notifications NotificationRecipient[]
+  tickets       SupportTicket[]
+  reviews       Review[]
 }
 
 model User {
@@ -62,13 +89,12 @@ model User {
 
 model Plan {
   id              String @id @default(uuid())
-  name            String
+  name            String @unique
   basePrice       Float
   perStudentPrice Float
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   subscriptions Subscription[]
 }
 
@@ -81,7 +107,10 @@ model Subscription {
   planId String
   plan   Plan   @relation(fields: [planId], references: [id])
 
-  status SubscriptionStatus @default(TRIAL)
+  status        SubscriptionStatus @default(TRIAL)
+  paymentStatus PaymentStatus      @default(PENDING)
+  discount      Float              @default(0)
+  features      Json?
 
   startDate DateTime
   endDate   DateTime?
@@ -107,10 +136,85 @@ model Invite {
 }
 
 model AuditLog {
-  id       String  @id @default(uuid())
-  action   String
-  userId   String?
-  metadata Json?
+  id            String  @id @default(uuid())
+  action        String
+  userId        String?
+  actorRole     String?
+  institutionId String?
+  details       String?
+  ip            String?
+  metadata      Json?
+
+  institution Institution? @relation(fields: [institutionId], references: [id])
 
   createdAt DateTime @default(now())
+}
+
+model Notification {
+  id            String   @id @default(uuid())
+  title         String
+  message       String
+  tag           String
+  recipientType String
+  deliveredTo   Int      @default(0)
+  sentById      String?
+
+  recipients NotificationRecipient[]
+
+  createdAt DateTime @default(now())
+}
+
+model NotificationRecipient {
+  id             String       @id @default(uuid())
+  notificationId String
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  institutionId  String
+  institution    Institution  @relation(fields: [institutionId], references: [id])
+}
+
+model SupportTicket {
+  id          String @id @default(uuid())
+  title       String
+  description String
+  category    String
+  priority    String
+  status      String @default("OPEN")
+
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  adminEmail    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  replies TicketReply[]
+}
+
+model TicketReply {
+  id       String        @id @default(uuid())
+  ticketId String
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id])
+
+  author  String
+  role    String
+  message String
+
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  adminName    String
+  adminEmail   String
+  rating       Int
+  title        String
+  body         String
+  likes        Int     @default(0)
+  replyMessage String?
+
+  repliedAt DateTime?
+  createdAt DateTime  @default(now())
 }

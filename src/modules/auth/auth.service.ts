@@ -25,8 +25,14 @@ export const verifyInvite = async (token: string) => {
     throw new BadRequestError("Invalid or expired invite");
   }
 
+  // Look up the admin user's name
+  const adminUser = await prisma.user.findUnique({ where: { email: invite.email } });
+
   return {
+    valid: true,
     email: invite.email,
+    institutionName: invite.institution.name,
+    adminName: adminUser?.name ?? "",
     institution: invite.institution.name,
   };
 };
@@ -70,10 +76,20 @@ export const acceptInvite = async (token: string, password: string) => {
     return updatedUser;
   });
 
-  await logAudit("INVITE_ACCEPTED", result.id, {
-    email: result.email,
-    institutionId: result.institutionId,
+  await logAudit("INVITE_ACCEPTED", {
+    userId: result.id,
+    institutionId: result.institutionId ?? undefined,
+    details: `Invite accepted by ${result.email}`,
+    metadata: { email: result.email },
   });
+
+  // Activate the institution if it was PENDING
+  if (result.institutionId) {
+    await prisma.institution.update({
+      where: { id: result.institutionId },
+      data: { status: "ACTIVE" },
+    });
+  }
 
   const jti = crypto.randomUUID();
   const accessToken = jwt.sign(
@@ -105,11 +121,11 @@ export const login = async (email: string, password: string) => {
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    await logAudit("LOGIN_FAILED", undefined, { email });
+    await logAudit("LOGIN_FAILED", { details: `Failed login attempt for ${email}`, metadata: { email } });
     throw new UnauthorizedError("Invalid credentials");
   }
 
-  await logAudit("LOGIN_SUCCESS", user.id, { email });
+  await logAudit("LOGIN_SUCCESS", { userId: user.id, details: `Login by ${email}`, metadata: { email } });
 
   const jti = crypto.randomUUID();
   const token = jwt.sign(
@@ -123,7 +139,16 @@ export const login = async (email: string, password: string) => {
     { expiresIn: ACCESS_TOKEN_EXPIRY }
   );
 
-  return { token };
+  return {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      institutionId: user.institutionId,
+    },
+  };
 };
 
 export const logout = async (jti: string, exp: number) => {

@@ -178,15 +178,34 @@ export const createInstitutionService = async (data: any) => {
   return institution;
 };
 
+
 export const getInstitution = async () => {
-  return prisma.institution.findMany({
+  const institutions = await prisma.institution.findMany({
     include: {
-      users: { omit: { password: true } },
+      users: {
+        omit: { password: true },
+        orderBy: { createdAt: "asc" },
+      },
       subscription: { include: { plan: true } },
     },
     orderBy: { createdAt: "desc" },
   });
+
+  // Attach role-level counts and pick the primary admin
+  return institutions.map((inst) => {
+    const admin    = inst.users.find((u) => u.role === "ADMIN") ?? null;
+    const teachers = inst.users.filter((u) => (u.role as string) === "TEACHER").length;
+    const students = inst.users.filter((u) => (u.role as string) === "STUDENT").length;
+
+    return {
+      ...inst,
+      admin,          // full admin user object (name, email, isActive)
+      teacherCount: teachers,
+      studentCount: students,
+    };
+  });
 };
+
 
 export const getInstitutionById = async (id: string) => {
   const institution = await prisma.institution.findUnique({
@@ -292,7 +311,10 @@ export const getAuditLogs = async (query: {
       skip,
       take: limit,
       orderBy: { createdAt: "desc" },
-      include: { institution: true },
+      include: {
+        user:        { select: { id: true, name: true, email: true } },
+        institution: { select: { id: true, name: true, institutionCode: true } },
+      },
     }),
     prisma.auditLog.count({ where }),
   ]);

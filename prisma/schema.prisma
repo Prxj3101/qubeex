@@ -86,6 +86,8 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  auditLogs AuditLog[]
 }
 
 model Plan {
@@ -146,6 +148,7 @@ model AuditLog {
   ip            String?
   metadata      Json?
 
+  user        User?        @relation(fields: [userId], references: [id])
   institution Institution? @relation(fields: [institutionId], references: [id])
 
   createdAt DateTime @default(now())

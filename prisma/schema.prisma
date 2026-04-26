@@ -152,6 +152,11 @@ model AuditLog {
   institution Institution? @relation(fields: [institutionId], references: [id])
 
   createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([action])
+  @@index([actorRole])
+  @@index([institutionId])
 }
 
 model Notification {

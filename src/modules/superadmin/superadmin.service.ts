@@ -2,6 +2,7 @@ import { prisma } from "../../utils/prisma";
 import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
+import { generateInstitutionCode } from "../../utils/institutionCode";
 import { ConflictError, NotFoundError } from "../../utils/errors";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -110,9 +111,13 @@ export const createInstitutionService = async (data: any) => {
   const tokenHash = hashToken(rawToken);
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
+  // Generate human-readable code before the transaction
+  const institutionCode = await generateInstitutionCode(type);
+
   const institution = await prisma.$transaction(async (tx) => {
     const newInstitution = await tx.institution.create({
       data: {
+        institutionCode,
         name, email, type, status: "PENDING",
         phone, city, state, address, pincode,
         country: country ?? "India",
@@ -160,7 +165,7 @@ export const createInstitutionService = async (data: any) => {
   const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
 
   // Fire-and-forget — don't let email failure block institution creation
-  sendInviteEmail({ to: adminEmail, name: adminName, inviteLink }).catch((err) =>
+  sendInviteEmail({ to: adminEmail, name: adminName, inviteLink, institutionCode }).catch((err) =>
     console.error("⚠️  Invite email failed (non-blocking):", err.message)
   );
 

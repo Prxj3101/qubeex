@@ -6,10 +6,12 @@ export const sendInviteEmail = async ({
     to,
     name,
     inviteLink,
+    institutionCode,
 }: {
     to: string;
     name?: string;
     inviteLink: string;
+    institutionCode?: string;
 }) => {
     try {
         const { data, error } = await resend.emails.send({
@@ -49,10 +51,24 @@ export const sendInviteEmail = async ({
               <p style="margin:0 0 16px;font-size:22px;font-weight:600;color:#fff;">
                 Hello${name ? `, ${name}` : ''}! 👋
               </p>
-              <p style="margin:0 0 12px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">
+              <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">
                 You have been invited as an <strong style="color:#DA7756;">Admin</strong> on the QubeEx platform. 
                 Click the button below to set your password and activate your account.
               </p>
+
+              ${institutionCode ? `
+              <!-- Institution Code Box -->
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+                <tr>
+                  <td style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:12px;padding:16px 20px;">
+                    <p style="margin:0 0 4px;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;text-transform:uppercase;">Your Institution ID</p>
+                    <p style="margin:0;font-size:22px;font-weight:700;color:#DA7756;letter-spacing:2px;font-family:monospace;">${institutionCode}</p>
+                    <p style="margin:6px 0 0;font-size:11px;color:rgba(255,255,255,0.3);">Keep this safe — you'll need it to complete setup and to log in.</p>
+                  </td>
+                </tr>
+              </table>
+              ` : ''}
+
               <p style="margin:0 0 28px;font-size:13px;color:rgba(255,255,255,0.35);">
                 This link expires in <strong style="color:rgba(255,255,255,0.55);">24 hours</strong>.
               </p>

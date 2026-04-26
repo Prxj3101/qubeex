@@ -20,10 +20,9 @@ export const emailSchema = z
   .trim();
 
 export const acceptInviteSchema = z.object({
-  token: z.string().min(1, "Token is required"),
-  password: passwordSchema,
-  // Frontend sends instituteId as a UX confirmation step — we accept but don't require it
-  instituteId: z.string().optional(),
+  token:      z.string().min(1, "Token is required"),
+  password:   passwordSchema,
+  instituteId: z.string().min(1, "Institution ID is required").trim(),
 });
 
 export const loginSchema = z.object({

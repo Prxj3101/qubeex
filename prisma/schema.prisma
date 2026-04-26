@@ -41,11 +41,12 @@ enum PaymentStatus {
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Institution {
-  id      String          @id @default(uuid())
-  name    String
-  email   String          @unique
-  type    InstitutionType
-  status  InstitutionStatus @default(PENDING)
+  id              String            @id @default(uuid())
+  institutionCode String            @unique  // e.g. QX-SCH-2026-0001
+  name            String
+  email           String            @unique
+  type            InstitutionType
+  status          InstitutionStatus @default(PENDING)
 
   // Contact & Location
   phone   String?

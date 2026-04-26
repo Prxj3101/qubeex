@@ -32,22 +32,29 @@ export const verifyInvite = async (token: string) => {
     valid: true,
     email: invite.email,
     institutionName: invite.institution.name,
+    institutionCode: invite.institution.institutionCode,
     adminName: adminUser?.name ?? "",
     institution: invite.institution.name,
   };
 };
 
-export const acceptInvite = async (token: string, password: string) => {
+export const acceptInvite = async (token: string, password: string, instituteId: string) => {
   const tokenHash = hashToken(token);
 
   const invite = await prisma.invite.findUnique({
     where: { tokenHash },
+    include: { institution: true },
   });
 
   if (!invite) throw new BadRequestError("Invalid or expired invite");
   if (invite.isUsed) throw new BadRequestError("Invalid or expired invite");
   if (invite.expiresAt < new Date()) {
     throw new BadRequestError("Invalid or expired invite");
+  }
+
+  // Validate the institution code submitted by the admin matches
+  if (invite.institution.institutionCode !== instituteId?.trim()) {
+    throw new BadRequestError("Invalid Institution ID");
   }
 
   const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);

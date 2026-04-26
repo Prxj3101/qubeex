@@ -30,9 +30,9 @@ export const acceptInvite = async (
   next: NextFunction
 ) => {
   try {
-    const { token, password } = acceptInviteSchema.parse(req.body);
+    const { token, password, instituteId } = acceptInviteSchema.parse(req.body);
 
-    const data = await service.acceptInvite(token, password);
+    const data = await service.acceptInvite(token, password, instituteId);
 
     res.status(200).json({ success: true, data });
   } catch (error) {

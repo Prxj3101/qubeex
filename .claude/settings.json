@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/hacksmith010/Programming/qubeex/qubeex-web/store/**)",
+      "Read(//home/hacksmith010/Programming/qubeex/qubeex-web/app/superadmin/**)",
+      "Read(//home/hacksmith010/Programming/qubeex/qubeex-web/app/**)",
+      "Bash(grep -v \"^$\")",
+      "Read(//home/hacksmith010/Programming/qubeex/qubeex-web/**)"
+    ],
+    "additionalDirectories": [
+      "/home/hacksmith010/Programming/qubeex/qubeex-web/app/superadmin/settings",
+      "/home/hacksmith010/Programming/qubeex/qubeex-web/components/auth"
+    ]
+  }
+}

@@ -5,7 +5,13 @@ import { logAudit } from "../../services/audit.service";
 import { uploadImageToSupabase } from "../../services/storage.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "../../utils/errors";
+import { getCache, setCache, delCache } from "../../utils/cache";
 import bcrypt from "bcrypt";
+
+const CACHE_KEYS = {
+  overview:     "cache:overview",
+  institutions: "cache:institutions",
+} as const;
 
 const BCRYPT_ROUNDS = 12;
 
@@ -175,6 +181,9 @@ export const getProfileLoginActivity = async (userId: string, limit = 10) => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const getOverviewStats = async () => {
+  const cached = await getCache(CACHE_KEYS.overview);
+  if (cached) return cached;
+
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfWeek = new Date(now);
@@ -241,20 +250,23 @@ export const getOverviewStats = async () => {
     })
   );
 
-  return {
+  const result = {
     stats: {
       totalInstitutions,
       newInstitutionsThisMonth,
       pendingInvites,
-      activeStudents: 0,       // placeholder — add when student model exists
-      newStudentsThisWeek: 0,  // placeholder
-      testsConducted: 0,       // placeholder
+      activeStudents: 0,
+      newStudentsThisWeek: 0,
+      testsConducted: 0,
     },
     institutionGrowth,
     planDistribution,
     recentInstitutions,
     recentAuditLogs,
   };
+
+  await setCache(CACHE_KEYS.overview, result, 60);
+  return result;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -343,11 +355,15 @@ export const createInstitutionService = async (data: any) => {
     metadata: { institutionName: name, adminEmail },
   });
 
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
   return institution;
 };
 
 
 export const getInstitution = async () => {
+  const cached = await getCache(CACHE_KEYS.institutions);
+  if (cached) return cached;
+
   const institutions = await prisma.institution.findMany({
     include: {
       users: {
@@ -360,18 +376,21 @@ export const getInstitution = async () => {
   });
 
   // Attach role-level counts and pick the primary admin
-  return institutions.map((inst) => {
+  const result = institutions.map((inst) => {
     const admin    = inst.users.find((u) => u.role === "ADMIN") ?? null;
     const teachers = inst.users.filter((u) => (u.role as string) === "TEACHER").length;
     const students = inst.users.filter((u) => (u.role as string) === "STUDENT").length;
 
     return {
       ...inst,
-      admin,          // full admin user object (name, email, isActive)
+      admin,
       teacherCount: teachers,
       studentCount: students,
     };
   });
+
+  await setCache(CACHE_KEYS.institutions, result, 30);
+  return result;
 };
 
 
@@ -390,7 +409,9 @@ export const getInstitutionById = async (id: string) => {
 export const updateInstitution = async (id: string, data: any) => {
   const existing = await prisma.institution.findUnique({ where: { id } });
   if (!existing) throw new NotFoundError("Institution not found");
-  return prisma.institution.update({ where: { id }, data });
+  const result = await prisma.institution.update({ where: { id }, data });
+  await delCache(CACHE_KEYS.institutions);
+  return result;
 };
 
 export const uploadInstitutionLogo = async (
@@ -424,6 +445,7 @@ export const toggleInstitutionStatus = async (
   if (!existing) throw new NotFoundError("Institution not found");
 
   const result = await prisma.institution.update({ where: { id }, data: { status } });
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
 
   const action = status === "ACTIVE"
     ? "INSTITUTION_ACTIVATED"

@@ -15,12 +15,17 @@ export const redis = REDIS_URL
     })
   : null;
 
+export let isRedisReady = false;
+
 if (redis) {
   let connected = false;
+  redis.on("ready", () => { isRedisReady = true; });
+  redis.on("close", () => { isRedisReady = false; });
   redis.on("connect", () => {
     if (!connected) { console.log("✅  Redis connected"); connected = true; }
   });
   redis.on("error", (err) => {
+    isRedisReady = false;
     const msg = err.message ?? "";
     if (!msg.includes("ECONNRESET") && !msg.includes("ENOTFOUND") && !msg.includes("Connection is closed")) {
       console.warn("⚠️  Redis:", msg);

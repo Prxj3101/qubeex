@@ -6,6 +6,8 @@ import authRoutes from "./modules/auth/auth.routes";
 import adminRoutes from "./modules/admin/admin.routes";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { generalLimiter } from "./middlewares/rateLimiter.middleware";
+import { prisma } from "./utils/prisma";
+import { redis } from "./utils/redis";
 
 const app = express();
 
@@ -36,6 +38,34 @@ app.use("/api/admin", adminRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Server is running...");
+});
+
+app.get("/health", async (_req, res) => {
+  const dbStart = Date.now();
+  let dbOk = false;
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    dbOk = true;
+  } catch {}
+  const dbLatency = Date.now() - dbStart;
+
+  const redisStart = Date.now();
+  let redisOk = false;
+  try {
+    if (redis) { await redis.ping(); redisOk = true; }
+  } catch {}
+  const redisLatency = Date.now() - redisStart;
+
+  const status = dbOk ? "ok" : "degraded";
+  res.status(dbOk ? 200 : 503).json({
+    status,
+    db:    { status: dbOk    ? "ok" : "down", latency: `${dbLatency}ms` },
+    redis: {
+      status: redisOk ? "ok" : redis ? "down" : "not_configured",
+      latency: redisOk ? `${redisLatency}ms` : null,
+    },
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.use(errorHandler);

@@ -1,5 +1,5 @@
 import { prisma } from "../../utils/prisma";
-import { redis } from "../../utils/redis";
+import { redis, isRedisReady } from "../../utils/redis";
 import { hashToken } from "../../utils/token";
 import { logAudit } from "../../services/audit.service";
 import { UnauthorizedError, BadRequestError } from "../../utils/errors";
@@ -118,12 +118,44 @@ type LoginContext = {
   userAgent?: string;
 };
 
+const LOGIN_MAX_ATTEMPTS = 5;
+const LOGIN_WINDOW_SECS  = 15 * 60; // 15 min
+
+async function checkLoginLockout(email: string) {
+  if (!redis || !isRedisReady) return;
+  const attempts = parseInt((await redis.get(`loginAttempts:${email}`)) ?? "0", 10);
+  if (attempts >= LOGIN_MAX_ATTEMPTS) {
+    const ttl = await redis.ttl(`loginAttempts:${email}`);
+    const mins = Math.ceil(ttl / 60);
+    throw new UnauthorizedError(
+      `Account temporarily locked. Try again in ${mins} minute${mins === 1 ? "" : "s"}.`
+    );
+  }
+}
+
+async function recordFailedAttempt(email: string) {
+  if (!redis || !isRedisReady) return;
+  const key = `loginAttempts:${email}`;
+  const attempts = await redis.incr(key);
+  if (attempts === 1) {
+    await redis.expire(key, LOGIN_WINDOW_SECS);
+  }
+}
+
+async function clearLoginAttempts(email: string) {
+  if (!redis || !isRedisReady) return;
+  await redis.del(`loginAttempts:${email}`);
+}
+
 export const login = async (email: string, password: string, context: LoginContext = {}) => {
+  await checkLoginLockout(email);
+
   const user = await prisma.user.findUnique({
     where: { email },
   });
 
   if (!user || !user.password) {
+    await recordFailedAttempt(email);
     throw new UnauthorizedError("Invalid credentials");
   }
 
@@ -133,6 +165,7 @@ export const login = async (email: string, password: string, context: LoginConte
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
+    await recordFailedAttempt(email);
     await logAudit("LOGIN_FAILED", {
       userId: user.id,
       actorRole: user.role,
@@ -143,6 +176,8 @@ export const login = async (email: string, password: string, context: LoginConte
     });
     throw new UnauthorizedError("Invalid credentials");
   }
+
+  await clearLoginAttempts(email);
 
   await logAudit("LOGIN_SUCCESS", {
     userId: user.id,
@@ -179,7 +214,7 @@ export const login = async (email: string, password: string, context: LoginConte
 };
 
 export const logout = async (jti: string, exp: number) => {
-  if (!redis) {
+  if (!redis || !isRedisReady) {
     return { message: "Logged out (stateless)" };
   }
 

@@ -29,12 +29,15 @@ export const getOverviewStats = async () => {
     prisma.institution.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
-      include: { subscription: { include: { plan: true } } },
+      include: {
+        subscription: { include: { plan: true } },
+        users: { select: { role: true } },
+      },
     }),
     prisma.auditLog.findMany({
-      take: 10,
+      take: 5,
       orderBy: { createdAt: "desc" },
-      include: { institution: true },
+      include: { institution: { select: { id: true, name: true } } },
     }),
     prisma.subscription.findMany({ include: { plan: true } }),
   ]);

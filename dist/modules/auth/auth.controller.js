@@ -53,8 +53,8 @@ const verifyInvite = async (req, res, next) => {
 exports.verifyInvite = verifyInvite;
 const acceptInvite = async (req, res, next) => {
     try {
-        const { token, password } = auth_schema_1.acceptInviteSchema.parse(req.body);
-        const data = await service.acceptInvite(token, password);
+        const { token, password, instituteId } = auth_schema_1.acceptInviteSchema.parse(req.body);
+        const data = await service.acceptInvite(token, password, instituteId);
         res.status(200).json({ success: true, data });
     }
     catch (error) {
@@ -65,7 +65,15 @@ exports.acceptInvite = acceptInvite;
 const login = async (req, res, next) => {
     try {
         const { email, password } = auth_schema_1.loginSchema.parse(req.body);
-        const data = await service.login(email, password);
+        const forwardedFor = req.headers["x-forwarded-for"]?.toString();
+        const ip = forwardedFor?.split(",")[0]?.trim() ||
+            req.ip ||
+            req.socket.remoteAddress ||
+            "unknown";
+        const data = await service.login(email, password, {
+            ip,
+            userAgent: req.headers["user-agent"] ?? "unknown",
+        });
         res.json({ success: true, data });
     }
     catch (error) {

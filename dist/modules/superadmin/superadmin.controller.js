@@ -33,9 +33,71 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resendInvite = exports.toggleStatus = exports.updataInstitution = exports.getInstitution = exports.getInstitutions = exports.createInstitution = void 0;
+exports.getVaultStats = exports.getAIUsage = exports.getSystemHealth = exports.replyToReview = exports.getReviews = exports.replyToTicket = exports.updateTicketStatus = exports.getTicket = exports.getTickets = exports.getNotifications = exports.broadcastNotification = exports.updateInstitutionFeatures = exports.updateInstitutionPlan = exports.getInstitutionPlan = exports.getPlans = exports.getAuditLogs = exports.resendInvite = exports.toggleStatus = exports.uploadInstitutionLogo = exports.updateInstitution = exports.getInstitution = exports.getInstitutions = exports.createInstitution = exports.getOverview = exports.getLoginActivity = exports.changePassword = exports.updateProfile = exports.getProfile = void 0;
 const service = __importStar(require("./superadmin.service"));
 const superadmin_schema_1 = require("./superadmin.schema");
+// ─────────────────────────────────────────────────────────────────────────────
+// PROFILE
+// ─────────────────────────────────────────────────────────────────────────────
+const getProfile = async (req, res, next) => {
+    try {
+        const data = await service.getProfile(req.user.userId);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getProfile = getProfile;
+const updateProfile = async (req, res, next) => {
+    try {
+        const data = superadmin_schema_1.updateProfileSchema.parse(req.body);
+        const result = await service.updateProfile(req.user.userId, data);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.updateProfile = updateProfile;
+const changePassword = async (req, res, next) => {
+    try {
+        const data = superadmin_schema_1.changePasswordSchema.parse(req.body);
+        const result = await service.changeProfilePassword(req.user.userId, data);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.changePassword = changePassword;
+const getLoginActivity = async (req, res, next) => {
+    try {
+        const { limit } = req.query;
+        const data = await service.getProfileLoginActivity(req.user.userId, limit ? parseInt(limit) : 10);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getLoginActivity = getLoginActivity;
+// ─────────────────────────────────────────────────────────────────────────────
+// OVERVIEW
+// ─────────────────────────────────────────────────────────────────────────────
+const getOverview = async (_req, res, next) => {
+    try {
+        const data = await service.getOverviewStats();
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getOverview = getOverview;
+// ─────────────────────────────────────────────────────────────────────────────
+// INSTITUTIONS
+// ─────────────────────────────────────────────────────────────────────────────
 const createInstitution = async (req, res, next) => {
     try {
         const data = superadmin_schema_1.createInstitutionSchema.parse(req.body);
@@ -67,7 +129,7 @@ const getInstitution = async (req, res, next) => {
     }
 };
 exports.getInstitution = getInstitution;
-const updataInstitution = async (req, res, next) => {
+const updateInstitution = async (req, res, next) => {
     try {
         const data = superadmin_schema_1.updateInstitutionSchema.parse(req.body);
         const result = await service.updateInstitution(req.params.id, data);
@@ -77,11 +139,22 @@ const updataInstitution = async (req, res, next) => {
         next(error);
     }
 };
-exports.updataInstitution = updataInstitution;
+exports.updateInstitution = updateInstitution;
+const uploadInstitutionLogo = async (req, res, next) => {
+    try {
+        const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+        const result = await service.uploadInstitutionLogo(file, req.headers["content-type"] ?? "", req.user?.userId);
+        res.status(201).json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.uploadInstitutionLogo = uploadInstitutionLogo;
 const toggleStatus = async (req, res, next) => {
     try {
         const { status } = superadmin_schema_1.toggleStatusSchema.parse(req.body);
-        const result = await service.toggleInstitutionStatus(req.params.id, status);
+        const result = await service.toggleInstitutionStatus(req.params.id, status, req.user?.userId, req.user?.role);
         res.json({ success: true, data: result });
     }
     catch (error) {
@@ -92,7 +165,7 @@ exports.toggleStatus = toggleStatus;
 const resendInvite = async (req, res, next) => {
     try {
         const { email } = req.body;
-        const result = await service.resendInvite(email);
+        const result = await service.resendInvite(email, req.params.id);
         res.json({ success: true, data: result });
     }
     catch (error) {
@@ -100,3 +173,212 @@ const resendInvite = async (req, res, next) => {
     }
 };
 exports.resendInvite = resendInvite;
+// ─────────────────────────────────────────────────────────────────────────────
+// AUDIT LOGS
+// ─────────────────────────────────────────────────────────────────────────────
+const getAuditLogs = async (req, res, next) => {
+    try {
+        const { action, institutionId, actorRole, from, to, page, limit } = req.query;
+        const data = await service.getAuditLogs({
+            action,
+            institutionId,
+            actorRole,
+            from,
+            to,
+            page: page ? parseInt(page) : 1,
+            limit: limit ? parseInt(limit) : 20,
+        });
+        res.json({ success: true, ...data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getAuditLogs = getAuditLogs;
+// ─────────────────────────────────────────────────────────────────────────────
+// PLAN MANAGEMENT
+// ─────────────────────────────────────────────────────────────────────────────
+const getPlans = async (_req, res, next) => {
+    try {
+        const data = await service.getPlans();
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getPlans = getPlans;
+const getInstitutionPlan = async (req, res, next) => {
+    try {
+        const data = await service.getInstitutionPlan(req.params.id);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getInstitutionPlan = getInstitutionPlan;
+const updateInstitutionPlan = async (req, res, next) => {
+    try {
+        const data = superadmin_schema_1.updatePlanSchema.parse(req.body);
+        const result = await service.updateInstitutionPlan(req.params.id, data, req.user?.userId, req.user?.role);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.updateInstitutionPlan = updateInstitutionPlan;
+const updateInstitutionFeatures = async (req, res, next) => {
+    try {
+        const { features } = superadmin_schema_1.updateFeaturesSchema.parse(req.body);
+        const result = await service.updateInstitutionFeatures(req.params.id, features);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.updateInstitutionFeatures = updateInstitutionFeatures;
+// ─────────────────────────────────────────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────────────────────────────────────────
+const broadcastNotification = async (req, res, next) => {
+    try {
+        const data = superadmin_schema_1.broadcastNotificationSchema.parse(req.body);
+        const result = await service.broadcastNotification(data, req.user?.userId);
+        res.status(201).json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.broadcastNotification = broadcastNotification;
+const getNotifications = async (req, res, next) => {
+    try {
+        const { page, limit } = req.query;
+        const data = await service.getNotifications(page ? parseInt(page) : 1, limit ? parseInt(limit) : 20);
+        res.json({ success: true, ...data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getNotifications = getNotifications;
+// ─────────────────────────────────────────────────────────────────────────────
+// SUPPORT TICKETS
+// ─────────────────────────────────────────────────────────────────────────────
+const getTickets = async (req, res, next) => {
+    try {
+        const { status, category, search, page, limit } = req.query;
+        const data = await service.getTickets({
+            status, category, search,
+            page: page ? parseInt(page) : 1,
+            limit: limit ? parseInt(limit) : 20,
+        });
+        res.json({ success: true, ...data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getTickets = getTickets;
+const getTicket = async (req, res, next) => {
+    try {
+        const data = await service.getTicketById(req.params.id);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getTicket = getTicket;
+const updateTicketStatus = async (req, res, next) => {
+    try {
+        const { status } = superadmin_schema_1.updateTicketStatusSchema.parse(req.body);
+        const result = await service.updateTicketStatus(req.params.id, status);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.updateTicketStatus = updateTicketStatus;
+const replyToTicket = async (req, res, next) => {
+    try {
+        const { message } = superadmin_schema_1.ticketReplySchema.parse(req.body);
+        const result = await service.replyToTicket(req.params.id, message);
+        res.status(201).json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.replyToTicket = replyToTicket;
+// ─────────────────────────────────────────────────────────────────────────────
+// REVIEWS
+// ─────────────────────────────────────────────────────────────────────────────
+const getReviews = async (req, res, next) => {
+    try {
+        const { type, rating, search, page, limit } = req.query;
+        const data = await service.getReviews({
+            type, search,
+            rating: rating ? parseInt(rating) : undefined,
+            page: page ? parseInt(page) : 1,
+            limit: limit ? parseInt(limit) : 20,
+        });
+        res.json({ success: true, ...data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getReviews = getReviews;
+const replyToReview = async (req, res, next) => {
+    try {
+        const { message } = superadmin_schema_1.reviewReplySchema.parse(req.body);
+        const result = await service.replyToReview(req.params.id, message);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.replyToReview = replyToReview;
+// ─────────────────────────────────────────────────────────────────────────────
+// SYSTEM
+// ─────────────────────────────────────────────────────────────────────────────
+const getSystemHealth = async (_req, res, next) => {
+    try {
+        const data = await service.getSystemHealth();
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getSystemHealth = getSystemHealth;
+const getAIUsage = async (req, res, next) => {
+    try {
+        const { range = "1M" } = req.query;
+        const data = await service.getAIUsage(range);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getAIUsage = getAIUsage;
+// ─────────────────────────────────────────────────────────────────────────────
+// VAULT
+// ─────────────────────────────────────────────────────────────────────────────
+const getVaultStats = async (_req, res, next) => {
+    try {
+        const data = await service.getVaultStats();
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getVaultStats = getVaultStats;

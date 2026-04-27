@@ -2,8 +2,173 @@ import { prisma } from "../../utils/prisma";
 import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
+import { uploadImageToSupabase } from "../../services/storage.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
-import { ConflictError, NotFoundError } from "../../utils/errors";
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "../../utils/errors";
+import bcrypt from "bcrypt";
+
+const BCRYPT_ROUNDS = 12;
+
+const toProfileResponse = (user: {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}) => ({
+  id: user.id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  isActive: user.isActive,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
+
+const getDeviceName = (userAgent?: string | null) => {
+  if (!userAgent || userAgent === "unknown") return "Unknown device";
+
+  const browser = userAgent.includes("Edg/")
+    ? "Edge"
+    : userAgent.includes("Chrome/")
+    ? "Chrome"
+    : userAgent.includes("Safari/") && !userAgent.includes("Chrome/")
+    ? "Safari"
+    : userAgent.includes("Firefox/")
+    ? "Firefox"
+    : userAgent.includes("OPR/") || userAgent.includes("Opera/")
+    ? "Opera"
+    : "Browser";
+
+  const os = /iPhone|iPad|iPod/.test(userAgent)
+    ? "iOS"
+    : userAgent.includes("Android")
+    ? "Android"
+    : userAgent.includes("Windows")
+    ? "Windows"
+    : userAgent.includes("Mac OS X") || userAgent.includes("Macintosh")
+    ? "macOS"
+    : userAgent.includes("Linux")
+    ? "Linux"
+    : "Unknown OS";
+
+  return `${browser} on ${os}`;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROFILE
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getProfile = async (userId: string) => {
+  const user = await prisma.user.findFirst({
+    where: { id: userId, role: "SUPER_ADMIN" },
+  });
+
+  if (!user) throw new NotFoundError("Super admin profile not found");
+
+  return toProfileResponse(user);
+};
+
+export const updateProfile = async (
+  userId: string,
+  data: { name: string; email: string }
+) => {
+  const existing = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!existing || existing.role !== "SUPER_ADMIN") {
+    throw new NotFoundError("Super admin profile not found");
+  }
+
+  if (data.email !== existing.email) {
+    const emailOwner = await prisma.user.findUnique({ where: { email: data.email } });
+    if (emailOwner && emailOwner.id !== userId) {
+      throw new ConflictError("A user with this email already exists");
+    }
+  }
+
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name: data.name,
+      email: data.email,
+    },
+  });
+
+  await logAudit("PROFILE_UPDATED", {
+    userId,
+    actorRole: "SUPER_ADMIN",
+    details: `Super admin profile updated for ${user.email}`,
+    metadata: { email: user.email },
+  });
+
+  return toProfileResponse(user);
+};
+
+export const changeProfilePassword = async (
+  userId: string,
+  data: { oldPassword: string; newPassword: string }
+) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user || user.role !== "SUPER_ADMIN") {
+    throw new NotFoundError("Super admin profile not found");
+  }
+  if (!user.password) throw new BadRequestError("Password is not set for this account");
+
+  const isMatch = await bcrypt.compare(data.oldPassword, user.password);
+  if (!isMatch) throw new UnauthorizedError("Current password is incorrect");
+
+  const isSamePassword = await bcrypt.compare(data.newPassword, user.password);
+  if (isSamePassword) throw new BadRequestError("New password must be different from current password");
+
+  const hashedPassword = await bcrypt.hash(data.newPassword, BCRYPT_ROUNDS);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedPassword },
+  });
+
+  await logAudit("PASSWORD_CHANGED", {
+    userId,
+    actorRole: "SUPER_ADMIN",
+    details: `Password changed for ${user.email}`,
+    metadata: { email: user.email },
+  });
+
+  return { message: "Password changed successfully" };
+};
+
+export const getProfileLoginActivity = async (userId: string, limit = 10) => {
+  const logs = await prisma.auditLog.findMany({
+    where: {
+      action: "LOGIN_SUCCESS",
+      userId,
+      actorRole: "SUPER_ADMIN",
+    },
+    take: Math.min(Math.max(limit, 1), 30),
+    orderBy: { createdAt: "desc" },
+  });
+
+  return logs.map((log, index) => {
+    const metadata = log.metadata as { userAgent?: string | null } | null;
+
+    return {
+      id: log.id,
+      device: getDeviceName(metadata?.userAgent),
+      ip: log.ip ?? "unknown",
+      location: "Captured by server",
+      time: log.createdAt,
+      latest: index === 0,
+      userAgent: metadata?.userAgent ?? null,
+    };
+  });
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OVERVIEW
@@ -226,6 +391,27 @@ export const updateInstitution = async (id: string, data: any) => {
   const existing = await prisma.institution.findUnique({ where: { id } });
   if (!existing) throw new NotFoundError("Institution not found");
   return prisma.institution.update({ where: { id }, data });
+};
+
+export const uploadInstitutionLogo = async (
+  file: Buffer,
+  contentType: string,
+  actorId?: string
+) => {
+  const uploaded = await uploadImageToSupabase(file, {
+    contentType,
+    folder: "institutions/logos",
+    ownerId: actorId ?? "superadmin",
+  });
+
+  await logAudit("INSTITUTION_LOGO_UPLOADED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    details: "Institution logo uploaded",
+    metadata: { path: uploaded.path, publicUrl: uploaded.publicUrl },
+  });
+
+  return { logoUrl: uploaded.publicUrl, path: uploaded.path };
 };
 
 export const toggleInstitutionStatus = async (

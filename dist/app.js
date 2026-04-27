@@ -12,8 +12,9 @@ const admin_routes_1 = __importDefault(require("./modules/admin/admin.routes"));
 const errorHandler_middleware_1 = require("./middlewares/errorHandler.middleware");
 const rateLimiter_middleware_1 = require("./middlewares/rateLimiter.middleware");
 const app = (0, express_1.default)();
+app.set("trust proxy", 1);
 app.use((0, helmet_1.default)());
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:5173")
     .split(",")
     .map((origin) => origin.trim());
 app.use((0, cors_1.default)({

@@ -113,7 +113,12 @@ export const acceptInvite = async (token: string, password: string, instituteId:
   return { token: accessToken };
 };
 
-export const login = async (email: string, password: string) => {
+type LoginContext = {
+  ip?: string;
+  userAgent?: string;
+};
+
+export const login = async (email: string, password: string, context: LoginContext = {}) => {
   const user = await prisma.user.findUnique({
     where: { email },
   });
@@ -128,11 +133,25 @@ export const login = async (email: string, password: string) => {
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    await logAudit("LOGIN_FAILED", { details: `Failed login attempt for ${email}`, metadata: { email } });
+    await logAudit("LOGIN_FAILED", {
+      userId: user.id,
+      actorRole: user.role,
+      institutionId: user.institutionId ?? undefined,
+      ip: context.ip,
+      details: `Failed login attempt for ${email}`,
+      metadata: { email, userAgent: context.userAgent },
+    });
     throw new UnauthorizedError("Invalid credentials");
   }
 
-  await logAudit("LOGIN_SUCCESS", { userId: user.id, details: `Login by ${email}`, metadata: { email } });
+  await logAudit("LOGIN_SUCCESS", {
+    userId: user.id,
+    actorRole: user.role,
+    institutionId: user.institutionId ?? undefined,
+    ip: context.ip,
+    details: `Login by ${email}`,
+    metadata: { email, userAgent: context.userAgent },
+  });
 
   const jti = crypto.randomUUID();
   const token = jwt.sign(
@@ -154,6 +173,7 @@ export const login = async (email: string, password: string) => {
       name: user.name,
       role: user.role,
       institutionId: user.institutionId,
+      createdAt: user.createdAt,
     },
   };
 };

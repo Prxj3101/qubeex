@@ -1,5 +1,17 @@
 import { z } from "zod";
-import { emailSchema } from "../auth/auth.schema";
+import { emailSchema, passwordSchema } from "../auth/auth.schema";
+
+// ─── Profile ─────────────────────────────────────────────────────────────────
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(200).trim(),
+  email: emailSchema,
+});
+
+export const changePasswordSchema = z.object({
+  oldPassword: z.string().min(1, "Current password is required").max(100),
+  newPassword: passwordSchema,
+});
 
 // ─── Institution Create ───────────────────────────────────────────────────────
 

@@ -28,16 +28,23 @@ const verifyInvite = async (token) => {
     if (invite.expiresAt < new Date()) {
         throw new errors_1.BadRequestError("Invalid or expired invite");
     }
+    // Look up the admin user's name
+    const adminUser = await prisma_1.prisma.user.findUnique({ where: { email: invite.email } });
     return {
+        valid: true,
         email: invite.email,
+        institutionName: invite.institution.name,
+        institutionCode: invite.institution.institutionCode,
+        adminName: adminUser?.name ?? "",
         institution: invite.institution.name,
     };
 };
 exports.verifyInvite = verifyInvite;
-const acceptInvite = async (token, password) => {
+const acceptInvite = async (token, password, instituteId) => {
     const tokenHash = (0, token_1.hashToken)(token);
     const invite = await prisma_1.prisma.invite.findUnique({
         where: { tokenHash },
+        include: { institution: true },
     });
     if (!invite)
         throw new errors_1.BadRequestError("Invalid or expired invite");
@@ -45,6 +52,10 @@ const acceptInvite = async (token, password) => {
         throw new errors_1.BadRequestError("Invalid or expired invite");
     if (invite.expiresAt < new Date()) {
         throw new errors_1.BadRequestError("Invalid or expired invite");
+    }
+    // Validate the institution code submitted by the admin matches
+    if (invite.institution.institutionCode !== instituteId?.trim()) {
+        throw new errors_1.BadRequestError("Invalid Institution ID");
     }
     const hashedPassword = await bcrypt_1.default.hash(password, BCRYPT_ROUNDS);
     const user = await prisma_1.prisma.user.findUnique({
@@ -67,10 +78,19 @@ const acceptInvite = async (token, password) => {
         });
         return updatedUser;
     });
-    await (0, audit_service_1.logAudit)("INVITE_ACCEPTED", result.id, {
-        email: result.email,
-        institutionId: result.institutionId,
+    await (0, audit_service_1.logAudit)("INVITE_ACCEPTED", {
+        userId: result.id,
+        institutionId: result.institutionId ?? undefined,
+        details: `Invite accepted by ${result.email}`,
+        metadata: { email: result.email },
     });
+    // Activate the institution if it was PENDING
+    if (result.institutionId) {
+        await prisma_1.prisma.institution.update({
+            where: { id: result.institutionId },
+            data: { status: "ACTIVE" },
+        });
+    }
     const jti = crypto_1.default.randomUUID();
     const accessToken = jsonwebtoken_1.default.sign({
         userId: result.id,
@@ -81,7 +101,7 @@ const acceptInvite = async (token, password) => {
     return { token: accessToken };
 };
 exports.acceptInvite = acceptInvite;
-const login = async (email, password) => {
+const login = async (email, password, context = {}) => {
     const user = await prisma_1.prisma.user.findUnique({
         where: { email },
     });
@@ -93,10 +113,24 @@ const login = async (email, password) => {
     }
     const isMatch = await bcrypt_1.default.compare(password, user.password);
     if (!isMatch) {
-        await (0, audit_service_1.logAudit)("LOGIN_FAILED", undefined, { email });
+        await (0, audit_service_1.logAudit)("LOGIN_FAILED", {
+            userId: user.id,
+            actorRole: user.role,
+            institutionId: user.institutionId ?? undefined,
+            ip: context.ip,
+            details: `Failed login attempt for ${email}`,
+            metadata: { email, userAgent: context.userAgent },
+        });
         throw new errors_1.UnauthorizedError("Invalid credentials");
     }
-    await (0, audit_service_1.logAudit)("LOGIN_SUCCESS", user.id, { email });
+    await (0, audit_service_1.logAudit)("LOGIN_SUCCESS", {
+        userId: user.id,
+        actorRole: user.role,
+        institutionId: user.institutionId ?? undefined,
+        ip: context.ip,
+        details: `Login by ${email}`,
+        metadata: { email, userAgent: context.userAgent },
+    });
     const jti = crypto_1.default.randomUUID();
     const token = jsonwebtoken_1.default.sign({
         userId: user.id,
@@ -104,7 +138,17 @@ const login = async (email, password) => {
         institutionId: user.institutionId,
         jti,
     }, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
-    return { token };
+    return {
+        token,
+        user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            institutionId: user.institutionId,
+            createdAt: user.createdAt,
+        },
+    };
 };
 exports.login = login;
 const logout = async (jti, exp) => {

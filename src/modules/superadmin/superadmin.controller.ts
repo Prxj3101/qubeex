@@ -2,6 +2,8 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import * as service from "./superadmin.service";
 import {
+  updateProfileSchema,
+  changePasswordSchema,
   createInstitutionSchema,
   updateInstitutionSchema,
   toggleStatusSchema,
@@ -12,6 +14,68 @@ import {
   ticketReplySchema,
   reviewReplySchema,
 } from "./superadmin.schema";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROFILE
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getProfile = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await service.getProfile(req.user!.userId);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfile = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = updateProfileSchema.parse(req.body);
+    const result = await service.updateProfile(req.user!.userId, data);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePassword = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = changePasswordSchema.parse(req.body);
+    const result = await service.changeProfilePassword(req.user!.userId, data);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getLoginActivity = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { limit } = req.query as Record<string, string>;
+    const data = await service.getProfileLoginActivity(
+      req.user!.userId,
+      limit ? parseInt(limit) : 10
+    );
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OVERVIEW
@@ -83,6 +147,24 @@ export const updateInstitution = async (
     const data = updateInstitutionSchema.parse(req.body);
     const result = await service.updateInstitution(req.params.id as string, data);
     res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadInstitutionLogo = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+    const result = await service.uploadInstitutionLogo(
+      file,
+      req.headers["content-type"] ?? "",
+      req.user?.userId
+    );
+    res.status(201).json({ success: true, data: result });
   } catch (error) {
     next(error);
   }

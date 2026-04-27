@@ -9,6 +9,8 @@ import { generalLimiter } from "./middlewares/rateLimiter.middleware";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(helmet());
 
 const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:5173")

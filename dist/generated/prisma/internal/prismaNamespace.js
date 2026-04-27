@@ -48,7 +48,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineExtension = exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.NullableJsonNullValueInput = exports.SortOrder = exports.AuditLogScalarFieldEnum = exports.InviteScalarFieldEnum = exports.SubscriptionScalarFieldEnum = exports.PlanScalarFieldEnum = exports.UserScalarFieldEnum = exports.InstitutionScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.NullableJsonNullValueInput = exports.SortOrder = exports.ReviewScalarFieldEnum = exports.TicketReplyScalarFieldEnum = exports.SupportTicketScalarFieldEnum = exports.NotificationRecipientScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.AuditLogScalarFieldEnum = exports.InviteScalarFieldEnum = exports.SubscriptionScalarFieldEnum = exports.PlanScalarFieldEnum = exports.UserScalarFieldEnum = exports.InstitutionScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 /**
  * Prisma Errors
@@ -108,7 +108,12 @@ exports.ModelName = {
     Plan: 'Plan',
     Subscription: 'Subscription',
     Invite: 'Invite',
-    AuditLog: 'AuditLog'
+    AuditLog: 'AuditLog',
+    Notification: 'Notification',
+    NotificationRecipient: 'NotificationRecipient',
+    SupportTicket: 'SupportTicket',
+    TicketReply: 'TicketReply',
+    Review: 'Review'
 };
 /**
  * Enums
@@ -121,10 +126,20 @@ exports.TransactionIsolationLevel = runtime.makeStrictEnum({
 });
 exports.InstitutionScalarFieldEnum = {
     id: 'id',
+    institutionCode: 'institutionCode',
     name: 'name',
     email: 'email',
     type: 'type',
     status: 'status',
+    phone: 'phone',
+    city: 'city',
+    state: 'state',
+    address: 'address',
+    pincode: 'pincode',
+    country: 'country',
+    board: 'board',
+    medium: 'medium',
+    logoUrl: 'logoUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
@@ -152,6 +167,9 @@ exports.SubscriptionScalarFieldEnum = {
     institutionId: 'institutionId',
     planId: 'planId',
     status: 'status',
+    paymentStatus: 'paymentStatus',
+    discount: 'discount',
+    features: 'features',
     startDate: 'startDate',
     endDate: 'endDate',
     createdAt: 'createdAt',
@@ -171,7 +189,59 @@ exports.AuditLogScalarFieldEnum = {
     id: 'id',
     action: 'action',
     userId: 'userId',
+    actorRole: 'actorRole',
+    institutionId: 'institutionId',
+    details: 'details',
+    ip: 'ip',
     metadata: 'metadata',
+    createdAt: 'createdAt'
+};
+exports.NotificationScalarFieldEnum = {
+    id: 'id',
+    title: 'title',
+    message: 'message',
+    tag: 'tag',
+    recipientType: 'recipientType',
+    deliveredTo: 'deliveredTo',
+    sentById: 'sentById',
+    createdAt: 'createdAt'
+};
+exports.NotificationRecipientScalarFieldEnum = {
+    id: 'id',
+    notificationId: 'notificationId',
+    institutionId: 'institutionId'
+};
+exports.SupportTicketScalarFieldEnum = {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    category: 'category',
+    priority: 'priority',
+    status: 'status',
+    institutionId: 'institutionId',
+    adminEmail: 'adminEmail',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.TicketReplyScalarFieldEnum = {
+    id: 'id',
+    ticketId: 'ticketId',
+    author: 'author',
+    role: 'role',
+    message: 'message',
+    createdAt: 'createdAt'
+};
+exports.ReviewScalarFieldEnum = {
+    id: 'id',
+    institutionId: 'institutionId',
+    adminName: 'adminName',
+    adminEmail: 'adminEmail',
+    rating: 'rating',
+    title: 'title',
+    body: 'body',
+    likes: 'likes',
+    replyMessage: 'replyMessage',
+    repliedAt: 'repliedAt',
     createdAt: 'createdAt'
 };
 exports.SortOrder = {

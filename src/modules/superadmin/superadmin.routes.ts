@@ -1,6 +1,11 @@
-import { Router } from "express";
+import { Router, raw } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import {
+  // Profile
+  getProfile,
+  updateProfile,
+  changePassword,
+  getLoginActivity,
   // Overview
   getOverview,
   // Institutions
@@ -8,6 +13,7 @@ import {
   getInstitutions,
   getInstitution,
   updateInstitution,
+  uploadInstitutionLogo,
   toggleStatus,
   resendInvite,
   // Audit Logs
@@ -38,11 +44,18 @@ import {
 const router = Router();
 const SA = authMiddleware(["SUPER_ADMIN"]);
 
+// ─── Profile ─────────────────────────────────────────────────────────────────
+router.get("/profile",                                 SA, getProfile);
+router.put("/profile",                                 SA, updateProfile);
+router.put("/profile/password",                        SA, changePassword);
+router.get("/profile/login-activity",                  SA, getLoginActivity);
+
 // ─── Overview ─────────────────────────────────────────────────────────────────
 router.get("/overview", SA, getOverview);
 
 // ─── Institutions ─────────────────────────────────────────────────────────────
 router.post("/institutions",                           SA, createInstitution);
+router.post("/institutions/logo",                      SA, raw({ type: ["image/png", "image/jpeg", "image/webp"], limit: "2mb" }), uploadInstitutionLogo);
 router.get("/institutions",                            SA, getInstitutions);
 router.get("/institutions/:id",                        SA, getInstitution);
 router.put("/institutions/:id",                        SA, updateInstitution);

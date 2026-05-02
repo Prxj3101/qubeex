@@ -1,6 +1,6 @@
 import { prisma } from "../../utils/prisma";
 import { generateToken, hashToken } from "../../utils/token";
-import { sendInviteEmail } from "../../services/email.service";
+import { sendInviteEmail, sendActivationEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
 import { uploadImageToSupabase } from "../../services/storage.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
@@ -222,11 +222,7 @@ export const getOverviewStats = async () => {
     const name = sub.plan.name;
     planCounts[name] = (planCounts[name] ?? 0) + 1;
   }
-  const trialCount = await prisma.subscription.count({ where: { status: "TRIAL" } });
-  const planDistribution = [
-    ...Object.entries(planCounts).map(([plan, count]) => ({ plan, count })),
-    { plan: "TRIAL", count: trialCount },
-  ];
+  const planDistribution = Object.entries(planCounts).map(([plan, count]) => ({ plan, count }));
 
   // Monthly institution growth (last 6 months)
   const months = Array.from({ length: 6 }, (_, i) => {
@@ -278,8 +274,14 @@ export const createInstitutionService = async (data: any) => {
     name, email, type, adminName, adminEmail,
     phone, city, state, address, pincode, country,
     board, medium, logoUrl,
-    plan: planName = "BASIC",
+    plan: selectedPlan = "BASIC",
+    trialDays = 14,
   } = data;
+
+  // When creating a TRIAL institution: the subscription uses the TRIAL plan.
+  // When creating a paid plan directly: no trial, subscription is ACTIVE.
+  const isTrial = selectedPlan === "TRIAL";
+  const activePlanName = isTrial ? "TRIAL" : selectedPlan;
 
   const existingInstitution = await prisma.institution.findUnique({ where: { email } });
   if (existingInstitution) throw new ConflictError("Institution with this email already exists");
@@ -325,19 +327,24 @@ export const createInstitutionService = async (data: any) => {
       },
     });
 
-    // Link the institution to the chosen plan
-    const plan = await tx.plan.findFirst({ where: { name: planName } });
-    if (plan) {
-      await tx.subscription.create({
-        data: {
-          institutionId: newInstitution.id,
-          planId: plan.id,
-          status: "TRIAL",
-          startDate: new Date(),
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30-day trial
-        },
-      });
-    }
+    // Link the institution to the chosen plan (TRIAL or BASIC/PRO).
+    const plan = await tx.plan.findFirst({ where: { name: activePlanName } });
+    if (!plan) throw new NotFoundError(`Plan '${activePlanName}' not found`);
+
+    const trialStart = new Date();
+    const trialEnd   = new Date(trialStart);
+    trialEnd.setDate(trialEnd.getDate() + Number(trialDays));
+
+    await tx.subscription.create({
+      data: {
+        institutionId: newInstitution.id,
+        planId:        plan.id,
+        status:        isTrial ? "TRIAL" : "ACTIVE",
+        startDate:     trialStart,
+        endDate:       isTrial ? trialEnd : null,
+        trialDays:     isTrial ? Number(trialDays) : null,
+      },
+    });
 
     return newInstitution;
   });
@@ -352,7 +359,13 @@ export const createInstitutionService = async (data: any) => {
   await logAudit("INSTITUTION_CREATED", {
     institutionId: institution.id,
     details: `Created ${name} · Type: ${type}`,
-    metadata: { institutionName: name, adminEmail },
+    metadata: {
+      institutionName: name,
+      adminEmail,
+      selectedPlan,
+      isTrial,
+      trialDays: isTrial ? Number(trialDays) : null,
+    },
   });
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
@@ -399,7 +412,11 @@ export const getInstitutionById = async (id: string) => {
     where: { id },
     include: {
       users: { omit: { password: true } },
-      subscription: { include: { plan: true } },
+      subscription: {
+        include: {
+          plan: true,
+        },
+      },
     },
   });
   if (!institution) throw new NotFoundError("Institution not found");
@@ -462,6 +479,139 @@ export const toggleInstitutionStatus = async (
   });
 
   return result;
+};
+
+export const extendTrial = async (id: string, extraDays: number, actorId?: string) => {
+  const subscription = await prisma.subscription.findUnique({ where: { institutionId: id } });
+  if (!subscription || subscription.status !== "TRIAL") {
+    throw new BadRequestError("Institution is not on an active trial.");
+  }
+  
+  const currentEnd = subscription.endDate ? new Date(subscription.endDate) : new Date();
+  const newEnd = new Date(currentEnd);
+  newEnd.setDate(newEnd.getDate() + extraDays);
+  
+  const result = await prisma.subscription.update({
+    where: { institutionId: id },
+    data: { 
+      endDate: newEnd,
+      trialDays: { increment: extraDays },
+      trialOutcome: "EXTENDED"
+    }
+  });
+  
+  await logAudit("TRIAL_EXTENDED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `Trial extended by ${extraDays} days`,
+    metadata: { extraDays, newEnd },
+  });
+
+  return result;
+};
+
+export const markTrialChurned = async (id: string, actorId?: string) => {
+  const subscription = await prisma.subscription.findUnique({ where: { institutionId: id } });
+  if (!subscription || subscription.status !== "TRIAL") {
+    throw new BadRequestError("Institution is not on an active trial.");
+  }
+
+  // Update trialOutcome and lock the institution
+  const result = await prisma.$transaction([
+    prisma.subscription.update({
+      where: { institutionId: id },
+      data: { trialOutcome: "CHURNED", status: "LOCKED" }
+    }),
+    prisma.institution.update({
+      where: { id },
+      data: { status: "SUSPENDED" }
+    })
+  ]);
+
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+
+  await logAudit("TRIAL_CHURNED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `Institution marked as churned after trial`,
+  });
+
+  return result[0];
+};
+
+export const getTrialUsage = async (id: string) => {
+  const institution = await prisma.institution.findUnique({
+    where: { id },
+    include: {
+      _count: { select: { users: true } },
+      subscription: true,
+    },
+  });
+  if (!institution) throw new NotFoundError("Institution not found");
+
+  const sub = institution.subscription;
+  const now = new Date();
+  const endDate = sub?.endDate ? new Date(sub.endDate) : null;
+  const daysRemaining = endDate
+    ? Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+    : null;
+
+  return {
+    users:      { used: institution._count.users, limit: 500 },
+    storageGb:  { used: 0,                        limit: 10 },
+    aiTokens:   { used: 0,                        limit: 2_000_000 },
+    daysRemaining,
+    trialEndDate: endDate?.toISOString() ?? null,
+    status: sub?.status ?? null,
+  };
+};
+
+export const deleteInstitution = async (id: string, actorId?: string) => {
+  const institution = await prisma.institution.findUnique({ where: { id } });
+  if (!institution) throw new NotFoundError("Institution not found");
+
+  // Collect institution user IDs before deletion
+  const institutionUsers = await prisma.user.findMany({
+    where: { institutionId: id },
+    select: { id: true },
+  });
+  const userIds = institutionUsers.map((u) => u.id);
+
+  // Delete in dependency order — everything tied to this institution
+  await prisma.ticketReply.deleteMany({ where: { ticket: { institutionId: id } } });
+  await prisma.supportTicket.deleteMany({ where: { institutionId: id } });
+  await prisma.notificationRecipient.deleteMany({ where: { institutionId: id } });
+  await prisma.review.deleteMany({ where: { institutionId: id } });
+  await prisma.invite.deleteMany({ where: { institutionId: id } });
+  await prisma.subscription.deleteMany({ where: { institutionId: id } });
+
+  // Wipe all audit logs belonging to this institution
+  await prisma.auditLog.deleteMany({ where: { institutionId: id } });
+
+  // Nullify any audit log entries referencing institution users (safety — prevents FK violation)
+  if (userIds.length > 0) {
+    await prisma.auditLog.updateMany({
+      where: { userId: { in: userIds } },
+      data: { userId: null },
+    });
+  }
+
+  // Hard delete all users belonging to this institution
+  await prisma.user.deleteMany({ where: { institutionId: id } });
+
+  await prisma.institution.delete({ where: { id } });
+
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+
+  // Log the deletion by the superadmin (survives — not tied to the institution)
+  await logAudit("INSTITUTION_DELETED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    details: `Institution "${institution.name}" (${institution.institutionCode}) permanently deleted along with ${userIds.length} user(s)`,
+    metadata: { institutionId: id, name: institution.name, usersDeleted: userIds.length },
+  });
 };
 
 export const resendInvite = async (email: string, institutionId: string) => {
@@ -589,6 +739,77 @@ export const updateInstitutionPlan = async (
     institutionId: id,
     details: `${institution.name} assigned to ${data.planName} plan with ${data.discount}% discount`,
     metadata: { plan: data.planName, discount: data.discount, paymentStatus: data.paymentStatus },
+  });
+
+  return subscription;
+};
+
+export const activateInstitutionPlan = async (
+  id: string,
+  planName: "BASIC" | "PRO",
+  discountPct: number,
+  actorId?: string
+) => {
+  const institution = await prisma.institution.findUnique({
+    where: { id },
+    include: {
+      users: { where: { role: "ADMIN" }, omit: { password: true } },
+      subscription: true,
+    },
+  });
+  if (!institution) throw new NotFoundError("Institution not found");
+  if (!institution.subscription) throw new NotFoundError("No subscription found for this institution");
+
+  const plan = await prisma.plan.findFirst({ where: { name: planName } });
+  if (!plan) throw new NotFoundError(`Plan '${planName}' not found`);
+
+  const activationDate = new Date();
+
+  const subscription = await prisma.subscription.update({
+    where: { institutionId: id },
+    data: {
+      planId: plan.id,
+      status: "ACTIVE",
+      paymentStatus: "PAID",
+      discount: discountPct,
+      activationDate,
+      trialOutcome: "ACTIVATED",
+      endDate: null,
+    },
+    include: { plan: true },
+  });
+
+  // Ensure institution status is ACTIVE
+  await prisma.institution.update({ where: { id }, data: { status: "ACTIVE" } });
+
+  // Generate licence bill
+  const licenceFee = plan.basePrice;
+  const discountAmount = Math.round(licenceFee * (discountPct / 100));
+  await generateLicenceBill(id, licenceFee, discountAmount);
+
+  // Email the institution admin
+  const adminUser = institution.users[0];
+  if (adminUser?.email) {
+    const now = new Date();
+    const nextBillingDate = new Date(now.getFullYear(), now.getMonth() + 1, 0); // last day of current month
+    sendActivationEmail({
+      to: adminUser.email,
+      institutionName: institution.name,
+      planName,
+      activationDate,
+      nextBillingDate,
+      discountPct,
+    }).catch((err) => console.error("Activation email failed:", err.message));
+  }
+
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+
+  await logAudit("PLAN_ACTIVATED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `${institution.name} activated on ${planName} plan${discountPct > 0 ? ` with ${discountPct}% discount` : ""}`,
+    metadata: { plan: planName, discountPct, activationDate },
   });
 
   return subscription;
@@ -886,4 +1107,229 @@ export const getVaultStats = async () => {
     activeSubscriptions: activeSubscriptions.length,
     churnRate: 0,
   };
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BILLING
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getBills = async (id: string, page: number, limit: number) => {
+  const [bills, total] = await Promise.all([
+    prisma.bill.findMany({
+      where: { institutionId: id },
+      orderBy: { generatedAt: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.bill.count({ where: { institutionId: id } }),
+  ]);
+  return { bills, total, page, limit, pages: Math.ceil(total / limit) };
+};
+
+export const updateBillStatus = async (
+  billId: string,
+  status: "PAID" | "PENDING",
+  actorId?: string
+) => {
+  const bill = await prisma.bill.findUnique({ where: { id: billId } });
+  if (!bill) throw new NotFoundError("Bill not found");
+
+  const updated = await prisma.bill.update({
+    where: { id: billId },
+    data: {
+      status,
+      paidAt: status === "PAID" ? new Date() : null,
+    },
+  });
+
+  await logAudit("BILL_STATUS_UPDATED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: bill.institutionId,
+    details: `Bill ${billId} marked as ${status}`,
+    metadata: { billId, status },
+  });
+
+  return updated;
+};
+
+export const generateLicenceBill = async (
+  institutionId: string,
+  licenceAmount: number,
+  discountAmount: number
+) => {
+  const totalAmount = licenceAmount - discountAmount;
+  const now = new Date();
+  const dueDate = new Date(now);
+  dueDate.setDate(dueDate.getDate() + 7);
+
+  return prisma.bill.create({
+    data: {
+      institutionId,
+      type: "LICENCE",
+      totalAmount,
+      baseAmount: licenceAmount,
+      discountAmount,
+      items: [
+        { label: "Licence Fee", desc: "One-time platform licence", amount: licenceAmount, type: "licence" },
+        ...(discountAmount > 0
+          ? [{ label: "Discount", desc: `Discount applied`, amount: -discountAmount, type: "discount" }]
+          : []),
+      ],
+      dueDate,
+    },
+  });
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAUSE / RESUME
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const pauseInstitution = async (id: string, actorId?: string) => {
+  const institution = await prisma.institution.findUnique({ where: { id } });
+  if (!institution) throw new NotFoundError("Institution not found");
+
+  const sub = await prisma.subscription.findUnique({ where: { institutionId: id } });
+  if (!sub) throw new NotFoundError("Subscription not found");
+  if (sub.status !== "ACTIVE") throw new BadRequestError("Can only pause an active subscription");
+  if (sub.pauseMonthsUsed >= 3) throw new BadRequestError("Maximum 3 pause months per calendar year reached");
+
+  const updated = await prisma.subscription.update({
+    where: { institutionId: id },
+    data: { status: "PAUSED", pausedAt: new Date() },
+  });
+
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+  await logAudit("INSTITUTION_PAUSED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `${institution.name} subscription paused`,
+    metadata: { pausedAt: updated.pausedAt },
+  });
+
+  return updated;
+};
+
+export const resumeInstitution = async (id: string, actorId?: string) => {
+  const institution = await prisma.institution.findUnique({ where: { id } });
+  if (!institution) throw new NotFoundError("Institution not found");
+
+  const sub = await prisma.subscription.findUnique({ where: { institutionId: id } });
+  if (!sub) throw new NotFoundError("Subscription not found");
+  if (sub.status !== "PAUSED") throw new BadRequestError("Subscription is not paused");
+
+  const updated = await prisma.subscription.update({
+    where: { institutionId: id },
+    data: {
+      status: "ACTIVE",
+      pausedAt: null,
+      pauseMonthsUsed: { increment: 1 },
+    },
+  });
+
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+  await logAudit("INSTITUTION_RESUMED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `${institution.name} subscription resumed`,
+    metadata: {},
+  });
+
+  return updated;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADDONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const updateAddons = async (
+  id: string,
+  addons: Record<string, unknown>,
+  actorId?: string
+) => {
+  const institution = await prisma.institution.findUnique({ where: { id } });
+  if (!institution) throw new NotFoundError("Institution not found");
+
+  const updated = await prisma.subscription.update({
+    where: { institutionId: id },
+    data: { addons: addons as any },
+  });
+
+  await logAudit("ADDONS_UPDATED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `Addons updated for ${institution.name}`,
+    metadata: addons as any,
+  });
+
+  return updated;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UPGRADE / DOWNGRADE
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const upgradePlan = async (id: string, actorId?: string) => {
+  const institution = await prisma.institution.findUnique({
+    where: { id },
+    include: { subscription: { include: { plan: true } } },
+  });
+  if (!institution) throw new NotFoundError("Institution not found");
+  if (!institution.subscription) throw new NotFoundError("Subscription not found");
+  if (institution.subscription.plan.name !== "BASIC")
+    throw new BadRequestError("Can only upgrade from BASIC plan");
+
+  const proPlan = await prisma.plan.findFirst({ where: { name: "PRO" } });
+  if (!proPlan) throw new NotFoundError("PRO plan not found");
+
+  const updated = await prisma.subscription.update({
+    where: { institutionId: id },
+    data: { planId: proPlan.id },
+    include: { plan: true },
+  });
+
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+  await logAudit("PLAN_UPGRADED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `${institution.name} upgraded from BASIC to PRO`,
+    metadata: {},
+  });
+
+  return updated;
+};
+
+export const downgradePlan = async (id: string, actorId?: string) => {
+  const institution = await prisma.institution.findUnique({
+    where: { id },
+    include: { subscription: { include: { plan: true } } },
+  });
+  if (!institution) throw new NotFoundError("Institution not found");
+  if (!institution.subscription) throw new NotFoundError("Subscription not found");
+  if (institution.subscription.plan.name !== "PRO")
+    throw new BadRequestError("Can only downgrade from PRO plan");
+
+  const basicPlan = await prisma.plan.findFirst({ where: { name: "BASIC" } });
+  if (!basicPlan) throw new NotFoundError("BASIC plan not found");
+
+  const updated = await prisma.subscription.update({
+    where: { institutionId: id },
+    data: { planId: basicPlan.id },
+    include: { plan: true },
+  });
+
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+  await logAudit("PLAN_DOWNGRADED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `${institution.name} downgraded from PRO to BASIC`,
+    metadata: {},
+  });
+
+  return updated;
 };

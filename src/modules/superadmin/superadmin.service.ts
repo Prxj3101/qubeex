@@ -4,7 +4,7 @@ import { sendInviteEmail, sendActivationEmail } from "../../services/email.servi
 import { logAudit } from "../../services/audit.service";
 import { uploadImageToSupabase } from "../../services/storage.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
-import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "../../utils/errors";
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooManyRequestsError } from "../../utils/errors";
 import { getCache, setCache, delCache } from "../../utils/cache";
 import bcrypt from "bcrypt";
 
@@ -568,6 +568,21 @@ export const getTrialUsage = async (id: string) => {
     trialEndDate: endDate?.toISOString() ?? null,
     status: sub?.status ?? null,
   };
+};
+
+export const checkTrialUserLimit = async (institutionId: string) => {
+  const subscription = await prisma.subscription.findUnique({
+    where: { institutionId },
+    select: { status: true },
+  });
+  if (!subscription || subscription.status !== "TRIAL") return;
+
+  const userCount = await prisma.user.count({ where: { institutionId } });
+  if (userCount >= 500) {
+    throw new TooManyRequestsError(
+      "Trial user limit reached. Maximum 500 users allowed during trial."
+    );
+  }
 };
 
 export const deleteInstitution = async (id: string, actorId?: string) => {

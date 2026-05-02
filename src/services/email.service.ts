@@ -2,6 +2,122 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+export const sendActivationEmail = async ({
+    to,
+    institutionName,
+    planName,
+    activationDate,
+    nextBillingDate,
+    discountPct,
+}: {
+    to: string;
+    institutionName: string;
+    planName: string;
+    activationDate: Date;
+    nextBillingDate: Date;
+    discountPct: number;
+}) => {
+    const formatDate = (d: Date) =>
+        d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'QubeEx <support@qubeex.in>',
+            to,
+            subject: `Your ${planName} plan is now active — Welcome to QubeEx!`,
+            html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0;padding:0;background:#0F0A1E;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0A1E;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="background:#1A112E;border-radius:20px;overflow:hidden;border:1px solid rgba(124,58,237,0.2);">
+          <tr><td style="height:4px;background:linear-gradient(90deg,#7C3AED,#DA7756);"></td></tr>
+          <tr>
+            <td align="center" style="padding:36px 40px 24px;">
+              <p style="margin:0;font-size:26px;font-weight:700;color:#FAE5D9;letter-spacing:-0.5px;">QubeEx</p>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;">AI-Powered School Platform</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 40px 32px;">
+              <p style="margin:0 0 16px;font-size:22px;font-weight:600;color:#fff;">Plan Activated!</p>
+              <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">
+                <strong style="color:#fff;">${institutionName}</strong> is now live on the
+                <strong style="color:#DA7756;">${planName}</strong> plan.
+                Your institution now has full access to all ${planName} features.
+              </p>
+
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+                <tr>
+                  <td style="background:rgba(218,119,86,0.12);border:1px solid rgba(218,119,86,0.3);border-radius:12px;padding:20px 24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Plan</p>
+                          <p style="margin:0;font-size:16px;font-weight:700;color:#DA7756;">${planName}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Activation Date</p>
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#fff;">${formatDate(activationDate)}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">First Bill Date</p>
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#fff;">${formatDate(nextBillingDate)}</p>
+                        </td>
+                      </tr>
+                      ${discountPct > 0 ? `
+                      <tr>
+                        <td style="padding-top:12px;">
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Discount Applied</p>
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#10B981;">${discountPct}% off licence fee</p>
+                        </td>
+                      </tr>` : '<tr><td style="padding-top:12px;"></td></tr>'}
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.4);line-height:1.6;">
+                Per-user billing starts from your activation date. Your first bill will be generated on
+                <strong style="color:rgba(255,255,255,0.6);">${formatDate(nextBillingDate)}</strong> and
+                payment is due by the 7th of the following month.
+              </p>
+            </td>
+          </tr>
+          <tr><td style="padding:0 40px;"><div style="height:1px;background:rgba(255,255,255,0.07);"></div></td></tr>
+          <tr>
+            <td align="center" style="padding:24px 40px 32px;">
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.25);">
+                This is an automated confirmation from QubeEx.
+              </p>
+              <p style="margin:8px 0 0;font-size:11px;color:rgba(255,255,255,0.15);">© ${new Date().getFullYear()} QubeEx. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+        });
+
+        if (error) console.error('Resend error:', error);
+        else console.log('Activation email sent:', data?.id);
+    } catch (err) {
+        console.error('Activation email send failed:', err);
+    }
+};
+
 export const sendInviteEmail = async ({
     to,
     name,
@@ -128,4 +244,91 @@ export const sendInviteEmail = async ({
         console.error('Email send failed:', err);
         throw new Error('Failed to send invite email');
     }
+};
+
+export const sendTrialEndingEmail = async ({
+  to,
+  institutionName,
+  daysRemaining,
+  trialEndDate,
+}: {
+  to: string;
+  institutionName: string;
+  daysRemaining: number;
+  trialEndDate: string;
+}) => {
+  const dayWord = daysRemaining === 1 ? 'day' : 'days';
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'QubeEx <support@qubeex.in>',
+      to,
+      subject: `Your QubeEx trial ends in ${daysRemaining} ${dayWord}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0;padding:0;background:#0F0A1E;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0A1E;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="background:#1A112E;border-radius:20px;overflow:hidden;border:1px solid rgba(124,58,237,0.2);">
+          <tr><td style="height:4px;background:linear-gradient(90deg,#7C3AED,#DA7756);"></td></tr>
+          <tr>
+            <td align="center" style="padding:36px 40px 24px;">
+              <p style="margin:0;font-size:26px;font-weight:700;color:#FAE5D9;letter-spacing:-0.5px;">QubeEx</p>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;">AI-Powered School Platform</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 40px 32px;">
+              <p style="margin:0 0 16px;font-size:22px;font-weight:600;color:#fff;">Your trial is ending soon</p>
+              <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">
+                The trial for <strong style="color:#fff;">${institutionName}</strong> ends in
+                <strong style="color:#DA7756;">${daysRemaining} ${dayWord}</strong> on ${trialEndDate}.
+              </p>
+
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+                <tr>
+                  <td style="background:rgba(218,119,86,0.12);border:1px solid rgba(218,119,86,0.3);border-radius:12px;padding:20px 24px;">
+                    <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#DA7756;">What happens when the trial ends?</p>
+                    <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;">
+                      If no plan is activated within <strong style="color:#fff;">24 hours</strong> of your trial expiry,
+                      your institution will be automatically locked. All data is preserved and access
+                      can be restored at any time by activating a plan.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6;">
+                To continue without interruption, contact your QubeEx administrator to activate your plan before ${trialEndDate}.
+              </p>
+            </td>
+          </tr>
+          <tr><td style="padding:0 40px;"><div style="height:1px;background:rgba(255,255,255,0.07);"></div></td></tr>
+          <tr>
+            <td align="center" style="padding:24px 40px 32px;">
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.25);">
+                This is an automated reminder from QubeEx.
+              </p>
+              <p style="margin:8px 0 0;font-size:11px;color:rgba(255,255,255,0.15);">© ${new Date().getFullYear()} QubeEx. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+    });
+
+    if (error) console.error('Resend error (trial ending email):', error);
+    else console.log('Trial ending email sent:', data?.id);
+  } catch (err) {
+    console.error('Trial ending email send failed:', err);
+  }
 };

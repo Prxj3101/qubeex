@@ -29,7 +29,9 @@ enum InstitutionStatus {
 enum SubscriptionStatus {
   TRIAL
   ACTIVE
+  PAUSED
   EXPIRED
+  LOCKED
 }
 
 enum PaymentStatus {
@@ -42,7 +44,7 @@ enum PaymentStatus {
 
 model Institution {
   id              String            @id @default(uuid())
-  institutionCode String            @unique  // e.g. QX-SCH-2026-0001
+  institutionCode String            @unique // e.g. QX-SCH-2026-0001
   name            String
   email           String            @unique
   type            InstitutionType
@@ -54,7 +56,7 @@ model Institution {
   state   String?
   address String?
   pincode String?
-  country String?         @default("India")
+  country String? @default("India")
 
   // Academic Info
   board   String?
@@ -66,6 +68,7 @@ model Institution {
 
   users         User[]
   subscription  Subscription?
+  bills         Bill[]
   invites       Invite[]
   auditLogs     AuditLog[]
   notifications NotificationRecipient[]
@@ -90,6 +93,12 @@ model User {
   auditLogs AuditLog[]
 }
 
+enum TrialOutcome {
+  EXTENDED
+  ACTIVATED
+  CHURNED
+}
+
 model Plan {
   id              String @id @default(uuid())
   name            String @unique
@@ -110,16 +119,49 @@ model Subscription {
   planId String
   plan   Plan   @relation(fields: [planId], references: [id])
 
+  // Trial tracking
+  trialDays           Int?          // number of trial days set by superadmin
+  trialOutcome        TrialOutcome? // what happened after trial ended
+  trialWarningSent    Boolean       @default(false)
+  trialExpiryNotified Boolean       @default(false)
+
   status        SubscriptionStatus @default(TRIAL)
   paymentStatus PaymentStatus      @default(PENDING)
   discount      Float              @default(0)
   features      Json?
+
+  activationDate  DateTime? // billing anchor — set when plan transitions from TRIAL to ACTIVE
+  pausedAt        DateTime?
+  pauseMonthsUsed Int       @default(0)
+  addons          Json?
 
   startDate DateTime
   endDate   DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Bill {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  type         String
+  billingMonth String?
+
+  userCount      Int   @default(0)
+  baseAmount     Float @default(0)
+  addonAmount    Float @default(0)
+  discountAmount Float @default(0)
+  totalAmount    Float
+
+  status PaymentStatus @default(PENDING)
+  items  Json // BillItem[]
+
+  generatedAt DateTime  @default(now())
+  dueDate     DateTime?
+  paidAt      DateTime?
 }
 
 model Invite {
@@ -160,12 +202,12 @@ model AuditLog {
 }
 
 model Notification {
-  id            String   @id @default(uuid())
+  id            String  @id @default(uuid())
   title         String
   message       String
   tag           String
   recipientType String
-  deliveredTo   Int      @default(0)
+  deliveredTo   Int     @default(0)
   sentById      String?
 
   recipients NotificationRecipient[]

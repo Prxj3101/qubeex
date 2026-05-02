@@ -502,6 +502,8 @@ export const extendTrial = async (id: string, extraDays: number, actorId?: strin
     }
   });
   
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+
   await logAudit("TRIAL_EXTENDED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",

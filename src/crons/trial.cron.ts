@@ -45,6 +45,8 @@ async function runDailyTrialNotifications() {
             daysRemaining,
             trialEndDate: formattedEndDate,
           });
+        } else {
+          console.warn(`[Trial Cron] No ADMIN user found for institution ${sub.institutionId} — skipping email`);
         }
 
         // Dashboard notification for institution admin

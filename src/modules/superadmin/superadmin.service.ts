@@ -493,10 +493,12 @@ export const extendTrial = async (id: string, extraDays: number, actorId?: strin
   
   const result = await prisma.subscription.update({
     where: { institutionId: id },
-    data: { 
+    data: {
       endDate: newEnd,
       trialDays: { increment: extraDays },
-      trialOutcome: "EXTENDED"
+      trialOutcome: "EXTENDED",
+      trialWarningSent: false,
+      trialExpiryNotified: false,
     }
   });
   

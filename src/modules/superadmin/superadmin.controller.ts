@@ -9,10 +9,13 @@ import {
   toggleStatusSchema,
   updatePlanSchema,
   updateFeaturesSchema,
+  activatePlanSchema,
   broadcastNotificationSchema,
   updateTicketStatusSchema,
   ticketReplySchema,
   reviewReplySchema,
+  updateBillStatusSchema,
+  updateAddonsSchema,
 } from "./superadmin.schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -189,6 +192,32 @@ export const toggleStatus = async (
   }
 };
 
+export const getTrialUsage = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await service.getTrialUsage(req.params.id as string);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteInstitution = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await service.deleteInstitution(req.params.id as string, req.user?.userId);
+    res.json({ success: true, message: "Institution permanently deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const resendInvite = async (
   req: AuthRequest,
   res: Response,
@@ -197,6 +226,43 @@ export const resendInvite = async (
   try {
     const { email } = req.body;
     const result = await service.resendInvite(email, req.params.id as string);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const extendTrial = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { extraDays } = req.body;
+    if (!extraDays || typeof extraDays !== 'number') {
+      return res.status(400).json({ success: false, message: 'extraDays is required and must be a number' });
+    }
+    const result = await service.extendTrial(
+      req.params.id as string,
+      extraDays,
+      req.user?.userId
+    );
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const markTrialChurned = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await service.markTrialChurned(
+      req.params.id as string,
+      req.user?.userId
+    );
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);
@@ -286,6 +352,25 @@ export const updateInstitutionFeatures = async (
   try {
     const { features } = updateFeaturesSchema.parse(req.body);
     const result = await service.updateInstitutionFeatures(req.params.id as string, features);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const activateInstitutionPlan = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { plan, discountPct } = activatePlanSchema.parse(req.body);
+    const result = await service.activateInstitutionPlan(
+      req.params.id as string,
+      plan,
+      discountPct,
+      req.user?.userId
+    );
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);
@@ -473,4 +558,89 @@ export const getVaultStats = async (
   } catch (error) {
     next(error);
   }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BILLING
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getBills = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit } = req.query as Record<string, string>;
+    const data = await service.getBills(
+      req.params.id as string,
+      page  ? parseInt(page)  : 1,
+      limit ? parseInt(limit) : 20
+    );
+    res.json({ success: true, ...data });
+  } catch (error) { next(error); }
+};
+
+export const updateBillStatus = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { status } = updateBillStatusSchema.parse(req.body);
+    const result = await service.updateBillStatus(req.params.billId as string, status, req.user?.userId);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAUSE / RESUME
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const pauseInstitution = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const result = await service.pauseInstitution(req.params.id as string, req.user?.userId);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+export const resumeInstitution = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const result = await service.resumeInstitution(req.params.id as string, req.user?.userId);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADDONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const updateAddons = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { addons } = updateAddonsSchema.parse(req.body);
+    const result = await service.updateAddons(req.params.id as string, addons, req.user?.userId);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UPGRADE / DOWNGRADE
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const upgradePlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const result = await service.upgradePlan(req.params.id as string, req.user?.userId);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+export const downgradePlan = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const result = await service.downgradePlan(req.params.id as string, req.user?.userId);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BILLING — Manual Trigger
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { generateMonthlyBills } from "../../services/billing.service";
+
+export const runMonthlyBilling = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const result = await generateMonthlyBills();
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
 };

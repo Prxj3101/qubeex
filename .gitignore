@@ -8,4 +8,12 @@
 
 /dist/
 
-.codex
+temp
+
+/scripts/
+
+/CLAUDE.md
+
+.claude/
+
+docs

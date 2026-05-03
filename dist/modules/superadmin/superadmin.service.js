@@ -11,7 +11,12 @@ const audit_service_1 = require("../../services/audit.service");
 const storage_service_1 = require("../../services/storage.service");
 const institutionCode_1 = require("../../utils/institutionCode");
 const errors_1 = require("../../utils/errors");
+const cache_1 = require("../../utils/cache");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const CACHE_KEYS = {
+    overview: "cache:overview",
+    institutions: "cache:institutions",
+};
 const BCRYPT_ROUNDS = 12;
 const toProfileResponse = (user) => ({
     id: user.id,
@@ -147,6 +152,9 @@ exports.getProfileLoginActivity = getProfileLoginActivity;
 // OVERVIEW
 // ─────────────────────────────────────────────────────────────────────────────
 const getOverviewStats = async () => {
+    const cached = await (0, cache_1.getCache)(CACHE_KEYS.overview);
+    if (cached)
+        return cached;
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfWeek = new Date(now);
@@ -199,27 +207,30 @@ const getOverviewStats = async () => {
         });
         return { month, active, trial };
     }));
-    return {
+    const result = {
         stats: {
             totalInstitutions,
             newInstitutionsThisMonth,
             pendingInvites,
-            activeStudents: 0, // placeholder — add when student model exists
-            newStudentsThisWeek: 0, // placeholder
-            testsConducted: 0, // placeholder
+            activeStudents: 0,
+            newStudentsThisWeek: 0,
+            testsConducted: 0,
         },
         institutionGrowth,
         planDistribution,
         recentInstitutions,
         recentAuditLogs,
     };
+    await (0, cache_1.setCache)(CACHE_KEYS.overview, result, 60);
+    return result;
 };
 exports.getOverviewStats = getOverviewStats;
 // ─────────────────────────────────────────────────────────────────────────────
 // INSTITUTIONS
 // ─────────────────────────────────────────────────────────────────────────────
 const createInstitutionService = async (data) => {
-    const { name, email, type, adminName, adminEmail, phone, city, state, address, pincode, country, board, medium, logoUrl, plan: planName = "BASIC", } = data;
+    const { name, email, type, adminName, adminEmail, phone, city, state, address, pincode, country, board, medium, logoUrl, plan: selectedPlan = "BASIC", trialDays = 14, } = data;
+    const postTrialPlanName = selectedPlan === "TRIAL" ? "BASIC" : selectedPlan;
     const existingInstitution = await prisma_1.prisma.institution.findUnique({ where: { email } });
     if (existingInstitution)
         throw new errors_1.ConflictError("Institution with this email already exists");
@@ -259,19 +270,24 @@ const createInstitutionService = async (data) => {
                 expiresAt,
             },
         });
-        // Link the institution to the chosen plan
-        const plan = await tx.plan.findFirst({ where: { name: planName } });
-        if (plan) {
-            await tx.subscription.create({
-                data: {
-                    institutionId: newInstitution.id,
-                    planId: plan.id,
-                    status: "TRIAL",
-                    startDate: new Date(),
-                    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30-day trial
-                },
-            });
+        // Link the institution to the chosen post-trial plan. Subscription remains
+        // TRIAL until the superadmin activates payment from Manage Plan.
+        const plan = await tx.plan.findFirst({ where: { name: postTrialPlanName } });
+        if (!plan) {
+            throw new errors_1.NotFoundError(`Plan '${postTrialPlanName}' not found`);
         }
+        const trialStart = new Date();
+        const trialEnd = new Date(trialStart);
+        trialEnd.setDate(trialEnd.getDate() + trialDays);
+        await tx.subscription.create({
+            data: {
+                institutionId: newInstitution.id,
+                planId: plan.id,
+                status: "TRIAL",
+                startDate: trialStart,
+                endDate: trialEnd,
+            },
+        });
         return newInstitution;
     });
     const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
@@ -280,12 +296,22 @@ const createInstitutionService = async (data) => {
     await (0, audit_service_1.logAudit)("INSTITUTION_CREATED", {
         institutionId: institution.id,
         details: `Created ${name} · Type: ${type}`,
-        metadata: { institutionName: name, adminEmail },
+        metadata: {
+            institutionName: name,
+            adminEmail,
+            selectedPlan,
+            postTrialPlan: postTrialPlanName,
+            trialDays,
+        },
     });
+    await (0, cache_1.delCache)(CACHE_KEYS.institutions, CACHE_KEYS.overview);
     return institution;
 };
 exports.createInstitutionService = createInstitutionService;
 const getInstitution = async () => {
+    const cached = await (0, cache_1.getCache)(CACHE_KEYS.institutions);
+    if (cached)
+        return cached;
     const institutions = await prisma_1.prisma.institution.findMany({
         include: {
             users: {
@@ -297,17 +323,19 @@ const getInstitution = async () => {
         orderBy: { createdAt: "desc" },
     });
     // Attach role-level counts and pick the primary admin
-    return institutions.map((inst) => {
+    const result = institutions.map((inst) => {
         const admin = inst.users.find((u) => u.role === "ADMIN") ?? null;
         const teachers = inst.users.filter((u) => u.role === "TEACHER").length;
         const students = inst.users.filter((u) => u.role === "STUDENT").length;
         return {
             ...inst,
-            admin, // full admin user object (name, email, isActive)
+            admin,
             teacherCount: teachers,
             studentCount: students,
         };
     });
+    await (0, cache_1.setCache)(CACHE_KEYS.institutions, result, 30);
+    return result;
 };
 exports.getInstitution = getInstitution;
 const getInstitutionById = async (id) => {
@@ -327,7 +355,9 @@ const updateInstitution = async (id, data) => {
     const existing = await prisma_1.prisma.institution.findUnique({ where: { id } });
     if (!existing)
         throw new errors_1.NotFoundError("Institution not found");
-    return prisma_1.prisma.institution.update({ where: { id }, data });
+    const result = await prisma_1.prisma.institution.update({ where: { id }, data });
+    await (0, cache_1.delCache)(CACHE_KEYS.institutions);
+    return result;
 };
 exports.updateInstitution = updateInstitution;
 const uploadInstitutionLogo = async (file, contentType, actorId) => {
@@ -350,6 +380,7 @@ const toggleInstitutionStatus = async (id, status, actorId, actorRole) => {
     if (!existing)
         throw new errors_1.NotFoundError("Institution not found");
     const result = await prisma_1.prisma.institution.update({ where: { id }, data: { status } });
+    await (0, cache_1.delCache)(CACHE_KEYS.institutions, CACHE_KEYS.overview);
     const action = status === "ACTIVE"
         ? "INSTITUTION_ACTIVATED"
         : status === "SUSPENDED"

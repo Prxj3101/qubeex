@@ -101,11 +101,39 @@ const acceptInvite = async (token, password, instituteId) => {
     return { token: accessToken };
 };
 exports.acceptInvite = acceptInvite;
+const LOGIN_MAX_ATTEMPTS = 5;
+const LOGIN_WINDOW_SECS = 15 * 60; // 15 min
+async function checkLoginLockout(email) {
+    if (!redis_1.redis || !redis_1.isRedisReady)
+        return;
+    const attempts = parseInt((await redis_1.redis.get(`loginAttempts:${email}`)) ?? "0", 10);
+    if (attempts >= LOGIN_MAX_ATTEMPTS) {
+        const ttl = await redis_1.redis.ttl(`loginAttempts:${email}`);
+        const mins = Math.ceil(ttl / 60);
+        throw new errors_1.UnauthorizedError(`Account temporarily locked. Try again in ${mins} minute${mins === 1 ? "" : "s"}.`);
+    }
+}
+async function recordFailedAttempt(email) {
+    if (!redis_1.redis || !redis_1.isRedisReady)
+        return;
+    const key = `loginAttempts:${email}`;
+    const attempts = await redis_1.redis.incr(key);
+    if (attempts === 1) {
+        await redis_1.redis.expire(key, LOGIN_WINDOW_SECS);
+    }
+}
+async function clearLoginAttempts(email) {
+    if (!redis_1.redis || !redis_1.isRedisReady)
+        return;
+    await redis_1.redis.del(`loginAttempts:${email}`);
+}
 const login = async (email, password, context = {}) => {
+    await checkLoginLockout(email);
     const user = await prisma_1.prisma.user.findUnique({
         where: { email },
     });
     if (!user || !user.password) {
+        await recordFailedAttempt(email);
         throw new errors_1.UnauthorizedError("Invalid credentials");
     }
     if (!user.isActive) {
@@ -113,6 +141,7 @@ const login = async (email, password, context = {}) => {
     }
     const isMatch = await bcrypt_1.default.compare(password, user.password);
     if (!isMatch) {
+        await recordFailedAttempt(email);
         await (0, audit_service_1.logAudit)("LOGIN_FAILED", {
             userId: user.id,
             actorRole: user.role,
@@ -123,6 +152,7 @@ const login = async (email, password, context = {}) => {
         });
         throw new errors_1.UnauthorizedError("Invalid credentials");
     }
+    await clearLoginAttempts(email);
     await (0, audit_service_1.logAudit)("LOGIN_SUCCESS", {
         userId: user.id,
         actorRole: user.role,
@@ -152,7 +182,7 @@ const login = async (email, password, context = {}) => {
 };
 exports.login = login;
 const logout = async (jti, exp) => {
-    if (!redis_1.redis) {
+    if (!redis_1.redis || !redis_1.isRedisReady) {
         return { message: "Logged out (stateless)" };
     }
     const ttl = Math.max(exp - Math.floor(Date.now() / 1000), 0);

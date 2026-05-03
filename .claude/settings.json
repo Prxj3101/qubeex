@@ -5,11 +5,26 @@
       "Read(//home/hacksmith010/Programming/qubeex/qubeex-web/app/superadmin/**)",
       "Read(//home/hacksmith010/Programming/qubeex/qubeex-web/app/**)",
       "Bash(grep -v \"^$\")",
-      "Read(//home/hacksmith010/Programming/qubeex/qubeex-web/**)"
+      "Read(//home/hacksmith010/Programming/qubeex/qubeex-web/**)",
+      "Bash(TRIAL)",
+      "Bash(grep -rn \"key=\\\\\"TRIAL\\\\\"\\\\|key={'TRIAL'}\\\\|key={`TRIAL`}\" /home/hacksmith010/Programming/qubeex/qubeex-web/)",
+      "Bash(npx --prefix /home/hacksmith010/Programming/qubeex/qubeex-web tsc --noEmit)",
+      "Bash(bash -c \"cd /home/hacksmith010/Programming/qubeex/qubeex-web && npx tsc --noEmit 2>&1 | head -50\")",
+      "Bash(npx prisma *)",
+      "Bash(bash -c \"cd /home/hacksmith010/Programming/qubeex/qubeex-web && npx tsc --noEmit 2>&1 | head -20\")",
+      "Bash(npm install *)",
+      "Bash(pnpm add *)",
+      "Bash(python3)",
+      "Read(//tmp/**)",
+      "Bash(grep -n \"tex$\\\\|text-xs\" /home/hacksmith010/.claude/projects/-home-hacksmith010-Programming-qubeex-backend/54be7c03-d10d-4a56-a797-7ac4e8f04922.jsonl)",
+      "Bash(grep \"tex$\")"
     ],
     "additionalDirectories": [
       "/home/hacksmith010/Programming/qubeex/qubeex-web/app/superadmin/settings",
-      "/home/hacksmith010/Programming/qubeex/qubeex-web/components/auth"
+      "/home/hacksmith010/Programming/qubeex/qubeex-web/components/auth",
+      "/home/hacksmith010/Programming/qubeex/qubeex-web/components/superadmin",
+      "/home/hacksmith010/Programming/qubeex/qubeex-web/app/superadmin/institutions/[id]",
+      "/tmp"
     ]
   }
 }

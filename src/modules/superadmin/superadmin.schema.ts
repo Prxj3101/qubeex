@@ -39,7 +39,8 @@ export const createInstitutionSchema = z.object({
   logoUrl: z.string().url().optional(),
 
   // Subscription
-  plan: z.enum(["BASIC", "PRO"]).default("BASIC"),
+  plan: z.enum(["BASIC", "PRO", "TRIAL"]).default("BASIC"),
+  trialDays: z.coerce.number().int().min(1).max(365).default(14),
 });
 
 // ─── Institution Update ───────────────────────────────────────────────────────
@@ -77,6 +78,11 @@ export const updateFeaturesSchema = z.object({
   features: z.record(z.string(), z.boolean()),
 });
 
+export const activatePlanSchema = z.object({
+  plan:       z.enum(["BASIC", "PRO"]),
+  discountPct: z.number().min(0).max(100).default(0),
+});
+
 // ─── Notifications ────────────────────────────────────────────────────────────
 
 export const broadcastNotificationSchema = z.object({
@@ -101,4 +107,14 @@ export const ticketReplySchema = z.object({
 
 export const reviewReplySchema = z.object({
   message: z.string().min(1).max(1000).trim(),
+});
+
+// ─── Billing ──────────────────────────────────────────────────────────────────
+
+export const updateBillStatusSchema = z.object({
+  status: z.enum(["PAID", "PENDING"]),
+});
+
+export const updateAddonsSchema = z.object({
+  addons: z.record(z.string(), z.any()),
 });

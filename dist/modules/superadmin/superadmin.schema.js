@@ -33,7 +33,8 @@ exports.createInstitutionSchema = zod_1.z.object({
     medium: zod_1.z.string().max(100).trim().optional(),
     logoUrl: zod_1.z.string().url().optional(),
     // Subscription
-    plan: zod_1.z.enum(["BASIC", "PRO"]).default("BASIC"),
+    plan: zod_1.z.enum(["BASIC", "PRO", "TRIAL"]).default("BASIC"),
+    trialDays: zod_1.z.coerce.number().int().min(1).max(365).default(14),
 });
 // ─── Institution Update ───────────────────────────────────────────────────────
 exports.updateInstitutionSchema = zod_1.z.object({

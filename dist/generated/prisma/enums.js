@@ -9,7 +9,7 @@
 * 🟢 You can import this file directly.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PaymentStatus = exports.SubscriptionStatus = exports.InstitutionStatus = exports.InstitutionType = exports.Role = void 0;
+exports.TrialOutcome = exports.PaymentStatus = exports.SubscriptionStatus = exports.InstitutionStatus = exports.InstitutionType = exports.Role = void 0;
 exports.Role = {
     SUPER_ADMIN: 'SUPER_ADMIN',
     ADMIN: 'ADMIN'
@@ -27,10 +27,17 @@ exports.InstitutionStatus = {
 exports.SubscriptionStatus = {
     TRIAL: 'TRIAL',
     ACTIVE: 'ACTIVE',
-    EXPIRED: 'EXPIRED'
+    PAUSED: 'PAUSED',
+    EXPIRED: 'EXPIRED',
+    LOCKED: 'LOCKED'
 };
 exports.PaymentStatus = {
     PAID: 'PAID',
     PENDING: 'PENDING',
     FAILED: 'FAILED'
+};
+exports.TrialOutcome = {
+    EXTENDED: 'EXTENDED',
+    ACTIVATED: 'ACTIVATED',
+    CHURNED: 'CHURNED'
 };

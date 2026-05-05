@@ -79,7 +79,10 @@ export const updateFeaturesSchema = z.object({
 });
 
 export const activatePlanSchema = z.object({
-  plan:       z.enum(["BASIC", "PRO"]),
+  plan: z.enum(["BASIC", "PRO"]),
+  paymentReceived: z
+    .boolean()
+    .refine((value) => value === true, "License payment must be marked as received to activate plan"),
   discountPct: z.number().min(0).max(100).default(0),
 });
 
@@ -115,6 +118,46 @@ export const updateBillStatusSchema = z.object({
   status: z.enum(["PAID", "PENDING"]),
 });
 
+const addonBillingCycleSchema = z.enum(["MONTHLY", "YEARLY"]);
+
+const featureAddonSchema = z.object({
+  active: z.boolean(),
+  billingCycle: addonBillingCycleSchema,
+  amount: z.number().nonnegative(),
+});
+
+const smartBoardAddonSchema = z.object({
+  active: z.boolean(),
+  isInFreePeriod: z.boolean(),
+  freeStartDate: z.string().datetime().optional(),
+  freeEndDate: z.string().datetime().optional(),
+  billingCycle: addonBillingCycleSchema.nullable(),
+  amount: z.number().nonnegative().nullable(),
+  autoEnabledBySystem: z.boolean().optional(),
+  freeExpiry30DayAlertSent: z.boolean().optional(),
+});
+
+const extraStorageAddonSchema = z.object({
+  active: z.boolean(),
+  gbPurchased: z.number().int().positive(),
+  oneTimeAmount: z.number().nonnegative(),
+  purchasedAt: z.string().datetime(),
+});
+
+const aiTokenAddonSchema = z.object({
+  active: z.boolean(),
+  tokensPerMonth: z.number().int().positive(),
+  monthlyAmount: z.number().nonnegative(),
+});
+
 export const updateAddonsSchema = z.object({
-  addons: z.record(z.string(), z.any()),
+  addons: z
+    .object({
+      smartBoardAi: smartBoardAddonSchema.optional(),
+      performanceInsightsAndAnalytics: featureAddonSchema.optional(),
+      timetableAutoScheduling: featureAddonSchema.optional(),
+      extraStorage: z.array(extraStorageAddonSchema).optional(),
+      extraAiTokens: z.array(aiTokenAddonSchema).optional(),
+    })
+    .strict(),
 });

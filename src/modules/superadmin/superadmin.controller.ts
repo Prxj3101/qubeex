@@ -325,6 +325,19 @@ export const getInstitutionPlan = async (
   }
 };
 
+export const getInstitutionPlanDashboard = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await service.getInstitutionPlanDashboard(req.params.id as string);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateInstitutionPlan = async (
   req: AuthRequest,
   res: Response,
@@ -364,11 +377,12 @@ export const activateInstitutionPlan = async (
   next: NextFunction
 ) => {
   try {
-    const { plan, discountPct } = activatePlanSchema.parse(req.body);
+    const { plan, discountPct, paymentReceived } = activatePlanSchema.parse(req.body);
     const result = await service.activateInstitutionPlan(
       req.params.id as string,
       plan,
       discountPct,
+      paymentReceived,
       req.user?.userId
     );
     res.json({ success: true, data: result });

@@ -19,12 +19,29 @@ router.get("/institutions", SA, superadmin_controller_1.getInstitutions);
 router.get("/institutions/:id", SA, superadmin_controller_1.getInstitution);
 router.put("/institutions/:id", SA, superadmin_controller_1.updateInstitution);
 router.patch("/institutions/:id/status", SA, superadmin_controller_1.toggleStatus);
+router.delete("/institutions/:id", SA, superadmin_controller_1.deleteInstitution);
 router.post("/institutions/:id/resend-invite", SA, superadmin_controller_1.resendInvite);
 // ─── Plan Management ──────────────────────────────────────────────────────────
 router.get("/plans", SA, superadmin_controller_1.getPlans);
 router.get("/institutions/:id/plan", SA, superadmin_controller_1.getInstitutionPlan);
+router.get("/institutions/:id/plan/dashboard", SA, superadmin_controller_1.getInstitutionPlanDashboard);
 router.patch("/institutions/:id/plan", SA, superadmin_controller_1.updateInstitutionPlan);
+router.post("/institutions/:id/activate", SA, superadmin_controller_1.activateInstitutionPlan);
 router.patch("/institutions/:id/features", SA, superadmin_controller_1.updateInstitutionFeatures);
+router.get("/institutions/:id/trial/usage", SA, superadmin_controller_1.getTrialUsage);
+router.post("/institutions/:id/trial/extend", SA, superadmin_controller_1.extendTrial);
+router.post("/institutions/:id/trial/churn", SA, superadmin_controller_1.markTrialChurned);
+// ─── Billing ──────────────────────────────────────────────────────────────────
+router.get("/institutions/:id/bills", SA, superadmin_controller_1.getBills);
+router.patch("/institutions/:id/bills/:billId/status", SA, superadmin_controller_1.updateBillStatus);
+// ─── Pause / Resume ───────────────────────────────────────────────────────────
+router.post("/institutions/:id/pause", SA, superadmin_controller_1.pauseInstitution);
+router.post("/institutions/:id/resume", SA, superadmin_controller_1.resumeInstitution);
+// ─── Addons ───────────────────────────────────────────────────────────────────
+router.patch("/institutions/:id/addons", SA, superadmin_controller_1.updateAddons);
+// ─── Upgrade / Downgrade ──────────────────────────────────────────────────────
+router.post("/institutions/:id/upgrade", SA, superadmin_controller_1.upgradePlan);
+router.post("/institutions/:id/downgrade", SA, superadmin_controller_1.downgradePlan);
 // ─── Audit Logs ───────────────────────────────────────────────────────────────
 router.get("/audit-logs", SA, superadmin_controller_1.getAuditLogs);
 // ─── Notifications ────────────────────────────────────────────────────────────
@@ -43,4 +60,6 @@ router.get("/system/health", SA, superadmin_controller_1.getSystemHealth);
 router.get("/system/ai-usage", SA, superadmin_controller_1.getAIUsage);
 // ─── Vault ────────────────────────────────────────────────────────────────────
 router.get("/vault/stats", SA, superadmin_controller_1.getVaultStats);
+// ─── Billing — Manual Trigger ─────────────────────────────────────────────────
+router.post("/billing/run-monthly", SA, superadmin_controller_1.runMonthlyBilling);
 exports.default = router;

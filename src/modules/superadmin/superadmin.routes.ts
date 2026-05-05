@@ -22,6 +22,7 @@ import {
   getAuditLogs,
   getPlans,
   getInstitutionPlan,
+  getInstitutionPlanDashboard,
   updateInstitutionPlan,
   activateInstitutionPlan,
   updateInstitutionFeatures,
@@ -82,6 +83,7 @@ router.post("/institutions/:id/resend-invite",         SA, resendInvite);
 // ─── Plan Management ──────────────────────────────────────────────────────────
 router.get("/plans",                                   SA, getPlans);
 router.get("/institutions/:id/plan",                   SA, getInstitutionPlan);
+router.get("/institutions/:id/plan/dashboard",         SA, getInstitutionPlanDashboard);
 router.patch("/institutions/:id/plan",                 SA, updateInstitutionPlan);
 router.post("/institutions/:id/activate",              SA, activateInstitutionPlan);
 router.patch("/institutions/:id/features",             SA, updateInstitutionFeatures);

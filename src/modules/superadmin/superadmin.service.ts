@@ -3,6 +3,7 @@ import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail, sendActivationEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
 import { uploadImageToSupabase } from "../../services/storage.service";
+import { generateUpgradeProrationBill } from "../../services/billing.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooManyRequestsError } from "../../utils/errors";
 import { getCache, setCache, delCache } from "../../utils/cache";
@@ -14,6 +15,76 @@ const CACHE_KEYS = {
 } as const;
 
 const BCRYPT_ROUNDS = 12;
+
+type PlanName = "BASIC" | "PRO";
+
+type FeatureFlags = Record<string, boolean>;
+
+const BASIC_FEATURES: FeatureFlags = {
+  studentManagement: true,
+  teacherManagement: true,
+  courseManagement: true,
+  attendanceTracking: true,
+  aiQuestionAndTestGeneration: true,
+  resultsAndMarksheet: true,
+  academicCalendar: true,
+  announcementsAndFeed: true,
+  timetableManual: true,
+  timetableAutomatic: false,
+  studentApp: true,
+  parentPortal: false,
+  submissionsAndResourceSharing: true,
+  remarksFlagsWarning: true,
+  feesManagement: true,
+  performanceInsightsAndAnalytics: false,
+  leaderboardSystem: false,
+  whitelabelling: false,
+};
+
+const PRO_FEATURES: FeatureFlags = {
+  ...BASIC_FEATURES,
+  timetableAutomatic: true,
+  parentPortal: true,
+  performanceInsightsAndAnalytics: true,
+  leaderboardSystem: true,
+  whitelabelling: true,
+};
+
+const FIRST_YEAR_FREE_ADDON_KEY = "smartBoardAi";
+
+type SmartBoardAddonState = {
+  active: boolean;
+  isInFreePeriod: boolean;
+  freeStartDate: string;
+  freeEndDate: string;
+  billingCycle: "MONTHLY" | "YEARLY" | null;
+  amount: number | null;
+  autoEnabledBySystem: boolean;
+  freeExpiry30DayAlertSent: boolean;
+};
+
+const getFeatureFlagsForPlan = (planName: PlanName): FeatureFlags => {
+  return planName === "PRO" ? PRO_FEATURES : BASIC_FEATURES;
+};
+
+const getNextBillingDate = (anchor: Date): Date => {
+  return new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0);
+};
+
+const buildSmartBoardFreeAddon = (activationDate: Date): SmartBoardAddonState => {
+  const freeEnd = new Date(activationDate);
+  freeEnd.setFullYear(freeEnd.getFullYear() + 1);
+  return {
+    active: true,
+    isInFreePeriod: true,
+    freeStartDate: activationDate.toISOString(),
+    freeEndDate: freeEnd.toISOString(),
+    billingCycle: null,
+    amount: null,
+    autoEnabledBySystem: true,
+    freeExpiry30DayAlertSent: false,
+  };
+};
 
 const toProfileResponse = (user: {
   id: string;
@@ -722,6 +793,59 @@ export const getInstitutionPlan = async (id: string) => {
   return institution.subscription;
 };
 
+export const getInstitutionPlanDashboard = async (id: string) => {
+  const institution = await prisma.institution.findUnique({
+    where: { id },
+    include: {
+      users: { select: { role: true } },
+      subscription: { include: { plan: true } },
+    },
+  });
+  if (!institution) throw new NotFoundError("Institution not found");
+  if (!institution.subscription) throw new NotFoundError("Subscription not found");
+
+  const [latestBill] = await prisma.bill.findMany({
+    where: { institutionId: id },
+    orderBy: { generatedAt: "desc" },
+    take: 1,
+  });
+
+  const adminCount = institution.users.filter((u) => u.role === "ADMIN").length;
+  const teacherCount = 0;
+  const studentCount = 0;
+  const activationDate = institution.subscription.activationDate;
+  const nextBillingDate = activationDate ? getNextBillingDate(activationDate) : null;
+
+  return {
+    userBreakdown: {
+      admin: adminCount,
+      teachers: teacherCount,
+      students: studentCount,
+      total: adminCount + teacherCount + studentCount,
+    },
+    planDetails: {
+      planName: institution.subscription.plan.name,
+      activationDate,
+      nextBillingDate,
+      status: institution.subscription.status,
+    },
+    billingStatus: latestBill
+      ? {
+          currentMonthBillId: latestBill.id,
+          amount: latestBill.totalAmount,
+          status: latestBill.status,
+          dueDate: latestBill.dueDate,
+          generatedAt: latestBill.generatedAt,
+        }
+      : null,
+    addonStatus: (institution.subscription.addons ?? {}) as Record<string, unknown>,
+    usageMeters: {
+      aiTokens: { used: 0, total: 0 },
+      storageGb: { used: 0, total: 0 },
+    },
+  };
+};
+
 export const updateInstitutionPlan = async (
   id: string,
   data: { planName: string; discount: number; paymentStatus: "PAID" | "PENDING" | "FAILED" },
@@ -765,8 +889,9 @@ export const updateInstitutionPlan = async (
 
 export const activateInstitutionPlan = async (
   id: string,
-  planName: "BASIC" | "PRO",
+  planName: PlanName,
   discountPct: number,
+  paymentReceived: boolean,
   actorId?: string
 ) => {
   const institution = await prisma.institution.findUnique({
@@ -782,7 +907,14 @@ export const activateInstitutionPlan = async (
   const plan = await prisma.plan.findFirst({ where: { name: planName } });
   if (!plan) throw new NotFoundError(`Plan '${planName}' not found`);
 
+  if (!paymentReceived) {
+    throw new BadRequestError("License payment must be marked as received to activate plan");
+  }
+
   const activationDate = new Date();
+  const existingAddons = (institution.subscription.addons ?? {}) as Record<string, unknown>;
+  const smartBoardAddon = buildSmartBoardFreeAddon(activationDate);
+  const features = getFeatureFlagsForPlan(planName);
 
   const subscription = await prisma.subscription.update({
     where: { institutionId: id },
@@ -794,6 +926,11 @@ export const activateInstitutionPlan = async (
       activationDate,
       trialOutcome: "ACTIVATED",
       endDate: null,
+      features,
+      addons: {
+        ...existingAddons,
+        [FIRST_YEAR_FREE_ADDON_KEY]: smartBoardAddon,
+      },
     },
     include: { plan: true },
   });
@@ -804,7 +941,15 @@ export const activateInstitutionPlan = async (
   // Generate licence bill
   const licenceFee = plan.basePrice;
   const discountAmount = Math.round(licenceFee * (discountPct / 100));
-  await generateLicenceBill(id, licenceFee, discountAmount);
+  const invoice = await generateLicenceBill({
+    institutionId: id,
+    planName,
+    licenceAmount: licenceFee,
+    discountPct,
+    discountAmount,
+    activationDate,
+    institutionName: institution.name,
+  });
 
   // Email the institution admin
   const adminUser = institution.users[0];
@@ -818,6 +963,10 @@ export const activateInstitutionPlan = async (
       activationDate,
       nextBillingDate,
       discountPct,
+      invoiceId: invoice.id,
+      invoiceAmount: invoice.totalAmount,
+      licenseFee: licenceFee,
+      discountAmount,
     }).catch((err) => console.error("Activation email failed:", err.message));
   }
 
@@ -828,7 +977,13 @@ export const activateInstitutionPlan = async (
     actorRole: "SUPER_ADMIN",
     institutionId: id,
     details: `${institution.name} activated on ${planName} plan${discountPct > 0 ? ` with ${discountPct}% discount` : ""}`,
-    metadata: { plan: planName, discountPct, activationDate },
+    metadata: {
+      plan: planName,
+      discountPct,
+      activationDate,
+      paymentReceived,
+      smartBoardFreeUntil: smartBoardAddon.freeEndDate,
+    },
   });
 
   return subscription;
@@ -1150,7 +1305,10 @@ export const updateBillStatus = async (
   status: "PAID" | "PENDING",
   actorId?: string
 ) => {
-  const bill = await prisma.bill.findUnique({ where: { id: billId } });
+  const bill = await prisma.bill.findUnique({
+    where: { id: billId },
+    include: { institution: { include: { subscription: true } } },
+  });
   if (!bill) throw new NotFoundError("Bill not found");
 
   const updated = await prisma.bill.update({
@@ -1161,26 +1319,64 @@ export const updateBillStatus = async (
     },
   });
 
+  let reactivated = false;
+  if (status === "PAID") {
+    const pendingDues = await prisma.bill.count({
+      where: {
+        institutionId: bill.institutionId,
+        status: "PENDING",
+      },
+    });
+
+    if (pendingDues === 0 && bill.institution.subscription?.status === "EXPIRED") {
+      await prisma.$transaction([
+        prisma.subscription.update({
+          where: { institutionId: bill.institutionId },
+          data: { status: "ACTIVE", paymentStatus: "PAID" },
+        }),
+        prisma.institution.update({
+          where: { id: bill.institutionId },
+          data: { status: "ACTIVE" },
+        }),
+      ]);
+      reactivated = true;
+    }
+  }
+
   await logAudit("BILL_STATUS_UPDATED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: bill.institutionId,
     details: `Bill ${billId} marked as ${status}`,
-    metadata: { billId, status },
+    metadata: { billId, status, reactivated },
   });
 
-  return updated;
+  return { bill: updated, reactivated };
 };
 
-export const generateLicenceBill = async (
-  institutionId: string,
-  licenceAmount: number,
-  discountAmount: number
-) => {
+export const generateLicenceBill = async (data: {
+  institutionId: string;
+  planName: PlanName;
+  licenceAmount: number;
+  discountPct: number;
+  discountAmount: number;
+  activationDate: Date;
+  institutionName: string;
+}) => {
+  const {
+    institutionId,
+    planName,
+    licenceAmount,
+    discountPct,
+    discountAmount,
+    activationDate,
+    institutionName,
+  } = data;
   const totalAmount = licenceAmount - discountAmount;
   const now = new Date();
   const dueDate = new Date(now);
   dueDate.setDate(dueDate.getDate() + 7);
+  const billingAnchor = getNextBillingDate(activationDate);
 
   return prisma.bill.create({
     data: {
@@ -1190,10 +1386,34 @@ export const generateLicenceBill = async (
       baseAmount: licenceAmount,
       discountAmount,
       items: [
-        { label: "Licence Fee", desc: "One-time platform licence", amount: licenceAmount, type: "licence" },
+        {
+          label: "Licence Fee",
+          desc: `One-time ${planName} licence for ${institutionName}`,
+          amount: licenceAmount,
+          type: "licence",
+        },
         ...(discountAmount > 0
-          ? [{ label: "Discount", desc: `Discount applied`, amount: -discountAmount, type: "discount" }]
+          ? [
+              {
+                label: "Discount",
+                desc: `${discountPct}% discount applied on licence fee`,
+                amount: -discountAmount,
+                type: "discount",
+              },
+            ]
           : []),
+        {
+          label: "Billing Anchor",
+          desc: `Per-user billing anchor date: ${billingAnchor.toISOString()}`,
+          amount: 0,
+          type: "metadata",
+        },
+        {
+          label: "Plan Activation Date",
+          desc: activationDate.toISOString(),
+          amount: 0,
+          type: "metadata",
+        },
       ],
       dueDate,
     },
@@ -1309,6 +1529,8 @@ export const upgradePlan = async (id: string, actorId?: string) => {
     data: { planId: proPlan.id },
     include: { plan: true },
   });
+
+  await generateUpgradeProrationBill(id);
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
   await logAudit("PLAN_UPGRADED", {

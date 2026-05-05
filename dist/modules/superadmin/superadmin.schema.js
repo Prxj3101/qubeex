@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reviewReplySchema = exports.ticketReplySchema = exports.updateTicketStatusSchema = exports.broadcastNotificationSchema = exports.updateFeaturesSchema = exports.updatePlanSchema = exports.toggleStatusSchema = exports.updateInstitutionSchema = exports.createInstitutionSchema = exports.changePasswordSchema = exports.updateProfileSchema = void 0;
+exports.updateAddonsSchema = exports.updateBillStatusSchema = exports.reviewReplySchema = exports.ticketReplySchema = exports.updateTicketStatusSchema = exports.broadcastNotificationSchema = exports.activatePlanSchema = exports.updateFeaturesSchema = exports.updatePlanSchema = exports.toggleStatusSchema = exports.updateInstitutionSchema = exports.createInstitutionSchema = exports.changePasswordSchema = exports.updateProfileSchema = void 0;
 const zod_1 = require("zod");
 const auth_schema_1 = require("../auth/auth.schema");
 // ─── Profile ─────────────────────────────────────────────────────────────────
@@ -64,6 +64,13 @@ exports.updatePlanSchema = zod_1.z.object({
 exports.updateFeaturesSchema = zod_1.z.object({
     features: zod_1.z.record(zod_1.z.string(), zod_1.z.boolean()),
 });
+exports.activatePlanSchema = zod_1.z.object({
+    plan: zod_1.z.enum(["BASIC", "PRO"]),
+    paymentReceived: zod_1.z
+        .boolean()
+        .refine((value) => value === true, "License payment must be marked as received to activate plan"),
+    discountPct: zod_1.z.number().min(0).max(100).default(0),
+});
 // ─── Notifications ────────────────────────────────────────────────────────────
 exports.broadcastNotificationSchema = zod_1.z.object({
     title: zod_1.z.string().min(1).max(80).trim(),
@@ -82,4 +89,46 @@ exports.ticketReplySchema = zod_1.z.object({
 // ─── Reviews ─────────────────────────────────────────────────────────────────
 exports.reviewReplySchema = zod_1.z.object({
     message: zod_1.z.string().min(1).max(1000).trim(),
+});
+// ─── Billing ──────────────────────────────────────────────────────────────────
+exports.updateBillStatusSchema = zod_1.z.object({
+    status: zod_1.z.enum(["PAID", "PENDING"]),
+});
+const addonBillingCycleSchema = zod_1.z.enum(["MONTHLY", "YEARLY"]);
+const featureAddonSchema = zod_1.z.object({
+    active: zod_1.z.boolean(),
+    billingCycle: addonBillingCycleSchema,
+    amount: zod_1.z.number().nonnegative(),
+});
+const smartBoardAddonSchema = zod_1.z.object({
+    active: zod_1.z.boolean(),
+    isInFreePeriod: zod_1.z.boolean(),
+    freeStartDate: zod_1.z.string().datetime().optional(),
+    freeEndDate: zod_1.z.string().datetime().optional(),
+    billingCycle: addonBillingCycleSchema.nullable(),
+    amount: zod_1.z.number().nonnegative().nullable(),
+    autoEnabledBySystem: zod_1.z.boolean().optional(),
+    freeExpiry30DayAlertSent: zod_1.z.boolean().optional(),
+});
+const extraStorageAddonSchema = zod_1.z.object({
+    active: zod_1.z.boolean(),
+    gbPurchased: zod_1.z.number().int().positive(),
+    oneTimeAmount: zod_1.z.number().nonnegative(),
+    purchasedAt: zod_1.z.string().datetime(),
+});
+const aiTokenAddonSchema = zod_1.z.object({
+    active: zod_1.z.boolean(),
+    tokensPerMonth: zod_1.z.number().int().positive(),
+    monthlyAmount: zod_1.z.number().nonnegative(),
+});
+exports.updateAddonsSchema = zod_1.z.object({
+    addons: zod_1.z
+        .object({
+        smartBoardAi: smartBoardAddonSchema.optional(),
+        performanceInsightsAndAnalytics: featureAddonSchema.optional(),
+        timetableAutoScheduling: featureAddonSchema.optional(),
+        extraStorage: zod_1.z.array(extraStorageAddonSchema).optional(),
+        extraAiTokens: zod_1.z.array(aiTokenAddonSchema).optional(),
+    })
+        .strict(),
 });

@@ -48,7 +48,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineExtension = exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.NullableJsonNullValueInput = exports.SortOrder = exports.ReviewScalarFieldEnum = exports.TicketReplyScalarFieldEnum = exports.SupportTicketScalarFieldEnum = exports.NotificationRecipientScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.AuditLogScalarFieldEnum = exports.InviteScalarFieldEnum = exports.SubscriptionScalarFieldEnum = exports.PlanScalarFieldEnum = exports.UserScalarFieldEnum = exports.InstitutionScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.JsonNullValueInput = exports.NullableJsonNullValueInput = exports.SortOrder = exports.ReviewScalarFieldEnum = exports.TicketReplyScalarFieldEnum = exports.SupportTicketScalarFieldEnum = exports.NotificationRecipientScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.AuditLogScalarFieldEnum = exports.InviteScalarFieldEnum = exports.BillScalarFieldEnum = exports.SubscriptionScalarFieldEnum = exports.PlanScalarFieldEnum = exports.UserScalarFieldEnum = exports.InstitutionScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 /**
  * Prisma Errors
@@ -107,6 +107,7 @@ exports.ModelName = {
     User: 'User',
     Plan: 'Plan',
     Subscription: 'Subscription',
+    Bill: 'Bill',
     Invite: 'Invite',
     AuditLog: 'AuditLog',
     Notification: 'Notification',
@@ -166,14 +167,38 @@ exports.SubscriptionScalarFieldEnum = {
     id: 'id',
     institutionId: 'institutionId',
     planId: 'planId',
+    trialDays: 'trialDays',
+    trialOutcome: 'trialOutcome',
+    trialWarningSent: 'trialWarningSent',
+    trialExpiryNotified: 'trialExpiryNotified',
     status: 'status',
     paymentStatus: 'paymentStatus',
     discount: 'discount',
     features: 'features',
+    activationDate: 'activationDate',
+    pausedAt: 'pausedAt',
+    pauseMonthsUsed: 'pauseMonthsUsed',
+    addons: 'addons',
     startDate: 'startDate',
     endDate: 'endDate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
+};
+exports.BillScalarFieldEnum = {
+    id: 'id',
+    institutionId: 'institutionId',
+    type: 'type',
+    billingMonth: 'billingMonth',
+    userCount: 'userCount',
+    baseAmount: 'baseAmount',
+    addonAmount: 'addonAmount',
+    discountAmount: 'discountAmount',
+    totalAmount: 'totalAmount',
+    status: 'status',
+    items: 'items',
+    generatedAt: 'generatedAt',
+    dueDate: 'dueDate',
+    paidAt: 'paidAt'
 };
 exports.InviteScalarFieldEnum = {
     id: 'id',
@@ -250,6 +275,9 @@ exports.SortOrder = {
 };
 exports.NullableJsonNullValueInput = {
     DbNull: exports.DbNull,
+    JsonNull: exports.JsonNull
+};
+exports.JsonNullValueInput = {
     JsonNull: exports.JsonNull
 };
 exports.QueryMode = {

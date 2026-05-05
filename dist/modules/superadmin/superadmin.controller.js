@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVaultStats = exports.getAIUsage = exports.getSystemHealth = exports.replyToReview = exports.getReviews = exports.replyToTicket = exports.updateTicketStatus = exports.getTicket = exports.getTickets = exports.getNotifications = exports.broadcastNotification = exports.updateInstitutionFeatures = exports.updateInstitutionPlan = exports.getInstitutionPlan = exports.getPlans = exports.getAuditLogs = exports.resendInvite = exports.toggleStatus = exports.uploadInstitutionLogo = exports.updateInstitution = exports.getInstitution = exports.getInstitutions = exports.createInstitution = exports.getOverview = exports.getLoginActivity = exports.changePassword = exports.updateProfile = exports.getProfile = void 0;
+exports.runMonthlyBilling = exports.downgradePlan = exports.upgradePlan = exports.updateAddons = exports.resumeInstitution = exports.pauseInstitution = exports.updateBillStatus = exports.getBills = exports.getVaultStats = exports.getAIUsage = exports.getSystemHealth = exports.replyToReview = exports.getReviews = exports.replyToTicket = exports.updateTicketStatus = exports.getTicket = exports.getTickets = exports.getNotifications = exports.broadcastNotification = exports.activateInstitutionPlan = exports.updateInstitutionFeatures = exports.updateInstitutionPlan = exports.getInstitutionPlanDashboard = exports.getInstitutionPlan = exports.getPlans = exports.getAuditLogs = exports.markTrialChurned = exports.extendTrial = exports.resendInvite = exports.deleteInstitution = exports.getTrialUsage = exports.toggleStatus = exports.uploadInstitutionLogo = exports.updateInstitution = exports.getInstitution = exports.getInstitutions = exports.createInstitution = exports.getOverview = exports.getLoginActivity = exports.changePassword = exports.updateProfile = exports.getProfile = void 0;
 const service = __importStar(require("./superadmin.service"));
 const superadmin_schema_1 = require("./superadmin.schema");
 // ─────────────────────────────────────────────────────────────────────────────
@@ -162,6 +162,26 @@ const toggleStatus = async (req, res, next) => {
     }
 };
 exports.toggleStatus = toggleStatus;
+const getTrialUsage = async (req, res, next) => {
+    try {
+        const data = await service.getTrialUsage(req.params.id);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getTrialUsage = getTrialUsage;
+const deleteInstitution = async (req, res, next) => {
+    try {
+        await service.deleteInstitution(req.params.id, req.user?.userId);
+        res.json({ success: true, message: "Institution permanently deleted" });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.deleteInstitution = deleteInstitution;
 const resendInvite = async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -173,6 +193,30 @@ const resendInvite = async (req, res, next) => {
     }
 };
 exports.resendInvite = resendInvite;
+const extendTrial = async (req, res, next) => {
+    try {
+        const { extraDays } = req.body;
+        if (!extraDays || typeof extraDays !== 'number') {
+            return res.status(400).json({ success: false, message: 'extraDays is required and must be a number' });
+        }
+        const result = await service.extendTrial(req.params.id, extraDays, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.extendTrial = extendTrial;
+const markTrialChurned = async (req, res, next) => {
+    try {
+        const result = await service.markTrialChurned(req.params.id, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.markTrialChurned = markTrialChurned;
 // ─────────────────────────────────────────────────────────────────────────────
 // AUDIT LOGS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -218,6 +262,16 @@ const getInstitutionPlan = async (req, res, next) => {
     }
 };
 exports.getInstitutionPlan = getInstitutionPlan;
+const getInstitutionPlanDashboard = async (req, res, next) => {
+    try {
+        const data = await service.getInstitutionPlanDashboard(req.params.id);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getInstitutionPlanDashboard = getInstitutionPlanDashboard;
 const updateInstitutionPlan = async (req, res, next) => {
     try {
         const data = superadmin_schema_1.updatePlanSchema.parse(req.body);
@@ -240,6 +294,17 @@ const updateInstitutionFeatures = async (req, res, next) => {
     }
 };
 exports.updateInstitutionFeatures = updateInstitutionFeatures;
+const activateInstitutionPlan = async (req, res, next) => {
+    try {
+        const { plan, discountPct, paymentReceived } = superadmin_schema_1.activatePlanSchema.parse(req.body);
+        const result = await service.activateInstitutionPlan(req.params.id, plan, discountPct, paymentReceived, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.activateInstitutionPlan = activateInstitutionPlan;
 // ─────────────────────────────────────────────────────────────────────────────
 // NOTIFICATIONS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -382,3 +447,102 @@ const getVaultStats = async (_req, res, next) => {
     }
 };
 exports.getVaultStats = getVaultStats;
+// ─────────────────────────────────────────────────────────────────────────────
+// BILLING
+// ─────────────────────────────────────────────────────────────────────────────
+const getBills = async (req, res, next) => {
+    try {
+        const { page, limit } = req.query;
+        const data = await service.getBills(req.params.id, page ? parseInt(page) : 1, limit ? parseInt(limit) : 20);
+        res.json({ success: true, ...data });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.getBills = getBills;
+const updateBillStatus = async (req, res, next) => {
+    try {
+        const { status } = superadmin_schema_1.updateBillStatusSchema.parse(req.body);
+        const result = await service.updateBillStatus(req.params.billId, status, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.updateBillStatus = updateBillStatus;
+// ─────────────────────────────────────────────────────────────────────────────
+// PAUSE / RESUME
+// ─────────────────────────────────────────────────────────────────────────────
+const pauseInstitution = async (req, res, next) => {
+    try {
+        const result = await service.pauseInstitution(req.params.id, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.pauseInstitution = pauseInstitution;
+const resumeInstitution = async (req, res, next) => {
+    try {
+        const result = await service.resumeInstitution(req.params.id, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.resumeInstitution = resumeInstitution;
+// ─────────────────────────────────────────────────────────────────────────────
+// ADDONS
+// ─────────────────────────────────────────────────────────────────────────────
+const updateAddons = async (req, res, next) => {
+    try {
+        const { addons } = superadmin_schema_1.updateAddonsSchema.parse(req.body);
+        const result = await service.updateAddons(req.params.id, addons, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.updateAddons = updateAddons;
+// ─────────────────────────────────────────────────────────────────────────────
+// UPGRADE / DOWNGRADE
+// ─────────────────────────────────────────────────────────────────────────────
+const upgradePlan = async (req, res, next) => {
+    try {
+        const result = await service.upgradePlan(req.params.id, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.upgradePlan = upgradePlan;
+const downgradePlan = async (req, res, next) => {
+    try {
+        const result = await service.downgradePlan(req.params.id, req.user?.userId);
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.downgradePlan = downgradePlan;
+// ─────────────────────────────────────────────────────────────────────────────
+// BILLING — Manual Trigger
+// ─────────────────────────────────────────────────────────────────────────────
+const billing_service_1 = require("../../services/billing.service");
+const runMonthlyBilling = async (req, res, next) => {
+    try {
+        const result = await (0, billing_service_1.generateMonthlyBills)();
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.runMonthlyBilling = runMonthlyBilling;

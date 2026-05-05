@@ -9,6 +9,10 @@ export const sendActivationEmail = async ({
     activationDate,
     nextBillingDate,
     discountPct,
+    invoiceId,
+    invoiceAmount,
+    licenseFee,
+    discountAmount,
 }: {
     to: string;
     institutionName: string;
@@ -16,6 +20,10 @@ export const sendActivationEmail = async ({
     activationDate: Date;
     nextBillingDate: Date;
     discountPct: number;
+    invoiceId: string;
+    invoiceAmount: number;
+    licenseFee: number;
+    discountAmount: number;
 }) => {
     const formatDate = (d: Date) =>
         d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
@@ -82,6 +90,30 @@ export const sendActivationEmail = async ({
                           <p style="margin:0;font-size:14px;font-weight:600;color:#10B981;">${discountPct}% off licence fee</p>
                         </td>
                       </tr>` : '<tr><td style="padding-top:12px;"></td></tr>'}
+                      <tr>
+                        <td style="padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Invoice ID</p>
+                          <p style="margin:0;font-size:13px;font-weight:600;color:#fff;font-family:monospace;">${invoiceId}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Licence Fee</p>
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#fff;">₹${licenseFee.toLocaleString("en-IN")}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Discount Amount</p>
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#10B981;">₹${discountAmount.toLocaleString("en-IN")}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:12px;">
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Paid Amount</p>
+                          <p style="margin:0;font-size:16px;font-weight:700;color:#DA7756;">₹${invoiceAmount.toLocaleString("en-IN")}</p>
+                        </td>
+                      </tr>
                     </table>
                   </td>
                 </tr>
@@ -330,5 +362,92 @@ export const sendTrialEndingEmail = async ({
     else console.log('Trial ending email sent:', data?.id);
   } catch (err) {
     console.error('Trial ending email send failed:', err);
+  }
+};
+
+export const sendSmartBoardFreeExpiryEmail = async ({
+  to,
+  institutionName,
+  freeEndDate,
+}: {
+  to: string;
+  institutionName: string;
+  freeEndDate: string;
+}) => {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'QubeEx <support@qubeex.in>',
+      to,
+      subject: "Smart Board + AI free period ends in 30 days",
+      html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:24px;background:#0F0A1E;color:#fff;font-family:'Segoe UI',Arial,sans-serif;">
+  <h2 style="margin:0 0 12px;">Smart Board + AI Free Period Reminder</h2>
+  <p style="margin:0 0 10px;line-height:1.6;">
+    The first-year free Smart Board + AI addon period for <strong>${institutionName}</strong>
+    will end on <strong>${freeEndDate}</strong>.
+  </p>
+  <p style="margin:0;line-height:1.6;">
+    After this date, addon billing will apply based on the configured monthly or yearly price unless the addon is deactivated.
+  </p>
+</body>
+</html>`,
+    });
+
+    if (error) console.error('Resend error (smart board free expiry):', error);
+    else console.log('Smart board free expiry email sent:', data?.id);
+  } catch (err) {
+    console.error('Smart board free expiry email send failed:', err);
+  }
+};
+
+export const sendMonthlyBillEmail = async ({
+  to,
+  institutionName,
+  billingMonth,
+  totalAmount,
+  dueDate,
+  billId,
+}: {
+  to: string;
+  institutionName: string;
+  billingMonth: string;
+  totalAmount: number;
+  dueDate: Date;
+  billId: string;
+}) => {
+  const formattedDueDate = dueDate.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Kolkata',
+  });
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'QubeEx <support@qubeex.in>',
+      to,
+      subject: `QubeEx bill generated for ${billingMonth}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:24px;background:#0F0A1E;color:#fff;font-family:'Segoe UI',Arial,sans-serif;">
+  <h2 style="margin:0 0 12px;">Monthly Bill Generated</h2>
+  <p style="margin:0 0 10px;line-height:1.6;">
+    The QubeEx monthly bill for <strong>${institutionName}</strong> has been generated.
+  </p>
+  <p style="margin:0 0 8px;line-height:1.6;">Billing month: <strong>${billingMonth}</strong></p>
+  <p style="margin:0 0 8px;line-height:1.6;">Bill ID: <strong>${billId}</strong></p>
+  <p style="margin:0 0 8px;line-height:1.6;">Total amount due: <strong>Rs.${totalAmount.toLocaleString("en-IN")}</strong></p>
+  <p style="margin:0;line-height:1.6;">Payment due by: <strong>${formattedDueDate}</strong></p>
+</body>
+</html>`,
+    });
+
+    if (error) console.error('Resend error (monthly bill):', error);
+    else console.log('Monthly bill email sent:', data?.id);
+  } catch (err) {
+    console.error('Monthly bill email send failed:', err);
   }
 };

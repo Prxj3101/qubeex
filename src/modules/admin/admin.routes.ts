@@ -1,7 +1,7 @@
 import { Router, raw } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
-import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo } from "./admin.controller";
+import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher } from "./admin.controller";
 
 const router = Router();
 
@@ -15,5 +15,10 @@ router.post(
   raw({ type: ["image/png", "image/jpeg", "image/webp"], limit: "2mb" }),
   uploadMyInstitutionLogo
 );
+
+router.get("/teachers", ...A, listTeachers);
+router.post("/teachers", ...A, addTeacher);
+router.get("/teachers/:id", ...A, getTeacher);
+router.patch("/teachers/:id", ...A, updateTeacher);
 
 export default router;

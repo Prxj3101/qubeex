@@ -42,6 +42,11 @@ enum PaymentStatus {
   FAILED
 }
 
+enum TeacherStatus {
+  ACTIVE
+  INACTIVE
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Institution {
@@ -76,6 +81,7 @@ model Institution {
   notifications NotificationRecipient[]
   tickets       SupportTicket[]
   reviews       Review[]
+  teachers      Teacher[]
 }
 
 model User {
@@ -93,6 +99,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   auditLogs AuditLog[]
+  teacher   Teacher?
 }
 
 enum TrialOutcome {
@@ -180,6 +187,38 @@ model Invite {
   isUsed    Boolean  @default(false)
 
   createdAt DateTime @default(now())
+}
+
+model Teacher {
+  id        String @id @default(uuid())
+  teacherId String
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  phone         String?
+  avatarUrl     String?
+  dob           String?
+  gender        String?
+  address       String?
+  city          String?
+  state         String?
+  pincode       String?
+  country       String?       @default("India")
+  qualification String?
+  experience    String?
+
+  status   TeacherStatus @default(ACTIVE)
+  joinedAt DateTime      @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([teacherId, institutionId])
+  @@index([institutionId])
 }
 
 model AuditLog {

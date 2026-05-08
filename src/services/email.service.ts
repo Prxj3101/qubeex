@@ -493,3 +493,87 @@ export const sendPlanDowngradeEmail = async ({
     console.error('Plan downgrade email send failed:', err);
   }
 };
+
+export const sendTeacherInviteEmail = async ({
+    to,
+    name,
+    inviteLink,
+    institutionName,
+}: {
+    to: string;
+    name?: string;
+    inviteLink: string;
+    institutionName: string;
+}) => {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'QubeEx <support@qubeex.in>',
+            to,
+            subject: "You're invited to QubeEx — Set up your Teacher account",
+            html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QubeEx Teacher Invite</title>
+</head>
+<body style="margin:0;padding:0;background:#0F0A1E;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0A1E;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="background:#1A112E;border-radius:20px;overflow:hidden;border:1px solid rgba(124,58,237,0.2);">
+          <tr>
+            <td style="height:4px;background:linear-gradient(90deg,#7C3AED,#DA7756);"></td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:36px 40px 24px;">
+              <p style="margin:0;font-size:26px;font-weight:700;color:#FAE5D9;letter-spacing:-0.5px;">QubeEx</p>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;">AI-Powered School Platform</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 40px 32px;">
+              <p style="margin:0 0 16px;font-size:22px;font-weight:700;color:#FAE5D9;">
+                ${name ? `Hi ${name},` : 'Hello,'}
+              </p>
+              <p style="margin:0 0 16px;font-size:15px;color:rgba(255,255,255,0.7);line-height:1.6;">
+                You have been invited as a <strong style="color:#DA7756;">Teacher</strong> at <strong style="color:#FAE5D9;">${institutionName}</strong> on the QubeEx platform.
+              </p>
+              <p style="margin:0 0 28px;font-size:15px;color:rgba(255,255,255,0.7);line-height:1.6;">
+                Click the button below to set up your account and get started.
+              </p>
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td align="center" style="border-radius:12px;background:linear-gradient(135deg,#DA7756,#C06040);">
+                    <a href="${inviteLink}"
+                       style="display:block;padding:14px 36px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;letter-spacing:0.3px;">
+                      Set Up My Account
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:24px 0 0;font-size:12px;color:rgba(255,255,255,0.3);text-align:center;">
+                Link expires in 7 days. If you weren't expecting this, you can safely ignore it.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+        });
+
+        if (error) {
+            console.error('Teacher invite email error:', error);
+            throw new Error('Failed to send teacher invite email');
+        }
+
+        console.log('Teacher invite email sent:', data?.id);
+    } catch (err) {
+        console.error('sendTeacherInviteEmail failed:', err);
+        throw new Error('Failed to send teacher invite email');
+    }
+};

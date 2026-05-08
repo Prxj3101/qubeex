@@ -164,6 +164,7 @@ export const listTeachers = async (
 ) => {
   try {
     const { institutionId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
     const teachers = await prisma.teacher.findMany({
       where: { institutionId },
@@ -204,6 +205,7 @@ export const addTeacher = async (
   try {
     const user = req.user!;
     const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
     const data = addTeacherSchema.parse(req.body);
 
@@ -311,6 +313,7 @@ export const getTeacher = async (
 ) => {
   try {
     const { institutionId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const id = req.params.id as string;
 
     const teacher = await prisma.teacher.findFirst({
@@ -369,6 +372,7 @@ export const updateTeacher = async (
   try {
     const user = req.user!;
     const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const id = req.params.id as string;
 
     const data = updateTeacherSchema.parse(req.body);
@@ -392,18 +396,11 @@ export const updateTeacher = async (
     } as const;
 
     const teacher = await prisma.$transaction(async (tx) => {
-      if (status !== undefined) {
-        await tx.user.update({
-          where: { id: existing.userId },
-          data: { isActive: status === "ACTIVE" },
-        });
-      }
-
-      if (name !== undefined) {
-        await tx.user.update({
-          where: { id: existing.userId },
-          data: { name },
-        });
+      const userChanges: { isActive?: boolean; name?: string } = {};
+      if (status !== undefined) userChanges.isActive = status === "ACTIVE";
+      if (name !== undefined) userChanges.name = name;
+      if (Object.keys(userChanges).length > 0) {
+        await tx.user.update({ where: { id: existing.userId }, data: userChanges });
       }
 
       return tx.teacher.update({

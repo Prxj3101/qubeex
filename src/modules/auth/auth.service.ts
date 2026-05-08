@@ -200,6 +200,21 @@ export const login = async (email: string, password: string, context: LoginConte
     { expiresIn: ACCESS_TOKEN_EXPIRY }
   );
 
+  let institutionStatus: string | null = null;
+  let subscriptionStatus: string | null = null;
+  if (user.institutionId) {
+    const sub = await prisma.subscription.findUnique({
+      where: { institutionId: user.institutionId },
+      select: { status: true },
+    });
+    subscriptionStatus = sub?.status ?? null;
+    const inst = await prisma.institution.findUnique({
+      where: { id: user.institutionId },
+      select: { status: true },
+    });
+    institutionStatus = inst?.status ?? null;
+  }
+
   return {
     token,
     user: {
@@ -210,6 +225,9 @@ export const login = async (email: string, password: string, context: LoginConte
       institutionId: user.institutionId,
       createdAt: user.createdAt,
     },
+    institution: user.institutionId
+      ? { status: institutionStatus, subscriptionStatus }
+      : null,
   };
 };
 

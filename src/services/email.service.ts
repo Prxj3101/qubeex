@@ -451,3 +451,45 @@ export const sendMonthlyBillEmail = async ({
     console.error('Monthly bill email send failed:', err);
   }
 };
+
+export const sendPlanDowngradeEmail = async ({
+  to,
+  institutionName,
+  storageWarning,
+}: {
+  to: string;
+  institutionName: string;
+  storageWarning: boolean;
+}) => {
+  const storageNote = storageWarning
+    ? `<p style="margin:0 0 10px;line-height:1.6;color:#f59e0b;"><strong>⚠ Storage Warning:</strong> Your institution is using more than 500 GB. The Basic plan includes 500 GB. Please reduce your storage or purchase an extra storage add-on to avoid data access issues.</p>`
+    : '';
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'QubeEx <support@qubeex.in>',
+      to,
+      subject: `QubeEx: Your institution has been downgraded to Basic`,
+      html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:24px;background:#0F0A1E;color:#fff;font-family:'Segoe UI',Arial,sans-serif;">
+  <h2 style="margin:0 0 12px;">Plan Downgraded to Basic</h2>
+  <p style="margin:0 0 10px;line-height:1.6;">
+    The QubeEx subscription for <strong>${institutionName}</strong> has been downgraded from <strong>PRO</strong> to <strong>Basic</strong>.
+  </p>
+  <p style="margin:0 0 10px;line-height:1.6;">
+    PRO-exclusive features (Whitelabeling, Advanced Leaderboard, Student App Pro) have been disabled immediately. Your billing will reflect the Basic plan from next month onwards.
+  </p>
+  ${storageNote}
+  <p style="margin:0;line-height:1.6;">If you have any questions, please contact QubeEx support.</p>
+</body>
+</html>`,
+    });
+
+    if (error) console.error('Resend error (plan downgrade):', error);
+    else console.log('Plan downgrade email sent:', data?.id);
+  } catch (err) {
+    console.error('Plan downgrade email send failed:', err);
+  }
+};

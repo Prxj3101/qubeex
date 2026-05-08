@@ -10,7 +10,7 @@ async function runDailyTrialNotifications() {
   const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
 
   const trials = await prisma.subscription.findMany({
-    where: { status: "TRIAL" },
+    where: { status: "TRIAL", startDate: { not: null } },
     include: { institution: true },
   });
 
@@ -111,6 +111,7 @@ async function runHourlyAutoLock() {
   const expired = await prisma.subscription.findMany({
     where: {
       status: "TRIAL",
+      startDate: { not: null },
       endDate: { lt: lockBefore },
     },
     select: { id: true, institutionId: true },

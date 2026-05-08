@@ -137,17 +137,18 @@ const smartBoardAddonSchema = z.object({
   freeExpiry30DayAlertSent: z.boolean().optional(),
 });
 
-const extraStorageAddonSchema = z.object({
-  active: z.boolean(),
-  gbPurchased: z.number().int().positive(),
-  oneTimeAmount: z.number().nonnegative(),
-  purchasedAt: z.string().datetime(),
-});
+const aiTokenAddonRequestSchema = z.union([
+  z.object({ active: z.literal(false) }),
+  z.object({
+    active: z.literal(true),
+    tokensPerMonth: z.number().int().positive(),
+    pricePerMillion: z.number().positive("Price per million tokens must be greater than 0"),
+  }),
+]);
 
-const aiTokenAddonSchema = z.object({
-  active: z.boolean(),
-  tokensPerMonth: z.number().int().positive(),
-  monthlyAmount: z.number().nonnegative(),
+const storageAddonEntrySchema = z.object({
+  gbPurchased: z.number().int().positive(),
+  price: z.number().positive("Price must be greater than 0"),
 });
 
 export const updateAddonsSchema = z.object({
@@ -156,8 +157,8 @@ export const updateAddonsSchema = z.object({
       smartBoardAi: smartBoardAddonSchema.optional(),
       performanceInsightsAndAnalytics: featureAddonSchema.optional(),
       timetableAutoScheduling: featureAddonSchema.optional(),
-      extraStorage: z.array(extraStorageAddonSchema).optional(),
-      extraAiTokens: z.array(aiTokenAddonSchema).optional(),
+      aiTokenAddon: aiTokenAddonRequestSchema.optional(),
+      extraStorage: z.array(storageAddonEntrySchema).optional(),
     })
     .strict(),
 });

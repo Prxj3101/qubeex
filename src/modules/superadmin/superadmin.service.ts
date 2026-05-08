@@ -3,7 +3,10 @@ import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail, sendActivationEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
 import { uploadImageToSupabase } from "../../services/storage.service";
-import { generateUpgradeProrationBill } from "../../services/billing.service";
+import {
+  generateUpgradeProrationBill,
+  PLAN_AI_TOKENS,
+} from "../../services/billing.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooManyRequestsError } from "../../utils/errors";
 import { getCache, setCache, delCache } from "../../utils/cache";
@@ -362,7 +365,7 @@ export const createInstitutionService = async (data: any) => {
 
   const rawToken = generateToken();
   const tokenHash = hashToken(rawToken);
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
   // Generate human-readable code before the transaction
   const institutionCode = await generateInstitutionCode(type);
@@ -402,18 +405,16 @@ export const createInstitutionService = async (data: any) => {
     const plan = await tx.plan.findFirst({ where: { name: activePlanName } });
     if (!plan) throw new NotFoundError(`Plan '${activePlanName}' not found`);
 
-    const trialStart = new Date();
-    const trialEnd   = new Date(trialStart);
-    trialEnd.setDate(trialEnd.getDate() + Number(trialDays));
-
+    const now = new Date();
     await tx.subscription.create({
       data: {
         institutionId: newInstitution.id,
         planId:        plan.id,
         status:        isTrial ? "TRIAL" : "ACTIVE",
-        startDate:     trialStart,
-        endDate:       isTrial ? trialEnd : null,
+        startDate:     isTrial ? null : now,  // trial starts only when explicitly activated
+        endDate:       null,
         trialDays:     isTrial ? Number(trialDays) : null,
+        activationDate: isTrial ? null : now,
       },
     });
 
@@ -552,12 +553,57 @@ export const toggleInstitutionStatus = async (
   return result;
 };
 
+export const activateTrial = async (id: string, actorId?: string) => {
+  const institution = await prisma.institution.findUnique({
+    where: { id },
+    include: { subscription: true },
+  });
+  if (!institution) throw new NotFoundError("Institution not found");
+  const subscription = institution.subscription;
+  if (!subscription || subscription.status !== "TRIAL") {
+    throw new BadRequestError("Institution is not on a trial plan.");
+  }
+  if (subscription.startDate) {
+    throw new BadRequestError("Trial has already been activated.");
+  }
+
+  const now = new Date();
+  const endDate = new Date(now);
+  endDate.setDate(endDate.getDate() + (subscription.trialDays ?? 14));
+
+  await prisma.$transaction([
+    prisma.subscription.update({
+      where: { institutionId: id },
+      data: { startDate: now, endDate },
+    }),
+    prisma.institution.update({
+      where: { id },
+      data: { status: "ACTIVE" },
+    }),
+  ]);
+
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
+
+  await logAudit("TRIAL_ACTIVATED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    institutionId: id,
+    details: `Trial activated for ${institution.name}`,
+    metadata: { trialDays: subscription.trialDays, startDate: now, endDate },
+  });
+
+  return { startDate: now.toISOString(), endDate: endDate.toISOString(), trialDays: subscription.trialDays };
+};
+
 export const extendTrial = async (id: string, extraDays: number, actorId?: string) => {
   const subscription = await prisma.subscription.findUnique({ where: { institutionId: id } });
   if (!subscription || subscription.status !== "TRIAL") {
-    throw new BadRequestError("Institution is not on an active trial.");
+    throw new BadRequestError("Institution is not on a trial plan.");
   }
-  
+  if (!subscription.startDate) {
+    throw new BadRequestError("Trial has not been activated yet.");
+  }
+
   const currentEnd = subscription.endDate ? new Date(subscription.endDate) : new Date();
   const newEnd = new Date(currentEnd);
   newEnd.setDate(newEnd.getDate() + extraDays);
@@ -636,7 +682,7 @@ export const getTrialUsage = async (id: string) => {
   return {
     users:      { used: institution._count.users, limit: 500 },
     storageGb:  { used: 0,                        limit: 10 },
-    aiTokens:   { used: 0,                        limit: 2_000_000 },
+    aiTokens:   { used: 0,                        limit: PLAN_AI_TOKENS.TRIAL },
     daysRemaining,
     trialEndDate: endDate?.toISOString() ?? null,
     status: sub?.status ?? null,
@@ -675,6 +721,7 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
   await prisma.notificationRecipient.deleteMany({ where: { institutionId: id } });
   await prisma.review.deleteMany({ where: { institutionId: id } });
   await prisma.invite.deleteMany({ where: { institutionId: id } });
+  await prisma.bill.deleteMany({ where: { institutionId: id } });
   await prisma.subscription.deleteMany({ where: { institutionId: id } });
 
   // Wipe all audit logs belonging to this institution
@@ -710,7 +757,7 @@ export const resendInvite = async (email: string, institutionId: string) => {
 
   const rawToken = generateToken();
   const tokenHash = hashToken(rawToken);
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
   await prisma.invite.create({
     data: { email, tokenHash, role: "ADMIN", institutionId: user.institutionId!, expiresAt },
@@ -780,6 +827,28 @@ export const getAuditLogs = async (query: {
 // PLAN MANAGEMENT
 // ─────────────────────────────────────────────────────────────────────────────
 
+function computeUsageMeters(planName: string, addons: unknown) {
+  const baseTokens = PLAN_AI_TOKENS[planName as keyof typeof PLAN_AI_TOKENS] ?? PLAN_AI_TOKENS.BASIC;
+  const normalizedAddons = (addons && typeof addons === "object" && !Array.isArray(addons))
+    ? addons as Record<string, unknown>
+    : {};
+
+  const extraTokens = (normalizedAddons.extraAiTokens as Array<{ active?: boolean; tokensPerMonth?: number }> ?? [])
+    .filter((t) => t.active)
+    .reduce((sum, t) => sum + (t.tokensPerMonth ?? 0), 0);
+
+  const extraStorageGb = (normalizedAddons.extraStorage as Array<{ active?: boolean; gbPurchased?: number }> ?? [])
+    .filter((s) => s.active)
+    .reduce((sum, s) => sum + (s.gbPurchased ?? 0), 0);
+
+  const basePlanStorageGb = planName === "PRO" ? 1024 : 500;
+
+  return {
+    aiTokens: { used: 0, total: baseTokens + extraTokens },
+    storageGb: { used: 0, total: basePlanStorageGb + extraStorageGb },
+  };
+}
+
 export const getPlans = async () => {
   return prisma.plan.findMany({ orderBy: { basePrice: "asc" } });
 };
@@ -839,10 +908,7 @@ export const getInstitutionPlanDashboard = async (id: string) => {
         }
       : null,
     addonStatus: (institution.subscription.addons ?? {}) as Record<string, unknown>,
-    usageMeters: {
-      aiTokens: { used: 0, total: 0 },
-      storageGb: { used: 0, total: 0 },
-    },
+    usageMeters: computeUsageMeters(institution.subscription.plan.name, institution.subscription.addons),
   };
 };
 
@@ -1438,7 +1504,7 @@ export const pauseInstitution = async (id: string, actorId?: string) => {
     data: { status: "PAUSED", pausedAt: new Date() },
   });
 
-  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
   await logAudit("INSTITUTION_PAUSED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
@@ -1467,7 +1533,7 @@ export const resumeInstitution = async (id: string, actorId?: string) => {
     },
   });
 
-  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
   await logAudit("INSTITUTION_RESUMED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
@@ -1483,28 +1549,97 @@ export const resumeInstitution = async (id: string, actorId?: string) => {
 // ADDONS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const updateAddons = async (
-  id: string,
-  addons: Record<string, unknown>,
-  actorId?: string
-) => {
-  const institution = await prisma.institution.findUnique({ where: { id } });
-  if (!institution) throw new NotFoundError("Institution not found");
+type AddonUpdate = {
+  smartBoardAi?: Record<string, unknown>;
+  performanceInsightsAndAnalytics?: Record<string, unknown>;
+  timetableAutoScheduling?: Record<string, unknown>;
+  aiTokenAddon?: { active: false } | { active: true; tokensPerMonth: number; pricePerMillion: number };
+  extraStorage?: { gbPurchased: number; price: number }[];
+};
+
+export const updateAddons = async (id: string, incoming: AddonUpdate, actorId?: string) => {
+  const sub = await prisma.subscription.findUnique({
+    where: { institutionId: id },
+    include: { institution: true },
+  });
+  if (!sub) throw new NotFoundError("Subscription not found");
+
+  const existing = (sub.addons && typeof sub.addons === "object" && !Array.isArray(sub.addons))
+    ? (sub.addons as Record<string, unknown>)
+    : {};
+
+  const merged: Record<string, unknown> = { ...existing };
+
+  if (incoming.smartBoardAi !== undefined)
+    merged.smartBoardAi = incoming.smartBoardAi;
+  if (incoming.performanceInsightsAndAnalytics !== undefined)
+    merged.performanceInsightsAndAnalytics = incoming.performanceInsightsAndAnalytics;
+  if (incoming.timetableAutoScheduling !== undefined)
+    merged.timetableAutoScheduling = incoming.timetableAutoScheduling;
+
+  if (incoming.aiTokenAddon !== undefined) {
+    if (!incoming.aiTokenAddon.active) {
+      merged.extraAiTokens = [];
+    } else {
+      const { tokensPerMonth, pricePerMillion } = incoming.aiTokenAddon;
+      const monthlyAmount = Math.round((tokensPerMonth / 1_000_000) * pricePerMillion);
+      merged.extraAiTokens = [{ active: true, tokensPerMonth, monthlyAmount }];
+    }
+  }
+
+  if (incoming.extraStorage && incoming.extraStorage.length > 0) {
+    const existingStorage = Array.isArray(existing.extraStorage)
+      ? (existing.extraStorage as unknown[])
+      : [];
+    const newEntries = incoming.extraStorage.map((s) => ({
+      active: true,
+      gbPurchased: s.gbPurchased,
+      oneTimeAmount: s.price,
+      purchasedAt: new Date().toISOString(),
+    }));
+    merged.extraStorage = [...existingStorage, ...newEntries];
+  }
 
   const updated = await prisma.subscription.update({
     where: { institutionId: id },
-    data: { addons: addons as any },
+    data: { addons: merged as any },
   });
 
   await logAudit("ADDONS_UPDATED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
-    details: `Addons updated for ${institution.name}`,
-    metadata: addons as any,
+    details: `Addons updated for ${sub.institution.name}`,
+    metadata: incoming as any,
   });
 
   return updated;
+};
+
+export const resendBill = async (institutionId: string, billId: string) => {
+  const bill = await prisma.bill.findFirst({ where: { id: billId, institutionId } });
+  if (!bill) throw new NotFoundError("Bill not found");
+
+  const institution = await prisma.institution.findUnique({ where: { id: institutionId } });
+  if (!institution) throw new NotFoundError("Institution not found");
+
+  const admin = await prisma.user.findFirst({
+    where: { institutionId, role: "ADMIN" },
+    select: { email: true },
+  });
+  if (!admin?.email) throw new NotFoundError("No admin email found for this institution");
+
+  const { sendMonthlyBillEmail } = await import("../../services/email.service");
+  await sendMonthlyBillEmail({
+    to: admin.email,
+    institutionName: institution.name,
+    billingMonth: bill.billingMonth ?? bill.type,
+    totalAmount: bill.totalAmount,
+    dueDate: bill.dueDate ?? new Date(),
+    billId: bill.id,
+  });
+
+  return { sent: true, to: admin.email };
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1547,7 +1682,10 @@ export const upgradePlan = async (id: string, actorId?: string) => {
 export const downgradePlan = async (id: string, actorId?: string) => {
   const institution = await prisma.institution.findUnique({
     where: { id },
-    include: { subscription: { include: { plan: true } } },
+    include: {
+      subscription: { include: { plan: true } },
+      _count: { select: { users: true } },
+    },
   });
   if (!institution) throw new NotFoundError("Institution not found");
   if (!institution.subscription) throw new NotFoundError("Subscription not found");
@@ -1557,20 +1695,52 @@ export const downgradePlan = async (id: string, actorId?: string) => {
   const basicPlan = await prisma.plan.findFirst({ where: { name: "BASIC" } });
   if (!basicPlan) throw new NotFoundError("BASIC plan not found");
 
+  // Disable PRO-exclusive features in addons/features JSON
+  const currentAddons = (institution.subscription.addons ?? {}) as Record<string, unknown>;
+  const updatedAddons = {
+    ...currentAddons,
+    // PRO-only addon features become inactive on downgrade
+    performanceInsightsAndAnalytics: { active: false },
+    timetableAutoScheduling: { active: false },
+  };
+
   const updated = await prisma.subscription.update({
     where: { institutionId: id },
-    data: { planId: basicPlan.id },
+    data: { planId: basicPlan.id, addons: updatedAddons },
     include: { plan: true },
   });
 
-  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
+
+  // Check storage usage — warn if above Basic limit (500GB)
+  // We use the addon storage sum as a proxy; actual usage check is best-effort
+  const addons = currentAddons as { extraStorage?: Array<{ active?: boolean; gbPurchased?: number }> };
+  const extraStorageGb = (addons.extraStorage ?? [])
+    .filter((s) => s.active)
+    .reduce((sum, s) => sum + (s.gbPurchased ?? 0), 0);
+  const storageWarning = extraStorageGb > 0; // any extra storage addon implies usage beyond 500GB base
+
+  // Send notification email to admin
+  const admin = await prisma.user.findFirst({
+    where: { institutionId: id, role: "ADMIN" },
+    select: { email: true },
+  });
+  if (admin?.email) {
+    const { sendPlanDowngradeEmail } = await import("../../services/email.service");
+    sendPlanDowngradeEmail({
+      to: admin.email,
+      institutionName: institution.name,
+      storageWarning,
+    }).catch((err) => console.error("Plan downgrade email failed:", err.message));
+  }
+
   await logAudit("PLAN_DOWNGRADED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
     details: `${institution.name} downgraded from PRO to BASIC`,
-    metadata: {},
+    metadata: { storageWarning, adminEmail: admin?.email },
   });
 
-  return updated;
+  return { ...updated, storageWarning };
 };

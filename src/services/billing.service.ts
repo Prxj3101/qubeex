@@ -1,10 +1,18 @@
 import { prisma } from "../utils/prisma";
 import { logAudit } from "./audit.service";
 import { sendMonthlyBillEmail } from "./email.service";
+import { delCache } from "../utils/cache";
 
 type PlanName = "BASIC" | "PRO" | "TRIAL";
 type InstitutionType = "SCHOOL" | "COLLEGE" | "COACHING";
 type BillingCycle = "MONTHLY" | "YEARLY";
+
+export const PLAN_AI_TOKENS: Record<PlanName, number> = {
+  BASIC:  10_000_000,
+  PRO:    10_000_000,
+  TRIAL:   2_000_000,
+};
+
 
 type BillItem = {
   label: string;
@@ -350,6 +358,8 @@ export const autoDeactivateOverdueInstitutions = async (runDate = new Date()) =>
       }),
     ]);
 
+    await delCache(`inst:access:${bill.institutionId}`);
+
     await logAudit("INSTITUTION_AUTO_DEACTIVATED_NON_PAYMENT", {
       actorRole: "SYSTEM",
       institutionId: bill.institutionId,
@@ -390,8 +400,10 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
   const rateDifference = Math.max(0, proRate - basicRate);
   const daysInMonth = getDaysInMonth(upgradeDate);
   const remainingDays = daysInMonth - upgradeDate.getDate() + 1;
-  const baseAmount = Math.round((billedUsers * rateDifference / daysInMonth) * remainingDays);
-  if (baseAmount <= 0) return null;
+  const prorationAmount = Math.round((billedUsers * rateDifference / daysInMonth) * remainingDays);
+  const upgradeFixedCharge = 5000;
+  const baseAmount = prorationAmount;
+  const totalAmount = prorationAmount + upgradeFixedCharge;
 
   const dueDate = new Date(upgradeDate);
   dueDate.setDate(dueDate.getDate() + 7);
@@ -403,13 +415,19 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
       billingMonth,
       userCount: billedUsers,
       baseAmount,
-      totalAmount: baseAmount,
+      totalAmount,
       items: [
         {
-          label: "Basic to Pro Proration",
+          label: "Basic to Pro Rate Proration",
           desc: `${billedUsers} billed users (${actualUsers} actual snapshot) x Rs.${rateDifference}/user difference x ${remainingDays}/${daysInMonth} days`,
-          amount: baseAmount,
+          amount: prorationAmount,
           type: "base",
+        },
+        {
+          label: "PRO Upgrade Charge",
+          desc: "One-time fixed upgrade fee",
+          amount: upgradeFixedCharge,
+          type: "addon",
         },
       ],
       dueDate,
@@ -422,7 +440,7 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
       to: adminEmail,
       institutionName: institution.name,
       billingMonth: `${billingMonth} upgrade proration`,
-      totalAmount: baseAmount,
+      totalAmount,
       dueDate,
       billId: bill.id,
     }).catch((err) => console.error("Upgrade proration email failed:", err.message));
@@ -442,7 +460,9 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
       rateDifference,
       remainingDays,
       daysInMonth,
-      totalAmount: baseAmount,
+      prorationAmount,
+      upgradeFixedCharge,
+      totalAmount,
     },
   });
 

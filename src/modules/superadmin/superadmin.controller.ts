@@ -192,6 +192,19 @@ export const toggleStatus = async (
   }
 };
 
+export const activateTrial = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await service.activateTrial(req.params.id as string, req.user?.userId);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getTrialUsage = async (
   req: AuthRequest,
   res: Response,
@@ -623,7 +636,14 @@ export const resumeInstitution = async (req: AuthRequest, res: Response, next: N
 export const updateAddons = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { addons } = updateAddonsSchema.parse(req.body);
-    const result = await service.updateAddons(req.params.id as string, addons, req.user?.userId);
+    const result = await service.updateAddons(req.params.id as string, addons as any, req.user?.userId);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+export const resendBill = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const result = await service.resendBill(req.params.id as string, req.params.billId as string);
     res.json({ success: true, data: result });
   } catch (error) { next(error); }
 };

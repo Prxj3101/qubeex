@@ -135,7 +135,7 @@ model Subscription {
   pauseMonthsUsed Int       @default(0)
   addons          Json?
 
-  startDate DateTime
+  startDate DateTime? // null = trial created but not yet activated
   endDate   DateTime?
 
   createdAt DateTime @default(now())

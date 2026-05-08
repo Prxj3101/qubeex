@@ -16,6 +16,7 @@ import {
   uploadInstitutionLogo,
   toggleStatus,
   getTrialUsage,
+  activateTrial,
   deleteInstitution,
   resendInvite,
   // Audit Logs
@@ -52,6 +53,7 @@ import {
   resumeInstitution,
   // Addons
   updateAddons,
+  resendBill,
   // Upgrade / Downgrade
   upgradePlan,
   downgradePlan,
@@ -88,19 +90,21 @@ router.patch("/institutions/:id/plan",                 SA, updateInstitutionPlan
 router.post("/institutions/:id/activate",              SA, activateInstitutionPlan);
 router.patch("/institutions/:id/features",             SA, updateInstitutionFeatures);
 router.get("/institutions/:id/trial/usage",            SA, getTrialUsage);
+router.post("/institutions/:id/trial/activate",        SA, activateTrial);
 router.post("/institutions/:id/trial/extend",          SA, extendTrial);
 router.post("/institutions/:id/trial/churn",           SA, markTrialChurned);
 
 // ─── Billing ──────────────────────────────────────────────────────────────────
-router.get("/institutions/:id/bills",                  SA, getBills);
-router.patch("/institutions/:id/bills/:billId/status", SA, updateBillStatus);
+router.get("/institutions/:id/bills",                       SA, getBills);
+router.patch("/institutions/:id/bills/:billId/status",      SA, updateBillStatus);
+router.post("/institutions/:id/bills/:billId/resend",       SA, resendBill);
 
 // ─── Pause / Resume ───────────────────────────────────────────────────────────
-router.post("/institutions/:id/pause",                 SA, pauseInstitution);
-router.post("/institutions/:id/resume",                SA, resumeInstitution);
+router.post("/institutions/:id/pause",                      SA, pauseInstitution);
+router.post("/institutions/:id/resume",                     SA, resumeInstitution);
 
 // ─── Addons ───────────────────────────────────────────────────────────────────
-router.patch("/institutions/:id/addons",               SA, updateAddons);
+router.patch("/institutions/:id/addons",                    SA, updateAddons);
 
 // ─── Upgrade / Downgrade ──────────────────────────────────────────────────────
 router.post("/institutions/:id/upgrade",               SA, upgradePlan);

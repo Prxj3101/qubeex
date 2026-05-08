@@ -16,5 +16,6 @@ temp
 
 .claude/
 .codex
+.playwright-mcp/
 
 docs

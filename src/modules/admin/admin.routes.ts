@@ -5,12 +5,14 @@ import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTea
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications } from "./notifications.controller";
+import { getOverview } from "./overview.controller";
 
 const router = Router();
 
 const A = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
 
 router.get("/me", ...A, getMyInstitution);
+router.get("/overview", ...A, getOverview);
 router.patch("/institution", ...A, updateMyInstitution);
 router.post(
   "/institution/logo",

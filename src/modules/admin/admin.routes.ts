@@ -4,6 +4,7 @@ import { institutionAccessMiddleware } from "../../middlewares/institutionAccess
 import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
+import { listNotifications } from "./notifications.controller";
 
 const router = Router();
 
@@ -35,5 +36,8 @@ router.patch("/support/reviews/:id", ...A, updateReview);
 
 // Audit logs
 router.get("/audit-logs", ...A, listAuditLogs);
+
+// Notifications
+router.get("/notifications", ...A, listNotifications);
 
 export default router;

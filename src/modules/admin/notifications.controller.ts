@@ -8,8 +8,8 @@ export const listNotifications = async (req: AuthRequest, res: Response, next: N
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
-    const page  = Math.max(1, parseInt(req.query.page  as string) || 1);
-    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 20));
+    const page  = Math.max(1, parseInt(req.query.page  as string, 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string, 10) || 20));
 
     const [recipients, total] = await prisma.$transaction([
       prisma.notificationRecipient.findMany({
@@ -35,7 +35,7 @@ export const listNotifications = async (req: AuthRequest, res: Response, next: N
       total,
       page,
       limit,
-      pages: Math.ceil(total / limit) || 1,
+      pages: total === 0 ? 0 : Math.ceil(total / limit),
     });
   } catch (err) {
     next(err);

@@ -1203,10 +1203,24 @@ export const replyToTicket = async (id: string, message: string) => {
     data: { ticketId: id, author: "Super Admin", role: "SUPER_ADMIN", message },
   });
 
-  // Auto-move to IN_PROGRESS if still OPEN
   if (existing.status === "OPEN") {
     await prisma.supportTicket.update({ where: { id }, data: { status: "IN_PROGRESS" } });
   }
+
+  // Notify the institution's admin
+  const truncated = message.length > 160 ? message.slice(0, 160) + "…" : message;
+  await prisma.notification.create({
+    data: {
+      title: "QubeEx Support replied to your ticket",
+      message: `${existing.title} — ${truncated}`,
+      tag: "TICKET_REPLY",
+      recipientType: "SPECIFIC",
+      deliveredTo: 1,
+      recipients: {
+        create: [{ institutionId: existing.institutionId }],
+      },
+    },
+  });
 
   return reply;
 };

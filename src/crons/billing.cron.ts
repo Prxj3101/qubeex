@@ -22,12 +22,24 @@ export function startBillingCron() {
       console.log(`[Billing Cron] Running monthly bill generation for ${now.toISOString()}`);
       try {
         await generateMonthlyBills();
-        // Notify institutions whose bill was just generated
-        const pendingSubs = await prisma.subscription.findMany({
-          where: { status: { in: ["ACTIVE", "PAUSED"] }, paymentStatus: "PENDING" },
+        // Notify institutions that have an unpaid bill for this month
+        const billingMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        const unpaidBills = await prisma.bill.findMany({
+          where: { billingMonth, type: "MONTHLY", status: "PENDING" },
           select: { institutionId: true },
         });
-        for (const sub of pendingSubs) {
+        // Idempotency: skip institutions already notified this month
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const alreadyNotified = await prisma.notificationRecipient.findMany({
+          where: {
+            institutionId: { in: unpaidBills.map(b => b.institutionId) },
+            notification: { tag: "PLAN_EXPIRY", createdAt: { gte: startOfMonth } },
+          },
+          select: { institutionId: true },
+        });
+        const notifiedSet = new Set(alreadyNotified.map(r => r.institutionId));
+        const toNotify = unpaidBills.filter(b => !notifiedSet.has(b.institutionId));
+        for (const bill of toNotify) {
           await prisma.notification.create({
             data: {
               title: "Your monthly bill is ready",
@@ -35,11 +47,11 @@ export function startBillingCron() {
               tag: "PLAN_EXPIRY",
               recipientType: "SYSTEM",
               deliveredTo: 1,
-              recipients: { create: [{ institutionId: sub.institutionId }] },
+              recipients: { create: [{ institutionId: bill.institutionId }] },
             },
           });
         }
-        console.log(`[Billing Cron] Sent bill notifications to ${pendingSubs.length} institution(s)`);
+        console.log(`[Billing Cron] Sent bill notifications to ${toNotify.length} institution(s)`);
       } catch (err) {
         console.error("[Billing Cron] Error generating monthly bills:", err);
       }
@@ -67,11 +79,28 @@ export function startBillingCron() {
     async () => {
       console.log(`[Billing Cron] Sending payment reminder notifications at ${new Date().toISOString()}`);
       try {
-        const overdueInstitutions = await prisma.subscription.findMany({
-          where: { status: { in: ["ACTIVE", "PAUSED"] }, paymentStatus: "PENDING" },
+        const now = new Date();
+        const billingMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        const unpaidBills = await prisma.bill.findMany({
+          where: { billingMonth, type: "MONTHLY", status: "PENDING" },
           select: { institutionId: true },
         });
-        for (const sub of overdueInstitutions) {
+        // Idempotency: skip institutions that already received a reminder this month
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const alreadyReminded = await prisma.notificationRecipient.findMany({
+          where: {
+            institutionId: { in: unpaidBills.map(b => b.institutionId) },
+            notification: {
+              tag: "PLAN_EXPIRY",
+              title: "Payment reminder — 3 days left",
+              createdAt: { gte: startOfMonth },
+            },
+          },
+          select: { institutionId: true },
+        });
+        const remindedSet = new Set(alreadyReminded.map(r => r.institutionId));
+        const toRemind = unpaidBills.filter(b => !remindedSet.has(b.institutionId));
+        for (const bill of toRemind) {
           await prisma.notification.create({
             data: {
               title: "Payment reminder — 3 days left",
@@ -79,11 +108,11 @@ export function startBillingCron() {
               tag: "PLAN_EXPIRY",
               recipientType: "SYSTEM",
               deliveredTo: 1,
-              recipients: { create: [{ institutionId: sub.institutionId }] },
+              recipients: { create: [{ institutionId: bill.institutionId }] },
             },
           });
         }
-        console.log(`[Billing Cron] Sent payment reminders to ${overdueInstitutions.length} institution(s)`);
+        console.log(`[Billing Cron] Sent payment reminders to ${toRemind.length} institution(s)`);
       } catch (err) {
         console.error("[Billing Cron] Error sending payment reminders:", err);
       }

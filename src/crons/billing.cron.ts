@@ -3,6 +3,7 @@ import {
   autoDeactivateOverdueInstitutions,
   generateMonthlyBills,
 } from "../services/billing.service";
+import { prisma } from "../utils/prisma";
 
 // Runs at 23:59 on the last day of every month (IST = UTC+5:30 → 18:29 UTC)
 // Cron: minute hour day-of-month month day-of-week
@@ -21,6 +22,24 @@ export function startBillingCron() {
       console.log(`[Billing Cron] Running monthly bill generation for ${now.toISOString()}`);
       try {
         await generateMonthlyBills();
+        // Notify institutions whose bill was just generated
+        const pendingSubs = await prisma.subscription.findMany({
+          where: { status: { in: ["ACTIVE", "PAUSED"] }, paymentStatus: "PENDING" },
+          select: { institutionId: true },
+        });
+        for (const sub of pendingSubs) {
+          await prisma.notification.create({
+            data: {
+              title: "Your monthly bill is ready",
+              message: "Your bill has been generated. Please pay by the 8th to avoid service interruption.",
+              tag: "PLAN_EXPIRY",
+              recipientType: "SYSTEM",
+              deliveredTo: 1,
+              recipients: { create: [{ institutionId: sub.institutionId }] },
+            },
+          });
+        }
+        console.log(`[Billing Cron] Sent bill notifications to ${pendingSubs.length} institution(s)`);
       } catch (err) {
         console.error("[Billing Cron] Error generating monthly bills:", err);
       }
@@ -42,5 +61,35 @@ export function startBillingCron() {
     { timezone: "Asia/Kolkata" },
   );
 
-  console.log("[Billing Cron] Monthly billing cron scheduled (last day 11:59 PM IST + overdue check on 8th)");
+  // Runs on the 5th of every month at 9:00 AM IST — payment reminder (3 days before deactivation)
+  cron.schedule(
+    "0 9 5 * *",
+    async () => {
+      console.log(`[Billing Cron] Sending payment reminder notifications at ${new Date().toISOString()}`);
+      try {
+        const overdueInstitutions = await prisma.subscription.findMany({
+          where: { status: { in: ["ACTIVE", "PAUSED"] }, paymentStatus: "PENDING" },
+          select: { institutionId: true },
+        });
+        for (const sub of overdueInstitutions) {
+          await prisma.notification.create({
+            data: {
+              title: "Payment reminder — 3 days left",
+              message: "Your account will be suspended on the 8th if payment is not received. Please pay now.",
+              tag: "PLAN_EXPIRY",
+              recipientType: "SYSTEM",
+              deliveredTo: 1,
+              recipients: { create: [{ institutionId: sub.institutionId }] },
+            },
+          });
+        }
+        console.log(`[Billing Cron] Sent payment reminders to ${overdueInstitutions.length} institution(s)`);
+      } catch (err) {
+        console.error("[Billing Cron] Error sending payment reminders:", err);
+      }
+    },
+    { timezone: "Asia/Kolkata" },
+  );
+
+  console.log("[Billing Cron] Scheduled: bill generation (last day), overdue check (8th), payment reminder (5th)");
 }

@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
+import { redis, isRedisReady } from "../../utils/redis";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -89,6 +90,24 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
         }),
       ]);
 
+    let aiUsage = { used: 0, limit: 0 };
+    if (redis && isRedisReady) {
+      try {
+        const usageKey = `ai:usage:institution:${institutionId}`;
+        const limitKey = `ai:limit:institution:${institutionId}`;
+        const [usedRaw, limitRaw] = await Promise.all([
+          redis.get(usageKey),
+          redis.get(limitKey),
+        ]);
+        aiUsage = {
+          used: Number(usedRaw ?? 0) || 0,
+          limit: Number(limitRaw ?? 0) || 0,
+        };
+      } catch {
+        aiUsage = { used: 0, limit: 0 };
+      }
+    }
+
     if (!institution) throw new BadRequestError("Institution not found");
 
     // ── Enrollment growth — 6 months cumulative teacher count ──
@@ -153,6 +172,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
             users: { used: userCount, limit: userLimit },
             storage: { used: 0, limit: storageLimit },
             tests: { used: 0, limit: testLimit },
+            aiTokens: aiUsage,
           },
         },
         auditLogs,

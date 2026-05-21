@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyInvite, acceptInvite, login, logout } from "./auth.controller";
+import { verifyInvite, acceptInvite, login, logout, updateProfile, changePassword } from "./auth.controller";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { authLimiter } from "../../middlewares/rateLimiter.middleware";
 
@@ -15,5 +15,9 @@ router.post("/set-password", authLimiter, acceptInvite);    // frontend: /auth/s
 // ── Auth ─────────────────────────────────────────────────────────────────────
 router.post("/login", authLimiter, login);
 router.post("/logout", authMiddleware(), logout);
+
+// ── Authenticated user profile ─────────────────────────────────────────────
+router.patch("/profile", authMiddleware(), updateProfile);
+router.post("/change-password", authMiddleware(), changePassword);
 
 export default router;

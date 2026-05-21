@@ -47,6 +47,25 @@ enum TeacherStatus {
   INACTIVE
 }
 
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CampusPostType {
+  ANNOUNCEMENT
+  NOTICE
+  MATERIAL
+  RESULT
+}
+
+enum CalendarEventType {
+  HOLIDAY
+  TEST
+  EXAM
+  SUBMISSION
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Institution {
@@ -82,6 +101,15 @@ model Institution {
   tickets       SupportTicket[]
   reviews       Review[]
   teachers      Teacher[]
+  students      Student[]
+  staffPosts    StaffPost[]
+  staffMessages StaffMessage[]
+  standards     Standard[]
+  divisions     Division[]
+  subjects      Subject[]
+  assignments   DivisionAssignment[]
+  campusPosts   CampusFeedPost[]
+  calendarEvents CalendarEvent[]
 }
 
 model User {
@@ -98,8 +126,16 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  auditLogs AuditLog[]
-  teacher   Teacher?
+  auditLogs          AuditLog[]
+  teacher            Teacher?
+  student            Student?
+  staffPosts         StaffPost[]         @relation("StaffPostAuthor")
+  staffPostReactions StaffPostReaction[] @relation("StaffPostReactionUser")
+  staffPostComments  StaffPostComment[]  @relation("StaffPostCommentAuthor")
+  sentMessages       StaffMessage[]      @relation("StaffMessageSender")
+  receivedMessages   StaffMessage[]      @relation("StaffMessageReceiver")
+  campusFeedPosts    CampusFeedPost[]    @relation("CampusFeedPostAuthor")
+  calendarEvents     CalendarEvent[]     @relation("CalendarEventCreator")
 }
 
 enum TrialOutcome {
@@ -217,7 +253,45 @@ model Teacher {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  assignments DivisionAssignment[]
+
   @@unique([teacherId, institutionId])
+  @@index([institutionId])
+}
+
+model Student {
+  id        String @id @default(uuid())
+  studentId String
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  standardId String?
+  standard   Standard? @relation(fields: [standardId], references: [id], onDelete: SetNull)
+
+  divisionId String?
+  division   Division? @relation(fields: [divisionId], references: [id], onDelete: SetNull)
+
+  phone    String?
+  avatarUrl String?
+  dob      String?
+  gender   String?
+  address  String?
+  city     String?
+  state    String?
+  pincode  String?
+  country  String? @default("India")
+
+  status   StudentStatus @default(ACTIVE)
+  joinedAt DateTime      @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, institutionId])
   @@index([institutionId])
 }
 
@@ -262,6 +336,11 @@ model NotificationRecipient {
   notification   Notification @relation(fields: [notificationId], references: [id])
   institutionId  String
   institution    Institution  @relation(fields: [institutionId], references: [id])
+  readAt         DateTime?
+  dismissedAt    DateTime?
+
+  @@index([institutionId, readAt])
+  @@index([institutionId, dismissedAt])
 }
 
 model SupportTicket {
@@ -309,4 +388,204 @@ model Review {
 
   repliedAt DateTime?
   createdAt DateTime  @default(now())
+}
+
+// ─── Staffroom ────────────────────────────────────────────────────────────────
+
+model StaffPost {
+  id             String  @id @default(uuid())
+  institutionId  String
+  authorId       String
+  text           String
+  attachmentUrl  String?
+  attachmentType String? // "image" | "file"
+  attachmentName String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  institution Institution       @relation(fields: [institutionId], references: [id])
+  author      User              @relation("StaffPostAuthor", fields: [authorId], references: [id])
+  reactions   StaffPostReaction[]
+  comments    StaffPostComment[]
+
+  @@index([institutionId, createdAt(sort: Desc)])
+}
+
+model StaffPostReaction {
+  id            String   @id @default(uuid())
+  postId        String
+  userId        String
+  institutionId String
+  createdAt     DateTime @default(now())
+
+  post StaffPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User      @relation("StaffPostReactionUser", fields: [userId], references: [id])
+
+  @@unique([postId, userId])
+  @@index([institutionId])
+}
+
+model StaffPostComment {
+  id            String   @id @default(uuid())
+  postId        String
+  authorId      String
+  institutionId String
+  text          String
+  createdAt     DateTime @default(now())
+
+  post   StaffPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User      @relation("StaffPostCommentAuthor", fields: [authorId], references: [id])
+
+  @@index([postId])
+  @@index([institutionId])
+}
+
+model StaffMessage {
+  id             String    @id @default(uuid())
+  institutionId  String
+  senderId       String
+  receiverId     String
+  text           String?
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+  readAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+  sender      User        @relation("StaffMessageSender", fields: [senderId], references: [id])
+  receiver    User        @relation("StaffMessageReceiver", fields: [receiverId], references: [id])
+
+  @@index([institutionId])
+  @@index([senderId, receiverId])
+  @@index([createdAt(sort: Desc)])
+}
+
+// ─── Campus ───────────────────────────────────────────────────────────────────
+
+model Standard {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  name  String
+  order Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  divisions Division[]
+  students  Student[]
+
+  @@unique([institutionId, name])
+  @@index([institutionId])
+}
+
+model Division {
+  id         String   @id @default(uuid())
+  standardId String
+  standard   Standard @relation(fields: [standardId], references: [id], onDelete: Cascade)
+
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  name     String
+  capacity Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subjects    Subject[]
+  assignments DivisionAssignment[]
+  students    Student[]
+
+  @@unique([standardId, name])
+  @@index([institutionId])
+}
+
+model Subject {
+  id         String   @id @default(uuid())
+  divisionId String
+  division   Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  name  String
+  code  String?
+  color String?
+  order Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments DivisionAssignment[]
+
+  @@unique([divisionId, name])
+  @@index([institutionId])
+}
+
+model DivisionAssignment {
+  id         String   @id @default(uuid())
+  divisionId String
+  division   Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+
+  // null = class teacher slot; set = subject teacher for that subject
+  subjectId String?
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  teacherId String
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([divisionId, subjectId])
+  @@index([institutionId])
+  @@index([teacherId])
+}
+
+// ─── Campus Feed ──────────────────────────────────────────────────────────────
+
+model CampusFeedPost {
+  id            String         @id @default(uuid())
+  institutionId String
+  institution   Institution    @relation(fields: [institutionId], references: [id])
+
+  type          CampusPostType
+  title         String
+  body          String
+  subject       String?
+
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+
+  authorId String
+  author   User   @relation("CampusFeedPostAuthor", fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionId, createdAt(sort: Desc)])
+}
+
+model CalendarEvent {
+  id            String            @id @default(uuid())
+  institutionId String
+  institution   Institution       @relation(fields: [institutionId], references: [id])
+
+  type  CalendarEventType
+  label String
+  date  DateTime
+
+  createdById String?
+  createdBy   User?   @relation("CalendarEventCreator", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([institutionId, date])
 }

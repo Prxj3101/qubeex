@@ -242,3 +242,56 @@ export const logout = async (jti: string, exp: number) => {
 
   return { message: "Logged out successfully" };
 };
+
+// ── PATCH /auth/profile ────────────────────────────────────────────────────
+export const updateProfile = async (userId: string, name: string) => {
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: { name },
+    omit: { password: true },
+  });
+
+  await logAudit("PROFILE_UPDATED", {
+    userId: updated.id,
+    actorRole: updated.role,
+    institutionId: updated.institutionId ?? undefined,
+    details: `Display name updated to "${name}"`,
+  });
+
+  return {
+    id: updated.id,
+    name: updated.name,
+    email: updated.email,
+    role: updated.role,
+    institutionId: updated.institutionId,
+  };
+};
+
+// ── POST /auth/change-password ─────────────────────────────────────────────
+export const changePassword = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || !user.password) {
+    throw new UnauthorizedError("Invalid credentials");
+  }
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    throw new UnauthorizedError("Current password is incorrect");
+  }
+
+  const hashed = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+  await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+
+  await logAudit("PASSWORD_CHANGED", {
+    userId: user.id,
+    actorRole: user.role,
+    institutionId: user.institutionId ?? undefined,
+    details: "Password changed by user",
+  });
+
+  return { message: "Password updated successfully" };
+};

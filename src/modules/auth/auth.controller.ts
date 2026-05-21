@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import * as service from "./auth.service";
 import { acceptInviteSchema, loginSchema } from "./auth.schema";
+import { z } from "zod";
 
 export const verifyInvite = async (
   req: Request,
@@ -93,6 +94,51 @@ export const logout = async (
     const data = await service.logout(user.jti, decoded.exp);
 
     res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ── PATCH /auth/profile ────────────────────────────────────────────────────
+const profileSchema = z.object({
+  name: z.string().min(2).max(100).trim(),
+});
+
+export const updateProfile = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { name } = profileSchema.parse(req.body);
+    const updated = await service.updateProfile(user.userId, name);
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ── POST /auth/change-password ─────────────────────────────────────────────
+const changePwSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z
+    .string()
+    .min(8)
+    .regex(/[A-Z]/, "Must contain an uppercase letter")
+    .regex(/[0-9]/, "Must contain a number"),
+});
+
+export const changePassword = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { currentPassword, newPassword } = changePwSchema.parse(req.body);
+    await service.changePassword(user.userId, currentPassword, newPassword);
+    res.json({ success: true, data: { message: "Password updated" } });
   } catch (error) {
     next(error);
   }

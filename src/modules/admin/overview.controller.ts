@@ -110,8 +110,6 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
 
     if (!institution) throw new BadRequestError("Institution not found");
 
-    // ── Enrollment growth — 6 months cumulative teacher count ──
-    // (Students not yet in this phase; students column will show 0 until Phase 2)
     const enrollmentGrowth = Array.from({ length: 6 }, (_, i) => {
       const d = new Date();
       d.setDate(1);

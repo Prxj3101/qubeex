@@ -12,6 +12,13 @@ datasource db {
 enum Role {
   SUPER_ADMIN
   ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
 }
 
 enum InstitutionType {
@@ -80,6 +87,14 @@ model Institution {
   tickets       SupportTicket[]
   reviews       Review[]
   teachers      Teacher[]
+  students      Student[]
+  standards     Standard[]
+  divisions     Division[]
+  subjects      Subject[]
+  assignments   DivisionAssignment[]
+  staffPosts    StaffPost[]
+  campusPosts   CampusFeedPost[]
+  calendarEvents CalendarEvent[]
 }
 
 model User {
@@ -98,6 +113,15 @@ model User {
 
   auditLogs AuditLog[]
   teacher   Teacher?
+  student   Student?
+
+  staffPostsAuthored    StaffPost[]          @relation("StaffPostAuthor")
+  staffReactions        StaffPostReaction[]  @relation("StaffPostReactionUser")
+  staffCommentsAuthored StaffPostComment[]   @relation("StaffPostCommentAuthor")
+  staffMessagesSent     StaffMessage[]       @relation("StaffMessageSender")
+  staffMessagesReceived StaffMessage[]       @relation("StaffMessageReceiver")
+  campusPostsAuthored   CampusFeedPost[]     @relation("CampusFeedPostAuthor")
+  calendarEventsCreated CalendarEvent[]      @relation("CalendarEventCreator")
 }
 
 enum TrialOutcome {
@@ -215,6 +239,8 @@ model Teacher {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  assignments DivisionAssignment[]
+
   @@unique([teacherId, institutionId])
   @@index([institutionId])
 }
@@ -260,6 +286,12 @@ model NotificationRecipient {
   notification   Notification @relation(fields: [notificationId], references: [id])
   institutionId  String
   institution    Institution  @relation(fields: [institutionId], references: [id])
+
+  readAt      DateTime?
+  dismissedAt DateTime?
+
+  @@index([institutionId, readAt])
+  @@index([institutionId, dismissedAt])
 }
 
 model SupportTicket {
@@ -307,4 +339,236 @@ model Review {
 
   repliedAt DateTime?
   createdAt DateTime  @default(now())
+}
+
+// ─── Campus Structure ─────────────────────────────────────────────────────────
+
+model Standard {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  name  String
+  order Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  divisions Division[]
+  students  Student[]
+
+  @@unique([institutionId, name])
+  @@index([institutionId])
+}
+
+model Division {
+  id            String      @id @default(uuid())
+  standardId    String
+  standard      Standard    @relation(fields: [standardId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  name     String
+  capacity Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subjects    Subject[]
+  assignments DivisionAssignment[]
+  students    Student[]
+
+  @@unique([standardId, name])
+  @@index([institutionId])
+  @@index([standardId])
+}
+
+model Subject {
+  id            String      @id @default(uuid())
+  divisionId    String
+  division      Division    @relation(fields: [divisionId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  name  String
+  code  String?
+  color String?
+  order Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments DivisionAssignment[]
+
+  @@unique([divisionId, name])
+  @@index([divisionId])
+  @@index([institutionId])
+}
+
+model DivisionAssignment {
+  id            String      @id @default(uuid())
+  divisionId    String
+  division      Division    @relation(fields: [divisionId], references: [id])
+  subjectId     String?
+  subject       Subject?    @relation(fields: [subjectId], references: [id])
+  teacherId     String
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([divisionId])
+  @@index([teacherId])
+  @@index([institutionId])
+}
+
+model Student {
+  id            String      @id @default(uuid())
+  studentId     String
+  userId        String      @unique
+  user          User        @relation(fields: [userId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  standardId String?
+  standard   Standard? @relation(fields: [standardId], references: [id])
+  divisionId String?
+  division   Division? @relation(fields: [divisionId], references: [id])
+
+  phone     String?
+  avatarUrl String?
+  dob       String?
+  gender    String?
+  address   String?
+  city      String?
+  state     String?
+  pincode   String?
+  country   String?       @default("India")
+  status    StudentStatus @default(ACTIVE)
+  joinedAt  DateTime      @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, institutionId])
+  @@index([institutionId])
+}
+
+// ─── Staffroom ────────────────────────────────────────────────────────────────
+
+model StaffPost {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  authorId      String
+  author        User        @relation("StaffPostAuthor", fields: [authorId], references: [id])
+
+  text           String
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+
+  createdAt DateTime @default(now())
+
+  reactions StaffPostReaction[]
+  comments  StaffPostComment[]
+
+  @@index([institutionId])
+}
+
+model StaffPostReaction {
+  id            String    @id @default(uuid())
+  postId        String
+  post          StaffPost @relation(fields: [postId], references: [id])
+  userId        String
+  user          User      @relation("StaffPostReactionUser", fields: [userId], references: [id])
+  institutionId String
+
+  @@unique([postId, userId])
+}
+
+model StaffPostComment {
+  id            String    @id @default(uuid())
+  postId        String
+  post          StaffPost @relation(fields: [postId], references: [id])
+  authorId      String
+  author        User      @relation("StaffPostCommentAuthor", fields: [authorId], references: [id])
+  institutionId String
+  text          String
+
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+}
+
+model StaffMessage {
+  id            String  @id @default(uuid())
+  institutionId String
+  senderId      String
+  sender        User    @relation("StaffMessageSender", fields: [senderId], references: [id])
+  receiverId    String
+  receiver      User    @relation("StaffMessageReceiver", fields: [receiverId], references: [id])
+
+  text           String?
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+  readAt         DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([institutionId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+// ─── Campus Feed & Calendar ───────────────────────────────────────────────────
+
+enum CampusPostType {
+  ANNOUNCEMENT
+  NOTICE
+  MATERIAL
+  RESULT
+}
+
+enum CalendarEventType {
+  HOLIDAY
+  TEST
+  EXAM
+  SUBMISSION
+}
+
+model CampusFeedPost {
+  id            String         @id @default(uuid())
+  institutionId String
+  institution   Institution    @relation(fields: [institutionId], references: [id])
+  authorId      String
+  author        User           @relation("CampusFeedPostAuthor", fields: [authorId], references: [id])
+
+  type           CampusPostType
+  title          String
+  body           String
+  subject        String?
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+
+  createdAt DateTime @default(now())
+
+  @@index([institutionId])
+}
+
+model CalendarEvent {
+  id            String            @id @default(uuid())
+  institutionId String
+  institution   Institution       @relation(fields: [institutionId], references: [id])
+  createdById   String
+  createdBy     User              @relation("CalendarEventCreator", fields: [createdById], references: [id])
+
+  type  CalendarEventType
+  label String
+  date  DateTime
+
+  @@index([institutionId])
 }

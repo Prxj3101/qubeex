@@ -87,7 +87,7 @@ export const createStandard = async (req: AuthRequest, res: Response, next: Next
     if (existing) throw new BadRequestError("A standard with this name already exists");
 
     const standard = await prisma.standard.create({
-      data: { institutionId, ...data },
+      data: { institutionId, ...data, order: data.order ?? 0 },
     });
 
     res.status(201).json({ success: true, data: standard });
@@ -252,7 +252,7 @@ export const createSubject = async (req: AuthRequest, res: Response, next: NextF
     if (existing) throw new BadRequestError("A subject with this name already exists in this division");
 
     const subject = await prisma.subject.create({
-      data: { divisionId, institutionId, ...data },
+      data: { divisionId, institutionId, ...data, order: data.order ?? 0 },
     });
 
     res.status(201).json({ success: true, data: subject });

@@ -58,7 +58,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
-    const [institution, userCount, teacherCount, classCount, subscription, recentLogs, recentTickets, teachersForGrowth] =
+    const [institution, userCount, teacherCount, studentCount, classCount, subscription, recentLogs, recentTickets, teachersForGrowth, studentsForGrowth] =
       await Promise.all([
         prisma.institution.findUnique({
           where: { id: institutionId },
@@ -66,6 +66,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
         }),
         prisma.user.count({ where: { institutionId } }),
         prisma.teacher.count({ where: { institutionId } }),
+        prisma.student.count({ where: { institutionId } }),
         prisma.standard.count({ where: { institutionId } }),
         prisma.subscription.findUnique({
           where: { institutionId },
@@ -86,6 +87,11 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
         // Teacher users for enrollment growth trend (createdAt grouped by month)
         prisma.user.findMany({
           where: { institutionId, role: "TEACHER" },
+          select: { createdAt: true },
+        }),
+        // Student users for enrollment growth trend (createdAt grouped by month)
+        prisma.user.findMany({
+          where: { institutionId, role: "STUDENT" },
           select: { createdAt: true },
         }),
       ]);
@@ -117,7 +123,8 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
       const endOfMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
       const month = endOfMonth.toLocaleString("en-US", { month: "short" });
       const teachers = teachersForGrowth.filter(u => u.createdAt <= endOfMonth).length;
-      return { month, students: 0, teachers };
+      const students = studentsForGrowth.filter(u => u.createdAt <= endOfMonth).length;
+      return { month, students, teachers };
     });
 
     // ── Plan usage ──
@@ -159,7 +166,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
         },
         stats: {
           totalUsers: userCount,
-          totalStudents: 0,   // students phase not yet built
+          totalStudents: studentCount,
           totalTeachers: teacherCount,
           totalClasses: classCount,
         },

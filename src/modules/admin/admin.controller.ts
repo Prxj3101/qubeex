@@ -209,7 +209,6 @@ export const listTeachers = async (
           institutionId: institutionId!,
           role: "TEACHER",
           isUsed: false,
-          expiresAt: { gt: new Date() },
         },
         select: { email: true },
       })).map(i => i.email)
@@ -391,7 +390,6 @@ export const getTeacher = async (
         institutionId: institutionId!,
         role: "TEACHER",
         isUsed: false,
-        expiresAt: { gt: new Date() },
       },
       select: { id: true },
     });
@@ -480,7 +478,6 @@ export const updateTeacher = async (
         institutionId: institutionId!,
         role: "TEACHER",
         isUsed: false,
-        expiresAt: { gt: new Date() },
       },
       select: { id: true },
     });
@@ -851,6 +848,9 @@ export const resendTeacherInvite = async (
     if (teacher.user.isActive) {
       throw new BadRequestError("Teacher has already accepted the invite");
     }
+    if (teacher.status === "INACTIVE") {
+      throw new BadRequestError("Cannot resend invite to a deactivated teacher");
+    }
 
     const institution = await prisma.institution.findUnique({
       where: { id: institutionId },
@@ -864,7 +864,7 @@ export const resendTeacherInvite = async (
     await prisma.$transaction(async (tx) => {
       // Invalidate all existing unused invites for this email
       await tx.invite.updateMany({
-        where: { email: teacher.user.email, isUsed: false },
+        where: { email: teacher.user.email, institutionId, isUsed: false },
         data: { isUsed: true },
       });
 
@@ -881,12 +881,12 @@ export const resendTeacherInvite = async (
     });
 
     const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
-    sendTeacherInviteEmail({
+    await sendTeacherInviteEmail({
       to: teacher.user.email,
       name: teacher.user.name ?? undefined,
       institutionName: institution.name,
       inviteLink,
-    }).catch((err) => console.error("Resend invite email failed:", err));
+    });
 
     await logAudit("TEACHER_INVITE_RESENT", {
       userId: user.userId,

@@ -15,6 +15,7 @@ export const listAuditLogs = async (req: AuthRequest, res: Response, next: NextF
     const actorRole = req.query.actorRole as string | undefined;
     const from      = req.query.from      as string | undefined;
     const to        = req.query.to        as string | undefined;
+    const search    = req.query.search    as string | undefined;
 
     const fromDate = from ? new Date(from) : undefined;
     const toDate   = to   ? new Date(to)   : undefined;
@@ -31,6 +32,15 @@ export const listAuditLogs = async (req: AuthRequest, res: Response, next: NextF
         ...(toDate   ? { lte: toDate   } : {}),
       };
     }
+    if (search?.trim()) {
+      const q = search.trim();
+      where.OR = [
+        { details:  { contains: q, mode: "insensitive" } },
+        { action:   { contains: q, mode: "insensitive" } },
+        { user: { is: { name:  { contains: q, mode: "insensitive" } } } },
+        { user: { is: { email: { contains: q, mode: "insensitive" } } } },
+      ];
+    }
 
     const [logs, total] = await prisma.$transaction([
       prisma.auditLog.findMany({
@@ -46,12 +56,15 @@ export const listAuditLogs = async (req: AuthRequest, res: Response, next: NextF
     ]);
 
     res.json({
-      logs,
-      pagination: {
-        total,
-        page,
-        limit,
-        pages: Math.ceil(total / limit) || 1,
+      success: true,
+      data: {
+        logs,
+        pagination: {
+          total,
+          page,
+          limit,
+          pages: Math.ceil(total / limit) || 1,
+        },
       },
     });
   } catch (err) {

@@ -830,3 +830,74 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
     next(error);
   }
 };
+
+export const resendTeacherInvite = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+    const id = req.params.id as string;
+
+    const teacher = await prisma.teacher.findFirst({
+      where: { id, institutionId },
+      include: { user: { select: { id: true, name: true, email: true, isActive: true } } },
+    });
+    if (!teacher) throw new NotFoundError("Teacher not found");
+
+    if (teacher.user.isActive) {
+      throw new BadRequestError("Teacher has already accepted the invite");
+    }
+
+    const institution = await prisma.institution.findUnique({
+      where: { id: institutionId },
+      select: { name: true },
+    });
+    if (!institution) throw new NotFoundError("Institution not found");
+
+    const rawToken = generateToken();
+    const tokenHash = hashToken(rawToken);
+
+    await prisma.$transaction(async (tx) => {
+      // Invalidate all existing unused invites for this email
+      await tx.invite.updateMany({
+        where: { email: teacher.user.email, isUsed: false },
+        data: { isUsed: true },
+      });
+
+      // Create a fresh invite
+      await tx.invite.create({
+        data: {
+          email: teacher.user.email,
+          tokenHash,
+          role: "TEACHER",
+          institutionId,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      });
+    });
+
+    const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
+    sendTeacherInviteEmail({
+      to: teacher.user.email,
+      name: teacher.user.name ?? undefined,
+      institutionName: institution.name,
+      inviteLink,
+    }).catch((err) => console.error("Resend invite email failed:", err));
+
+    await logAudit("TEACHER_INVITE_RESENT", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId,
+      details: `Invite resent to ${teacher.user.name}`,
+      metadata: { teacherId: teacher.teacherId, email: teacher.user.email },
+    });
+
+    res.json({ success: true, data: { message: "Invite resent successfully" } });
+  } catch (error) {
+    next(error);
+  }
+};

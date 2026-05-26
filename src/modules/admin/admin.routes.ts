@@ -1,7 +1,7 @@
 import { Router, raw } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
-import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent } from "./admin.controller";
+import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
@@ -31,6 +31,7 @@ router.post(
   raw({ type: ["image/png", "image/jpeg", "image/webp"], limit: "2mb" }),
   uploadTeacherAvatar
 );
+router.post("/teachers/:id/resend-invite", ...A, resendTeacherInvite);
 router.get("/students", ...A, listStudents);
 router.post("/students", ...A, addStudent);
 router.get("/students/:id", ...A, getStudent);

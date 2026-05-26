@@ -203,6 +203,18 @@ export const listTeachers = async (
       orderBy: { createdAt: "asc" },
     });
 
+    const pendingInviteEmails = new Set(
+      (await prisma.invite.findMany({
+        where: {
+          institutionId: institutionId!,
+          role: "TEACHER",
+          isUsed: false,
+          expiresAt: { gt: new Date() },
+        },
+        select: { email: true },
+      })).map(i => i.email)
+    );
+
     const data = teachers.map((t) => ({
       id: t.id,
       teacherId: t.teacherId,
@@ -211,7 +223,7 @@ export const listTeachers = async (
       phone: t.phone,
       avatarUrl: t.avatarUrl,
       status: t.status,
-      invitePending: !t.user.isActive,
+      invitePending: pendingInviteEmails.has(t.user.email),
       joinedAt: t.joinedAt.toISOString(),
       assignments: [],
       dob: t.dob,
@@ -373,6 +385,17 @@ export const getTeacher = async (
 
     if (!teacher) throw new NotFoundError("Teacher not found");
 
+    const pendingInvite = await prisma.invite.findFirst({
+      where: {
+        email: teacher.user.email,
+        institutionId: institutionId!,
+        role: "TEACHER",
+        isUsed: false,
+        expiresAt: { gt: new Date() },
+      },
+      select: { id: true },
+    });
+
     res.json({
       success: true,
       data: {
@@ -383,7 +406,7 @@ export const getTeacher = async (
         phone: teacher.phone,
         avatarUrl: teacher.avatarUrl,
         status: teacher.status,
-        invitePending: !teacher.user.isActive,
+        invitePending: pendingInvite !== null,
         joinedAt: teacher.joinedAt.toISOString(),
         assignments: [],
         experience: teacher.experience,
@@ -451,6 +474,17 @@ export const updateTeacher = async (
       });
     });
 
+    const pendingInviteForUpdate = await prisma.invite.findFirst({
+      where: {
+        email: teacher.user.email,
+        institutionId: institutionId!,
+        role: "TEACHER",
+        isUsed: false,
+        expiresAt: { gt: new Date() },
+      },
+      select: { id: true },
+    });
+
     await logAudit("TEACHER_UPDATED", {
       userId: user.userId,
       actorRole: user.role,
@@ -469,7 +503,7 @@ export const updateTeacher = async (
         phone: teacher.phone,
         avatarUrl: teacher.avatarUrl,
         status: teacher.status,
-        invitePending: !teacher.user.isActive,
+        invitePending: pendingInviteForUpdate !== null,
         joinedAt: teacher.joinedAt.toISOString(),
         assignments: [],
         experience: teacher.experience,

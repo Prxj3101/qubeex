@@ -125,6 +125,8 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
       actorRole: req.user!.role,
       institutionId,
       details: `${data.type}: "${data.title}"`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);
@@ -149,6 +151,8 @@ export const deletePost = async (req: AuthRequest, res: Response, next: NextFunc
       actorRole: req.user!.role,
       institutionId,
       details: `Post "${post.title}" deleted`,
+      category: "ADMIN_ACTION",
+      severity: "WARNING",
     });
   } catch (err) {
     next(err);

@@ -178,9 +178,11 @@ export const updateProfile = async (
     },
   });
 
-  await logAudit("PROFILE_UPDATED", {
+  logAudit("PROFILE_UPDATED", {
     userId,
     actorRole: "SUPER_ADMIN",
+    category: "SECURITY",
+    severity: "INFO",
     details: `Super admin profile updated for ${user.email}`,
     metadata: { email: user.email },
   });
@@ -214,9 +216,11 @@ export const changeProfilePassword = async (
     data: { password: hashedPassword },
   });
 
-  await logAudit("PASSWORD_CHANGED", {
+  logAudit("PASSWORD_CHANGED", {
     userId,
     actorRole: "SUPER_ADMIN",
+    category: "SECURITY",
+    severity: "WARNING",
     details: `Password changed for ${user.email}`,
     metadata: { email: user.email },
   });
@@ -428,8 +432,10 @@ export const createInstitutionService = async (data: any) => {
     console.error("⚠️  Invite email failed (non-blocking):", err.message)
   );
 
-  await logAudit("INSTITUTION_CREATED", {
+  logAudit("INSTITUTION_CREATED", {
     institutionId: institution.id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `Created ${name} · Type: ${type}`,
     metadata: {
       institutionName: name,
@@ -514,9 +520,11 @@ export const uploadInstitutionLogo = async (
     ownerId: actorId ?? "superadmin",
   });
 
-  await logAudit("INSTITUTION_LOGO_UPLOADED", {
+  logAudit("INSTITUTION_LOGO_UPLOADED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: "Institution logo uploaded",
     metadata: { path: uploaded.path, publicUrl: uploaded.publicUrl },
   });
@@ -542,10 +550,12 @@ export const toggleInstitutionStatus = async (
     ? "INSTITUTION_SUSPENDED"
     : "INSTITUTION_STATUS_CHANGED";
 
-  await logAudit(action, {
+  logAudit(action, {
     userId: actorId,
     actorRole,
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "WARNING",
     details: `${existing.name} status changed to ${status}`,
     metadata: { newStatus: status },
   });
@@ -584,10 +594,12 @@ export const activateTrial = async (id: string, actorId?: string) => {
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
 
-  await logAudit("TRIAL_ACTIVATED", {
+  logAudit("TRIAL_ACTIVATED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `Trial activated for ${institution.name}`,
     metadata: { trialDays: subscription.trialDays, startDate: now, endDate },
   });
@@ -621,10 +633,12 @@ export const extendTrial = async (id: string, extraDays: number, actorId?: strin
   
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
 
-  await logAudit("TRIAL_EXTENDED", {
+  logAudit("TRIAL_EXTENDED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `Trial extended by ${extraDays} days`,
     metadata: { extraDays, newEnd },
   });
@@ -652,10 +666,12 @@ export const markTrialChurned = async (id: string, actorId?: string) => {
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
 
-  await logAudit("TRIAL_CHURNED", {
+  logAudit("TRIAL_CHURNED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "WARNING",
     details: `Institution marked as churned after trial`,
   });
 
@@ -743,9 +759,11 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
 
   // Log the deletion by the superadmin (survives — not tied to the institution)
-  await logAudit("INSTITUTION_DELETED", {
+  logAudit("INSTITUTION_DELETED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
+    category: "SUPERADMIN_ACTION",
+    severity: "CRITICAL",
     details: `Institution "${institution.name}" (${institution.institutionCode}) permanently deleted along with ${userIds.length} user(s)`,
     metadata: { institutionId: id, name: institution.name, usersDeleted: userIds.length },
   });
@@ -768,8 +786,10 @@ export const resendInvite = async (email: string, institutionId: string) => {
     console.error("⚠️  Resend invite email failed:", err.message)
   );
 
-  await logAudit("INVITE_SENT", {
+  logAudit("INVITE_SENT", {
     institutionId,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `Invite resent to ${email}`,
     metadata: { email },
   });
@@ -942,10 +962,12 @@ export const updateInstitutionPlan = async (
     },
   });
 
-  await logAudit("PLAN_ASSIGNED", {
+  logAudit("PLAN_ASSIGNED", {
     userId: actorId,
     actorRole,
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `${institution.name} assigned to ${data.planName} plan with ${data.discount}% discount`,
     metadata: { plan: data.planName, discount: data.discount, paymentStatus: data.paymentStatus },
   });
@@ -1038,10 +1060,12 @@ export const activateInstitutionPlan = async (
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
 
-  await logAudit("PLAN_ACTIVATED", {
+  logAudit("PLAN_ACTIVATED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `${institution.name} activated on ${planName} plan${discountPct > 0 ? ` with ${discountPct}% discount` : ""}`,
     metadata: {
       plan: planName,
@@ -1113,8 +1137,10 @@ export const broadcastNotification = async (
     },
   });
 
-  await logAudit("NOTIFICATION_SENT", {
+  logAudit("NOTIFICATION_SENT", {
     userId: actorId,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `Broadcast: "${data.title}" → ${targetInstitutions.length} institutions`,
     metadata: { tag: data.tag, recipient: data.recipient },
   });
@@ -1423,10 +1449,12 @@ export const updateBillStatus = async (
     }
   }
 
-  await logAudit("BILL_STATUS_UPDATED", {
+  logAudit("BILL_STATUS_UPDATED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: bill.institutionId,
+    category: "BILLING",
+    severity: "INFO",
     details: `Bill ${billId} marked as ${status}`,
     metadata: { billId, status, reactivated },
   });
@@ -1519,10 +1547,12 @@ export const pauseInstitution = async (id: string, actorId?: string) => {
   });
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
-  await logAudit("INSTITUTION_PAUSED", {
+  logAudit("INSTITUTION_PAUSED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "WARNING",
     details: `${institution.name} subscription paused`,
     metadata: { pausedAt: updated.pausedAt },
   });
@@ -1548,10 +1578,12 @@ export const resumeInstitution = async (id: string, actorId?: string) => {
   });
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
-  await logAudit("INSTITUTION_RESUMED", {
+  logAudit("INSTITUTION_RESUMED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `${institution.name} subscription resumed`,
     metadata: {},
   });
@@ -1619,10 +1651,12 @@ export const updateAddons = async (id: string, incoming: AddonUpdate, actorId?: 
     data: { addons: merged as any },
   });
 
-  await logAudit("ADDONS_UPDATED", {
+  logAudit("ADDONS_UPDATED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `Addons updated for ${sub.institution.name}`,
     metadata: incoming as any,
   });
@@ -1682,10 +1716,12 @@ export const upgradePlan = async (id: string, actorId?: string) => {
   await generateUpgradeProrationBill(id);
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
-  await logAudit("PLAN_UPGRADED", {
+  logAudit("PLAN_UPGRADED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
     details: `${institution.name} upgraded from BASIC to PRO`,
     metadata: {},
   });
@@ -1748,10 +1784,12 @@ export const downgradePlan = async (id: string, actorId?: string) => {
     }).catch((err) => console.error("Plan downgrade email failed:", err.message));
   }
 
-  await logAudit("PLAN_DOWNGRADED", {
+  logAudit("PLAN_DOWNGRADED", {
     userId: actorId,
     actorRole: "SUPER_ADMIN",
     institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "WARNING",
     details: `${institution.name} downgraded from PRO to BASIC`,
     metadata: { storageWarning, adminEmail: admin?.email },
   });

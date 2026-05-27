@@ -94,13 +94,15 @@ async function runSmartBoardFreeExpiryAlerts() {
       data: { addons: updatedAddons },
     });
 
-    await logAudit("SMARTBOARD_FREE_EXPIRY_ALERT_SENT", {
+    logAudit("SMARTBOARD_FREE_EXPIRY_ALERT_SENT", {
       actorRole: "SYSTEM",
       institutionId: sub.institutionId,
       details: `Smart Board + AI free expiry alert sent (30 days remaining).`,
       metadata: {
         freeEndDate: smartBoard.freeEndDate,
       },
+      category: "SYSTEM",
+      severity: "INFO",
     });
   }
 }

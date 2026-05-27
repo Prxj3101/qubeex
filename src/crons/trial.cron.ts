@@ -130,10 +130,12 @@ async function runHourlyAutoLock() {
         }),
       ]);
 
-      await logAudit("TRIAL_AUTO_LOCKED", {
+      logAudit("TRIAL_AUTO_LOCKED", {
         actorRole: "SYSTEM",
         institutionId: sub.institutionId,
         details: "Institution auto-locked: trial expired with no plan activation within 24 hours",
+        category: "SYSTEM",
+        severity: "WARNING",
       });
 
       console.log(`[Trial Cron] Auto-locked institution ${sub.institutionId}`);

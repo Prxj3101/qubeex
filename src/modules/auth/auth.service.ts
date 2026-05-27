@@ -83,11 +83,13 @@ export const acceptInvite = async (token: string, password: string, instituteId:
     return updatedUser;
   });
 
-  await logAudit("INVITE_ACCEPTED", {
+  logAudit("INVITE_ACCEPTED", {
     userId: result.id,
     institutionId: result.institutionId ?? undefined,
     details: `Invite accepted by ${result.email}`,
     metadata: { email: result.email },
+    category: "SECURITY",
+    severity: "INFO",
   });
 
   // Activate the institution if it was PENDING
@@ -166,26 +168,30 @@ export const login = async (email: string, password: string, context: LoginConte
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     await recordFailedAttempt(email);
-    await logAudit("LOGIN_FAILED", {
+    logAudit("LOGIN_FAILED", {
       userId: user.id,
       actorRole: user.role,
       institutionId: user.institutionId ?? undefined,
       ip: context.ip,
       details: `Failed login attempt for ${email}`,
       metadata: { email, userAgent: context.userAgent },
+      category: "SECURITY",
+      severity: "WARNING",
     });
     throw new UnauthorizedError("Invalid credentials");
   }
 
   await clearLoginAttempts(email);
 
-  await logAudit("LOGIN_SUCCESS", {
+  logAudit("LOGIN_SUCCESS", {
     userId: user.id,
     actorRole: user.role,
     institutionId: user.institutionId ?? undefined,
     ip: context.ip,
     details: `Login by ${email}`,
     metadata: { email, userAgent: context.userAgent },
+    category: "SECURITY",
+    severity: "INFO",
   });
 
   const jti = crypto.randomUUID();
@@ -251,11 +257,13 @@ export const updateProfile = async (userId: string, name: string) => {
     omit: { password: true },
   });
 
-  await logAudit("PROFILE_UPDATED", {
+  logAudit("PROFILE_UPDATED", {
     userId: updated.id,
     actorRole: updated.role,
     institutionId: updated.institutionId ?? undefined,
     details: `Display name updated to "${name}"`,
+    category: "SECURITY",
+    severity: "INFO",
   });
 
   return {
@@ -286,11 +294,13 @@ export const changePassword = async (
   const hashed = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
   await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
 
-  await logAudit("PASSWORD_CHANGED", {
+  logAudit("PASSWORD_CHANGED", {
     userId: user.id,
     actorRole: user.role,
     institutionId: user.institutionId ?? undefined,
     details: "Password changed by user",
+    category: "SECURITY",
+    severity: "WARNING",
   });
 
   return { message: "Password updated successfully" };

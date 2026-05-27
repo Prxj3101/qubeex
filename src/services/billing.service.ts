@@ -290,7 +290,7 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
       }).catch((err) => console.error("Monthly bill email failed:", err.message));
     }
 
-    await logAudit("MONTHLY_BILL_GENERATED", {
+    logAudit("MONTHLY_BILL_GENERATED", {
       actorRole: "SYSTEM",
       institutionId: sub.institutionId,
       details: `Monthly bill generated for ${sub.institution.name} (${billingMonth})`,
@@ -306,15 +306,19 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
         totalAmount,
         adminEmail,
       },
+      category: "BILLING",
+      severity: "INFO",
     });
 
     generated++;
   }
 
-  await logAudit("MONTHLY_BILLS_GENERATED", {
+  logAudit("MONTHLY_BILLS_GENERATED", {
     actorRole: "SYSTEM",
     details: `Monthly billing for ${billingMonth}: ${generated} bills created, ${skipped} skipped`,
     metadata: { billingMonth, generated, skipped },
+    category: "BILLING",
+    severity: "INFO",
   });
 
   console.log(`[Billing] ${billingMonth}: ${generated} bills generated, ${skipped} skipped`);
@@ -360,7 +364,7 @@ export const autoDeactivateOverdueInstitutions = async (runDate = new Date()) =>
 
     await delCache(`inst:access:${bill.institutionId}`);
 
-    await logAudit("INSTITUTION_AUTO_DEACTIVATED_NON_PAYMENT", {
+    logAudit("INSTITUTION_AUTO_DEACTIVATED_NON_PAYMENT", {
       actorRole: "SYSTEM",
       institutionId: bill.institutionId,
       details: `Institution auto-deactivated for unpaid bill ${bill.id}`,
@@ -369,6 +373,8 @@ export const autoDeactivateOverdueInstitutions = async (runDate = new Date()) =>
         dueDate: bill.dueDate,
         totalAmount: bill.totalAmount,
       },
+      category: "BILLING",
+      severity: "CRITICAL",
     });
 
     deactivated++;
@@ -446,7 +452,7 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
     }).catch((err) => console.error("Upgrade proration email failed:", err.message));
   }
 
-  await logAudit("UPGRADE_PRORATION_BILL_GENERATED", {
+  logAudit("UPGRADE_PRORATION_BILL_GENERATED", {
     actorRole: "SYSTEM",
     institutionId,
     details: `Upgrade proration bill generated for ${institution.name}`,
@@ -464,6 +470,8 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
       upgradeFixedCharge,
       totalAmount,
     },
+    category: "BILLING",
+    severity: "INFO",
   });
 
   return bill;

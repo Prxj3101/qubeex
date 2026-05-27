@@ -96,6 +96,8 @@ export const createStandard = async (req: AuthRequest, res: Response, next: Next
       actorRole: req.user!.role,
       institutionId,
       details: `Standard "${standard.name}" created`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);
@@ -125,6 +127,8 @@ export const updateStandard = async (req: AuthRequest, res: Response, next: Next
       actorRole: req.user!.role,
       institutionId,
       details: `Standard "${updated.name}" updated`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);
@@ -146,6 +150,8 @@ export const deleteStandard = async (req: AuthRequest, res: Response, next: Next
       actorRole: req.user!.role,
       institutionId,
       details: `Standard "${standard.name}" deleted`,
+      category: "ADMIN_ACTION",
+      severity: "WARNING",
     });
   } catch (err) {
     next(err);
@@ -179,6 +185,8 @@ export const createDivision = async (req: AuthRequest, res: Response, next: Next
       actorRole: req.user!.role,
       institutionId,
       details: `Division "${division.name}" created under standard "${standard.name}"`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);
@@ -208,6 +216,8 @@ export const updateDivision = async (req: AuthRequest, res: Response, next: Next
       actorRole: req.user!.role,
       institutionId,
       details: `Division "${updated.name}" updated`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);
@@ -229,6 +239,8 @@ export const deleteDivision = async (req: AuthRequest, res: Response, next: Next
       actorRole: req.user!.role,
       institutionId,
       details: `Division "${division.name}" deleted`,
+      category: "ADMIN_ACTION",
+      severity: "WARNING",
     });
   } catch (err) {
     next(err);
@@ -261,6 +273,8 @@ export const createSubject = async (req: AuthRequest, res: Response, next: NextF
       actorRole: req.user!.role,
       institutionId,
       details: `Subject "${subject.name}" added to division`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);
@@ -290,6 +304,8 @@ export const updateSubject = async (req: AuthRequest, res: Response, next: NextF
       actorRole: req.user!.role,
       institutionId,
       details: `Subject "${updated.name}" updated`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);
@@ -311,6 +327,8 @@ export const deleteSubject = async (req: AuthRequest, res: Response, next: NextF
       actorRole: req.user!.role,
       institutionId,
       details: `Subject "${subject.name}" deleted`,
+      category: "ADMIN_ACTION",
+      severity: "WARNING",
     });
   } catch (err) {
     next(err);
@@ -372,6 +390,8 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
       actorRole: req.user!.role,
       institutionId,
       details: `Teacher "${assignment.teacher.user.name}" assigned as ${slot} in division "${division.name}"`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);
@@ -393,6 +413,8 @@ export const removeAssignment = async (req: AuthRequest, res: Response, next: Ne
       actorRole: req.user!.role,
       institutionId,
       details: `Teacher assignment removed`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
   } catch (err) {
     next(err);

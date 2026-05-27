@@ -52,6 +52,20 @@ enum TeacherStatus {
   INACTIVE
 }
 
+enum AuditCategory {
+  ADMIN_ACTION
+  SECURITY
+  SYSTEM
+  BILLING
+  SUPERADMIN_ACTION
+}
+
+enum AuditSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Institution {
@@ -246,8 +260,10 @@ model Teacher {
 }
 
 model AuditLog {
-  id            String  @id @default(uuid())
+  id            String        @id @default(uuid())
   action        String
+  category      AuditCategory @default(ADMIN_ACTION)
+  severity      AuditSeverity @default(INFO)
   userId        String?
   actorRole     String?
   institutionId String?
@@ -260,6 +276,7 @@ model AuditLog {
 
   createdAt DateTime @default(now())
 
+  @@index([institutionId, category, createdAt(sort: Desc)])
   @@index([createdAt(sort: Desc)])
   @@index([action])
   @@index([actorRole])

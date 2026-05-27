@@ -3,6 +3,13 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
 
+const VALID_CATEGORIES = ["ADMIN_ACTION", "SECURITY", "SYSTEM", "BILLING", "SUPERADMIN_ACTION"] as const;
+type AuditCategory = typeof VALID_CATEGORIES[number];
+
+// Admin can see ADMIN_ACTION (default) and SECURITY.
+// SYSTEM, BILLING, SUPERADMIN_ACTION are superadmin-only.
+const ADMIN_ALLOWED_CATEGORIES: AuditCategory[] = ["ADMIN_ACTION", "SECURITY"];
+
 export const listAuditLogs = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId } = req.user!;
@@ -17,13 +24,24 @@ export const listAuditLogs = async (req: AuthRequest, res: Response, next: NextF
     const to        = req.query.to        as string | undefined;
     const search    = req.query.search    as string | undefined;
 
+    // Category filter — default ADMIN_ACTION, admin can only access ADMIN_ACTION | SECURITY
+    const rawCategory = (req.query.category as string) ?? "ADMIN_ACTION";
+    if (!VALID_CATEGORIES.includes(rawCategory as AuditCategory)) {
+      throw new BadRequestError("Invalid category");
+    }
+    const category = rawCategory as AuditCategory;
+    if (!ADMIN_ALLOWED_CATEGORIES.includes(category)) {
+      throw new BadRequestError("Access denied for this log category");
+    }
+
     const fromDate = from ? new Date(from) : undefined;
     const toDate   = to   ? new Date(to)   : undefined;
 
     if (fromDate && isNaN(fromDate.getTime())) throw new BadRequestError("Invalid 'from' date");
     if (toDate   && isNaN(toDate.getTime()))   throw new BadRequestError("Invalid 'to' date");
 
-    const where: Record<string, unknown> = { institutionId };
+    const where: Record<string, unknown> = { institutionId, category };
+
     if (action    && action    !== "All Action Types") where.action    = action;
     if (actorRole && actorRole !== "All Roles")        where.actorRole = actorRole;
     if (fromDate || toDate) {

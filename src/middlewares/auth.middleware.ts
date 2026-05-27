@@ -48,7 +48,6 @@ export const authMiddleware = (roles: string[] = []) => {
 
       if (redis && decoded.jti) {
         try {
-          // Timeout after 500ms — if Redis is reconnecting, fail open rather than hang
           const isBlacklisted = await Promise.race([
             redis.get(`bl:${decoded.jti}`),
             new Promise<null>((resolve) => setTimeout(() => resolve(null), 500)),
@@ -58,7 +57,6 @@ export const authMiddleware = (roles: string[] = []) => {
             return;
           }
         } catch {
-          // Redis unavailable — allow request through (fail open)
         }
       }
 

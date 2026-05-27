@@ -15,7 +15,6 @@ export async function setCache(key: string, data: unknown, ttlSeconds: number): 
   try {
     await redis.setex(key, ttlSeconds, JSON.stringify(data));
   } catch {
-    // non-fatal — cache miss on next read is acceptable
   }
 }
 
@@ -24,6 +23,5 @@ export async function delCache(...keys: string[]): Promise<void> {
   try {
     await redis.del(...keys);
   } catch {
-    // non-fatal
   }
 }

@@ -561,10 +561,10 @@ export const getInstitutionStructure = async (
       where: { institutionId: user.institutionId },
       orderBy: { order: "asc" },
       include: {
+        subjects: { orderBy: { order: "asc" } },
         divisions: {
           orderBy: { name: "asc" },
           include: {
-            subjects: { orderBy: { order: "asc" } },
             assignments: {
               include: {
                 teacher: { include: { user: { select: { id: true, name: true } } } },
@@ -587,12 +587,12 @@ export const getInstitutionStructure = async (
         name: div.name,
         code: undefined,
         order: 0,
-        children: div.subjects.map((sub) => ({
+        children: std.subjects.map((sub) => ({
           id: sub.id,
           name: sub.name,
           code: sub.code ?? undefined,
           capacity: div.capacity ?? undefined,
-          teacherCount: div.assignments.filter((a) => a.subjectId === sub.id).length,
+          teacherCount: div.assignments.filter((a: { subjectId: string | null }) => a.subjectId === sub.id).length,
           studentCount: 0,
         })),
       })),

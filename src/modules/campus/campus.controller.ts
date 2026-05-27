@@ -53,10 +53,10 @@ export const listStandards = async (req: AuthRequest, res: Response, next: NextF
       where: { institutionId },
       orderBy: { order: "asc" },
       include: {
+        subjects: { orderBy: { order: "asc" } },
         divisions: {
           orderBy: { name: "asc" },
           include: {
-            subjects: { orderBy: { order: "asc" } },
             assignments: {
               include: {
                 teacher: {
@@ -176,7 +176,7 @@ export const createDivision = async (req: AuthRequest, res: Response, next: Next
 
     const division = await prisma.division.create({
       data: { standardId, institutionId, ...data },
-      include: { subjects: true, assignments: true },
+      include: { assignments: true },
     });
 
     res.status(201).json({ success: true, data: division });
@@ -252,19 +252,19 @@ export const deleteDivision = async (req: AuthRequest, res: Response, next: Next
 export const createSubject = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const institutionId = requireInstitution(req);
-    const divisionId = req.params.divisionId as string;
+    const standardId = req.params.standardId as string;
     const data = createSubjectSchema.parse(req.body);
 
-    const division = await prisma.division.findFirst({ where: { id: divisionId, institutionId } });
-    if (!division) throw new NotFoundError("Division not found");
+    const standard = await prisma.standard.findFirst({ where: { id: standardId, institutionId } });
+    if (!standard) throw new NotFoundError("Standard not found");
 
     const existing = await prisma.subject.findUnique({
-      where: { divisionId_name: { divisionId, name: data.name } },
+      where: { standardId_name: { standardId, name: data.name } },
     });
-    if (existing) throw new BadRequestError("A subject with this name already exists in this division");
+    if (existing) throw new BadRequestError("A subject with this name already exists in this standard");
 
     const subject = await prisma.subject.create({
-      data: { divisionId, institutionId, ...data, order: data.order ?? 0 },
+      data: { standardId, institutionId, ...data, order: data.order ?? 0 },
     });
 
     res.status(201).json({ success: true, data: subject });
@@ -272,7 +272,7 @@ export const createSubject = async (req: AuthRequest, res: Response, next: NextF
       userId: req.user!.userId,
       actorRole: req.user!.role,
       institutionId,
-      details: `Subject "${subject.name}" added to division`,
+      details: `Subject "${subject.name}" added to standard "${standard.name}"`,
       category: "ADMIN_ACTION",
       severity: "INFO",
     });
@@ -292,9 +292,9 @@ export const updateSubject = async (req: AuthRequest, res: Response, next: NextF
 
     if (data.name && data.name !== subject.name) {
       const existing = await prisma.subject.findUnique({
-        where: { divisionId_name: { divisionId: subject.divisionId, name: data.name } },
+        where: { standardId_name: { standardId: subject.standardId, name: data.name } },
       });
-      if (existing) throw new BadRequestError("A subject with this name already exists in this division");
+      if (existing) throw new BadRequestError("A subject with this name already exists in this standard");
     }
 
     const updated = await prisma.subject.update({ where: { id }, data });
@@ -351,9 +351,9 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
 
     if (data.subjectId) {
       const subject = await prisma.subject.findFirst({
-        where: { id: data.subjectId, divisionId, institutionId },
+        where: { id: data.subjectId, standardId: division.standardId, institutionId },
       });
-      if (!subject) throw new NotFoundError("Subject not found in this division");
+      if (!subject) throw new NotFoundError("Subject not found in this standard");
     }
 
     // Upsert: replace existing assignment for this slot
@@ -429,8 +429,9 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
     const division = await prisma.division.findFirst({
       where: { id, institutionId },
       include: {
-        standard: true,
-        subjects: { orderBy: { order: "asc" } },
+        standard: {
+          include: { subjects: { orderBy: { order: "asc" } } },
+        },
         assignments: {
           include: {
             teacher: {

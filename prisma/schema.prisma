@@ -373,6 +373,7 @@ model Standard {
 
   divisions Division[]
   students  Student[]
+  subjects  Subject[]
 
   @@unique([institutionId, name])
   @@index([institutionId])
@@ -391,7 +392,6 @@ model Division {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  subjects    Subject[]
   assignments DivisionAssignment[]
   students    Student[]
 
@@ -402,8 +402,8 @@ model Division {
 
 model Subject {
   id            String      @id @default(uuid())
-  divisionId    String
-  division      Division    @relation(fields: [divisionId], references: [id])
+  standardId    String
+  standard      Standard    @relation(fields: [standardId], references: [id])
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
 
@@ -417,8 +417,8 @@ model Subject {
 
   assignments DivisionAssignment[]
 
-  @@unique([divisionId, name])
-  @@index([divisionId])
+  @@unique([standardId, name])
+  @@index([standardId])
   @@index([institutionId])
 }
 

@@ -3,14 +3,14 @@ import Redis from "ioredis";
 const REDIS_URL = process.env.REDIS_URL;
 
 if (!REDIS_URL) {
-  console.warn("⚠️  REDIS_URL not set — rate limiting will be in-memory only");
+  console.warn("REDIS_URL not set — rate limiting will be in-memory only");
 }
 
 export const redis = REDIS_URL
   ? new Redis(REDIS_URL, {
-      maxRetriesPerRequest: null, // Queue commands until connected (required by rate-limit-redis)
-      retryStrategy: (times) => Math.min(times * 500, 10_000), // Always retry, backoff to 10s max
-      reconnectOnError: () => true,                             // Reconnect on any socket error
+      maxRetriesPerRequest: null,
+      retryStrategy: (times) => Math.min(times * 500, 10_000),
+      reconnectOnError: () => true,
       tls: REDIS_URL.startsWith("rediss://") ? {} : undefined,
     })
   : null;
@@ -28,7 +28,7 @@ if (redis) {
     isRedisReady = false;
     const msg = err.message ?? "";
     if (!msg.includes("ECONNRESET") && !msg.includes("ENOTFOUND") && !msg.includes("Connection is closed")) {
-      console.warn("⚠️  Redis:", msg);
+      console.warn("Redis:", msg);
     }
   });
 }

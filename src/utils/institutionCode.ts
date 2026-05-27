@@ -11,7 +11,6 @@ export async function generateInstitutionCode(type: string): Promise<string> {
   const year = new Date().getFullYear();
   const base = `QX-${prefix}-${year}-`;
 
-  // Count existing codes with this prefix to derive the next number
   const existing = await prisma.institution.count({
     where: { institutionCode: { startsWith: base } },
   });

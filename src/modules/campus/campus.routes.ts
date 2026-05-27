@@ -41,8 +41,8 @@ router.get("/divisions/:divisionId", ...A, getDivision);
 router.patch("/divisions/:divisionId", ...A, updateDivision);
 router.delete("/divisions/:divisionId", ...A, deleteDivision);
 
-// Subjects (nested under division)
-router.post("/divisions/:divisionId/subjects", ...A, createSubject);
+// Subjects (nested under standard — shared across all divisions)
+router.post("/standards/:standardId/subjects", ...A, createSubject);
 router.patch("/subjects/:subjectId", ...A, updateSubject);
 router.delete("/subjects/:subjectId", ...A, deleteSubject);
 

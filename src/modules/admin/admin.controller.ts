@@ -131,12 +131,14 @@ export const updateMyInstitution = async (
       data,
     });
 
-    await logAudit("INSTITUTION_UPDATED", {
+    logAudit("INSTITUTION_UPDATED", {
       userId: user.userId,
       actorRole: user.role,
       institutionId: institution.id,
       details: `${institution.name} details updated`,
       metadata: { email: institution.email },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
 
     res.json({ success: true, data: institution });
@@ -171,12 +173,14 @@ export const uploadMyInstitutionLogo = async (
       data: { logoUrl: uploaded.publicUrl },
     });
 
-    await logAudit("INSTITUTION_LOGO_UPDATED", {
+    logAudit("INSTITUTION_LOGO_UPDATED", {
       userId: user.userId,
       actorRole: user.role,
       institutionId: institution.id,
       details: `${institution.name} logo updated`,
       metadata: { path: uploaded.path, logoUrl: uploaded.publicUrl },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
 
     res.json({
@@ -317,12 +321,14 @@ export const addTeacher = async (
       inviteLink,
     }).catch((err) => console.error("Teacher invite email failed:", err));
 
-    await logAudit("TEACHER_ADDED", {
+    logAudit("TEACHER_ADDED", {
       userId: user.userId,
       actorRole: user.role,
       institutionId: institutionId!,
       details: `${data.name} added as teacher`,
       metadata: { teacherId: teacher.teacherId, email: data.email },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
 
     res.status(201).json({
@@ -482,13 +488,28 @@ export const updateTeacher = async (
       select: { id: true },
     });
 
-    await logAudit("TEACHER_UPDATED", {
-      userId: user.userId,
-      actorRole: user.role,
-      institutionId: institutionId!,
-      details: `Teacher ${teacher.user.name} updated`,
-      metadata: { teacherId: teacher.teacherId, changes: Object.keys(data) },
-    });
+    {
+      const actionName = data.status === "INACTIVE"
+        ? "TEACHER_DEACTIVATED"
+        : data.status === "ACTIVE"
+        ? "TEACHER_ACTIVATED"
+        : "TEACHER_UPDATED";
+      const severityLevel = data.status === "INACTIVE" ? "WARNING" : "INFO";
+      const detailsText = data.status === "INACTIVE"
+        ? `Teacher ${teacher.user.name} deactivated`
+        : data.status === "ACTIVE"
+        ? `Teacher ${teacher.user.name} activated`
+        : `Teacher ${teacher.user.name} updated`;
+      logAudit(actionName, {
+        userId: user.userId,
+        actorRole: user.role,
+        institutionId: institutionId!,
+        details: detailsText,
+        metadata: { teacherId: teacher.teacherId, changes: Object.keys(data) },
+        category: "ADMIN_ACTION",
+        severity: severityLevel as "INFO" | "WARNING",
+      });
+    }
 
     res.json({
       success: true,
@@ -617,12 +638,14 @@ export const uploadTeacherAvatar = async (
       data: { avatarUrl: uploaded.publicUrl },
     });
 
-    await logAudit("TEACHER_UPDATED", {
+    logAudit("TEACHER_UPDATED", {
       userId: user.userId,
       actorRole: user.role,
       institutionId: user.institutionId,
       details: `Teacher avatar updated`,
       metadata: { teacherId: teacher.teacherId, path: uploaded.path },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
 
     res.json({ success: true, data: { avatarUrl: updated.avatarUrl } });
@@ -727,12 +750,14 @@ export const addStudent = async (req: AuthRequest, res: Response, next: NextFunc
       });
     });
 
-    await logAudit("STUDENT_ADDED", {
+    logAudit("STUDENT_ADDED", {
       userId: user.userId,
       actorRole: user.role,
       institutionId,
       details: `${student.user.name} added as student`,
       metadata: { studentId: student.studentId, email: student.user.email },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
 
     res.status(201).json({ success: true, data: student });
@@ -814,13 +839,28 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
       });
     });
 
-    await logAudit("STUDENT_UPDATED", {
-      userId: user.userId,
-      actorRole: user.role,
-      institutionId,
-      details: `Student ${student.user.name} updated`,
-      metadata: { studentId: student.studentId, changes: Object.keys(data) },
-    });
+    {
+      const studentAction = data.status === "INACTIVE"
+        ? "STUDENT_DEACTIVATED"
+        : data.status === "ACTIVE"
+        ? "STUDENT_ACTIVATED"
+        : "STUDENT_UPDATED";
+      const studentSeverity = data.status === "INACTIVE" ? "WARNING" : "INFO";
+      const studentDetails = data.status === "INACTIVE"
+        ? `Student ${student.user.name} deactivated`
+        : data.status === "ACTIVE"
+        ? `Student ${student.user.name} activated`
+        : `Student ${student.user.name} updated`;
+      logAudit(studentAction, {
+        userId: user.userId,
+        actorRole: user.role,
+        institutionId,
+        details: studentDetails,
+        metadata: { studentId: student.studentId, changes: Object.keys(data) },
+        category: "ADMIN_ACTION",
+        severity: studentSeverity as "INFO" | "WARNING",
+      });
+    }
 
     res.json({ success: true, data: student });
   } catch (error) {
@@ -888,12 +928,14 @@ export const resendTeacherInvite = async (
       inviteLink,
     });
 
-    await logAudit("TEACHER_INVITE_RESENT", {
+    logAudit("TEACHER_INVITE_RESENT", {
       userId: user.userId,
       actorRole: user.role,
       institutionId,
       details: `Invite resent to ${teacher.user.name}`,
       metadata: { teacherId: teacher.teacherId, email: teacher.user.email },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
     });
 
     res.json({ success: true, data: { message: "Invite resent successfully" } });

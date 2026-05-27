@@ -18,7 +18,7 @@ const createPostSchema = z.object({
 });
 
 const createEventSchema = z.object({
-  type: z.enum(["HOLIDAY", "TEST", "EXAM", "SUBMISSION"]),
+  type: z.enum(["HOLIDAY", "TEST", "EXAM", "SUBMISSION", "MEETING", "SPORTS", "EVENT", "TRIP"]),
   label: z.string().min(1).max(200).trim(),
   date: z.string().datetime({ offset: true }).or(z.string().date()),
 });
@@ -180,9 +180,9 @@ export const listEvents = async (req: AuthRequest, res: Response, next: NextFunc
 
     const data = events.map(e => ({
       id: e.id,
-      type: e.type.toLowerCase() as "holiday" | "test" | "exam" | "submission",
+      type: e.type.toLowerCase(),
       label: e.label,
-      date: new Date(e.date).getDate(),
+      date: e.date.getUTCDate(),
       fullDate: e.date.toISOString(),
       createdBy: e.createdBy ? { id: e.createdBy.id, name: e.createdBy.name } : null,
     }));
@@ -214,7 +214,7 @@ export const createEvent = async (req: AuthRequest, res: Response, next: NextFun
         id: event.id,
         type: event.type.toLowerCase(),
         label: event.label,
-        date: new Date(event.date).getDate(),
+        date: event.date.getUTCDate(),
         fullDate: event.date.toISOString(),
       },
     });

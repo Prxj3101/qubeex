@@ -554,6 +554,10 @@ enum CalendarEventType {
   TEST
   EXAM
   SUBMISSION
+  MEETING
+  SPORTS
+  EVENT
+  TRIP
 }
 
 model CampusFeedPost {

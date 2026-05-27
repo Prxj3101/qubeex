@@ -5,6 +5,7 @@ import app from "./app";
 import { startBillingCron } from "./crons/billing.cron";
 import { startTrialCron } from "./crons/trial.cron";
 import { startAddonCron } from "./crons/addon.cron";
+import { startAuditRetentionCron } from "./crons/audit.cron";
 
 const port = process.env.PORT || 3000;
 
@@ -13,4 +14,5 @@ app.listen(port, () => {
   startBillingCron();
   startTrialCron();
   startAddonCron();
+  startAuditRetentionCron();
 });

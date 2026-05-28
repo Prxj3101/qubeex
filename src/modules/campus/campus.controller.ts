@@ -57,6 +57,7 @@ export const listStandards = async (req: AuthRequest, res: Response, next: NextF
         divisions: {
           orderBy: { name: "asc" },
           include: {
+            divisionSubjects: { select: { subjectId: true } },
             assignments: {
               include: {
                 teacher: {
@@ -320,7 +321,11 @@ export const deleteSubject = async (req: AuthRequest, res: Response, next: NextF
     const subject = await prisma.subject.findFirst({ where: { id, institutionId } });
     if (!subject) throw new NotFoundError("Subject not found");
 
-    await prisma.subject.delete({ where: { id } });
+    await prisma.$transaction([
+      prisma.divisionAssignment.deleteMany({ where: { subjectId: id } }),
+      prisma.divisionSubject.deleteMany({ where: { subjectId: id } }),
+      prisma.subject.delete({ where: { id } }),
+    ]);
     res.json({ success: true });
     logAudit("SUBJECT_DELETED", {
       userId: req.user!.userId,
@@ -350,10 +355,10 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
     if (!teacher) throw new NotFoundError("Teacher not found");
 
     if (data.subjectId) {
-      const subject = await prisma.subject.findFirst({
-        where: { id: data.subjectId, standardId: division.standardId, institutionId },
+      const selected = await prisma.divisionSubject.findUnique({
+        where: { divisionId_subjectId: { divisionId, subjectId: data.subjectId } },
       });
-      if (!subject) throw new NotFoundError("Subject not found in this standard");
+      if (!selected) throw new NotFoundError("Subject is not selected for this division");
     }
 
     // Upsert: replace existing assignment for this slot
@@ -421,6 +426,53 @@ export const removeAssignment = async (req: AuthRequest, res: Response, next: Ne
   }
 };
 
+// ── Division subject selection ────────────────────────────────────────────────
+
+export const selectSubject = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const subjectId = req.params.subjectId as string;
+
+    const division = await prisma.division.findFirst({ where: { id: divisionId, institutionId } });
+    if (!division) throw new NotFoundError("Division not found");
+
+    const subject = await prisma.subject.findFirst({
+      where: { id: subjectId, standardId: division.standardId, institutionId },
+    });
+    if (!subject) throw new NotFoundError("Subject not found in this standard");
+
+    await prisma.divisionSubject.upsert({
+      where: { divisionId_subjectId: { divisionId, subjectId } },
+      create: { divisionId, subjectId, institutionId },
+      update: {},
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deselectSubject = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const subjectId = req.params.subjectId as string;
+
+    const division = await prisma.division.findFirst({ where: { id: divisionId, institutionId } });
+    if (!division) throw new NotFoundError("Division not found");
+
+    await prisma.divisionSubject.deleteMany({ where: { divisionId, subjectId } });
+    // Also remove any teacher assignment for this subject in this division
+    await prisma.divisionAssignment.deleteMany({ where: { divisionId, subjectId } });
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getDivision = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const institutionId = requireInstitution(req);
@@ -432,6 +484,7 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
         standard: {
           include: { subjects: { orderBy: { order: "asc" } } },
         },
+        divisionSubjects: { select: { subjectId: true } },
         assignments: {
           include: {
             teacher: {

@@ -13,6 +13,8 @@ import {
   createSubject,
   updateSubject,
   deleteSubject,
+  selectSubject,
+  deselectSubject,
   assignTeacher,
   removeAssignment,
 } from "./campus.controller";
@@ -45,6 +47,10 @@ router.delete("/divisions/:divisionId", ...A, deleteDivision);
 router.post("/standards/:standardId/subjects", ...A, createSubject);
 router.patch("/subjects/:subjectId", ...A, updateSubject);
 router.delete("/subjects/:subjectId", ...A, deleteSubject);
+
+// Division subject selection
+router.post("/divisions/:divisionId/subjects/:subjectId", ...A, selectSubject);
+router.delete("/divisions/:divisionId/subjects/:subjectId", ...A, deselectSubject);
 
 // Teacher assignments
 router.post("/divisions/:divisionId/assign", ...A, assignTeacher);

@@ -12,6 +12,7 @@ const createPostSchema = z.object({
   title: z.string().min(1).max(300).trim(),
   body: z.string().max(5000).trim().optional().default(""),
   subject: z.string().max(100).trim().optional(),
+  divisionId: z.string().uuid().optional(),
   attachmentUrl: z.string().url().optional(),
   attachmentType: z.string().max(20).optional(),
   attachmentName: z.string().max(200).optional(),
@@ -37,6 +38,7 @@ function formatPost(post: {
   title: string;
   body: string;
   subject: string | null;
+  divisionId: string | null;
   attachmentUrl: string | null;
   attachmentType: string | null;
   attachmentName: string | null;
@@ -49,6 +51,7 @@ function formatPost(post: {
     title: post.title,
     body: post.body,
     subject: post.subject,
+    divisionId: post.divisionId,
     attachmentUrl: post.attachmentUrl,
     attachmentType: post.attachmentType,
     attachmentName: post.attachmentName,
@@ -70,9 +73,11 @@ export const listPosts = async (req: AuthRequest, res: Response, next: NextFunct
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(50, parseInt(req.query.limit as string) || 20);
     const typeFilter = req.query.type as string | undefined;
+    const divisionId = req.query.divisionId as string | undefined;
 
     const where = {
       institutionId,
+      ...(divisionId ? { divisionId } : {}),
       ...(typeFilter && typeFilter !== "all"
         ? { type: typeFilter.toUpperCase() as "ANNOUNCEMENT" | "NOTICE" | "MATERIAL" | "RESULT" }
         : {}),
@@ -112,6 +117,7 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
         title: data.title,
         body: data.body,
         subject: data.subject,
+        divisionId: data.divisionId ?? null,
         attachmentUrl: data.attachmentUrl,
         attachmentType: data.attachmentType,
         attachmentName: data.attachmentName,

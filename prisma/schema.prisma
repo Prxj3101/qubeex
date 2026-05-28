@@ -395,6 +395,7 @@ model Division {
   assignments      DivisionAssignment[]
   students         Student[]
   divisionSubjects DivisionSubject[]
+  campusPosts      CampusFeedPost[]
 
   @@unique([standardId, name])
   @@index([institutionId])
@@ -580,6 +581,8 @@ model CampusFeedPost {
   institution   Institution    @relation(fields: [institutionId], references: [id])
   authorId      String
   author        User           @relation("CampusFeedPostAuthor", fields: [authorId], references: [id])
+  divisionId    String?
+  division      Division?      @relation(fields: [divisionId], references: [id])
 
   type           CampusPostType
   title          String
@@ -592,6 +595,7 @@ model CampusFeedPost {
   createdAt DateTime @default(now())
 
   @@index([institutionId])
+  @@index([divisionId])
 }
 
 model CalendarEvent {

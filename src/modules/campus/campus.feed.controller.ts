@@ -1,9 +1,17 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+import { uploadAttachmentToSupabase } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const multer = require("multer");
+
+export const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+});
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -19,9 +27,10 @@ const createPostSchema = z.object({
 });
 
 const createEventSchema = z.object({
-  type: z.enum(["HOLIDAY", "TEST", "EXAM", "SUBMISSION", "MEETING", "SPORTS", "EVENT", "TRIP"]),
+  type: z.enum(["HOLIDAY", "TEST", "TERMTEST", "EXAM", "SUBMISSION", "MEETING", "SPORTS", "EVENT", "TRIP"]),
   label: z.string().min(1).max(200).trim(),
   date: z.string().datetime({ offset: true }).or(z.string().date()),
+  divisionId: z.string().uuid().optional(),
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -64,6 +73,40 @@ function formatPost(post: {
   };
 }
 
+// ── Upload attachment ─────────────────────────────────────────────────────────
+
+export const uploadFeedAttachment = async (
+  req: AuthRequest & { file?: Express.Multer.File },
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { institutionId } = requireInstitution(req);
+    const file = req.file;
+    if (!file) throw new BadRequestError("No file provided");
+
+    const result = await uploadAttachmentToSupabase(file.buffer, {
+      originalName: file.originalname,
+      contentType: file.mimetype,
+      folder: "campus/feed",
+      ownerId: institutionId,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        url: result.publicUrl,
+        name: file.originalname,
+        type: result.attachmentType,
+        mimeType: file.mimetype,
+        size: file.size,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ── Feed posts ────────────────────────────────────────────────────────────────
 
 export const listPosts = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -75,13 +118,15 @@ export const listPosts = async (req: AuthRequest, res: Response, next: NextFunct
     const typeFilter = req.query.type as string | undefined;
     const divisionId = req.query.divisionId as string | undefined;
 
-    const where = {
-      institutionId,
-      ...(divisionId ? { divisionId } : {}),
-      ...(typeFilter && typeFilter !== "all"
-        ? { type: typeFilter.toUpperCase() as "ANNOUNCEMENT" | "NOTICE" | "MATERIAL" | "RESULT" }
-        : {}),
-    };
+    const typeCondition = typeFilter && typeFilter !== "all"
+      ? { type: typeFilter.toUpperCase() as "ANNOUNCEMENT" | "NOTICE" | "MATERIAL" | "RESULT" }
+      : {};
+
+    // Division feed: show division-specific + institution-wide (divisionId=null) posts
+    // Main feed: show institution-wide posts only
+    const where = divisionId
+      ? { institutionId, OR: [{ divisionId }, { divisionId: null }], ...typeCondition }
+      : { institutionId, divisionId: null, ...typeCondition };
 
     const [posts, total] = await prisma.$transaction([
       prisma.campusFeedPost.findMany({
@@ -174,12 +219,19 @@ export const listEvents = async (req: AuthRequest, res: Response, next: NextFunc
     const year = parseInt(req.query.year as string) || new Date().getFullYear();
     const month = parseInt(req.query.month as string); // 0-indexed
     const validMonth = Number.isNaN(month) ? new Date().getMonth() : month;
+    const divisionId = req.query.divisionId as string | undefined;
 
     const start = new Date(year, validMonth, 1);
     const end = new Date(year, validMonth + 1, 0, 23, 59, 59, 999);
 
+    // Division calendar: show division-specific + institution-wide (divisionId=null) events
+    // Main calendar: show institution-wide events only
+    const where = divisionId
+      ? { institutionId, date: { gte: start, lte: end }, OR: [{ divisionId }, { divisionId: null }] }
+      : { institutionId, date: { gte: start, lte: end }, divisionId: null };
+
     const events = await prisma.calendarEvent.findMany({
-      where: { institutionId, date: { gte: start, lte: end } },
+      where,
       orderBy: { date: "asc" },
       include: { createdBy: { select: { id: true, name: true } } },
     });
@@ -190,6 +242,7 @@ export const listEvents = async (req: AuthRequest, res: Response, next: NextFunc
       label: e.label,
       date: e.date.getUTCDate(),
       fullDate: e.date.toISOString(),
+      divisionId: e.divisionId,
       createdBy: e.createdBy ? { id: e.createdBy.id, name: e.createdBy.name } : null,
     }));
 
@@ -211,6 +264,7 @@ export const createEvent = async (req: AuthRequest, res: Response, next: NextFun
         type: data.type,
         label: data.label,
         date: new Date(data.date),
+        divisionId: data.divisionId ?? null,
       },
     });
 

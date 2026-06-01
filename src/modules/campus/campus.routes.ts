@@ -19,6 +19,8 @@ import {
   removeAssignment,
 } from "./campus.controller";
 import {
+  upload,
+  uploadFeedAttachment,
   listPosts,
   createPost,
   deletePost,
@@ -26,6 +28,7 @@ import {
   createEvent,
   deleteEvent,
 } from "./campus.feed.controller";
+import { getFeeStructure, saveFeeStructure } from "./campus.fees.controller";
 
 const router = Router();
 
@@ -55,6 +58,13 @@ router.delete("/divisions/:divisionId/subjects/:subjectId", ...A, deselectSubjec
 // Teacher assignments
 router.post("/divisions/:divisionId/assign", ...A, assignTeacher);
 router.delete("/assignments/:assignmentId", ...A, removeAssignment);
+
+// Fee structure
+router.get("/divisions/:divisionId/fee-structure", ...A, getFeeStructure);
+router.put("/divisions/:divisionId/fee-structure", ...A, saveFeeStructure);
+
+// Campus feed upload
+router.post("/feed/upload", ...A, upload.single("file"), uploadFeedAttachment);
 
 // Campus feed posts
 router.get("/feed/posts", ...A, listPosts);

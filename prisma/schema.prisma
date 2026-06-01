@@ -109,6 +109,7 @@ model Institution {
   staffPosts    StaffPost[]
   campusPosts   CampusFeedPost[]
   calendarEvents CalendarEvent[]
+  feeStructures DivisionFeeStructure[]
 }
 
 model User {
@@ -396,6 +397,8 @@ model Division {
   students         Student[]
   divisionSubjects DivisionSubject[]
   campusPosts      CampusFeedPost[]
+  calendarEvents   CalendarEvent[]
+  feeStructure     DivisionFeeStructure?
 
   @@unique([standardId, name])
   @@index([institutionId])
@@ -567,6 +570,7 @@ enum CampusPostType {
 enum CalendarEventType {
   HOLIDAY
   TEST
+  TERMTEST
   EXAM
   SUBMISSION
   MEETING
@@ -604,10 +608,36 @@ model CalendarEvent {
   institution   Institution       @relation(fields: [institutionId], references: [id])
   createdById   String
   createdBy     User              @relation("CalendarEventCreator", fields: [createdById], references: [id])
+  divisionId    String?
+  division      Division?         @relation(fields: [divisionId], references: [id])
 
   type  CalendarEventType
   label String
   date  DateTime
+
+  @@index([institutionId])
+  @@index([divisionId])
+}
+
+// ─── Fee Structure ────────────────────────────────────────────────────────────
+
+model DivisionFeeStructure {
+  id            String      @id @default(uuid())
+  divisionId    String      @unique
+  division      Division    @relation(fields: [divisionId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  feeStructures      Json  // FeeStructure[] — named fee bundles (Regular, Exam, Event, etc.)
+  feeMonths          Json  // FeeMonth[] — monthly schedule with assignedStructureIds
+  bankDetails        Json?
+  qrImageUrl         String?
+  extraColumns       Json
+  extraStudentFields Json
+  generalRemark      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([institutionId])
 }

@@ -9,10 +9,15 @@ if (!REDIS_URL) {
 export const redis = REDIS_URL
   ? new Redis(REDIS_URL, {
       maxRetriesPerRequest: 1,
-      commandTimeout: 3000,
-      retryStrategy: (times) => Math.min(times * 500, 5_000),
-      reconnectOnError: () => true,
-      tls: REDIS_URL.startsWith("rediss://") ? {} : undefined,
+      commandTimeout: 5000,
+      connectTimeout: 10000,
+      retryStrategy: (times) => {
+        if (times > 3) return null; // stop retrying after 3 attempts
+        return Math.min(times * 1000, 3000);
+      },
+      reconnectOnError: () => false,
+      tls: REDIS_URL.startsWith("rediss://") ? { rejectUnauthorized: false } : undefined,
+      lazyConnect: true,
     })
   : null;
 

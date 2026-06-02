@@ -1,11 +1,11 @@
 import rateLimit from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
-import { redis } from "../utils/redis";
+import { redis, isRedisReady } from "../utils/redis";
 
 const isDev = process.env.NODE_ENV !== "production";
 
 const makeStore = (prefix: string) =>
-  redis && !isDev
+  redis && !isDev && isRedisReady
     ? new RedisStore({
         prefix,
         sendCommand: (...args: string[]) =>

@@ -8,8 +8,9 @@ if (!REDIS_URL) {
 
 export const redis = REDIS_URL
   ? new Redis(REDIS_URL, {
-      maxRetriesPerRequest: null,
-      retryStrategy: (times) => Math.min(times * 500, 10_000),
+      maxRetriesPerRequest: 1,
+      commandTimeout: 3000,
+      retryStrategy: (times) => Math.min(times * 500, 5_000),
       reconnectOnError: () => true,
       tls: REDIS_URL.startsWith("rediss://") ? {} : undefined,
     })

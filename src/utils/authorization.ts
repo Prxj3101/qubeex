@@ -2,7 +2,7 @@ import { ForbiddenError } from "./errors";
 
 export interface AuthUser {
   userId: string;
-  role: "SUPER_ADMIN" | "ADMIN";
+  role: "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "STUDENT";
   institutionId?: string;
   jti?: string;
 }

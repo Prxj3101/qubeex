@@ -122,10 +122,9 @@ export const listPosts = async (req: AuthRequest, res: Response, next: NextFunct
       ? { type: typeFilter.toUpperCase() as "ANNOUNCEMENT" | "NOTICE" | "MATERIAL" | "RESULT" }
       : {};
 
-    // Division feed: show division-specific + institution-wide (divisionId=null) posts
-    // Main feed: show institution-wide posts only
+    // Strict separation: class feed shows only that class's posts, main feed shows only institution-wide posts
     const where = divisionId
-      ? { institutionId, OR: [{ divisionId }, { divisionId: null }], ...typeCondition }
+      ? { institutionId, divisionId, ...typeCondition }
       : { institutionId, divisionId: null, ...typeCondition };
 
     const [posts, total] = await prisma.$transaction([
@@ -224,10 +223,9 @@ export const listEvents = async (req: AuthRequest, res: Response, next: NextFunc
     const start = new Date(year, validMonth, 1);
     const end = new Date(year, validMonth + 1, 0, 23, 59, 59, 999);
 
-    // Division calendar: show division-specific + institution-wide (divisionId=null) events
-    // Main calendar: show institution-wide events only
+    // Strict separation: class calendar shows only that class's events, main calendar shows only institution-wide
     const where = divisionId
-      ? { institutionId, date: { gte: start, lte: end }, OR: [{ divisionId }, { divisionId: null }] }
+      ? { institutionId, date: { gte: start, lte: end }, divisionId }
       : { institutionId, date: { gte: start, lte: end }, divisionId: null };
 
     const events = await prisma.calendarEvent.findMany({
@@ -256,6 +254,11 @@ export const createEvent = async (req: AuthRequest, res: Response, next: NextFun
   try {
     const { institutionId, userId } = requireInstitution(req);
     const data = createEventSchema.parse(req.body);
+
+    // Only admins can create institution-wide (main calendar) events
+    if (!data.divisionId && req.user!.role === "TEACHER") {
+      throw new BadRequestError("Teachers can only add events to class calendars");
+    }
 
     const event = await prisma.calendarEvent.create({
       data: {
@@ -293,6 +296,48 @@ export const deleteEvent = async (req: AuthRequest, res: Response, next: NextFun
 
     await prisma.calendarEvent.delete({ where: { id } });
     res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Merged calendar (for students) — main + class events combined ─────────────
+
+export const listMergedEvents = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId } = requireInstitution(req);
+
+    const year = parseInt(req.query.year as string) || new Date().getFullYear();
+    const month = parseInt(req.query.month as string);
+    const validMonth = Number.isNaN(month) ? new Date().getMonth() : month;
+    const divisionId = req.query.divisionId as string | undefined;
+
+    const start = new Date(year, validMonth, 1);
+    const end = new Date(year, validMonth + 1, 0, 23, 59, 59, 999);
+
+    // Fetch main (institution-wide) + class events in one query
+    const where = divisionId
+      ? { institutionId, date: { gte: start, lte: end }, OR: [{ divisionId }, { divisionId: null }] }
+      : { institutionId, date: { gte: start, lte: end }, divisionId: null };
+
+    const events = await prisma.calendarEvent.findMany({
+      where,
+      orderBy: { date: "asc" },
+      include: { createdBy: { select: { id: true, name: true } } },
+    });
+
+    const data = events.map(e => ({
+      id: e.id,
+      type: e.type.toLowerCase(),
+      label: e.label,
+      date: e.date.getUTCDate(),
+      fullDate: e.date.toISOString(),
+      divisionId: e.divisionId,
+      isClassEvent: !!e.divisionId,
+      createdBy: e.createdBy ? { id: e.createdBy.id, name: e.createdBy.name } : null,
+    }));
+
+    res.json({ success: true, data });
   } catch (err) {
     next(err);
   }

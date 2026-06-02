@@ -27,6 +27,7 @@ import {
   listEvents,
   createEvent,
   deleteEvent,
+  listMergedEvents,
 } from "./campus.feed.controller";
 import { getFeeStructure, saveFeeStructure } from "./campus.fees.controller";
 
@@ -73,6 +74,7 @@ router.delete("/feed/posts/:id", ...A, deletePost);
 
 // Calendar events
 router.get("/feed/events", ...A, listEvents);
+router.get("/feed/events/merged", ...A, listMergedEvents);
 router.post("/feed/events", ...A, createEvent);
 router.delete("/feed/events/:id", ...A, deleteEvent);
 

@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import app from "./app";
+import app, { connectionStatus } from "./app";
 import { prisma } from "./utils/prisma";
+import { redis } from "./utils/redis";
 import { startBillingCron } from "./crons/billing.cron";
 import { startTrialCron } from "./crons/trial.cron";
 import { startAddonCron } from "./crons/addon.cron";
@@ -13,13 +14,21 @@ const port = process.env.PORT || 3000;
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
 
-  // Test DB connection on startup
+  // Test DB connection
   try {
-    console.log("[DB] Testing connection...");
     await prisma.$queryRaw`SELECT 1`;
+    connectionStatus.db = true;
     console.log("✅  DB connected");
   } catch (err) {
     console.error("❌  DB connection failed:", err);
+  }
+
+  // Test Redis connection
+  try {
+    if (redis) { await redis.ping(); connectionStatus.redis = true; }
+    console.log("✅  Redis connected");
+  } catch (err) {
+    console.error("❌  Redis connection failed:", err);
   }
 
   startBillingCron();

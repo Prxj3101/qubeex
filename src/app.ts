@@ -46,30 +46,14 @@ app.get("/", (_req, res) => {
   res.send("Server is running...");
 });
 
-app.get("/health", async (_req, res) => {
-  const dbStart = Date.now();
-  let dbOk = false;
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    dbOk = true;
-  } catch {}
-  const dbLatency = Date.now() - dbStart;
+// Connection status tracked at startup — health check returns instantly
+export const connectionStatus = { db: false, redis: false };
 
-  const redisStart = Date.now();
-  let redisOk = false;
-  try {
-    if (redis) { await redis.ping(); redisOk = true; }
-  } catch {}
-  const redisLatency = Date.now() - redisStart;
-
-  const status = dbOk ? "ok" : "degraded";
-  res.status(dbOk ? 200 : 503).json({
-    status,
-    db:    { status: dbOk    ? "ok" : "down", latency: `${dbLatency}ms` },
-    redis: {
-      status: redisOk ? "ok" : redis ? "down" : "not_configured",
-      latency: redisOk ? `${redisLatency}ms` : null,
-    },
+app.get("/health", (_req, res) => {
+  res.status(connectionStatus.db ? 200 : 503).json({
+    status: connectionStatus.db ? "ok" : "degraded",
+    db: { status: connectionStatus.db ? "ok" : "down" },
+    redis: { status: connectionStatus.redis ? "ok" : "down" },
     timestamp: new Date().toISOString(),
   });
 });

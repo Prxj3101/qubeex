@@ -1,17 +1,9 @@
 import rateLimit from "express-rate-limit";
-import { RedisStore } from "rate-limit-redis";
-import { redis, isRedisReady } from "../utils/redis";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-const makeStore = (prefix: string) =>
-  redis && !isDev && isRedisReady
-    ? new RedisStore({
-        prefix,
-        sendCommand: (...args: string[]) =>
-          (redis as any).call(...(args as [string, ...string[]])),
-      })
-    : undefined;
+// Using in-memory store for now — Redis store can be added once Redis is stable
+const makeStore = (_prefix: string) => undefined;
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

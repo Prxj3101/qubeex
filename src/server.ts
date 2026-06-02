@@ -23,12 +23,17 @@ app.listen(port, async () => {
     console.error("❌  DB connection failed:", err);
   }
 
-  // Test Redis connection
+  // Test Redis connection (optional — app works without it)
   try {
-    if (redis) { await redis.ping(); connectionStatus.redis = true; }
-    console.log("✅  Redis connected");
-  } catch (err) {
-    console.error("❌  Redis connection failed:", err);
+    if (redis) {
+      await redis.ping();
+      connectionStatus.redis = true;
+      console.log("✅  Redis connected");
+    } else {
+      console.log("⚠️  Redis not configured — using in-memory fallback");
+    }
+  } catch {
+    console.warn("⚠️  Redis unavailable — using in-memory fallback");
   }
 
   startBillingCron();

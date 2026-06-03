@@ -40,6 +40,7 @@ import {
   // Reviews
   getReviews,
   replyToReview,
+  likeReview,
   // System
   getSystemHealth,
   getAIUsage,
@@ -126,6 +127,7 @@ router.post("/support/tickets/:id/reply",              SA, replyToTicket);
 // ─── Support — Reviews ────────────────────────────────────────────────────────
 router.get("/support/reviews",                         SA, getReviews);
 router.post("/support/reviews/:id/reply",              SA, replyToReview);
+router.post("/support/reviews/:id/like",               SA, likeReview);
 
 // ─── System & AI ─────────────────────────────────────────────────────────────
 router.get("/system/health",                           SA, getSystemHealth);

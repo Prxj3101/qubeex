@@ -1302,6 +1302,17 @@ export const replyToReview = async (id: string, message: string) => {
   });
 };
 
+export const likeReview = async (id: string) => {
+  const existing = await prisma.review.findUnique({ where: { id } });
+  if (!existing) throw new NotFoundError("Review not found");
+
+  const updated = await prisma.review.update({
+    where: { id },
+    data: { likes: { increment: 1 } },
+  });
+  return { likes: updated.likes };
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SYSTEM HEALTH
 // ─────────────────────────────────────────────────────────────────────────────

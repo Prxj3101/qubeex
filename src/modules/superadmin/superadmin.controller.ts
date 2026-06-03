@@ -539,6 +539,19 @@ export const replyToReview = async (
   }
 };
 
+export const likeReview = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await service.likeReview(req.params.id as string);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SYSTEM
 // ─────────────────────────────────────────────────────────────────────────────

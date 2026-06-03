@@ -92,24 +92,26 @@ model Institution {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users         User[]
-  subscription  Subscription?
-  bills         Bill[]
-  invites       Invite[]
-  auditLogs     AuditLog[]
-  notifications NotificationRecipient[]
-  tickets       SupportTicket[]
-  reviews       Review[]
-  teachers      Teacher[]
-  students      Student[]
-  standards     Standard[]
-  divisions     Division[]
-  subjects      Subject[]
-  assignments   DivisionAssignment[]
-  staffPosts    StaffPost[]
-  campusPosts   CampusFeedPost[]
-  calendarEvents CalendarEvent[]
-  feeStructures DivisionFeeStructure[]
+  users              User[]
+  subscription       Subscription?
+  bills              Bill[]
+  invites            Invite[]
+  auditLogs          AuditLog[]
+  notifications      NotificationRecipient[]
+  tickets            SupportTicket[]
+  reviews            Review[]
+  teachers           Teacher[]
+  students           Student[]
+  standards          Standard[]
+  divisions          Division[]
+  subjects           Subject[]
+  assignments        DivisionAssignment[]
+  staffPosts         StaffPost[]
+  campusPosts        CampusFeedPost[]
+  calendarEvents     CalendarEvent[]
+  feeStructures      DivisionFeeStructure[]
+  blackboardFolders  BlackboardFolder[]
+  blackboardMaterials BlackboardMaterial[]
 }
 
 model User {
@@ -658,6 +660,7 @@ model PendingFileDeletion {
 model BlackboardFolder {
   id            String  @id @default(uuid())
   institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
   teacherId     String
   name          String
   parentId      String?
@@ -666,6 +669,7 @@ model BlackboardFolder {
   files         BlackboardMaterial[]
   createdAt     DateTime @default(now())
 
+  @@index([institutionId, teacherId])
   @@index([teacherId])
   @@index([institutionId])
 }
@@ -673,6 +677,7 @@ model BlackboardFolder {
 model BlackboardMaterial {
   id            String @id @default(uuid())
   institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
   teacherId     String
   folderId      String
   folder        BlackboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
@@ -683,6 +688,7 @@ model BlackboardMaterial {
   size          Int
   createdAt     DateTime @default(now())
 
+  @@index([institutionId, teacherId])
   @@index([folderId])
   @@index([teacherId])
 }

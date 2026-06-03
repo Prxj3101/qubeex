@@ -111,7 +111,7 @@ export const deleteFolder = async (req: AuthRequest, res: Response, next: NextFu
     while (queue.length > 0) {
       const current = queue.shift()!;
       const children = await prisma.blackboardFolder.findMany({
-        where: { parentId: current, institutionId },
+        where: { parentId: current, teacherId, institutionId },
         select: { id: true },
       });
       for (const c of children) { allFolderIds.push(c.id); queue.push(c.id); }
@@ -125,12 +125,12 @@ export const deleteFolder = async (req: AuthRequest, res: Response, next: NextFu
 
     // Delete folders (deepest first to avoid FK issues — children cascade deletes files)
     for (let i = allFolderIds.length - 1; i >= 0; i--) {
-      await prisma.blackboardFolder.delete({ where: { id: allFolderIds[i] } }).catch(() => {});
+      await prisma.blackboardFolder.delete({ where: { id: allFolderIds[i] } });
     }
 
     // Schedule R2 deletions
     for (const f of files) {
-      await scheduleR2FileDeletion(f.r2Key).catch(() => {});
+      await scheduleR2FileDeletion(f.r2Key).catch((e) => console.error("[blackboard deleteFolder] Failed to schedule R2 deletion:", e));
     }
 
     res.json({ success: true });
@@ -165,6 +165,9 @@ export const uploadFile = async (
       area: "blackboard",
     });
 
+    const r2Key = r2KeyFromUrl(result.publicUrl);
+    if (!r2Key) throw new BadRequestError("R2 key extraction failed — check R2_PUBLIC_URL configuration");
+
     const material = await prisma.blackboardMaterial.create({
       data: {
         institutionId,
@@ -172,7 +175,7 @@ export const uploadFile = async (
         folderId,
         name: file.originalname,
         fileUrl: result.publicUrl,
-        r2Key: r2KeyFromUrl(result.publicUrl) ?? result.publicUrl,
+        r2Key,
         mimeType: file.mimetype,
         size: file.size,
       },

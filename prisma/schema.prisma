@@ -641,3 +641,48 @@ model DivisionFeeStructure {
 
   @@index([institutionId])
 }
+
+// ─── Storage Cleanup ──────────────────────────────────────────────────────────
+
+model PendingFileDeletion {
+  id          String   @id @default(uuid())
+  r2Key       String   // object key in R2: institutions/{institutionId}/{area}/{uuid}-filename
+  scheduledAt DateTime // delete after this time (set to createdAt + 14 days)
+  createdAt   DateTime @default(now())
+
+  @@index([scheduledAt])
+}
+
+// ─── Blackboard ───────────────────────────────────────────────────────────────
+
+model BlackboardFolder {
+  id            String  @id @default(uuid())
+  institutionId String
+  teacherId     String
+  name          String
+  parentId      String?
+  parent        BlackboardFolder?  @relation("FolderChildren", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children      BlackboardFolder[] @relation("FolderChildren")
+  files         BlackboardMaterial[]
+  createdAt     DateTime @default(now())
+
+  @@index([teacherId])
+  @@index([institutionId])
+}
+
+model BlackboardMaterial {
+  id            String @id @default(uuid())
+  institutionId String
+  teacherId     String
+  folderId      String
+  folder        BlackboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  name          String
+  fileUrl       String
+  r2Key         String
+  mimeType      String
+  size          Int
+  createdAt     DateTime @default(now())
+
+  @@index([folderId])
+  @@index([teacherId])
+}

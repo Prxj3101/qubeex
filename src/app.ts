@@ -7,6 +7,7 @@ import adminRoutes from "./modules/admin/admin.routes";
 import staffroomRoutes from "./modules/staffroom/staffroom.routes";
 import campusRoutes from "./modules/campus/campus.routes";
 import teacherCampusRoutes from "./modules/campus/campus.teacher.routes";
+import teacherRoutes from "./modules/teacher/teacher.routes";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { generalLimiter } from "./middlewares/rateLimiter.middleware";
 import { prisma } from "./utils/prisma";
@@ -44,6 +45,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin/staffroom", staffroomRoutes);
 app.use("/api/admin/campus", campusRoutes);
 app.use("/api/teacher/campus", teacherCampusRoutes);
+app.use("/api/teacher", teacherRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Server is running...");

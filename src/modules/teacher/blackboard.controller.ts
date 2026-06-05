@@ -8,15 +8,18 @@ import { createFolderSchema, aiScanSchema, aiChatSchema, aiQuizSchema } from "./
 const multer = require("multer");
 import { redis, isRedisReady } from "../../utils/redis";
 
-let openai: import("openai").OpenAI | null = null;
-if (process.env.OPENAI_API_KEY) {
-  import("openai").then(m => {
-    openai = new m.OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  });
-}
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const OpenAIModule = process.env.OPENAI_API_KEY ? require("openai") : null;
+const openai = OpenAIModule
+  ? new OpenAIModule.OpenAI({ apiKey: process.env.OPENAI_API_KEY }) as import("openai").OpenAI
+  : null;
 
 async function checkTokenPool(institutionId: string): Promise<void> {
-  if (!openai || !redis || !isRedisReady) return;
+  if (!openai) return;
+  if (!redis || !isRedisReady) {
+    if (redis) console.warn("[blackboard] Redis configured but not ready — token pool check skipped");
+    return;
+  }
   const usageKey = `ai:usage:institution:${institutionId}`;
   const limitKey = `ai:limit:institution:${institutionId}`;
   const [used, limit] = await Promise.all([redis.get(usageKey), redis.get(limitKey)]);
@@ -242,7 +245,9 @@ async function fetchWikimediaImages(query: string, limit = 4): Promise<{ url: st
     origin: "*",
   });
 
-  const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`);
+  const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`, {
+    signal: AbortSignal.timeout(5000),
+  });
   if (!response.ok) return [];
 
   const json = await response.json() as {
@@ -316,7 +321,12 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
 
     await deductTokens(institutionId, completion.usage?.total_tokens ?? 0);
 
-    const parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
+    } catch {
+      throw new BadRequestError("AI returned malformed JSON — please retry");
+    }
     const images = await fetchWikimediaImages(data.topic, 3);
 
     res.json({ success: true, data: { ...parsed, images } });
@@ -391,7 +401,12 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
 
     await deductTokens(institutionId, completion.usage?.total_tokens ?? 0);
 
-    const parsed = JSON.parse(completion.choices[0].message.content ?? '{"questions":[]}');
+    let parsed: { questions?: { id?: string; question: string; options: string[]; answer: number }[] };
+    try {
+      parsed = JSON.parse(completion.choices[0].message.content ?? '{"questions":[]}');
+    } catch {
+      throw new BadRequestError("AI returned malformed JSON — please retry");
+    }
     const questions = (parsed.questions ?? []).map((q: { id?: string; question: string; options: string[]; answer: number }, i: number) => ({
       id: q.id ?? `q${i + 1}`,
       question: q.question,

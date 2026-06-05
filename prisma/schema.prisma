@@ -257,6 +257,8 @@ model Teacher {
   updatedAt DateTime @updatedAt
 
   assignments DivisionAssignment[]
+  blackboardFolders   BlackboardFolder[]
+  blackboardMaterials BlackboardMaterial[]
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
@@ -662,6 +664,7 @@ model BlackboardFolder {
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
   teacherId     String
+  teacher       Teacher  @relation(fields: [teacherId], references: [id])
   name          String
   parentId      String?
   parent        BlackboardFolder?  @relation("FolderChildren", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -679,6 +682,7 @@ model BlackboardMaterial {
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
   teacherId     String
+  teacher       Teacher  @relation(fields: [teacherId], references: [id])
   folderId      String
   folder        BlackboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
   name          String

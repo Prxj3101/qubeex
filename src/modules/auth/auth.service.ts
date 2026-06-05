@@ -9,7 +9,7 @@ import crypto from "crypto";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const BCRYPT_ROUNDS = 12;
-const ACCESS_TOKEN_EXPIRY = "1h";
+const ACCESS_TOKEN_EXPIRY = "7d";
 
 export const verifyInvite = async (token: string) => {
   const tokenHash = hashToken(token);

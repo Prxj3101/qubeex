@@ -1,7 +1,7 @@
 import { Response, NextFunction, Request } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
-import { uploadAttachmentToSupabase } from "../../services/storage.service";
+import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -11,15 +11,17 @@ const multer = require("multer");
 
 export const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+  limits: { fileSize: 50 * 1024 * 1024, files: 1 }, // 50 MB — video upper bound
 });
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
+const attachmentTypeEnum = z.enum(["image", "video", "file"]);
+
 const createPostSchema = z.object({
   text: z.string().min(1).max(2000).trim(),
   attachmentUrl: z.string().url().optional(),
-  attachmentType: z.enum(["image", "file"]).optional(),
+  attachmentType: attachmentTypeEnum.optional(),
   attachmentName: z.string().max(200).optional(),
 });
 
@@ -30,7 +32,7 @@ const createCommentSchema = z.object({
 const sendMessageSchema = z.object({
   text: z.string().max(2000).trim().optional(),
   attachmentUrl: z.string().url().optional(),
-  attachmentType: z.enum(["image", "file"]).optional(),
+  attachmentType: attachmentTypeEnum.optional(),
   attachmentName: z.string().max(200).optional(),
 }).refine(d => d.text || d.attachmentUrl, {
   message: "Message must have text or an attachment",
@@ -97,11 +99,11 @@ export const uploadAttachment = async (
     if (!file) throw new BadRequestError("No file provided");
 
     const context = (req.query.context as string) === "dm" ? "dms" : "posts";
-    const result = await uploadAttachmentToSupabase(file.buffer, {
-      originalName: file.originalname,
-      contentType: file.mimetype,
-      folder: `staffroom/${context}`,
-      ownerId: institutionId,
+    const result = await uploadAttachmentToR2(file.buffer, {
+      originalName:  file.originalname,
+      contentType:   file.mimetype,
+      institutionId,
+      area:          `staffroom/${context}`,
     });
 
     res.json({
@@ -114,6 +116,7 @@ export const uploadAttachment = async (
       },
     });
   } catch (err) {
+    console.error("[staffroom upload error]", err);
     next(err);
   }
 };
@@ -209,6 +212,13 @@ export const deletePost = async (
     }
 
     await prisma.staffPost.delete({ where: { id } });
+
+    // Schedule R2 attachment deletion after grace period
+    if (post.attachmentUrl) {
+      const key = r2KeyFromUrl(post.attachmentUrl);
+      if (key) await scheduleR2FileDeletion(key);
+    }
+
     res.json({ success: true });
   } catch (err) {
     next(err);

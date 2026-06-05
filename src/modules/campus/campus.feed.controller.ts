@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
-import { uploadAttachmentToSupabase } from "../../services/storage.service";
+import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
@@ -10,7 +10,7 @@ const multer = require("multer");
 
 export const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+  limits: { fileSize: 50 * 1024 * 1024, files: 1 }, // 50 MB — video upper bound
 });
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
@@ -85,11 +85,11 @@ export const uploadFeedAttachment = async (
     const file = req.file;
     if (!file) throw new BadRequestError("No file provided");
 
-    const result = await uploadAttachmentToSupabase(file.buffer, {
-      originalName: file.originalname,
-      contentType: file.mimetype,
-      folder: "campus/feed",
-      ownerId: institutionId,
+    const result = await uploadAttachmentToR2(file.buffer, {
+      originalName:  file.originalname,
+      contentType:   file.mimetype,
+      institutionId,
+      area:          "feed",
     });
 
     res.json({
@@ -103,6 +103,7 @@ export const uploadFeedAttachment = async (
       },
     });
   } catch (err) {
+    console.error("[feed upload error]", err);
     next(err);
   }
 };
@@ -195,6 +196,13 @@ export const deletePost = async (req: AuthRequest, res: Response, next: NextFunc
     }
 
     await prisma.campusFeedPost.delete({ where: { id } });
+
+    // Schedule R2 attachment deletion after grace period
+    if (post.attachmentUrl) {
+      const key = r2KeyFromUrl(post.attachmentUrl);
+      if (key) await scheduleR2FileDeletion(key).catch(() => {});
+    }
+
     res.json({ success: true });
     logAudit("POST_DELETED", {
       userId,

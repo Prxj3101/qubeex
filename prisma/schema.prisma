@@ -112,6 +112,8 @@ model Institution {
   feeStructures      DivisionFeeStructure[]
   blackboardFolders  BlackboardFolder[]
   blackboardMaterials BlackboardMaterial[]
+  taskQuestions      TaskQuestion[]
+  taskModules        TaskModule[]
 }
 
 model User {
@@ -259,6 +261,8 @@ model Teacher {
   assignments DivisionAssignment[]
   blackboardFolders   BlackboardFolder[]
   blackboardMaterials BlackboardMaterial[]
+  taskQuestions       TaskQuestion[]
+  taskModules         TaskModule[]
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
@@ -426,6 +430,8 @@ model Subject {
 
   assignments      DivisionAssignment[]
   divisionSubjects DivisionSubject[]
+  taskQuestions    TaskQuestion[]
+  taskModules      TaskModule[]
 
   @@unique([standardId, name])
   @@index([standardId])
@@ -695,4 +701,69 @@ model BlackboardMaterial {
   @@index([institutionId, teacherId])
   @@index([folderId])
   @@index([teacherId])
+}
+
+// ─── Task Questions & Modules ─────────────────────────────────────────────────
+
+enum TaskQuestionType {
+  MCQ
+  FILL_BLANK
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+model TaskQuestion {
+  id            String           @id @default(uuid())
+  institutionId String
+  institution   Institution      @relation(fields: [institutionId], references: [id])
+  teacherId     String
+  teacher       Teacher          @relation(fields: [teacherId], references: [id])
+  subjectId     String
+  subject       Subject          @relation(fields: [subjectId], references: [id])
+
+  type          TaskQuestionType
+  question      String
+  options       Json?            // String[4] — MCQ only
+  answer        String
+
+  moduleAssignment TaskModuleQuestion?
+
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([teacherId, subjectId])
+  @@index([institutionId])
+}
+
+model TaskModule {
+  id            String               @id @default(uuid())
+  institutionId String
+  institution   Institution          @relation(fields: [institutionId], references: [id])
+  teacherId     String
+  teacher       Teacher              @relation(fields: [teacherId], references: [id])
+  subjectId     String
+  subject       Subject              @relation(fields: [subjectId], references: [id])
+
+  name          String
+  description   String?
+
+  questions     TaskModuleQuestion[]
+
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([teacherId, subjectId])
+  @@index([institutionId])
+}
+
+model TaskModuleQuestion {
+  id         String       @id @default(uuid())
+  moduleId   String
+  module     TaskModule   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  questionId String       @unique
+  question   TaskQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  assignedAt DateTime     @default(now())
+
+  @@index([moduleId])
 }

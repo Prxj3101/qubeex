@@ -107,3 +107,149 @@ async function resolveSubjectAssignment(
     throw new NotFoundError("No subject assignment found for this teacher in this division");
   return { subjectId: assignment.subjectId, subjectName: assignment.subject.name };
 }
+
+const GENERATION_SYSTEM_PROMPT = `You are an expert educational question setter creating assessment questions for students.
+
+Rules:
+- Detect the language of the notes and generate ALL questions in that EXACT same language (Hindi, Marathi, English, or any other)
+- For mathematics: use clear plain text notation only (e.g. "sin²θ + cos²θ = 1", "√2 ≈ 1.414", "∑n = n(n+1)/2")
+- Generate a natural mix of question types proportional to the content length, maximum 30 questions total:
+    MCQ — 4 options labelled as plain strings (not A/B/C/D), one correct answer
+    FILL_BLANK — key term or phrase is replaced with ___
+    TRUE_FALSE — a factual statement from the notes
+    SHORT_ANSWER — open question requiring 1–3 sentence answer
+- Base EVERY question strictly on the provided notes — no external knowledge
+- If teacher instruction is provided, follow it precisely (e.g. focus on chapter 3, avoid examples, generate more MCQs)
+- Do not repeat any question from the "Already Generated" list if provided
+
+Return ONLY valid JSON — no markdown, no explanation:
+{
+  "questions": [
+    {"type": "MCQ", "question": "...", "options": ["...", "...", "...", "..."], "answer": "..."},
+    {"type": "FILL_BLANK", "question": "The ___ is the powerhouse of the cell.", "answer": "mitochondria"},
+    {"type": "TRUE_FALSE", "question": "Water boils at 100°C at sea level.", "answer": "true"},
+    {"type": "SHORT_ANSWER", "question": "Explain Newton's first law.", "answer": "An object at rest stays at rest and an object in motion stays in motion unless acted on by an external force."}
+  ]
+}`;
+
+// ── Generate Questions ────────────────────────────────────────────────────────
+
+export const generateQuestions = async (
+  req: AuthRequest & { file?: Express.Multer.File },
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    if (!req.file) throw new BadRequestError("PDF file is required");
+
+    const body = generateQuestionsSchema.parse({
+      divisionId: req.body.divisionId,
+      prompt: req.body.prompt,
+      more: req.body.more === "true" || req.body.more === true,
+    });
+
+    const { subjectId } = await resolveSubjectAssignment(teacherId, body.divisionId, institutionId);
+
+    // Extract text from PDF
+    const { text, truncated } = await extractPdfText(req.file.buffer);
+    if (!text || text.length < 50)
+      throw new BadRequestError("Could not extract readable text from the PDF. Ensure the PDF contains selectable text.");
+
+    // Build user message
+    let userMessage = `Notes:\n${text}`;
+
+    if (body.prompt?.trim()) {
+      userMessage = `Teacher instruction: ${body.prompt.trim()}\n\n${userMessage}`;
+    }
+
+    // If "generate more", fetch existing questions and add as context
+    if (body.more) {
+      const existing = await prisma.taskQuestion.findMany({
+        where: { teacherId, subjectId, institutionId },
+        select: { question: true },
+        take: 50,
+      });
+      if (existing.length > 0) {
+        const existingList = existing.map((q, i) => `${i + 1}. ${q.question}`).join("\n");
+        userMessage = `Already Generated (do not repeat these):\n${existingList}\n\n${userMessage}`;
+      }
+    }
+
+    // Mock fallback when no AI key configured
+    if (!openai) {
+      const mockQuestions = [
+        { type: "MCQ" as const, question: "Which of the following best describes the main topic?", options: ["Option A", "Option B", "Option C", "Option D"], answer: "Option A" },
+        { type: "FILL_BLANK" as const, question: "The key concept discussed is ___.", answer: "the main topic" },
+        { type: "TRUE_FALSE" as const, question: "The notes discuss an important educational concept.", answer: "true" },
+        { type: "SHORT_ANSWER" as const, question: "Summarise the main idea from the notes.", answer: "The notes cover an important concept relevant to the subject." },
+      ];
+      const saved = await prisma.$transaction(
+        mockQuestions.map(q =>
+          prisma.taskQuestion.create({
+            data: {
+              institutionId,
+              teacherId,
+              subjectId,
+              type: q.type,
+              question: q.question,
+              options: q.type === "MCQ" ? q.options : undefined,
+              answer: q.answer,
+            },
+          })
+        )
+      );
+      return res.status(201).json({ success: true, data: { questions: saved, truncated, mock: true } });
+    }
+
+    await checkTokenPool(institutionId);
+
+    const completion = await openai.chat.completions.create({
+      model: AI_MODEL,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: GENERATION_SYSTEM_PROMPT },
+        { role: "user", content: userMessage },
+      ],
+      temperature: 0.4,
+    });
+
+    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0);
+
+    let parsed: { questions: { type: string; question: string; options?: string[]; answer: string }[] };
+    try {
+      parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
+    } catch {
+      throw new BadRequestError("AI returned malformed JSON — please try again");
+    }
+
+    if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+      throw new BadRequestError("AI returned no questions — try a more detailed prompt or a different PDF");
+    }
+
+    const VALID_TYPES = new Set(["MCQ", "FILL_BLANK", "TRUE_FALSE", "SHORT_ANSWER"]);
+
+    const saved = await prisma.$transaction(
+      parsed.questions
+        .filter(q => VALID_TYPES.has(q.type) && q.question?.trim() && q.answer?.trim())
+        .slice(0, 30)
+        .map(q =>
+          prisma.taskQuestion.create({
+            data: {
+              institutionId,
+              teacherId,
+              subjectId,
+              type: q.type as "MCQ" | "FILL_BLANK" | "TRUE_FALSE" | "SHORT_ANSWER",
+              question: q.question.trim(),
+              options: q.type === "MCQ" && Array.isArray(q.options) ? q.options.slice(0, 4) : undefined,
+              answer: q.answer.trim(),
+            },
+          })
+        )
+    );
+
+    res.status(201).json({ success: true, data: { questions: saved, truncated } });
+  } catch (err) { next(err); }
+};

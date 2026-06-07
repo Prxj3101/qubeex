@@ -495,3 +495,58 @@ export const deleteModule = async (req: AuthRequest, res: Response, next: NextFu
     res.json({ success: true });
   } catch (err) { next(err); }
 };
+
+// ── Module–Question Assignment ────────────────────────────────────────────────
+
+export const assignQuestionToModule = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const moduleId = req.params.id as string;
+    const { questionId } = assignQuestionSchema.parse(req.body);
+
+    // Verify module ownership
+    const taskModule = await prisma.taskModule.findFirst({ where: { id: moduleId, teacherId, institutionId } });
+    if (!taskModule) throw new NotFoundError("Module not found");
+
+    // Verify question ownership and same subject
+    const question = await prisma.taskQuestion.findFirst({
+      where: { id: questionId, teacherId, institutionId, subjectId: taskModule.subjectId },
+    });
+    if (!question) throw new NotFoundError("Question not found or belongs to a different subject");
+
+    // Check if already assigned to another module
+    const existing = await prisma.taskModuleQuestion.findUnique({ where: { questionId } });
+    if (existing) {
+      if (existing.moduleId === moduleId) throw new BadRequestError("Question is already in this module");
+      throw new BadRequestError("Question is already assigned to another module. Unassign it first.");
+    }
+
+    const assignment = await prisma.taskModuleQuestion.create({
+      data: { moduleId, questionId },
+    });
+
+    res.status(201).json({ success: true, data: assignment });
+  } catch (err) { next(err); }
+};
+
+export const unassignQuestionFromModule = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const moduleId = req.params.id as string;
+    const questionId = req.params.qid as string;
+
+    // Verify module ownership
+    const taskModule = await prisma.taskModule.findFirst({ where: { id: moduleId, teacherId, institutionId } });
+    if (!taskModule) throw new NotFoundError("Module not found");
+
+    const assignment = await prisma.taskModuleQuestion.findUnique({ where: { questionId } });
+    if (!assignment || assignment.moduleId !== moduleId)
+      throw new NotFoundError("Question is not assigned to this module");
+
+    await prisma.taskModuleQuestion.delete({ where: { questionId } });
+
+    res.json({ success: true });
+  } catch (err) { next(err); }
+};

@@ -330,3 +330,82 @@ export const deleteQuestion = async (req: AuthRequest, res: Response, next: Next
     res.json({ success: true });
   } catch (err) { next(err); }
 };
+
+// ── Export Question Bank as PDF ───────────────────────────────────────────────
+
+export const exportQuestions = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const divisionId = req.query.divisionId as string;
+
+    if (!divisionId) throw new BadRequestError("divisionId query param is required");
+
+    const { subjectId, subjectName } = await resolveSubjectAssignment(teacherId, divisionId, institutionId);
+
+    const questions = await prisma.taskQuestion.findMany({
+      where: { teacherId, subjectId, institutionId },
+      orderBy: [{ type: "asc" }, { createdAt: "asc" }],
+    });
+
+    if (questions.length === 0) throw new BadRequestError("No questions to export");
+
+    const teacher = await prisma.teacher.findFirst({
+      where: { id: teacherId },
+      select: { user: { select: { name: true } } },
+    });
+
+    const doc = new PDFDocument({ margin: 50, size: "A4" });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${subjectName.replace(/\s+/g, "_")}_Question_Bank.pdf"`
+    );
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(18).font("Helvetica-Bold").text(`${subjectName} — Question Bank`, { align: "center" });
+    doc.fontSize(10).font("Helvetica").fillColor("#666666")
+      .text(`Teacher: ${teacher?.user?.name ?? "Unknown"}   |   Generated: ${new Date().toLocaleDateString("en-IN")}`, { align: "center" });
+    doc.moveDown(1.5);
+
+    const TYPE_LABELS: Record<string, string> = {
+      MCQ: "Multiple Choice",
+      FILL_BLANK: "Fill in the Blank",
+      TRUE_FALSE: "True / False",
+      SHORT_ANSWER: "Short Answer",
+    };
+
+    let qNumber = 1;
+    for (const type of ["MCQ", "FILL_BLANK", "TRUE_FALSE", "SHORT_ANSWER"] as const) {
+      const group = questions.filter(q => q.type === type);
+      if (group.length === 0) continue;
+
+      doc.fontSize(13).font("Helvetica-Bold").fillColor("#000000")
+        .text(TYPE_LABELS[type], { underline: true });
+      doc.moveDown(0.5);
+
+      for (const q of group) {
+        doc.fontSize(11).font("Helvetica-Bold").fillColor("#000000")
+          .text(`Q${qNumber}. ${q.question}`);
+
+        if (q.type === "MCQ" && Array.isArray(q.options)) {
+          const opts = q.options as string[];
+          const labels = ["a", "b", "c", "d"];
+          opts.forEach((opt, i) => {
+            doc.fontSize(10).font("Helvetica").fillColor("#333333")
+              .text(`   ${labels[i]}) ${opt}`);
+          });
+        }
+
+        doc.fontSize(9).font("Helvetica-Oblique").fillColor("#1a6b3a")
+          .text(`   Answer: ${q.answer}`);
+        doc.moveDown(0.7);
+        qNumber++;
+      }
+      doc.moveDown(0.5);
+    }
+
+    doc.end();
+  } catch (err) { next(err); }
+};

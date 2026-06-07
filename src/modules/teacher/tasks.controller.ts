@@ -253,3 +253,80 @@ export const generateQuestions = async (
     res.status(201).json({ success: true, data: { questions: saved, truncated } });
   } catch (err) { next(err); }
 };
+
+// ── Question Bank CRUD ────────────────────────────────────────────────────────
+
+export const listQuestions = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const divisionId = req.query.divisionId as string;
+
+    if (!divisionId) throw new BadRequestError("divisionId query param is required");
+
+    const { subjectId } = await resolveSubjectAssignment(teacherId, divisionId, institutionId);
+
+    const questions = await prisma.taskQuestion.findMany({
+      where: { teacherId, subjectId, institutionId },
+      include: { moduleAssignment: { select: { moduleId: true, module: { select: { name: true } } } } },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json({ success: true, data: questions });
+  } catch (err) { next(err); }
+};
+
+export const editQuestion = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+    const data = editQuestionSchema.parse(req.body);
+
+    const question = await prisma.taskQuestion.findFirst({
+      where: { id, teacherId, institutionId },
+    });
+    if (!question) throw new NotFoundError("Question not found");
+
+    // Validate options present for MCQ
+    if (question.type === "MCQ" && (!data.options || data.options.length !== 4)) {
+      throw new BadRequestError("MCQ questions require exactly 4 options");
+    }
+    // Validate answer is one of the options for MCQ
+    if (question.type === "MCQ" && data.options && !data.options.includes(data.answer)) {
+      throw new BadRequestError("Answer must be one of the provided options");
+    }
+    // TRUE_FALSE answer must be "true" or "false"
+    if (question.type === "TRUE_FALSE" && !["true", "false"].includes(data.answer.toLowerCase())) {
+      throw new BadRequestError("True/False answer must be 'true' or 'false'");
+    }
+
+    const updated = await prisma.taskQuestion.update({
+      where: { id },
+      data: {
+        question: data.question,
+        options: question.type === "MCQ" ? (data.options as string[]) : undefined,
+        answer: data.answer,
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) { next(err); }
+};
+
+export const deleteQuestion = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+
+    const question = await prisma.taskQuestion.findFirst({
+      where: { id, teacherId, institutionId },
+    });
+    if (!question) throw new NotFoundError("Question not found");
+
+    await prisma.taskQuestion.delete({ where: { id } });
+
+    res.json({ success: true });
+  } catch (err) { next(err); }
+};

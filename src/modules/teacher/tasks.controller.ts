@@ -409,3 +409,89 @@ export const exportQuestions = async (req: AuthRequest, res: Response, next: Nex
     doc.end();
   } catch (err) { next(err); }
 };
+
+// ── Modules (Chapters) CRUD ───────────────────────────────────────────────────
+
+export const listModules = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const divisionId = req.query.divisionId as string;
+
+    if (!divisionId) throw new BadRequestError("divisionId query param is required");
+
+    const { subjectId } = await resolveSubjectAssignment(teacherId, divisionId, institutionId);
+
+    const modules = await prisma.taskModule.findMany({
+      where: { teacherId, subjectId, institutionId },
+      include: {
+        questions: {
+          include: {
+            question: {
+              select: { id: true, type: true, question: true, options: true, answer: true, createdAt: true },
+            },
+          },
+          orderBy: { assignedAt: "asc" },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    res.json({ success: true, data: modules });
+  } catch (err) { next(err); }
+};
+
+export const createModule = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const data = createModuleSchema.parse(req.body);
+
+    const { subjectId } = await resolveSubjectAssignment(teacherId, data.divisionId, institutionId);
+
+    const taskModule = await prisma.taskModule.create({
+      data: { institutionId, teacherId, subjectId, name: data.name, description: data.description ?? null },
+      include: { questions: true },
+    });
+
+    res.status(201).json({ success: true, data: taskModule });
+  } catch (err) { next(err); }
+};
+
+export const editModule = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+    const data = editModuleSchema.parse(req.body);
+
+    const taskModule = await prisma.taskModule.findFirst({ where: { id, teacherId, institutionId } });
+    if (!taskModule) throw new NotFoundError("Module not found");
+
+    const updated = await prisma.taskModule.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined ? { name: data.name } : {}),
+        ...(data.description !== undefined ? { description: data.description } : {}),
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) { next(err); }
+};
+
+export const deleteModule = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+
+    const taskModule = await prisma.taskModule.findFirst({ where: { id, teacherId, institutionId } });
+    if (!taskModule) throw new NotFoundError("Module not found");
+
+    // TaskModuleQuestion rows are cascade-deleted via the relation
+    await prisma.taskModule.delete({ where: { id } });
+
+    res.json({ success: true });
+  } catch (err) { next(err); }
+};

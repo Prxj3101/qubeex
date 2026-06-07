@@ -351,7 +351,7 @@ export const exportQuestions = async (req: AuthRequest, res: Response, next: Nex
     if (questions.length === 0) throw new BadRequestError("No questions to export");
 
     const teacher = await prisma.teacher.findFirst({
-      where: { id: teacherId },
+      where: { id: teacherId, institutionId },
       select: { user: { select: { name: true } } },
     });
 

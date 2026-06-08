@@ -132,6 +132,62 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
   }
 });
 
+// ── Class Detail ─────────────────────────────────────────────────────────────
+router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution associated with this account" });
+      return;
+    }
+    const divisionId = req.params.divisionId as string;
+
+    const teacher = await prisma.teacher.findFirst({
+      where: { userId, institutionId },
+      select: { id: true },
+    });
+    if (!teacher) {
+      res.status(404).json({ success: false, error: "Teacher profile not found" });
+      return;
+    }
+
+    // Security gate — teacher must be assigned to this division
+    const hasAssignment = await prisma.divisionAssignment.findFirst({
+      where: { divisionId, teacherId: teacher.id, institutionId },
+      select: { id: true },
+    });
+    if (!hasAssignment) {
+      res.status(403).json({ success: false, error: "You are not assigned to this division" });
+      return;
+    }
+
+    const division = await prisma.division.findFirst({
+      where: { id: divisionId, institutionId },
+      include: {
+        standard: {
+          include: { subjects: { orderBy: { order: "asc" } } },
+        },
+        divisionSubjects: { select: { subjectId: true } },
+        assignments: {
+          include: {
+            teacher: { include: { user: { select: { id: true, name: true } } } },
+            subject: true,
+          },
+        },
+        _count: { select: { students: true } },
+      },
+    });
+    if (!division) {
+      res.status(404).json({ success: false, error: "Division not found" });
+      return;
+    }
+
+    res.json({ success: true, data: division });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ── Blackboard Storage ────────────────────────────────────────────────────────
 router.get("/blackboard/storage/folders", ...T, listFolders);
 router.post("/blackboard/storage/folders", ...T, createFolder);

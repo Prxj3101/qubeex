@@ -1,4 +1,4 @@
-import { Router, Response } from "express";
+import { Router, Response, NextFunction } from "express";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
 import { prisma } from "../../utils/prisma";
@@ -35,89 +35,101 @@ const router = Router();
 const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware];
 
 // ── Presence heartbeat ────────────────────────────────────────────────────────
-router.post("/presence", ...T, async (req: AuthRequest, res: Response) => {
-  await setPresence(req.user!.userId);
-  res.json({ success: true });
+router.post("/presence", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    await setPresence(req.user!.userId);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // ── Me ────────────────────────────────────────────────────────────────────────
-router.get("/me", ...T, async (req: AuthRequest, res: Response) => {
-  const { userId, institutionId } = req.user!;
-  const user = await prisma.user.findFirst({
-    where: { id: userId, institutionId },
-    select: { id: true, name: true },
-  });
-  res.json({ success: true, data: { id: user?.id ?? userId, name: user?.name ?? "Teacher" } });
+router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    const user = await prisma.user.findFirst({
+      where: { id: userId, institutionId },
+      select: { id: true, name: true },
+    });
+    res.json({ success: true, data: { id: user?.id ?? userId, name: user?.name ?? "Teacher" } });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // ── Classes ───────────────────────────────────────────────────────────────────
-router.get("/classes", ...T, async (req: AuthRequest, res: Response) => {
-  const { userId, institutionId } = req.user!;
-  if (!institutionId) {
-    res.status(400).json({ success: false, error: "No institution associated with this account" });
-    return;
-  }
+router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution associated with this account" });
+      return;
+    }
 
-  const teacher = await prisma.teacher.findFirst({
-    where: { userId, institutionId },
-    select: { id: true },
-  });
-  if (!teacher) {
-    res.status(404).json({ success: false, error: "Teacher profile not found" });
-    return;
-  }
+    const teacher = await prisma.teacher.findFirst({
+      where: { userId, institutionId },
+      select: { id: true },
+    });
+    if (!teacher) {
+      res.status(404).json({ success: false, error: "Teacher profile not found" });
+      return;
+    }
 
-  const assignments = await prisma.divisionAssignment.findMany({
-    where: { teacherId: teacher.id, institutionId },
-    include: {
-      division: {
-        include: {
-          standard: true,
-          _count: { select: { students: true } },
-          assignments: {
-            include: {
-              teacher: { include: { user: { select: { id: true, name: true } } } },
-              subject: true,
+    const assignments = await prisma.divisionAssignment.findMany({
+      where: { teacherId: teacher.id, institutionId },
+      include: {
+        division: {
+          include: {
+            standard: true,
+            _count: { select: { students: true } },
+            assignments: {
+              include: {
+                teacher: { include: { user: { select: { id: true, name: true } } } },
+                subject: true,
+              },
             },
           },
         },
+        subject: true,
       },
-      subject: true,
-    },
-  });
+    });
 
-  const classTeacher = assignments
-    .filter((a) => a.subjectId === null)
-    .map((a) => ({
-      id: a.id,
-      divisionId: a.divisionId,
-      divisionName: a.division.name,
-      standardName: a.division.standard.name,
-      studentCount: a.division._count.students,
-      subjects: a.division.assignments
-        .filter((da) => da.subjectId !== null && da.subject !== null)
-        .map((da) => ({
-          id: da.subject!.id,
-          name: da.subject!.name,
-          color: da.subject!.color,
-          teacherName: da.teacher.user.name,
-        })),
-    }));
+    const classTeacher = assignments
+      .filter((a) => a.subjectId === null)
+      .map((a) => ({
+        id: a.id,
+        divisionId: a.divisionId,
+        divisionName: a.division.name,
+        standardName: a.division.standard.name,
+        studentCount: a.division._count.students,
+        subjects: a.division.assignments
+          .filter((da) => da.subjectId !== null && da.subject !== null)
+          .map((da) => ({
+            id: da.subject!.id,
+            name: da.subject!.name,
+            color: da.subject!.color,
+            teacherName: da.teacher.user.name,
+          })),
+      }));
 
-  const subjectTeacher = assignments
-    .filter((a) => a.subjectId !== null && a.subject !== null)
-    .map((a) => ({
-      id: a.id,
-      divisionId: a.divisionId,
-      divisionName: a.division.name,
-      standardName: a.division.standard.name,
-      subjectId: a.subject!.id,
-      subjectName: a.subject!.name,
-      subjectColor: a.subject!.color,
-      studentCount: a.division._count.students,
-    }));
+    const subjectTeacher = assignments
+      .filter((a) => a.subjectId !== null && a.subject !== null)
+      .map((a) => ({
+        id: a.id,
+        divisionId: a.divisionId,
+        divisionName: a.division.name,
+        standardName: a.division.standard.name,
+        subjectId: a.subject!.id,
+        subjectName: a.subject!.name,
+        subjectColor: a.subject!.color,
+        studentCount: a.division._count.students,
+      }));
 
-  res.json({ success: true, data: { classTeacher, subjectTeacher } });
+    res.json({ success: true, data: { classTeacher, subjectTeacher } });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // ── Blackboard Storage ────────────────────────────────────────────────────────

@@ -3,6 +3,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
+import { getPresenceBatch } from "../../services/presence.service";
 import { z } from "zod";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
@@ -324,24 +325,76 @@ export const listDmThreads = async (
   next: NextFunction
 ) => {
   try {
-    const { institutionId, userId } = requireInstitution(req);
+    const { institutionId, userId, role } = requireInstitution(req);
 
-    const teachers = await prisma.teacher.findMany({
-      where: { institutionId },
-      include: { user: { select: { id: true, name: true, isActive: true } } },
-      orderBy: { createdAt: "asc" },
-    });
+    type Contact = {
+      teacherId: string;
+      contactUserId: string;
+      name: string;
+      avatarUrl: string | null;
+      isActive: boolean;
+    };
+
+    let contacts: Contact[] = [];
+
+    if (role === "ADMIN") {
+      // Admin sees all teachers
+      const teachers = await prisma.teacher.findMany({
+        where: { institutionId },
+        include: { user: { select: { id: true, name: true, isActive: true } } },
+        orderBy: { createdAt: "asc" },
+      });
+      contacts = teachers.map((t) => ({
+        teacherId: t.id,
+        contactUserId: t.userId,
+        name: t.user.name ?? "Unknown",
+        avatarUrl: t.avatarUrl,
+        isActive: t.user.isActive,
+      }));
+    } else {
+      // Teacher sees other teachers (not self) + admin users
+      const [teachers, admins] = await Promise.all([
+        prisma.teacher.findMany({
+          where: { institutionId, userId: { not: userId } },
+          include: { user: { select: { id: true, name: true, isActive: true } } },
+          orderBy: { createdAt: "asc" },
+        }),
+        prisma.user.findMany({
+          where: { institutionId, role: "ADMIN" },
+          select: { id: true, name: true, isActive: true },
+          orderBy: { name: "asc" },
+        }),
+      ]);
+      contacts = [
+        ...admins.map((a) => ({
+          teacherId: a.id,
+          contactUserId: a.id,
+          name: a.name ?? "Admin",
+          avatarUrl: null,
+          isActive: a.isActive,
+        })),
+        ...teachers.map((t) => ({
+          teacherId: t.id,
+          contactUserId: t.userId,
+          name: t.user.name ?? "Unknown",
+          avatarUrl: t.avatarUrl,
+          isActive: t.user.isActive,
+        })),
+      ];
+    }
+
+    const presenceMap = await getPresenceBatch(contacts.map((c) => c.contactUserId));
+    // If Redis is unavailable (empty map), fall back to the static DB isActive field
+    const redisAvailable = Object.keys(presenceMap).length > 0 || contacts.length === 0;
 
     const threads = await Promise.all(
-      teachers.map(async (t) => {
-        const teacherUserId = t.userId;
-
+      contacts.map(async (c) => {
         const lastMessage = await prisma.staffMessage.findFirst({
           where: {
             institutionId,
             OR: [
-              { senderId: userId, receiverId: teacherUserId },
-              { senderId: teacherUserId, receiverId: userId },
+              { senderId: userId, receiverId: c.contactUserId },
+              { senderId: c.contactUserId, receiverId: userId },
             ],
           },
           orderBy: { createdAt: "desc" },
@@ -351,18 +404,18 @@ export const listDmThreads = async (
         const unread = await prisma.staffMessage.count({
           where: {
             institutionId,
-            senderId: teacherUserId,
+            senderId: c.contactUserId,
             receiverId: userId,
             readAt: null,
           },
         });
 
         return {
-          teacherId: t.id,
-          teacherUserId,
-          name: t.user.name ?? "Unknown",
-          avatarUrl: t.avatarUrl,
-          isActive: t.user.isActive,
+          teacherId: c.teacherId,
+          teacherUserId: c.contactUserId,
+          name: c.name,
+          avatarUrl: c.avatarUrl,
+          isActive: redisAvailable ? (presenceMap[c.contactUserId] ?? false) : c.isActive,
           lastMessage: lastMessage
             ? (lastMessage.text ?? lastMessage.attachmentName ?? "Attachment")
             : null,
@@ -388,10 +441,17 @@ export const getMessages = async (
     const { institutionId, userId } = requireInstitution(req);
     const teacherUserId = req.params.teacherUserId as string;
 
-    const teacher = await prisma.user.findFirst({
-      where: { id: teacherUserId, institutionId, role: "TEACHER" },
+    const contact = await prisma.user.findFirst({
+      where: {
+        id: teacherUserId,
+        role: { in: ["TEACHER", "ADMIN"] },
+        OR: [
+          { institutionId },
+          { teacher: { institutionId } },
+        ],
+      },
     });
-    if (!teacher) throw new NotFoundError("Teacher not found");
+    if (!contact) throw new NotFoundError("User not found");
 
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, parseInt(req.query.limit as string) || 50);
@@ -457,10 +517,17 @@ export const sendMessage = async (
     const teacherUserId = req.params.teacherUserId as string;
     const data = sendMessageSchema.parse(req.body);
 
-    const teacher = await prisma.user.findFirst({
-      where: { id: teacherUserId, institutionId, role: "TEACHER" },
+    const contact = await prisma.user.findFirst({
+      where: {
+        id: teacherUserId,
+        role: { in: ["TEACHER", "ADMIN"] },
+        OR: [
+          { institutionId },
+          { teacher: { institutionId } },
+        ],
+      },
     });
-    if (!teacher) throw new NotFoundError("Teacher not found");
+    if (!contact) throw new NotFoundError("User not found");
 
     const message = await prisma.staffMessage.create({
       data: {

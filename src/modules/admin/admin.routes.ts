@@ -1,6 +1,7 @@
-import { Router, raw } from "express";
-import { authMiddleware } from "../../middlewares/auth.middleware";
+import { Router, raw, Response } from "express";
+import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
+import { setPresence } from "../../services/presence.service";
 import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
@@ -10,6 +11,11 @@ import { getOverview } from "./overview.controller";
 const router = Router();
 
 const A = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
+
+router.post("/presence", ...A, async (req: AuthRequest, res: Response) => {
+  await setPresence(req.user!.userId);
+  res.json({ success: true });
+});
 
 router.get("/me", ...A, getMyInstitution);
 router.get("/overview", ...A, getOverview);

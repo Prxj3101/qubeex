@@ -230,6 +230,7 @@ export const login = async (email: string, password: string, context: LoginConte
       role: user.role,
       institutionId: user.institutionId,
       createdAt: user.createdAt,
+      mustChangePassword: user.mustChangePassword,
     },
     institution: user.institutionId
       ? { status: institutionStatus, subscriptionStatus }

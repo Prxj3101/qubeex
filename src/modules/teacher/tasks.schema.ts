@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 export const generateQuestionsSchema = z.object({
-  divisionId: z.string().uuid(),
+  divisionId: z.string().min(1),
   prompt: z.string().max(500).trim().optional(),
   more: z.boolean().optional().default(false),
 });
@@ -14,7 +14,7 @@ export const editQuestionSchema = z.object({
 });
 
 export const createModuleSchema = z.object({
-  divisionId: z.string().uuid(),
+  divisionId: z.string().min(1),
   name: z.string().min(1).max(200).trim(),
   description: z.string().max(500).trim().optional(),
 });

@@ -9,10 +9,15 @@ const multer = require("multer");
 import { redis, isRedisReady } from "../../utils/redis";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const OpenAIModule = process.env.OPENAI_API_KEY ? require("openai") : null;
-const openai = OpenAIModule
-  ? new OpenAIModule.OpenAI({ apiKey: process.env.OPENAI_API_KEY }) as import("openai").OpenAI
+const OpenAIModule = (process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY) ? require("openai") : null;
+const openai: import("openai").OpenAI | null = OpenAIModule
+  ? new OpenAIModule.OpenAI(
+      process.env.OPENAI_API_KEY
+        ? { apiKey: process.env.OPENAI_API_KEY }
+        : { apiKey: process.env.GROQ_API_KEY, baseURL: "https://api.groq.com/openai/v1" }
+    )
   : null;
+const AI_MODEL = process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "llama-3.3-70b-versatile";
 
 async function checkTokenPool(institutionId: string): Promise<void> {
   if (!openai) return;
@@ -310,7 +315,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       : `Topic: ${data.topic}`;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
+      model: AI_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userContent },
@@ -351,7 +356,7 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
       : "You are a classroom teaching assistant. Answer clearly and concisely. Focus on educational accuracy.";
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
+      model: AI_MODEL,
       messages: [
         { role: "system", content: systemContent },
         ...data.messages,
@@ -390,7 +395,7 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
       : `Topic: ${data.topic}`;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
+      model: AI_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userContent },

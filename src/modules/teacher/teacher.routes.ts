@@ -89,10 +89,22 @@ import {
 import {
   taskUpload,
   generateQuestions,
+  listUploads,
+  getUploadStatus,
   listQuestions,
+  updateQuestionStatus,
   editQuestion,
   deleteQuestion,
   exportQuestions,
+  listTests,
+  createTest,
+  getTest,
+  updateTest,
+  deleteTest,
+  addTestQuestion,
+  removeTestQuestion,
+  getTestResults,
+  savePaper,
   listModules,
   createModule,
   editModule,
@@ -302,7 +314,7 @@ router.get(
             },
           },
         },
-        orderBy: { joinedAt: "asc" },
+        orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
       });
 
       res.json({ success: true, data: students });
@@ -355,10 +367,22 @@ router.post(
 
       const data = addStudentSchema.parse(req.body);
 
-      // Generate student ID
+      // Generate student ID with school abbreviation
+      const institution = await prisma.institution.findUnique({
+        where: { id: institutionId },
+        select: { name: true },
+      });
+      const abbr = institution
+        ? institution.name
+            .split(/\s+/)
+            .filter((w) => w.length > 2 && !["and", "the", "of", "for"].includes(w.toLowerCase()))
+            .slice(0, 4)
+            .map((w) => w[0].toUpperCase())
+            .join("")
+        : "STU";
       const year = new Date().getFullYear();
       const count = await prisma.student.count({ where: { institutionId } });
-      const studentId = `STU-${year}-${String(count + 1).padStart(4, "0")}`;
+      const studentId = `${abbr}-${year}-${String(count + 1).padStart(4, "0")}`;
 
       // Generate and hash password
       const plainPassword = generateStudentPassword();
@@ -719,12 +743,28 @@ router.post("/blackboard/ai/quiz", ...T, aiQuiz);
 // ── Blackboard Images ─────────────────────────────────────────────────────────
 router.get("/blackboard/images", ...T, searchImages);
 
-// ── Tasks — Question Generation ───────────────────────────────────────────────
+// ── Tasks — PDF Generation ────────────────────────────────────────────────────
 router.post("/tasks/generate", ...T, taskUpload.single("file"), generateQuestions);
+router.get("/tasks/uploads", ...T, listUploads);
+router.get("/tasks/uploads/:id", ...T, getUploadStatus);
+
+// ── Tasks — Question Bank ─────────────────────────────────────────────────────
 router.get("/tasks/questions", ...T, listQuestions);
+router.patch("/tasks/questions/:id/status", ...T, updateQuestionStatus);
 router.patch("/tasks/questions/:id", ...T, editQuestion);
 router.delete("/tasks/questions/:id", ...T, deleteQuestion);
 router.get("/tasks/questions/export", ...T, exportQuestions);
+
+// ── Tasks — Tests ─────────────────────────────────────────────────────────────
+router.get("/tasks/tests", ...T, listTests);
+router.post("/tasks/tests", ...T, createTest);
+router.get("/tasks/tests/:id", ...T, getTest);
+router.patch("/tasks/tests/:id", ...T, updateTest);
+router.delete("/tasks/tests/:id", ...T, deleteTest);
+router.put("/tasks/tests/:id/paper", ...T, savePaper);
+router.post("/tasks/tests/:id/questions", ...T, addTestQuestion);
+router.delete("/tasks/tests/:id/questions/:qid", ...T, removeTestQuestion);
+router.get("/tasks/tests/:id/results", ...T, getTestResults);
 
 // ── Tasks — Modules ───────────────────────────────────────────────────────────
 router.get("/tasks/modules", ...T, listModules);
@@ -735,5 +775,372 @@ router.delete("/tasks/modules/:id", ...T, deleteModule);
 // ── Tasks — Module-Question Assignment ────────────────────────────────────────
 router.post("/tasks/modules/:id/questions", ...T, assignQuestionToModule);
 router.delete("/tasks/modules/:id/questions/:qid", ...T, unassignQuestionFromModule);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ── Attendance ────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Helper: verify teacher is assigned to division (any role — class or subject)
+async function assertDivisionAccess(
+  userId: string,
+  institutionId: string,
+  divisionId: string
+): Promise<string> {
+  const teacher = await prisma.teacher.findFirst({
+    where: { userId, institutionId },
+    select: { id: true },
+  });
+  if (!teacher) throw { status: 404, message: "Teacher profile not found" };
+
+  const assignment = await prisma.divisionAssignment.findFirst({
+    where: { divisionId, teacherId: teacher.id, institutionId },
+    select: { id: true },
+  });
+  if (!assignment) throw { status: 403, message: "Not assigned to this division" };
+
+  return teacher.id;
+}
+
+// Helper: verify teacher is CLASS teacher (subjectId = null)
+async function assertClassTeacher(
+  userId: string,
+  institutionId: string,
+  divisionId: string
+): Promise<string> {
+  const teacher = await prisma.teacher.findFirst({
+    where: { userId, institutionId },
+    select: { id: true },
+  });
+  if (!teacher) throw { status: 404, message: "Teacher profile not found" };
+
+  const assignment = await prisma.divisionAssignment.findFirst({
+    where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
+    select: { id: true },
+  });
+  if (!assignment) throw { status: 403, message: "Only class teacher can perform this action" };
+
+  return teacher.id;
+}
+
+// ── GET /attendance/:divisionId/holidays ──────────────────────────────────────
+router.get(
+  "/attendance/:divisionId/holidays",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const holidays = await prisma.schoolHoliday.findMany({
+        where: { institutionId },
+        select: { date: true, name: true },
+        orderBy: { date: "asc" },
+      });
+      res.json({ success: true, data: holidays });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+      next(err);
+    }
+  }
+);
+
+// ── POST /attendance/:divisionId/holidays ─────────────────────────────────────
+router.post(
+  "/attendance/:divisionId/holidays",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+      await assertClassTeacher(userId, institutionId, divisionId);
+
+      const { date, name } = z.object({
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        name: z.string().nullable(),
+      }).parse(req.body);
+
+      if (name === null) {
+        await prisma.schoolHoliday.deleteMany({ where: { institutionId, date } });
+      } else {
+        await prisma.schoolHoliday.upsert({
+          where: { institutionId_date: { institutionId, date } },
+          create: { institutionId, date, name },
+          update: { name },
+        });
+      }
+      res.json({ success: true });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+      next(err);
+    }
+  }
+);
+
+// ── GET /attendance/:divisionId/daily?date=YYYY-MM-DD ────────────────────────
+router.get(
+  "/attendance/:divisionId/daily",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).parse(req.query.date as string);
+
+      const [records, dayNote] = await Promise.all([
+        prisma.attendance.findMany({
+          where: { divisionId, institutionId, date },
+          select: { studentId: true, status: true, remark: true },
+        }),
+        prisma.attendanceDayNote.findUnique({
+          where: { divisionId_date: { divisionId, date } },
+          select: { note: true },
+        }),
+      ]);
+
+      res.json({ success: true, data: { records, dateNote: dayNote?.note ?? "" } });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+      next(err);
+    }
+  }
+);
+
+// ── POST /attendance/:divisionId/daily ───────────────────────────────────────
+router.post(
+  "/attendance/:divisionId/daily",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+      await assertClassTeacher(userId, institutionId, divisionId);
+
+      const { date, records, dateNote } = z.object({
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        records: z.array(z.object({
+          studentId: z.string(),
+          status: z.enum(["P", "A", "L"]),
+          remark: z.string().optional().default(""),
+        })),
+        dateNote: z.string().optional(),
+      }).parse(req.body);
+
+      await prisma.$transaction(async (tx) => {
+        // Upsert each attendance record
+        for (const rec of records) {
+          await tx.attendance.upsert({
+            where: { divisionId_studentId_date: { divisionId, studentId: rec.studentId, date } },
+            create: { institutionId, divisionId, studentId: rec.studentId, date, status: rec.status, remark: rec.remark || null },
+            update: { status: rec.status, remark: rec.remark || null },
+          });
+        }
+        // Upsert day note if provided
+        if (dateNote !== undefined) {
+          if (dateNote.trim()) {
+            await tx.attendanceDayNote.upsert({
+              where: { divisionId_date: { divisionId, date } },
+              create: { institutionId, divisionId, date, note: dateNote.trim() },
+              update: { note: dateNote.trim() },
+            });
+          } else {
+            await tx.attendanceDayNote.deleteMany({ where: { divisionId, date } });
+          }
+        }
+      });
+
+      res.json({ success: true });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+      next(err);
+    }
+  }
+);
+
+// ── GET /attendance/:divisionId/monthly?month=YYYY-MM ────────────────────────
+router.get(
+  "/attendance/:divisionId/monthly",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const month = z.string().regex(/^\d{4}-\d{2}$/).parse(req.query.month as string);
+      const dateStart = `${month}-01`;
+      const dateEnd = `${month}-31`;
+
+      const records = await prisma.attendance.findMany({
+        where: { divisionId, institutionId, date: { gte: dateStart, lte: dateEnd } },
+        select: { studentId: true, date: true, status: true, remark: true },
+      });
+
+      res.json({ success: true, data: { records } });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+      next(err);
+    }
+  }
+);
+
+// ── GET /attendance/:divisionId/summary ───────────────────────────────────────
+router.get(
+  "/attendance/:divisionId/summary",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+      const [students, allRecords] = await Promise.all([
+        prisma.student.findMany({
+          where: { divisionId, institutionId },
+          include: { user: { select: { name: true } } },
+          orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+        }),
+        prisma.attendance.findMany({
+          where: { divisionId, institutionId },
+          select: { studentId: true, date: true, status: true },
+        }),
+      ]);
+
+      // Group records by studentId
+      const byStudent: Record<string, { date: string; status: string }[]> = {};
+      allRecords.forEach((r) => {
+        if (!byStudent[r.studentId]) byStudent[r.studentId] = [];
+        byStudent[r.studentId].push({ date: r.date, status: r.status });
+      });
+
+      const calcPct = (p: number, a: number, l: number): number | null => {
+        const t = p + a + l;
+        return t > 0 ? Math.round(((p + l) / t) * 100) : null;
+      };
+
+      const summaryStudents = students.map((s) => {
+        const recs = byStudent[s.id] ?? [];
+
+        // Overall
+        let tP = 0, tA = 0, tL = 0;
+        recs.forEach((r) => { if (r.status === "P") tP++; else if (r.status === "A") tA++; else if (r.status === "L") tL++; });
+        const overallPct = calcPct(tP, tA, tL);
+
+        // Current month
+        const curRecs = recs.filter((r) => r.date.startsWith(currentMonth));
+        let cP = 0, cA = 0, cL = 0;
+        curRecs.forEach((r) => { if (r.status === "P") cP++; else if (r.status === "A") cA++; else if (r.status === "L") cL++; });
+        const currentMonthPct = calcPct(cP, cA, cL);
+
+        // Per month
+        const monthGroups: Record<string, { p: number; a: number; l: number }> = {};
+        recs.forEach((r) => {
+          const mk = r.date.slice(0, 7);
+          if (!monthGroups[mk]) monthGroups[mk] = { p: 0, a: 0, l: 0 };
+          if (r.status === "P") monthGroups[mk].p++;
+          else if (r.status === "A") monthGroups[mk].a++;
+          else if (r.status === "L") monthGroups[mk].l++;
+        });
+
+        const monthlyStats = Object.entries(monthGroups)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([mk, c]) => ({ monthKey: mk, p: c.p, a: c.a, l: c.l, pct: calcPct(c.p, c.a, c.l) }));
+
+        return {
+          studentId: s.id,
+          name: s.user.name,
+          rollNo: s.rollNo ?? "",
+          overallPct,
+          currentMonthPct,
+          monthlyStats,
+        };
+      });
+
+      // Class-level stats — only average students who have actual data
+      const withOverall = summaryStudents.filter((st) => st.overallPct !== null);
+      const classOverallPct = withOverall.length > 0
+        ? Math.round(withOverall.reduce((s, st) => s + st.overallPct!, 0) / withOverall.length)
+        : null;
+      const withMonth = summaryStudents.filter((st) => st.currentMonthPct !== null);
+      const classCurrentMonthPct = withMonth.length > 0
+        ? Math.round(withMonth.reduce((s, st) => s + st.currentMonthPct!, 0) / withMonth.length)
+        : null;
+
+      // Class monthly averages — collect all month keys
+      const allMonthKeys = new Set<string>();
+      summaryStudents.forEach((st) => st.monthlyStats.forEach((m) => allMonthKeys.add(m.monthKey)));
+      const classMonthlyStats = Array.from(allMonthKeys).sort().map((mk) => {
+        const pcts = summaryStudents
+          .map((st) => st.monthlyStats.find((m) => m.monthKey === mk)?.pct ?? null)
+          .filter((p): p is number => p !== null);
+        const avg = pcts.length > 0 ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : null;
+        return { monthKey: mk, avg };
+      });
+
+      res.json({
+        success: true,
+        data: {
+          students: summaryStudents,
+          classStats: { overallPct: classOverallPct, currentMonthPct: classCurrentMonthPct, monthlyStats: classMonthlyStats },
+        },
+      });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+      next(err);
+    }
+  }
+);
+
+// ── GET /attendance/:divisionId/student-records/:studentId ────────────────────
+router.get(
+  "/attendance/:divisionId/student-records/:studentId",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const yearStr = req.query.year as string | undefined;
+      const year = yearStr ? parseInt(yearStr, 10) : new Date().getFullYear();
+
+      const records = await prisma.attendance.findMany({
+        where: {
+          divisionId,
+          institutionId,
+          studentId,
+          date: { gte: `${year}-01-01`, lte: `${year}-12-31` },
+        },
+        select: { date: true, status: true, remark: true },
+        orderBy: { date: "asc" },
+      });
+
+      res.json({ success: true, data: { records } });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+      next(err);
+    }
+  }
+);
 
 export default router;

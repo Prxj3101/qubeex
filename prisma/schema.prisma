@@ -114,6 +114,11 @@ model Institution {
   blackboardMaterials BlackboardMaterial[]
   taskQuestions      TaskQuestion[]
   taskModules        TaskModule[]
+  taskTests          TaskTest[]
+  taskPdfUploads     TaskPdfUpload[]
+  attendances        Attendance[]
+  holidays           SchoolHoliday[]
+  attendanceDayNotes AttendanceDayNote[]
 }
 
 model User {
@@ -264,6 +269,8 @@ model Teacher {
   blackboardMaterials BlackboardMaterial[]
   taskQuestions       TaskQuestion[]
   taskModules         TaskModule[]
+  taskTests           TaskTest[]
+  taskPdfUploads      TaskPdfUpload[]
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
@@ -402,12 +409,15 @@ model Division {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  assignments      DivisionAssignment[]
-  students         Student[]
-  divisionSubjects DivisionSubject[]
-  campusPosts      CampusFeedPost[]
-  calendarEvents   CalendarEvent[]
-  feeStructure     DivisionFeeStructure?
+  assignments        DivisionAssignment[]
+  students           Student[]
+  divisionSubjects   DivisionSubject[]
+  campusPosts        CampusFeedPost[]
+  calendarEvents     CalendarEvent[]
+  feeStructure       DivisionFeeStructure?
+  attendances        Attendance[]
+  attendanceDayNotes AttendanceDayNote[]
+  taskTests          TaskTest[]
 
   @@unique([standardId, name])
   @@index([institutionId])
@@ -433,6 +443,7 @@ model Subject {
   divisionSubjects DivisionSubject[]
   taskQuestions    TaskQuestion[]
   taskModules      TaskModule[]
+  taskTests        TaskTest[]
 
   @@unique([standardId, name])
   @@index([standardId])
@@ -507,8 +518,58 @@ model Student {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  attendances       Attendance[]
+  taskTestAttempts  TaskTestAttempt[]
+
   @@unique([studentId, institutionId])
   @@index([institutionId])
+}
+
+// ─── Attendance ───────────────────────────────────────────────────────────────
+
+model Attendance {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  divisionId    String
+  division      Division    @relation(fields: [divisionId], references: [id])
+  studentId     String
+  student       Student     @relation(fields: [studentId], references: [id])
+  date          String      // YYYY-MM-DD
+  status        String      // P | A | L
+  remark        String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([divisionId, studentId, date])
+  @@index([divisionId, date])
+  @@index([studentId])
+  @@index([institutionId])
+}
+
+model SchoolHoliday {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  date          String      // YYYY-MM-DD
+  name          String
+  createdAt     DateTime    @default(now())
+
+  @@unique([institutionId, date])
+  @@index([institutionId])
+}
+
+model AttendanceDayNote {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  divisionId    String
+  division      Division    @relation(fields: [divisionId], references: [id])
+  date          String      // YYYY-MM-DD
+  note          String
+
+  @@unique([divisionId, date])
+  @@index([divisionId])
 }
 
 // ─── Staffroom ────────────────────────────────────────────────────────────────
@@ -721,29 +782,50 @@ enum TaskQuestionType {
   FILL_BLANK
   TRUE_FALSE
   SHORT_ANSWER
+  NUMERICAL
+  CONCEPTUAL
+}
+
+enum TaskQuestionStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum TaskTestStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
 }
 
 model TaskQuestion {
-  id            String           @id @default(uuid())
+  id            String             @id @default(uuid())
   institutionId String
-  institution   Institution      @relation(fields: [institutionId], references: [id])
+  institution   Institution        @relation(fields: [institutionId], references: [id])
   teacherId     String
-  teacher       Teacher          @relation(fields: [teacherId], references: [id])
+  teacher       Teacher            @relation(fields: [teacherId], references: [id])
   subjectId     String
-  subject       Subject          @relation(fields: [subjectId], references: [id])
+  subject       Subject            @relation(fields: [subjectId], references: [id])
 
-  type          TaskQuestionType
-  question      String
-  options       Json?            // String[4] — MCQ only
-  answer        String
+  type             TaskQuestionType
+  status           TaskQuestionStatus @default(APPROVED)
+  question         String
+  questionTemplate String?            // question text with {variable} placeholders
+  options          Json?              // String[4] — MCQ only
+  answer           String
+  details          Json?              // NUMERICAL: {variables, correct_answer_formula, distractor_formulas, category}; CONCEPTUAL: {correct_answer, distractors, category}
+  category         String?
 
   moduleAssignment TaskModuleQuestion?
+  testQuestions    TaskTestQuestion[]
+  studentAnswers   TaskStudentAnswer[]
 
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 
   @@index([teacherId, subjectId])
   @@index([institutionId])
+  @@index([status])
 }
 
 model TaskModule {
@@ -777,4 +859,117 @@ model TaskModuleQuestion {
   assignedAt DateTime     @default(now())
 
   @@index([moduleId])
+}
+
+// ─── Task Tests & Quiz ────────────────────────────────────────────────────────
+
+model TaskTest {
+  id            String         @id @default(uuid())
+  institutionId String
+  institution   Institution    @relation(fields: [institutionId], references: [id])
+  teacherId     String
+  teacher       Teacher        @relation(fields: [teacherId], references: [id])
+  subjectId     String
+  subject       Subject        @relation(fields: [subjectId], references: [id])
+  divisionId    String
+  division      Division       @relation(fields: [divisionId], references: [id])
+
+  title            String
+  description      String?
+  testLink         String         @unique
+  status           TaskTestStatus @default(DRAFT)
+  paperType        String         @default("TEST")
+  isRandomized     Boolean        @default(false)
+  sections         Json?
+  durationMinutes  Int            @default(60)
+  marksPerQuestion Int            @default(1)
+  numberOfQuestions Int
+  maxAttempts      Int            @default(1)
+  validUntil       DateTime?
+
+  questions TaskTestQuestion[]
+  attempts  TaskTestAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teacherId])
+  @@index([institutionId])
+  @@index([divisionId])
+}
+
+model TaskTestQuestion {
+  id           String       @id @default(uuid())
+  testId       String
+  test         TaskTest     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  questionId   String
+  question     TaskQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  isCompulsory Boolean      @default(false)
+  sectionId    String?
+  marks        Int?
+  order        Int          @default(0)
+
+  @@unique([testId, questionId])
+  @@index([testId])
+}
+
+model TaskTestAttempt {
+  id            String    @id @default(uuid())
+  testId        String
+  test          TaskTest  @relation(fields: [testId], references: [id], onDelete: Cascade)
+  studentId     String?
+  student       Student?  @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  studentName    String
+  rollNo         String
+  attemptNumber  Int      @default(1)
+  startTime      DateTime @default(now())
+  endTime        DateTime?
+  totalScore     Int      @default(0)
+  maxScore       Int      @default(0)
+  status         String   @default("in_progress")
+  tabChangeCount Int      @default(0)
+
+  answers TaskStudentAnswer[]
+
+  @@index([testId])
+  @@index([studentId])
+}
+
+model TaskStudentAnswer {
+  id         String          @id @default(uuid())
+  attemptId  String
+  attempt    TaskTestAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId String
+  question   TaskQuestion    @relation(fields: [questionId], references: [id])
+
+  generatedQuestion String
+  generatedOptions  Json?    // String[] shown to student
+  studentAnswer     String?
+  correctAnswer     String
+  isCorrect         Boolean
+
+  createdAt DateTime @default(now())
+
+  @@index([attemptId])
+}
+
+model TaskPdfUpload {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  teacherId     String
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+  divisionId    String
+
+  displayName   String
+  originalName  String
+  status        String   @default("processing")
+  questionCount Int?
+  errorMessage  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([teacherId])
+  @@index([institutionId])
 }

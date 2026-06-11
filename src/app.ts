@@ -9,6 +9,8 @@ import teacherStaffroomRoutes from "./modules/staffroom/staffroom.teacher.routes
 import campusRoutes from "./modules/campus/campus.routes";
 import teacherCampusRoutes from "./modules/campus/campus.teacher.routes";
 import teacherRoutes from "./modules/teacher/teacher.routes";
+import studentRoutes from "./modules/student/student.routes";
+import quizRoutes from "./modules/quiz/quiz.routes";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { generalLimiter } from "./middlewares/rateLimiter.middleware";
 import { prisma } from "./utils/prisma";
@@ -48,6 +50,8 @@ app.use("/api/admin/campus", campusRoutes);
 app.use("/api/teacher/campus", teacherCampusRoutes);
 app.use("/api/teacher/staffroom", teacherStaffroomRoutes);
 app.use("/api/teacher", teacherRoutes);
+app.use("/api/student", studentRoutes);
+app.use("/api/quiz", quizRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Server is running...");

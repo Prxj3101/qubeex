@@ -64,7 +64,7 @@ export const startQuizSchema = z.object({
 });
 
 export const submitQuizSchema = z.object({
-  attemptId: z.string().uuid(),
+  attemptId: z.string().uuid().optional(),
   answers: z.array(
     z.object({
       questionId: z.string().uuid(),

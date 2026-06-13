@@ -1152,13 +1152,22 @@ export const unassignQuestionFromModule = async (req: AuthRequest, res: Response
 export const getQuizInfo = async (req: import("express").Request, res: Response, next: NextFunction) => {
   try {
     const testLink = req.params.testLink as string;
+    const studentName =
+      typeof req.query.name === "string" ? req.query.name.trim() : undefined;
+    const rollNo =
+      typeof req.query.roll_number === "string"
+        ? req.query.roll_number.trim()
+        : typeof req.query.rollNo === "string"
+          ? req.query.rollNo.trim()
+          : undefined;
 
     const test = await prisma.taskTest.findUnique({
       where: { testLink },
       select: {
         id: true, title: true, description: true, status: true,
         durationMinutes: true, marksPerQuestion: true, numberOfQuestions: true,
-        maxAttempts: true, validUntil: true,
+        maxAttempts: true, validUntil: true, testLink: true, divisionId: true,
+        institutionId: true,
       },
     });
 
@@ -1167,14 +1176,59 @@ export const getQuizInfo = async (req: import("express").Request, res: Response,
     if (test.validUntil && new Date(test.validUntil) < new Date())
       throw new BadRequestError("This test has expired");
 
-    res.json({ success: true, data: test });
+    let attempts: Array<{ id: string; totalScore: number; endTime: Date | null; attemptNumber: number }> = [];
+
+    if (studentName && rollNo) {
+      const student = await prisma.student.findFirst({
+        where: {
+          divisionId: test.divisionId,
+          institutionId: test.institutionId,
+          rollNo,
+          user: { name: { equals: studentName, mode: "insensitive" } },
+        },
+        select: { id: true },
+      });
+
+      if (!student) {
+        throw new BadRequestError("The name and roll number combination is not registered for this test.");
+      }
+
+      attempts = await prisma.taskTestAttempt.findMany({
+        where: { testId: test.id, studentId: student.id, status: "completed" },
+        select: { id: true, totalScore: true, endTime: true, attemptNumber: true },
+        orderBy: { attemptNumber: "asc" },
+      });
+    }
+
+    res.json({
+      success: true,
+      data: test,
+      test: {
+        ...test,
+        test_link: test.testLink,
+        duration_minutes: test.durationMinutes,
+        marks_per_question: test.marksPerQuestion,
+        number_of_questions: test.numberOfQuestions,
+        max_attempts: test.maxAttempts,
+        valid_until: test.validUntil,
+      },
+      attempts: attempts.map((attempt) => ({
+        ...attempt,
+        total_score: attempt.totalScore,
+        end_time: attempt.endTime,
+        attempt_number: attempt.attemptNumber,
+      })),
+    });
   } catch (err) { next(err); }
 };
 
 export const startQuiz = async (req: import("express").Request, res: Response, next: NextFunction) => {
   try {
     const testLink = req.params.testLink as string;
-    const { studentName, rollNo } = startQuizSchema.parse(req.body);
+    const { studentName, rollNo } = startQuizSchema.parse({
+      studentName: req.body.studentName ?? req.body.student_name,
+      rollNo: req.body.rollNo ?? req.body.roll_number,
+    });
 
     const test = await prisma.taskTest.findUnique({
       where: { testLink },
@@ -1209,9 +1263,22 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
 
     // Find student in DB if rollNo matches
     const student = await prisma.student.findFirst({
-      where: { divisionId: test.divisionId, rollNo, institutionId: test.institutionId },
-      select: { id: true },
+      where: {
+        divisionId: test.divisionId,
+        rollNo,
+        institutionId: test.institutionId,
+      },
+      select: { id: true, user: { select: { name: true } } },
     });
+
+    if (!student) {
+      throw new BadRequestError("The name and roll number combination is not registered for this test.");
+    }
+
+    const registeredName = student.user.name?.trim().toLowerCase();
+    if (!registeredName || registeredName !== studentName.trim().toLowerCase()) {
+      throw new BadRequestError("The name and roll number combination is not registered for this test.");
+    }
 
     // Select questions: all compulsory + random pool to fill numberOfQuestions
     const compulsory = test.questions.filter(tq => tq.isCompulsory);
@@ -1255,6 +1322,7 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
       success: true,
       data: {
         attemptId: attempt.id,
+        attemptNumber: attempt.attemptNumber,
         testTitle: test.title,
         durationMinutes: test.durationMinutes,
         marksPerQuestion: test.marksPerQuestion,
@@ -1267,6 +1335,18 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
         // Store correctAnswers separately — never sent to client
         _meta: { totalQuestions: orderedQ.length },
       },
+      attemptId: attempt.id,
+      attempt_number: attempt.attemptNumber,
+      duration_minutes: test.durationMinutes,
+      marks_per_question: test.marksPerQuestion,
+      questions: orderedQ.map(q => ({
+        id: q.questionId,
+        questionId: q.questionId,
+        question: q.questionText,
+        questionText: q.questionText,
+        options: q.options,
+        type: q.type,
+      })),
     });
 
     // Save generated questions to answers table (for scoring later)
@@ -1289,10 +1369,48 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
 export const submitQuiz = async (req: import("express").Request, res: Response, next: NextFunction) => {
   try {
     const testLink = req.params.testLink as string;
-    const { attemptId, answers } = submitQuizSchema.parse(req.body);
+    const legacyAnswers = req.body.answers && !Array.isArray(req.body.answers)
+      ? Object.entries(req.body.answers as Record<string, unknown>).map(([questionId, answer]) => ({
+          questionId,
+          answer: typeof answer === "string" ? answer : answer == null ? null : String(answer),
+        }))
+      : undefined;
+    const normalized = submitQuizSchema.parse({
+      attemptId: req.body.attemptId,
+      answers: legacyAnswers ?? req.body.answers,
+    });
+    let attemptId = normalized.attemptId;
+    const answers = normalized.answers;
 
     const test = await prisma.taskTest.findUnique({ where: { testLink } });
     if (!test) throw new NotFoundError("Test not found");
+
+    if (!attemptId) {
+      const rollNo = typeof req.body.rollNo === "string"
+        ? req.body.rollNo.trim()
+        : typeof req.body.roll_number === "string"
+          ? req.body.roll_number.trim()
+          : "";
+      const attemptNumber = Number(req.body.attempt_number);
+      if (!rollNo || !Number.isInteger(attemptNumber) || attemptNumber < 1) {
+        throw new BadRequestError("attemptId is required");
+      }
+
+      const inProgressAttempt = await prisma.taskTestAttempt.findFirst({
+        where: {
+          testId: test.id,
+          rollNo,
+          attemptNumber,
+          status: "in_progress",
+        },
+        select: { id: true },
+      });
+
+      if (!inProgressAttempt) {
+        throw new NotFoundError("Attempt not found or already submitted");
+      }
+      attemptId = inProgressAttempt.id;
+    }
 
     const attempt = await prisma.taskTestAttempt.findFirst({
       where: { id: attemptId, testId: test.id, status: "in_progress" },
@@ -1342,12 +1460,24 @@ export const submitQuiz = async (req: import("express").Request, res: Response, 
     res.json({
       success: true,
       data: {
+        attemptId,
         totalScore,
         maxScore,
         percentage,
         correct: updates.filter(u => u.isCorrect).length,
         total: storedAnswers.length,
       },
+      score: totalScore,
+      attemptId,
+      questions: storedAnswers.map((stored) => {
+        const submitted = updates.find((u) => u.id === stored.id);
+        return {
+          questionText: stored.generatedQuestion,
+          studentAnswer: submitted?.studentAnswer ?? stored.studentAnswer,
+          correctAnswer: stored.correctAnswer,
+          isCorrect: submitted?.isCorrect ?? stored.isCorrect,
+        };
+      }),
     });
   } catch (err) { next(err); }
 };
@@ -1375,4 +1505,50 @@ export const getAttemptResult = async (req: import("express").Request, res: Resp
 
     res.json({ success: true, data: attempt });
   } catch (err) { next(err); }
+};
+
+export const getAttemptDetailsForPdf = async (req: import("express").Request, res: Response, next: NextFunction) => {
+  try {
+    const attemptId = req.params.id as string;
+
+    const attempt = await prisma.taskTestAttempt.findUnique({
+      where: { id: attemptId },
+      include: {
+        test: { select: { title: true, marksPerQuestion: true } },
+        answers: {
+          select: {
+            generatedQuestion: true,
+            studentAnswer: true,
+            correctAnswer: true,
+            isCorrect: true,
+          },
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    });
+
+    if (!attempt) throw new NotFoundError("Attempt not found");
+    if (attempt.answers.length === 0) throw new NotFoundError("No answer details found for this attempt.");
+
+    res.json(
+      attempt.answers.map((answer) => ({
+        generated_question: answer.generatedQuestion,
+        student_answer: answer.studentAnswer,
+        correct_answer: answer.correctAnswer,
+        is_correct: answer.isCorrect,
+        test_title: attempt.test.title,
+        marks_per_question: attempt.test.marksPerQuestion,
+        student_name: attempt.studentName,
+        student_roll_number: attempt.rollNo,
+        total_score: attempt.totalScore,
+        end_time: attempt.endTime,
+        attempt_number: attempt.attemptNumber,
+        tab_change_count: attempt.tabChangeCount,
+      }))
+    );
+  } catch (err) { next(err); }
+};
+
+export const beaconSubmitQuiz = async (req: import("express").Request, res: Response, next: NextFunction) => {
+  return submitQuiz(req, res, next);
 };

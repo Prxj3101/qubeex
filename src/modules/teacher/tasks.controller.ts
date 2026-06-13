@@ -761,7 +761,10 @@ export const createTest = async (req: AuthRequest, res: Response, next: NextFunc
         maxAttempts: data.maxAttempts ?? 1,
         validUntil: data.validUntil ? new Date(data.validUntil) : null,
       },
-      include: { questions: true },
+      include: {
+        questions: { select: { id: true, isCompulsory: true } },
+        _count: { select: { attempts: true } },
+      },
     });
 
     res.status(201).json({ success: true, data: test });

@@ -2,7 +2,7 @@ import { Router, raw, Response } from "express";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
 import { setPresence } from "../../services/presence.service";
-import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite } from "./admin.controller";
+import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, listSubAdmins, addSubAdmin, updateSubAdminPermissions, deactivateSubAdmin, resendSubAdminInvite } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
@@ -10,7 +10,10 @@ import { getOverview } from "./overview.controller";
 
 const router = Router();
 
-const A = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
+const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware];
+
+// ADMIN only — subadmins cannot use these
+const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
 
 router.post("/presence", ...A, async (req: AuthRequest, res: Response) => {
   await setPresence(req.user!.userId);
@@ -38,6 +41,14 @@ router.post(
   uploadTeacherAvatar
 );
 router.post("/teachers/:id/resend-invite", ...A, resendTeacherInvite);
+
+// Subadmin management — ADMIN only
+router.get("/subadmins", ...ADMIN_ONLY, listSubAdmins);
+router.post("/subadmins", ...ADMIN_ONLY, addSubAdmin);
+router.patch("/subadmins/:id/permissions", ...ADMIN_ONLY, updateSubAdminPermissions);
+router.patch("/subadmins/:id/deactivate", ...ADMIN_ONLY, deactivateSubAdmin);
+router.post("/subadmins/:id/resend-invite", ...ADMIN_ONLY, resendSubAdminInvite);
+
 router.get("/students", ...A, listStudents);
 router.post("/students", ...A, addStudent);
 router.get("/students/:id", ...A, getStudent);
@@ -57,7 +68,7 @@ router.post("/support/reviews", ...A, createReview);
 router.patch("/support/reviews/:id", ...A, updateReview);
 
 // Audit logs
-router.get("/audit-logs", ...A, listAuditLogs);
+router.get("/audit-logs", ...ADMIN_ONLY, listAuditLogs);
 
 // Notifications
 router.get("/notifications", ...A, listNotifications);

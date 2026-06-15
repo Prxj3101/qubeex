@@ -12,6 +12,7 @@ datasource db {
 enum Role {
   SUPER_ADMIN
   ADMIN
+  SUB_ADMIN
   TEACHER
   STUDENT
 }
@@ -119,6 +120,7 @@ model Institution {
   attendances        Attendance[]
   holidays           SchoolHoliday[]
   attendanceDayNotes AttendanceDayNote[]
+  subAdmins     SubAdmin[]
 }
 
 model User {
@@ -139,6 +141,7 @@ model User {
   auditLogs AuditLog[]
   teacher   Teacher?
   student   Student?
+  subAdmin      SubAdmin?
 
   staffPostsAuthored    StaffPost[]          @relation("StaffPostAuthor")
   staffReactions        StaffPostReaction[]  @relation("StaffPostReactionUser")
@@ -226,6 +229,7 @@ model Invite {
   email     String
   tokenHash String @unique
   role      Role
+  permissions String[] @default([])
 
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
@@ -274,6 +278,18 @@ model Teacher {
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
+}
+
+model SubAdmin {
+  id            String      @id @default(uuid())
+  userId        String      @unique
+  user          User        @relation(fields: [userId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  permissions   String[]
+  createdById   String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model AuditLog {

@@ -103,11 +103,15 @@ export const acceptInvite = async (token: string, password: string, instituteId:
   // After transaction, fetch permissions if SUB_ADMIN:
   let permissions: string[] | undefined;
   if (result.role === 'SUB_ADMIN') {
-    const subAdmin = await prisma.subAdmin.findUnique({
-      where: { userId: result.id },
-      select: { permissions: true },
-    });
-    permissions = subAdmin?.permissions ?? [];
+    try {
+      const subAdmin = await prisma.subAdmin.findUnique({
+        where: { userId: result.id },
+        select: { permissions: true },
+      });
+      permissions = subAdmin?.permissions ?? [];
+    } catch {
+      permissions = [];
+    }
   }
 
   const jti = crypto.randomUUID();

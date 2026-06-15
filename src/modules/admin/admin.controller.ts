@@ -6,7 +6,7 @@ import { uploadImageToSupabase } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { NotFoundError, BadRequestError } from "../../utils/errors";
 import { generateToken, hashToken } from "../../utils/token";
-import { sendTeacherInviteEmail } from "../../services/email.service";
+import { sendTeacherInviteEmail, sendSubAdminInviteEmail } from "../../services/email.service";
 import { z } from "zod";
 
 const updateInstitutionSchema = z.object({
@@ -44,6 +44,18 @@ const updateTeacherSchema = z.object({
   experience: z.string().trim().optional().nullable(),
   avatarUrl: z.string().url().optional().nullable(),
   status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+});
+
+const VALID_PERMISSIONS = ["CAMPUS", "FEES"] as const;
+
+const addSubAdminSchema = z.object({
+  name: z.string().min(2).max(100).trim(),
+  email: z.string().email().toLowerCase().trim(),
+  permissions: z.array(z.enum(VALID_PERMISSIONS)).min(1, "Grant at least one permission"),
+});
+
+const updateSubAdminPermissionsSchema = z.object({
+  permissions: z.array(z.enum(VALID_PERMISSIONS)).min(1, "Grant at least one permission"),
 });
 
 const addStudentSchema = z.object({
@@ -941,5 +953,286 @@ export const resendTeacherInvite = async (
     res.json({ success: true, data: { message: "Invite resent successfully" } });
   } catch (error) {
     next(error);
+  }
+};
+
+export const listSubAdmins = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { institutionId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution");
+
+    const subAdmins = await prisma.subAdmin.findMany({
+      where: { institutionId: institutionId! },
+      include: { user: { omit: { password: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const emails = subAdmins.map(s => s.user.email);
+    const pendingInvites = await prisma.invite.findMany({
+      where: {
+        email: { in: emails },
+        role: "SUB_ADMIN",
+        isUsed: false,
+        expiresAt: { gte: new Date() },
+      },
+      select: { email: true },
+    });
+    const pendingSet = new Set(pendingInvites.map(i => i.email));
+
+    res.json({
+      success: true,
+      data: subAdmins.map(s => ({
+        id: s.id,
+        userId: s.userId,
+        name: s.user.name,
+        email: s.user.email,
+        isActive: s.user.isActive,
+        permissions: s.permissions,
+        invitePending: pendingSet.has(s.user.email),
+        createdAt: s.createdAt,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const addSubAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution");
+
+    const data = addSubAdminSchema.parse(req.body);
+
+    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) throw new BadRequestError("A user with this email already exists");
+
+    const institution = await prisma.institution.findUnique({ where: { id: institutionId! } });
+    if (!institution) throw new NotFoundError("Institution not found");
+
+    const rawToken = generateToken();
+    const tokenHash = hashToken(rawToken);
+
+    const subAdmin = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          role: "SUB_ADMIN",
+          institutionId: institutionId!,
+          isActive: false,
+        },
+      });
+
+      const newSubAdmin = await tx.subAdmin.create({
+        data: {
+          userId: newUser.id,
+          institutionId: institutionId!,
+          permissions: data.permissions,
+          createdById: user.userId,
+        },
+        include: { user: { omit: { password: true } } },
+      });
+
+      await tx.invite.create({
+        data: {
+          email: data.email,
+          tokenHash,
+          role: "SUB_ADMIN",
+          permissions: data.permissions,
+          institutionId: institutionId!,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      });
+
+      return newSubAdmin;
+    });
+
+    const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
+    sendSubAdminInviteEmail({
+      to: data.email,
+      name: data.name,
+      institutionName: institution.name,
+      inviteLink,
+      permissions: data.permissions as string[],
+    }).catch(err => console.error("SubAdmin invite email failed:", err));
+
+    logAudit("SUBADMIN_ADDED", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId: institutionId!,
+      details: `${data.name} added as subadmin with permissions: ${data.permissions.join(", ")}`,
+      metadata: { email: data.email, permissions: data.permissions },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
+    });
+
+    res.status(201).json({
+      success: true,
+      data: {
+        id: subAdmin.id,
+        name: subAdmin.user.name,
+        email: subAdmin.user.email,
+        permissions: subAdmin.permissions,
+        isActive: subAdmin.user.isActive,
+        invitePending: true,
+        createdAt: subAdmin.createdAt,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateSubAdminPermissions = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution");
+
+    const id = req.params.id as string;
+    const { permissions } = updateSubAdminPermissionsSchema.parse(req.body);
+
+    const subAdmin = await prisma.subAdmin.findFirst({
+      where: { id, institutionId: institutionId! },
+    });
+    if (!subAdmin) throw new NotFoundError("SubAdmin not found");
+
+    await prisma.subAdmin.update({
+      where: { id },
+      data: { permissions },
+    });
+
+    logAudit("SUBADMIN_PERMISSIONS_UPDATED", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId: institutionId!,
+      details: `SubAdmin permissions updated to: ${permissions.join(", ")}`,
+      metadata: { subAdminId: id, permissions },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
+    });
+
+    res.json({ success: true, data: { id, permissions } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deactivateSubAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution");
+
+    const id = req.params.id as string;
+
+    const subAdmin = await prisma.subAdmin.findFirst({
+      where: { id, institutionId: institutionId! },
+      include: { user: true },
+    });
+    if (!subAdmin) throw new NotFoundError("SubAdmin not found");
+
+    await prisma.user.update({
+      where: { id: subAdmin.userId },
+      data: { isActive: false },
+    });
+
+    logAudit("SUBADMIN_DEACTIVATED", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId: institutionId!,
+      details: `SubAdmin ${subAdmin.user.email} deactivated`,
+      metadata: { subAdminId: id },
+      category: "ADMIN_ACTION",
+      severity: "WARNING",
+    });
+
+    res.json({ success: true, data: { message: "SubAdmin deactivated" } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const resendSubAdminInvite = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution");
+
+    const id = req.params.id as string;
+
+    const subAdmin = await prisma.subAdmin.findFirst({
+      where: { id, institutionId: institutionId! },
+      include: { user: true },
+    });
+    if (!subAdmin) throw new NotFoundError("SubAdmin not found");
+    if (subAdmin.user.isActive) throw new BadRequestError("SubAdmin has already activated their account");
+
+    const institution = await prisma.institution.findUnique({ where: { id: institutionId! } });
+    if (!institution) throw new NotFoundError("Institution not found");
+
+    await prisma.invite.updateMany({
+      where: { email: subAdmin.user.email, role: "SUB_ADMIN", isUsed: false },
+      data: { isUsed: true },
+    });
+
+    const rawToken = generateToken();
+    const tokenHash = hashToken(rawToken);
+
+    await prisma.invite.create({
+      data: {
+        email: subAdmin.user.email,
+        tokenHash,
+        role: "SUB_ADMIN",
+        permissions: subAdmin.permissions,
+        institutionId: institutionId!,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
+    await sendSubAdminInviteEmail({
+      to: subAdmin.user.email,
+      name: subAdmin.user.name ?? undefined,
+      institutionName: institution.name,
+      inviteLink,
+      permissions: subAdmin.permissions,
+    });
+
+    logAudit("SUBADMIN_INVITE_RESENT", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId: institutionId!,
+      details: `Invite resent to subadmin ${subAdmin.user.email}`,
+      metadata: { subAdminId: id },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
+    });
+
+    res.json({ success: true, data: { message: "Invite resent" } });
+  } catch (err) {
+    next(err);
   }
 };

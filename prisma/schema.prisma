@@ -290,6 +290,8 @@ model SubAdmin {
   createdById   String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+
+  @@index([institutionId])
 }
 
 model AuditLog {

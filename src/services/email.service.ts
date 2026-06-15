@@ -577,3 +577,59 @@ export const sendTeacherInviteEmail = async ({
         throw new Error('Failed to send teacher invite email');
     }
 };
+
+export const sendSubAdminInviteEmail = async ({
+    to,
+    name,
+    inviteLink,
+    institutionName,
+    permissions,
+}: {
+    to: string;
+    name?: string;
+    inviteLink: string;
+    institutionName: string;
+    permissions: string[];
+}) => {
+    const permissionLabels: Record<string, string> = {
+        CAMPUS: 'Campus & Classes',
+        FEES: 'Fees Management',
+    };
+    const grantedList = permissions
+        .map(p => permissionLabels[p] ?? p)
+        .map(p => `<li style="margin-bottom:4px;">✅ ${p}</li>`)
+        .join('');
+
+    try {
+        await resend.emails.send({
+            from: 'QubeEx <support@qubeex.in>',
+            to,
+            subject: `You've been added as a SubAdmin at ${institutionName} — QubeEx`,
+            html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background:#0F0A1E;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0A1E;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0" style="background:#1A1535;border-radius:16px;padding:40px;border:1px solid #2D2850;">
+        <tr><td>
+          <h1 style="color:#E2DDFF;font-size:24px;margin:0 0 8px;">You're a SubAdmin 🏛️</h1>
+          <p style="color:#9B97C4;font-size:15px;margin:0 0 24px;">Hi ${name ?? 'there'}, ${institutionName} has given you administrative access to QubeEx.</p>
+          <p style="color:#9B97C4;font-size:14px;margin:0 0 8px;">Your access includes:</p>
+          <ul style="color:#E2DDFF;font-size:14px;margin:0 0 24px;padding-left:20px;">${grantedList}</ul>
+          <p style="color:#9B97C4;font-size:14px;margin:0 0 16px;">Set your password to activate your account:</p>
+          <a href="${inviteLink}" style="display:inline-block;background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">Set Password & Login</a>
+          <p style="color:#5E5A8A;font-size:12px;margin:24px 0 0;">This link expires in 7 days. If you didn't expect this email, ignore it.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+        });
+    } catch (err) {
+        console.error('sendSubAdminInviteEmail failed:', err);
+        throw new Error('Failed to send subadmin invite email');
+    }
+};

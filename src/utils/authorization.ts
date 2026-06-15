@@ -2,8 +2,9 @@ import { ForbiddenError } from "./errors";
 
 export interface AuthUser {
   userId: string;
-  role: "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "STUDENT";
+  role: "SUPER_ADMIN" | "ADMIN" | "SUB_ADMIN" | "TEACHER" | "STUDENT";
   institutionId?: string;
+  permissions?: string[];   // populated only for SUB_ADMIN
   jti?: string;
 }
 

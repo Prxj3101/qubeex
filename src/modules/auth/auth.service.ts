@@ -100,12 +100,23 @@ export const acceptInvite = async (token: string, password: string, instituteId:
     });
   }
 
+  // After transaction, fetch permissions if SUB_ADMIN:
+  let permissions: string[] | undefined;
+  if (result.role === 'SUB_ADMIN') {
+    const subAdmin = await prisma.subAdmin.findUnique({
+      where: { userId: result.id },
+      select: { permissions: true },
+    });
+    permissions = subAdmin?.permissions ?? [];
+  }
+
   const jti = crypto.randomUUID();
   const accessToken = jwt.sign(
     {
       userId: result.id,
       role: result.role,
       institutionId: result.institutionId,
+      permissions,
       jti,
     },
     JWT_SECRET,
@@ -154,6 +165,7 @@ export const login = async (email: string, password: string, context: LoginConte
 
   const user = await prisma.user.findUnique({
     where: { email },
+    include: { subAdmin: true },
   });
 
   if (!user || !user.password) {
@@ -194,12 +206,17 @@ export const login = async (email: string, password: string, context: LoginConte
     severity: "INFO",
   });
 
+  const permissions = user.role === 'SUB_ADMIN' && user.subAdmin
+    ? user.subAdmin.permissions
+    : undefined;
+
   const jti = crypto.randomUUID();
   const token = jwt.sign(
     {
       userId: user.id,
       role: user.role,
       institutionId: user.institutionId,
+      permissions,
       jti,
     },
     JWT_SECRET,
@@ -229,6 +246,7 @@ export const login = async (email: string, password: string, context: LoginConte
       name: user.name,
       role: user.role,
       institutionId: user.institutionId,
+      permissions,
       createdAt: user.createdAt,
       mustChangePassword: user.mustChangePassword,
     },

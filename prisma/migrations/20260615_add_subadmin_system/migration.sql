@@ -26,3 +26,6 @@ ALTER TABLE "SubAdmin" ADD CONSTRAINT "SubAdmin_userId_fkey"
 -- Add foreign key from SubAdmin to Institution
 ALTER TABLE "SubAdmin" ADD CONSTRAINT "SubAdmin_institutionId_fkey"
   FOREIGN KEY ("institutionId") REFERENCES "Institution"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Add institutionId index
+CREATE INDEX IF NOT EXISTS "SubAdmin_institutionId_idx" ON "SubAdmin"("institutionId");

@@ -115,6 +115,7 @@ import {
 import {
   initMarksheet, getDivisionMarksheet,
   addColumn, editColumn, deleteColumn, reorderColumns,
+  setSubjectConfig, bulkUpsertScores,
 } from "./marksheet.controller";
 
 const router = Router();
@@ -1154,5 +1155,7 @@ router.post("/marksheet/:id/columns", ...T, addColumn);
 router.patch("/marksheet/:id/columns/:colId", ...T, editColumn);
 router.delete("/marksheet/:id/columns/:colId", ...T, deleteColumn);
 router.put("/marksheet/:id/columns/:subjectId/reorder", ...T, reorderColumns);
+router.put("/marksheet/:id/subjects/:subjectId/config", ...T, setSubjectConfig);
+router.put("/marksheet/:id/scores/subject/:subjectId", ...T, bulkUpsertScores);
 
 export default router;

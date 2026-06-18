@@ -450,6 +450,111 @@ export async function reorderColumns(
   }
 }
 
+// ── PUT /:id/subjects/:subjectId/config ───────────────────────────────────────
+
+export async function setSubjectConfig(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const { id: marksheetId, subjectId } = req.params as { id: string; subjectId: string };
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+
+    const { passingMarks, gradeScale } = subjectConfigSchema.parse(req.body);
+
+    const config = await prisma.marksheetSubjectConfig.upsert({
+      where: { marksheetId_subjectId: { marksheetId, subjectId } },
+      create: { marksheetId, subjectId, institutionId, passingMarks, gradeScale },
+      update: { passingMarks, gradeScale },
+      select: { subjectId: true, passingMarks: true, gradeScale: true },
+    });
+
+    res.json({ success: true, data: config });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── PUT /:id/scores/subject/:subjectId ────────────────────────────────────────
+
+export async function bulkUpsertScores(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const { id: marksheetId, subjectId } = req.params as { id: string; subjectId: string };
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+
+    // Must be subject teacher for this subject
+    await assertSubjectTeacher(teacherId, marksheet.divisionId, subjectId, institutionId);
+
+    const { scores } = bulkScoresSchema.parse(req.body);
+
+    // Validate all provided examColumnIds belong to this marksheet + subjectId
+    const columnIds = [...new Set(scores.map((s) => s.examColumnId))];
+    const validColumns = await prisma.marksheetExamColumn.findMany({
+      where: { id: { in: columnIds }, marksheetId, subjectId, institutionId },
+      select: { id: true },
+    });
+    const validColumnIdSet = new Set(validColumns.map((c) => c.id));
+    const invalid = columnIds.find((id) => !validColumnIdSet.has(id));
+    if (invalid) {
+      res.status(400).json({ success: false, error: `Column ${invalid} does not belong to subject ${subjectId} in this marksheet` });
+      return;
+    }
+
+    await prisma.$transaction(
+      scores.map((sc) =>
+        prisma.marksheetScore.upsert({
+          where: { examColumnId_studentId: { examColumnId: sc.examColumnId, studentId: sc.studentId } },
+          create: {
+            marksheetId,
+            examColumnId: sc.examColumnId,
+            studentId: sc.studentId,
+            institutionId,
+            score: sc.score,
+            isAbsent: sc.isAbsent,
+            enteredByTeacherId: teacherId,
+          },
+          update: {
+            score: sc.score,
+            isAbsent: sc.isAbsent,
+            enteredByTeacherId: teacherId,
+          },
+        })
+      )
+    );
+
+    res.json({ success: true, data: { saved: scores.length } });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
 // ── GET /division/:divisionId ─────────────────────────────────────────────────
 
 export async function getDivisionMarksheet(

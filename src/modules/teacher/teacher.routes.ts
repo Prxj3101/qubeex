@@ -116,6 +116,8 @@ import {
   initMarksheet, getDivisionMarksheet,
   addColumn, editColumn, deleteColumn, reorderColumns,
   setSubjectConfig, bulkUpsertScores,
+  addGradedSubject, editGradedSubject, deleteGradedSubject,
+  reorderGradedSubjects, updateGradedSectionTitle, bulkUpsertGradedScores,
 } from "./marksheet.controller";
 
 const router = Router();
@@ -1157,5 +1159,11 @@ router.delete("/marksheet/:id/columns/:colId", ...T, deleteColumn);
 router.put("/marksheet/:id/columns/:subjectId/reorder", ...T, reorderColumns);
 router.put("/marksheet/:id/subjects/:subjectId/config", ...T, setSubjectConfig);
 router.put("/marksheet/:id/scores/subject/:subjectId", ...T, bulkUpsertScores);
+router.post("/marksheet/:id/graded-subjects", ...T, addGradedSubject);
+router.patch("/marksheet/:id/graded-subjects/:gsId", ...T, editGradedSubject);
+router.delete("/marksheet/:id/graded-subjects/:gsId", ...T, deleteGradedSubject);
+router.put("/marksheet/:id/graded-subjects/reorder", ...T, reorderGradedSubjects);
+router.patch("/marksheet/:id/graded-section-title", ...T, updateGradedSectionTitle);
+router.put("/marksheet/:id/graded-scores", ...T, bulkUpsertGradedScores);
 
 export default router;

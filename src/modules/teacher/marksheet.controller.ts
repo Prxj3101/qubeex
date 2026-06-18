@@ -555,6 +555,232 @@ export async function bulkUpsertScores(
   }
 }
 
+// ── POST /:id/graded-subjects ─────────────────────────────────────────────────
+
+export async function addGradedSubject(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+
+    const { name } = addGradedSubjectSchema.parse(req.body);
+    const maxOrder = await prisma.marksheetGradedSubject.aggregate({
+      where: { marksheetId },
+      _max: { order: true },
+    });
+    const subject = await prisma.marksheetGradedSubject.create({
+      data: { marksheetId, institutionId, name, order: (maxOrder._max.order ?? -1) + 1 },
+      select: { id: true, name: true, order: true },
+    });
+
+    res.status(201).json({ success: true, data: subject });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── PATCH /:id/graded-subjects/:gsId ─────────────────────────────────────────
+
+export async function editGradedSubject(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const { id: marksheetId, gsId } = req.params as { id: string; gsId: string };
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const gs = await prisma.marksheetGradedSubject.findFirst({
+      where: { id: gsId, marksheetId, institutionId },
+      select: { id: true, marksheet: { select: { divisionId: true } } },
+    });
+    if (!gs) { res.status(404).json({ success: false, error: "Graded subject not found" }); return; }
+    await assertClassTeacher(teacherId, gs.marksheet.divisionId, institutionId);
+
+    const { name } = editGradedSubjectSchema.parse(req.body);
+    const updated = await prisma.marksheetGradedSubject.update({
+      where: { id: gsId },
+      data: { name },
+      select: { id: true, name: true, order: true },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── DELETE /:id/graded-subjects/:gsId ────────────────────────────────────────
+
+export async function deleteGradedSubject(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const { id: marksheetId, gsId } = req.params as { id: string; gsId: string };
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const gs = await prisma.marksheetGradedSubject.findFirst({
+      where: { id: gsId, marksheetId, institutionId },
+      select: { id: true, marksheet: { select: { divisionId: true } } },
+    });
+    if (!gs) { res.status(404).json({ success: false, error: "Graded subject not found" }); return; }
+    await assertClassTeacher(teacherId, gs.marksheet.divisionId, institutionId);
+
+    // Cascade deletes graded scores via onDelete: Cascade on MarksheetGradedScore
+    await prisma.marksheetGradedSubject.delete({ where: { id: gsId } });
+    res.json({ success: true });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── PUT /:id/graded-subjects/reorder ─────────────────────────────────────────
+
+export async function reorderGradedSubjects(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+
+    const { orderedIds } = reorderGradedSubjectsSchema.parse(req.body);
+
+    await prisma.$transaction(
+      orderedIds.map((gsId, idx) =>
+        prisma.marksheetGradedSubject.updateMany({
+          where: { id: gsId, marksheetId, institutionId },
+          data: { order: idx },
+        })
+      )
+    );
+
+    res.json({ success: true });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── PATCH /:id/graded-section-title ──────────────────────────────────────────
+
+export async function updateGradedSectionTitle(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+
+    const { title } = gradedSectionTitleSchema.parse(req.body);
+    await prisma.marksheet.update({
+      where: { id: marksheetId },
+      data: { gradedSectionTitle: title },
+    });
+
+    res.json({ success: true, data: { gradedSectionTitle: title } });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── PUT /:id/graded-scores ────────────────────────────────────────────────────
+
+export async function bulkUpsertGradedScores(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+
+    const { scores } = bulkGradedScoresSchema.parse(req.body);
+
+    await prisma.$transaction(
+      scores.map((sc) =>
+        prisma.marksheetGradedScore.upsert({
+          where: { gradedSubjectId_studentId: { gradedSubjectId: sc.gradedSubjectId, studentId: sc.studentId } },
+          create: {
+            marksheetId,
+            gradedSubjectId: sc.gradedSubjectId,
+            studentId: sc.studentId,
+            institutionId,
+            term1Grade: sc.term1Grade ?? null,
+            term2Grade: sc.term2Grade ?? null,
+          },
+          update: {
+            ...(sc.term1Grade !== undefined && { term1Grade: sc.term1Grade }),
+            ...(sc.term2Grade !== undefined && { term2Grade: sc.term2Grade }),
+          },
+        })
+      )
+    );
+
+    res.json({ success: true, data: { saved: scores.length } });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
 // ── GET /division/:divisionId ─────────────────────────────────────────────────
 
 export async function getDivisionMarksheet(

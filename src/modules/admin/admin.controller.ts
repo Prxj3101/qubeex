@@ -7,6 +7,7 @@ import { logAudit } from "../../services/audit.service";
 import { NotFoundError, BadRequestError } from "../../utils/errors";
 import { generateToken, hashToken } from "../../utils/token";
 import { sendTeacherInviteEmail, sendSubAdminInviteEmail } from "../../services/email.service";
+import { cacheSubAdminPermissions } from "../../middlewares/requirePermission.middleware";
 import { z } from "zod";
 
 const updateInstitutionSchema = z.object({
@@ -46,12 +47,36 @@ const updateTeacherSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
 });
 
-const VALID_PERMISSIONS = ["CAMPUS", "FEES"] as const;
+const VALID_PERMISSIONS = [
+  "STAFF_TEACHERS",
+  "STAFF_STAFFROOM",
+  "STAFF_SUBADMINS",
+  "CAMPUS_FEED",
+  "CAMPUS_VIEW",
+  "CAMPUS_MANAGE",
+  "CAMPUS_FEES",
+  "CAMPUS_ATTENDANCE",
+  "CAMPUS_MARKSHEET",
+  "INSIGHTS",
+  "SUPPORT",
+  "AUDIT_LOGS",
+] as const;
 
 const addSubAdminSchema = z.object({
   name: z.string().min(2).max(100).trim(),
   email: z.string().email().toLowerCase().trim(),
   permissions: z.array(z.enum(VALID_PERMISSIONS)).min(1, "Grant at least one permission"),
+  designation: z.string().max(100).trim().optional(),
+  phone: z.string().max(20).trim().optional(),
+  dob: z.string().optional(),
+  gender: z.string().optional(),
+  address: z.string().trim().optional(),
+  city: z.string().trim().optional(),
+  state: z.string().trim().optional(),
+  pincode: z.string().trim().optional(),
+  country: z.string().trim().optional(),
+  qualification: z.string().trim().optional(),
+  experience: z.string().trim().optional(),
 });
 
 const updateSubAdminPermissionsSchema = z.object({
@@ -956,6 +981,81 @@ export const resendTeacherInvite = async (
   }
 };
 
+export const deleteTeacher = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+    const id = req.params.id as string;
+
+    const teacher = await prisma.teacher.findFirst({
+      where: { id, institutionId },
+      select: { userId: true, user: { select: { email: true, name: true } } },
+    });
+    if (!teacher) throw new NotFoundError("Teacher not found");
+
+    await prisma.$transaction(async (tx) => {
+      // Remove class assignments
+      await tx.divisionAssignment.deleteMany({ where: { teacherId: id } });
+
+      // Task tests — delete dependent rows first
+      const tests = await tx.taskTest.findMany({ where: { teacherId: id }, select: { id: true } });
+      if (tests.length) {
+        const testIds = tests.map(t => t.id);
+        const attempts = await tx.taskTestAttempt.findMany({ where: { testId: { in: testIds } }, select: { id: true } });
+        if (attempts.length) {
+          await tx.taskStudentAnswer.deleteMany({ where: { attemptId: { in: attempts.map(a => a.id) } } });
+          await tx.taskTestAttempt.deleteMany({ where: { testId: { in: testIds } } });
+        }
+        await tx.taskTestQuestion.deleteMany({ where: { testId: { in: testIds } } });
+      }
+      await tx.taskTest.deleteMany({ where: { teacherId: id } });
+
+      // Task modules
+      const modules = await tx.taskModule.findMany({ where: { teacherId: id }, select: { id: true } });
+      if (modules.length) {
+        await tx.taskModuleQuestion.deleteMany({ where: { moduleId: { in: modules.map(m => m.id) } } });
+      }
+      await tx.taskModule.deleteMany({ where: { teacherId: id } });
+
+      // Task questions
+      await tx.taskQuestion.deleteMany({ where: { teacherId: id } });
+
+      // Blackboard
+      await tx.blackboardMaterial.deleteMany({ where: { teacherId: id } });
+      await tx.blackboardFolder.deleteMany({ where: { teacherId: id } });
+
+      // PDF uploads
+      await tx.taskPdfUpload.deleteMany({ where: { teacherId: id } });
+
+      // Invalidate invites
+      await tx.invite.deleteMany({ where: { email: teacher.user.email } });
+
+      // Delete teacher and user
+      await tx.teacher.delete({ where: { id } });
+      await tx.user.delete({ where: { id: teacher.userId } });
+    });
+
+    logAudit("TEACHER_DELETED", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId,
+      details: `Teacher ${teacher.user.name} permanently deleted`,
+      metadata: { email: teacher.user.email },
+      category: "ADMIN_ACTION",
+      severity: "WARNING",
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const listSubAdmins = async (
   req: AuthRequest,
   res: Response,
@@ -994,6 +1094,12 @@ export const listSubAdmins = async (
         permissions: s.permissions,
         invitePending: pendingSet.has(s.user.email),
         createdAt: s.createdAt,
+        designation: s.designation,
+        phone: s.phone,
+        city: s.city,
+        state: s.state,
+        qualification: s.qualification,
+        experience: s.experience,
       })),
     });
   } catch (err) {
@@ -1039,6 +1145,17 @@ export const addSubAdmin = async (
           institutionId: institutionId!,
           permissions: data.permissions,
           createdById: user.userId,
+          designation: data.designation,
+          phone: data.phone,
+          dob: data.dob,
+          gender: data.gender,
+          address: data.address,
+          city: data.city,
+          state: data.state,
+          pincode: data.pincode,
+          country: data.country ?? "India",
+          qualification: data.qualification,
+          experience: data.experience,
         },
         include: { user: { omit: { password: true } } },
       });
@@ -1086,6 +1203,12 @@ export const addSubAdmin = async (
         isActive: subAdmin.user.isActive,
         invitePending: true,
         createdAt: subAdmin.createdAt,
+        designation: subAdmin.designation,
+        phone: subAdmin.phone,
+        city: subAdmin.city,
+        state: subAdmin.state,
+        qualification: subAdmin.qualification,
+        experience: subAdmin.experience,
       },
     });
   } catch (err) {
@@ -1111,10 +1234,13 @@ export const updateSubAdminPermissions = async (
     });
     if (!subAdmin) throw new NotFoundError("SubAdmin not found");
 
-    await prisma.subAdmin.update({
+    const updated = await prisma.subAdmin.update({
       where: { id },
       data: { permissions },
+      select: { userId: true },
     });
+
+    await cacheSubAdminPermissions(updated.userId, permissions);
 
     logAudit("SUBADMIN_PERMISSIONS_UPDATED", {
       userId: user.userId,
@@ -1232,6 +1358,45 @@ export const resendSubAdminInvite = async (
     });
 
     res.json({ success: true, data: { message: "Invite resent" } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteSubAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+    const id = req.params.id as string;
+
+    const subAdmin = await prisma.subAdmin.findFirst({
+      where: { id, institutionId: institutionId! },
+      select: { userId: true, user: { select: { email: true, name: true } } },
+    });
+    if (!subAdmin) throw new NotFoundError("SubAdmin not found");
+
+    await prisma.$transaction(async (tx) => {
+      await tx.invite.deleteMany({ where: { email: subAdmin.user.email } });
+      await tx.subAdmin.delete({ where: { id } });
+      await tx.user.delete({ where: { id: subAdmin.userId } });
+    });
+
+    logAudit("SUBADMIN_DELETED", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId: institutionId!,
+      details: `SubAdmin ${subAdmin.user.name} permanently deleted`,
+      metadata: { email: subAdmin.user.email },
+      category: "ADMIN_ACTION",
+      severity: "WARNING",
+    });
+
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
+import { requirePermission } from "../../middlewares/requirePermission.middleware";
 import {
   upload,
   uploadAttachment,
@@ -18,23 +19,30 @@ import {
 
 const router = Router();
 
-const A = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
+// Base: ADMIN or SUB_ADMIN
+const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware];
 
-// Upload
-router.post("/upload", ...A, upload.single("file"), uploadAttachment);
+// ADMIN only (upload is admin-only; can't allow subadmins to post on behalf of admin)
+const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
+
+// SUB_ADMIN needs STAFF_STAFFROOM
+const STAFFROOM_PERM = [...A, requirePermission("STAFF_STAFFROOM")];
+
+// Upload — admin only
+router.post("/upload", ...ADMIN_ONLY, upload.single("file"), uploadAttachment);
 
 // Feed
-router.get("/posts", ...A, listPosts);
-router.post("/posts", ...A, createPost);
-router.delete("/posts/:id", ...A, deletePost);
-router.post("/posts/:id/like", ...A, toggleLike);
-router.post("/posts/:id/comments", ...A, addComment);
-router.delete("/posts/:id/comments/:commentId", ...A, deleteComment);
+router.get("/posts", ...STAFFROOM_PERM, listPosts);
+router.post("/posts", ...STAFFROOM_PERM, createPost);
+router.delete("/posts/:id", ...STAFFROOM_PERM, deletePost);
+router.post("/posts/:id/like", ...STAFFROOM_PERM, toggleLike);
+router.post("/posts/:id/comments", ...STAFFROOM_PERM, addComment);
+router.delete("/posts/:id/comments/:commentId", ...STAFFROOM_PERM, deleteComment);
 
 // DMs
-router.get("/dms", ...A, listDmThreads);
-router.get("/dms/:teacherUserId", ...A, getMessages);
-router.post("/dms/:teacherUserId", ...A, sendMessage);
-router.patch("/dms/:teacherUserId/read", ...A, markRead);
+router.get("/dms", ...STAFFROOM_PERM, listDmThreads);
+router.get("/dms/:teacherUserId", ...STAFFROOM_PERM, getMessages);
+router.post("/dms/:teacherUserId", ...STAFFROOM_PERM, sendMessage);
+router.patch("/dms/:teacherUserId/read", ...STAFFROOM_PERM, markRead);
 
 export default router;

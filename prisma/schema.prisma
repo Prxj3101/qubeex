@@ -288,8 +288,21 @@ model SubAdmin {
   institution   Institution @relation(fields: [institutionId], references: [id])
   permissions   String[]
   createdById   String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+
+  designation   String?
+  phone         String?
+  dob           String?
+  gender        String?
+  address       String?
+  city          String?
+  state         String?
+  pincode       String?
+  country       String?     @default("India")
+  qualification String?
+  experience    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([institutionId])
 }

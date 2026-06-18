@@ -93,6 +93,7 @@ async function fetchMarksheetFull(
         where: { id: marksheetId },
         select: {
           id: true,
+          institutionId: true,
           academicYear: true,
           status: true,
           shareToken: true,
@@ -127,7 +128,9 @@ async function fetchMarksheetFull(
       }),
     ]);
 
-  if (!marksheet) throw { status: 404, message: "Marksheet not found" };
+  if (!marksheet || marksheet.institutionId !== institutionId) {
+    throw { status: 404, message: "Marksheet not found" };
+  }
 
   // Group exam columns by subjectId
   const columnsBySubject: Record<string, typeof examColumns> = {};
@@ -170,7 +173,9 @@ async function fetchMarksheetFull(
       shareToken: marksheet.shareToken,
       gradedSectionTitle: marksheet.gradedSectionTitle,
     },
-    subjectConfigs: marksheet.subjectConfigs,
+    subjectConfigs: isClassTeacher
+      ? marksheet.subjectConfigs
+      : marksheet.subjectConfigs.filter(c => mySubjectIds.includes(c.subjectId)),
     examColumns: columnsBySubject,
     scores: scoreMap,
     gradedSubjects: isClassTeacher ? gradedSubjects : [],
@@ -198,21 +203,9 @@ export async function initMarksheet(
     }
     const divisionId = req.params.divisionId as string;
     const teacherId = await getTeacherId(userId, institutionId);
-    await assertClassTeacher(teacherId, divisionId, institutionId);
-
     const { academicYear } = initMarksheetSchema.parse(req.body);
 
-    // Check not already initialized
-    const existing = await prisma.marksheet.findUnique({
-      where: { divisionId_academicYear: { divisionId, academicYear } },
-      select: { id: true },
-    });
-    if (existing) {
-      res.status(409).json({ success: false, error: "Marksheet already exists for this division and academic year" });
-      return;
-    }
-
-    // Fetch all subjects for this division's standard
+    // Single division fetch with subjects — also used for class-teacher guard
     const division = await prisma.division.findFirst({
       where: { id: divisionId, institutionId },
       include: {
@@ -223,6 +216,24 @@ export async function initMarksheet(
     });
     if (!division) {
       res.status(404).json({ success: false, error: "Division not found" });
+      return;
+    }
+    if (!division.classTeacherId) {
+      res.status(403).json({ success: false, error: "No class teacher assigned to this division yet. Admin must assign one first." });
+      return;
+    }
+    if (division.classTeacherId !== teacherId) {
+      res.status(403).json({ success: false, error: "Only the class teacher can perform this action" });
+      return;
+    }
+
+    // Check not already initialized
+    const existing = await prisma.marksheet.findUnique({
+      where: { divisionId_academicYear: { divisionId, academicYear } },
+      select: { id: true },
+    });
+    if (existing) {
+      res.status(409).json({ success: false, error: "Marksheet already exists for this division and academic year" });
       return;
     }
 
@@ -280,15 +291,16 @@ export async function getDivisionMarksheet(
 
     const teacherId = await getTeacherId(userId, institutionId);
 
-    // Verify teacher is assigned to this division in any capacity
-    const assignment = await prisma.divisionAssignment.findFirst({
+    // Single query: get all assignments for this teacher in this division
+    const assignments = await prisma.divisionAssignment.findMany({
       where: { divisionId, teacherId, institutionId },
-      select: { id: true, subjectId: true },
+      select: { subjectId: true },
     });
-    if (!assignment) {
+    if (assignments.length === 0) {
       res.status(403).json({ success: false, error: "Not assigned to this division" });
       return;
     }
+    const mySubjectIds = assignments.map(a => a.subjectId).filter((id): id is string => id !== null);
 
     const marksheet = await prisma.marksheet.findUnique({
       where: { divisionId_academicYear: { divisionId, academicYear } },
@@ -299,16 +311,12 @@ export async function getDivisionMarksheet(
       return;
     }
 
-    const isClassTeacher = await isClassTeacherOf(teacherId, divisionId, institutionId);
-
-    // Collect all subject IDs this teacher is assigned to in this division
-    const allAssignments = await prisma.divisionAssignment.findMany({
-      where: { divisionId, teacherId, institutionId },
-      select: { subjectId: true },
+    // Check if class teacher (second query — only needs classTeacherId)
+    const divisionInfo = await prisma.division.findFirst({
+      where: { id: divisionId, institutionId },
+      select: { classTeacherId: true },
     });
-    const mySubjectIds = allAssignments
-      .map((a) => a.subjectId)
-      .filter((id): id is string => id !== null);
+    const isClassTeacher = divisionInfo?.classTeacherId === teacherId;
 
     const data = await fetchMarksheetFull(marksheet.id, institutionId, teacherId, isClassTeacher, mySubjectIds);
     res.json({ success: true, data });

@@ -53,6 +53,11 @@ enum TeacherStatus {
   INACTIVE
 }
 
+enum MarksheetStatus {
+  DRAFT
+  PUBLISHED
+}
+
 enum AuditCategory {
   ADMIN_ACTION
   SECURITY
@@ -121,6 +126,7 @@ model Institution {
   holidays           SchoolHoliday[]
   attendanceDayNotes AttendanceDayNote[]
   subAdmins     SubAdmin[]
+  marksheets    Marksheet[]
 }
 
 model User {
@@ -269,6 +275,8 @@ model Teacher {
   updatedAt DateTime @updatedAt
 
   assignments DivisionAssignment[]
+  classDivisions      Division[]           @relation("ClassTeacherDivisions")
+  createdMarksheets   Marksheet[]          @relation("MarksheetCreator")
   blackboardFolders   BlackboardFolder[]
   blackboardMaterials BlackboardMaterial[]
   taskQuestions       TaskQuestion[]
@@ -437,6 +445,9 @@ model Division {
   name     String
   capacity Int?
 
+  classTeacherId String?
+  classTeacher   Teacher? @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -449,6 +460,7 @@ model Division {
   attendances        Attendance[]
   attendanceDayNotes AttendanceDayNote[]
   taskTests          TaskTest[]
+  marksheets         Marksheet[]
 
   @@unique([standardId, name])
   @@index([institutionId])
@@ -475,6 +487,8 @@ model Subject {
   taskQuestions    TaskQuestion[]
   taskModules      TaskModule[]
   taskTests        TaskTest[]
+  marksheetConfigs MarksheetSubjectConfig[]
+  marksheetColumns MarksheetExamColumn[]
 
   @@unique([standardId, name])
   @@index([standardId])
@@ -549,8 +563,10 @@ model Student {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  attendances       Attendance[]
-  taskTestAttempts  TaskTestAttempt[]
+  attendances           Attendance[]
+  taskTestAttempts      TaskTestAttempt[]
+  marksheetScores       MarksheetScore[]
+  marksheetGradedScores MarksheetGradedScore[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
@@ -1003,4 +1019,115 @@ model TaskPdfUpload {
 
   @@index([teacherId])
   @@index([institutionId])
+}
+
+// ─── Marksheet ────────────────────────────────────────────────────────────────
+
+model Marksheet {
+  id                 String          @id @default(uuid())
+  institutionId      String
+  institution        Institution     @relation(fields: [institutionId], references: [id])
+  divisionId         String
+  division           Division        @relation(fields: [divisionId], references: [id])
+  createdByTeacherId String
+  createdBy          Teacher         @relation("MarksheetCreator", fields: [createdByTeacherId], references: [id])
+  academicYear       String
+  status             MarksheetStatus @default(DRAFT)
+  pdfR2Key           String?
+  shareToken         String          @unique
+  gradedSectionTitle String          @default("Graded Subjects")
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  subjectConfigs MarksheetSubjectConfig[]
+  examColumns    MarksheetExamColumn[]
+  scores         MarksheetScore[]
+  gradedSubjects MarksheetGradedSubject[]
+  gradedScores   MarksheetGradedScore[]
+
+  @@unique([divisionId, academicYear])
+  @@index([institutionId])
+  @@index([divisionId])
+}
+
+model MarksheetSubjectConfig {
+  id            String    @id @default(uuid())
+  marksheetId   String
+  marksheet     Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  subjectId     String
+  subject       Subject   @relation(fields: [subjectId], references: [id])
+  institutionId String
+  passingMarks  Float     @default(0)
+  gradeScale    Json      @default("[]")
+
+  @@unique([marksheetId, subjectId])
+  @@index([marksheetId])
+}
+
+model MarksheetExamColumn {
+  id                 String    @id @default(uuid())
+  marksheetId        String
+  marksheet          Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  subjectId          String
+  subject            Subject   @relation(fields: [subjectId], references: [id])
+  institutionId      String
+  name               String
+  maxMarks           Float
+  examDate           DateTime?
+  order              Int       @default(0)
+  createdByTeacherId String
+
+  scores MarksheetScore[]
+
+  @@index([marksheetId, subjectId])
+  @@index([marksheetId])
+}
+
+model MarksheetScore {
+  id                 String              @id @default(uuid())
+  marksheetId        String
+  marksheet          Marksheet           @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  examColumnId       String
+  examColumn         MarksheetExamColumn @relation(fields: [examColumnId], references: [id], onDelete: Cascade)
+  studentId          String
+  student            Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  institutionId      String
+  score              Float?
+  isAbsent           Boolean             @default(false)
+  enteredByTeacherId String
+  updatedAt          DateTime            @updatedAt
+
+  @@unique([examColumnId, studentId])
+  @@index([marksheetId])
+  @@index([examColumnId])
+}
+
+model MarksheetGradedSubject {
+  id            String    @id @default(uuid())
+  marksheetId   String
+  marksheet     Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  institutionId String
+  name          String
+  order         Int       @default(0)
+
+  gradedScores MarksheetGradedScore[]
+
+  @@index([marksheetId])
+}
+
+model MarksheetGradedScore {
+  id              String                 @id @default(uuid())
+  marksheetId     String
+  marksheet       Marksheet              @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  gradedSubjectId String
+  gradedSubject   MarksheetGradedSubject @relation(fields: [gradedSubjectId], references: [id], onDelete: Cascade)
+  studentId       String
+  student         Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  institutionId   String
+  term1Grade      String?
+  term2Grade      String?
+  updatedAt       DateTime               @updatedAt
+
+  @@unique([gradedSubjectId, studentId])
+  @@index([marksheetId])
 }

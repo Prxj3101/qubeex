@@ -118,6 +118,7 @@ import {
   setSubjectConfig, bulkUpsertScores,
   addGradedSubject, editGradedSubject, deleteGradedSubject,
   reorderGradedSubjects, updateGradedSectionTitle, bulkUpsertGradedScores,
+  publishMarksheet,
 } from "./marksheet.controller";
 
 const router = Router();
@@ -1165,5 +1166,6 @@ router.delete("/marksheet/:id/graded-subjects/:gsId", ...T, deleteGradedSubject)
 router.put("/marksheet/:id/graded-subjects/reorder", ...T, reorderGradedSubjects);
 router.patch("/marksheet/:id/graded-section-title", ...T, updateGradedSectionTitle);
 router.put("/marksheet/:id/graded-scores", ...T, bulkUpsertGradedScores);
+router.post("/marksheet/:id/publish", ...T, publishMarksheet);
 
 export default router;

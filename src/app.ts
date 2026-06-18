@@ -69,6 +69,25 @@ app.get("/health", (_req, res) => {
   });
 });
 
+// ── Public share link — no auth ───────────────────────────────────────────────
+app.get("/share/marksheet/:token", async (req, res, next) => {
+  try {
+    const token = req.params.token as string;
+    const marksheet = await prisma.marksheet.findUnique({
+      where: { shareToken: token },
+      select: { pdfR2Key: true, status: true },
+    });
+    if (!marksheet || marksheet.status !== "PUBLISHED" || !marksheet.pdfR2Key) {
+      res.status(404).json({ success: false, error: "Marksheet not found or not yet published" });
+      return;
+    }
+    const publicUrl = `${process.env.R2_PUBLIC_URL!.replace(/\/$/, "")}/${marksheet.pdfR2Key}`;
+    res.redirect(302, publicUrl);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use(errorHandler);
 
 export default app;

@@ -1,7 +1,10 @@
 import { Response, NextFunction } from "express";
 import crypto from "crypto";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const PDFDocument = require("pdfkit");
 import {
   initMarksheetSchema,
   addColumnSchema,
@@ -15,6 +18,147 @@ import {
   gradedSectionTitleSchema,
   bulkGradedScoresSchema,
 } from "./marksheet.schema";
+
+// ── R2 client ─────────────────────────────────────────────────────────────────
+
+function getR2Client(): S3Client {
+  return new S3Client({
+    region: "auto",
+    endpoint: process.env.R2_ENDPOINT!,
+    forcePathStyle: true,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  });
+}
+
+async function generateMarksheetPdf(params: {
+  divisionName: string;
+  standardName: string;
+  institutionName: string;
+  academicYear: string;
+  subjects: { id: string; name: string; code: string }[];
+  examColumnsBySubject: Record<string, { id: string; name: string; maxMarks: number }[]>;
+  students: { id: string; name: string; rollNo: string }[];
+  scoreMap: Record<string, Record<string, { score: number | null; isAbsent: boolean }>>;
+  gradedSubjects: { id: string; name: string }[];
+  gradedScoreMap: Record<string, Record<string, { term1Grade: string | null; term2Grade: string | null }>>;
+  gradedSectionTitle: string;
+}): Promise<Buffer> {
+  const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
+  const chunks: Buffer[] = [];
+
+  doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+
+  return new Promise<Buffer>((resolve, reject) => {
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    // Title
+    doc.fontSize(14).font("Helvetica-Bold")
+      .text(`${params.institutionName} — Marksheet`, { align: "center" });
+    doc.fontSize(10).font("Helvetica").fillColor("#555")
+      .text(`${params.standardName} - ${params.divisionName} | Academic Year: ${params.academicYear}`, { align: "center" });
+    doc.moveDown(0.8);
+
+    // Build header row
+    const COL_W = 55;
+    const NAME_W = 120;
+    const ROLL_W = 40;
+    const startX = doc.page.margins.left;
+    let y = doc.y;
+
+    const headerCols: string[] = [];
+    params.subjects.forEach((sub) => {
+      const cols = params.examColumnsBySubject[sub.id] ?? [];
+      cols.forEach((col) => headerCols.push(`${sub.code}\n${col.name}\n/${col.maxMarks}`));
+      headerCols.push(`${sub.code}\nTotal`);
+      headerCols.push(`${sub.code}\n%`);
+    });
+    if (params.gradedSubjects.length > 0) {
+      params.gradedSubjects.forEach((gs) => {
+        headerCols.push(`${gs.name}\nT1`);
+        headerCols.push(`${gs.name}\nT2`);
+      });
+    }
+    headerCols.push("Grand\nTotal");
+    headerCols.push("Grand\n%");
+    headerCols.push("Grade");
+
+    const totalWidth = ROLL_W + NAME_W + headerCols.length * COL_W;
+
+    // Draw header background
+    doc.rect(startX, y, totalWidth, 32).fill("#E8DDD0");
+    doc.fillColor("#2A1F10").font("Helvetica-Bold").fontSize(7);
+    doc.text("Roll", startX + 2, y + 4, { width: ROLL_W - 4 });
+    doc.text("Student Name", startX + ROLL_W + 2, y + 4, { width: NAME_W - 4 });
+    headerCols.forEach((label, i) => {
+      doc.text(label, startX + ROLL_W + NAME_W + i * COL_W + 2, y + 4, { width: COL_W - 4 });
+    });
+    y += 32;
+
+    // Draw rows
+    doc.font("Helvetica").fontSize(7);
+    params.students.forEach((student, si) => {
+      if (y > doc.page.height - doc.page.margins.bottom - 20) {
+        doc.addPage({ layout: "landscape", size: "A4", margin: 30 });
+        y = doc.page.margins.top;
+      }
+      const rowBg = si % 2 === 0 ? "#FAF5EE" : "#F5EFE5";
+      doc.rect(startX, y, totalWidth, 18).fill(rowBg);
+      doc.fillColor("#2A1F10");
+      doc.text(student.rollNo, startX + 2, y + 4, { width: ROLL_W - 4 });
+      doc.text(student.name, startX + ROLL_W + 2, y + 4, { width: NAME_W - 4, ellipsis: true });
+
+      let colIdx = 0;
+      let grandScored = 0, grandMax = 0;
+
+      params.subjects.forEach((sub) => {
+        const cols = params.examColumnsBySubject[sub.id] ?? [];
+        let subScored = 0, subMax = 0;
+        cols.forEach((col) => {
+          const entry = params.scoreMap[col.id]?.[student.id];
+          const score = entry?.score ?? null;
+          const absent = entry?.isAbsent ?? false;
+          const cellText = absent ? "AB" : score !== null ? String(score) : "—";
+          doc.text(cellText, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
+          if (score !== null) { subScored += score; subMax += col.maxMarks; }
+          else if (!absent) { subMax += col.maxMarks; }
+          colIdx++;
+        });
+        const subTotal = `${subScored}/${subMax}`;
+        const subPct = subMax > 0 ? `${Math.round((subScored / subMax) * 100)}%` : "—";
+        doc.text(subTotal, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
+        colIdx++;
+        doc.text(subPct, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
+        colIdx++;
+        grandScored += subScored;
+        grandMax += subMax;
+      });
+
+      params.gradedSubjects.forEach((gs) => {
+        const entry = params.gradedScoreMap[gs.id]?.[student.id];
+        doc.text(entry?.term1Grade ?? "—", startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
+        colIdx++;
+        doc.text(entry?.term2Grade ?? "—", startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
+        colIdx++;
+      });
+
+      const grandPct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
+      const gradeLabel = grandPct === null ? "—" : grandPct >= 75 ? "A" : grandPct >= 60 ? "B" : grandPct >= 45 ? "C" : grandPct >= 35 ? "D" : "F";
+      doc.text(`${grandScored}/${grandMax}`, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
+      colIdx++;
+      doc.text(grandPct !== null ? `${grandPct}%` : "—", startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
+      colIdx++;
+      doc.text(gradeLabel, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
+
+      y += 18;
+    });
+
+    doc.end();
+  });
+}
 
 // ── Internal helpers ──────────────────────────────────────────────────────────
 
@@ -828,6 +972,140 @@ export async function getDivisionMarksheet(
 
     const data = await fetchMarksheetFull(marksheet.id, institutionId, teacherId, isClassTeacher, mySubjectIds);
     res.json({ success: true, data });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── POST /:id/publish ─────────────────────────────────────────────────────────
+
+export async function publishMarksheet(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      include: {
+        division: {
+          include: { standard: true },
+        },
+      },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+
+    // Must have at least one exam column
+    const columnCount = await prisma.marksheetExamColumn.count({ where: { marksheetId } });
+    if (columnCount === 0) {
+      res.status(400).json({ success: false, error: "Add at least one exam column before publishing" });
+      return;
+    }
+
+    // Fetch institution name
+    const institution = await prisma.institution.findUnique({
+      where: { id: institutionId },
+      select: { name: true },
+    });
+
+    // Fetch all data needed for PDF
+    const [subjects, examColumns, scores, gradedSubjects, gradedScores, students] = await Promise.all([
+      prisma.subject.findMany({
+        where: { standardId: marksheet.division.standardId, institutionId },
+        orderBy: { order: "asc" },
+        select: { id: true, name: true, code: true },
+      }),
+      prisma.marksheetExamColumn.findMany({
+        where: { marksheetId },
+        orderBy: [{ subjectId: "asc" }, { order: "asc" }],
+        select: { id: true, subjectId: true, name: true, maxMarks: true },
+      }),
+      prisma.marksheetScore.findMany({
+        where: { marksheetId },
+        select: { examColumnId: true, studentId: true, score: true, isAbsent: true },
+      }),
+      prisma.marksheetGradedSubject.findMany({
+        where: { marksheetId },
+        orderBy: { order: "asc" },
+        select: { id: true, name: true },
+      }),
+      prisma.marksheetGradedScore.findMany({
+        where: { marksheetId },
+        select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
+      }),
+      prisma.student.findMany({
+        where: { divisionId: marksheet.divisionId, institutionId },
+        include: { user: { select: { name: true } } },
+        orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+      }),
+    ]);
+
+    // Build maps
+    const columnsBySubject: Record<string, { id: string; name: string; maxMarks: number }[]> = {};
+    for (const col of examColumns) {
+      if (!columnsBySubject[col.subjectId]) columnsBySubject[col.subjectId] = [];
+      columnsBySubject[col.subjectId].push(col);
+    }
+    const scoreMap: Record<string, Record<string, { score: number | null; isAbsent: boolean }>> = {};
+    for (const sc of scores) {
+      if (!scoreMap[sc.examColumnId]) scoreMap[sc.examColumnId] = {};
+      scoreMap[sc.examColumnId][sc.studentId] = { score: sc.score, isAbsent: sc.isAbsent };
+    }
+    const gradedScoreMap: Record<string, Record<string, { term1Grade: string | null; term2Grade: string | null }>> = {};
+    for (const gs of gradedScores) {
+      if (!gradedScoreMap[gs.gradedSubjectId]) gradedScoreMap[gs.gradedSubjectId] = {};
+      gradedScoreMap[gs.gradedSubjectId][gs.studentId] = { term1Grade: gs.term1Grade, term2Grade: gs.term2Grade };
+    }
+
+    const pdfBuffer = await generateMarksheetPdf({
+      divisionName: marksheet.division.name,
+      standardName: marksheet.division.standard.name,
+      institutionName: institution?.name ?? "Institution",
+      academicYear: marksheet.academicYear,
+      subjects: subjects.map((s) => ({ id: s.id, name: s.name, code: s.code ?? s.name.slice(0, 4) })),
+      examColumnsBySubject: columnsBySubject,
+      students: students.map((s) => ({ id: s.id, name: s.user.name ?? "", rollNo: s.rollNo ?? "" })),
+      scoreMap,
+      gradedSubjects,
+      gradedScoreMap,
+      gradedSectionTitle: marksheet.gradedSectionTitle,
+    });
+
+    const r2Key = `institutions/${institutionId}/marksheets/${marksheetId}.pdf`;
+    const r2Client = getR2Client();
+
+    await r2Client.send(new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME!,
+      Key: r2Key,
+      Body: pdfBuffer,
+      ContentType: "application/pdf",
+    }));
+
+    // Queue old PDF for deletion if re-publishing with a different key
+    if (marksheet.pdfR2Key && marksheet.pdfR2Key !== r2Key) {
+      await prisma.pendingFileDeletion.create({
+        data: {
+          r2Key: marksheet.pdfR2Key,
+          scheduledAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        },
+      });
+    }
+
+    await prisma.marksheet.update({
+      where: { id: marksheetId },
+      data: { status: "PUBLISHED", pdfR2Key: r2Key },
+    });
+
+    const publicUrl = `${process.env.R2_PUBLIC_URL!.replace(/\/$/, "")}/${r2Key}`;
+    res.json({ success: true, data: { pdfUrl: publicUrl, shareToken: marksheet.shareToken } });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };
     if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }

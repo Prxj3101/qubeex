@@ -112,7 +112,10 @@ import {
   assignQuestionToModule,
   unassignQuestionFromModule,
 } from "./tasks.controller";
-import { initMarksheet, getDivisionMarksheet } from "./marksheet.controller";
+import {
+  initMarksheet, getDivisionMarksheet,
+  addColumn, editColumn, deleteColumn, reorderColumns,
+} from "./marksheet.controller";
 
 const router = Router();
 
@@ -1147,5 +1150,9 @@ router.get(
 // ── Marksheet ─────────────────────────────────────────────────────────────────
 router.post("/marksheet/division/:divisionId/init", ...T, initMarksheet);
 router.get("/marksheet/division/:divisionId", ...T, getDivisionMarksheet);
+router.post("/marksheet/:id/columns", ...T, addColumn);
+router.patch("/marksheet/:id/columns/:colId", ...T, editColumn);
+router.delete("/marksheet/:id/columns/:colId", ...T, deleteColumn);
+router.put("/marksheet/:id/columns/:subjectId/reorder", ...T, reorderColumns);
 
 export default router;

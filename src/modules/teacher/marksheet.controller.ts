@@ -273,6 +273,183 @@ export async function initMarksheet(
   }
 }
 
+// ── POST /:id/columns ─────────────────────────────────────────────────────────
+
+export async function addColumn(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { id: true, divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+
+    const { subjectId, name, maxMarks, examDate } = addColumnSchema.parse(req.body);
+    const isClassTeacher = await isClassTeacherOf(teacherId, marksheet.divisionId, institutionId);
+
+    if (!isClassTeacher) {
+      // Subject teacher — must be assigned to this subject in this division
+      await assertSubjectTeacher(teacherId, marksheet.divisionId, subjectId, institutionId);
+    }
+
+    // Determine next order value
+    const maxOrder = await prisma.marksheetExamColumn.aggregate({
+      where: { marksheetId, subjectId },
+      _max: { order: true },
+    });
+    const nextOrder = (maxOrder._max.order ?? -1) + 1;
+
+    const column = await prisma.marksheetExamColumn.create({
+      data: {
+        marksheetId,
+        subjectId,
+        institutionId,
+        name,
+        maxMarks,
+        examDate: examDate ? new Date(examDate) : null,
+        order: nextOrder,
+        createdByTeacherId: teacherId,
+      },
+      select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
+    });
+
+    res.status(201).json({ success: true, data: column });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── PATCH /:id/columns/:colId ─────────────────────────────────────────────────
+
+export async function editColumn(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const { id: marksheetId, colId } = req.params as { id: string; colId: string };
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const column = await prisma.marksheetExamColumn.findFirst({
+      where: { id: colId, marksheetId, institutionId },
+      select: { id: true, subjectId: true, marksheet: { select: { divisionId: true } } },
+    });
+    if (!column) { res.status(404).json({ success: false, error: "Column not found" }); return; }
+
+    const isClassTeacher = await isClassTeacherOf(teacherId, column.marksheet.divisionId, institutionId);
+    if (!isClassTeacher) {
+      await assertSubjectTeacher(teacherId, column.marksheet.divisionId, column.subjectId, institutionId);
+    }
+
+    const data = editColumnSchema.parse(req.body);
+    const updated = await prisma.marksheetExamColumn.update({
+      where: { id: colId },
+      data: {
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.maxMarks !== undefined && { maxMarks: data.maxMarks }),
+        ...(data.examDate !== undefined && { examDate: data.examDate ? new Date(data.examDate) : null }),
+      },
+      select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── DELETE /:id/columns/:colId ────────────────────────────────────────────────
+
+export async function deleteColumn(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const { id: marksheetId, colId } = req.params as { id: string; colId: string };
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const column = await prisma.marksheetExamColumn.findFirst({
+      where: { id: colId, marksheetId, institutionId },
+      select: { id: true, subjectId: true, marksheet: { select: { divisionId: true } } },
+    });
+    if (!column) { res.status(404).json({ success: false, error: "Column not found" }); return; }
+
+    const isClassTeacher = await isClassTeacherOf(teacherId, column.marksheet.divisionId, institutionId);
+    if (!isClassTeacher) {
+      await assertSubjectTeacher(teacherId, column.marksheet.divisionId, column.subjectId, institutionId);
+    }
+
+    // Cascade deletes scores via onDelete: Cascade on MarksheetScore
+    await prisma.marksheetExamColumn.delete({ where: { id: colId } });
+
+    res.json({ success: true });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── PUT /:id/columns/:subjectId/reorder ───────────────────────────────────────
+
+export async function reorderColumns(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const { id: marksheetId, subjectId } = req.params as { id: string; subjectId: string };
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+
+    const isClassTeacher = await isClassTeacherOf(teacherId, marksheet.divisionId, institutionId);
+    if (!isClassTeacher) {
+      await assertSubjectTeacher(teacherId, marksheet.divisionId, subjectId, institutionId);
+    }
+
+    const { orderedIds } = reorderColumnsSchema.parse(req.body);
+
+    await prisma.$transaction(
+      orderedIds.map((colId, idx) =>
+        prisma.marksheetExamColumn.updateMany({
+          where: { id: colId, marksheetId, subjectId, institutionId },
+          data: { order: idx },
+        })
+      )
+    );
+
+    res.json({ success: true });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
 // ── GET /division/:divisionId ─────────────────────────────────────────────────
 
 export async function getDivisionMarksheet(

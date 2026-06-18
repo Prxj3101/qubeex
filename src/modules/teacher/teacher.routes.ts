@@ -112,6 +112,7 @@ import {
   assignQuestionToModule,
   unassignQuestionFromModule,
 } from "./tasks.controller";
+import { initMarksheet, getDivisionMarksheet } from "./marksheet.controller";
 
 const router = Router();
 
@@ -1142,5 +1143,9 @@ router.get(
     }
   }
 );
+
+// ── Marksheet ─────────────────────────────────────────────────────────────────
+router.post("/marksheet/division/:divisionId/init", ...T, initMarksheet);
+router.get("/marksheet/division/:divisionId", ...T, getDivisionMarksheet);
 
 export default router;

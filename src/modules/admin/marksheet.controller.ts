@@ -1,4 +1,5 @@
 import { Response, NextFunction } from "express";
+import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 
@@ -159,7 +160,13 @@ export async function assignClassTeacher(
     const { institutionId } = req.user!;
     if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
     const divisionId = req.params.divisionId as string;
-    const { teacherId } = req.body as { teacherId: string | null };
+    const bodySchema = z.object({ teacherId: z.string().uuid().nullable() });
+    const parseResult = bodySchema.safeParse(req.body);
+    if (!parseResult.success) {
+      res.status(400).json({ success: false, error: "teacherId must be a UUID or null" });
+      return;
+    }
+    const { teacherId } = parseResult.data;
 
     const division = await prisma.division.findFirst({
       where: { id: divisionId, institutionId },

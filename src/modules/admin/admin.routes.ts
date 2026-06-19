@@ -9,6 +9,7 @@ import { listTickets, createTicket, addTicketReply, listReviews, createReview, u
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
 import { getOverview } from "./overview.controller";
+import { adminListMarksheets, adminGetDivisionMarksheet, assignClassTeacher } from "./marksheet.controller";
 
 const router = Router();
 
@@ -106,5 +107,12 @@ router.get("/notifications", ...A, listNotifications);
 router.patch("/notifications/read-all", ...A, markAllNotificationsRead);
 router.patch("/notifications/:recipientId/read", ...A, markNotificationRead);
 router.patch("/notifications/:recipientId/dismiss", ...A, dismissNotification);
+
+// ── Marksheet (admin read-only) ───────────────────────────────────────────────
+router.get("/marksheet", ...A, adminListMarksheets);
+router.get("/marksheet/division/:divisionId", ...A, adminGetDivisionMarksheet);
+
+// ── Class teacher assignment ──────────────────────────────────────────────────
+router.patch("/campus/divisions/:divisionId/class-teacher", ...ADMIN_ONLY, assignClassTeacher);
 
 export default router;

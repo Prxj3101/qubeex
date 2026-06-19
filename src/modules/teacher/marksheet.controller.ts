@@ -1004,7 +1004,7 @@ export async function publishMarksheet(
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
     // Must have at least one exam column
-    const columnCount = await prisma.marksheetExamColumn.count({ where: { marksheetId } });
+    const columnCount = await prisma.marksheetExamColumn.count({ where: { marksheetId, institutionId } });
     if (columnCount === 0) {
       res.status(400).json({ success: false, error: "Add at least one exam column before publishing" });
       return;
@@ -1024,21 +1024,21 @@ export async function publishMarksheet(
         select: { id: true, name: true, code: true },
       }),
       prisma.marksheetExamColumn.findMany({
-        where: { marksheetId },
+        where: { marksheetId, institutionId },
         orderBy: [{ subjectId: "asc" }, { order: "asc" }],
         select: { id: true, subjectId: true, name: true, maxMarks: true },
       }),
       prisma.marksheetScore.findMany({
-        where: { marksheetId },
+        where: { marksheetId, institutionId },
         select: { examColumnId: true, studentId: true, score: true, isAbsent: true },
       }),
       prisma.marksheetGradedSubject.findMany({
-        where: { marksheetId },
+        where: { marksheetId, institutionId },
         orderBy: { order: "asc" },
         select: { id: true, name: true },
       }),
       prisma.marksheetGradedScore.findMany({
-        where: { marksheetId },
+        where: { marksheetId, institutionId },
         select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
       }),
       prisma.student.findMany({
@@ -1082,6 +1082,13 @@ export async function publishMarksheet(
     const r2Key = `institutions/${institutionId}/marksheets/${marksheetId}.pdf`;
     const r2Client = getR2Client();
 
+    // Update DB first — if R2 upload fails, DB points at a missing-but-recoverable key
+    // rather than leaving an orphaned live PDF in R2 with no DB record.
+    await prisma.marksheet.update({
+      where: { id: marksheetId },
+      data: { status: "PUBLISHED", pdfR2Key: r2Key },
+    });
+
     await r2Client.send(new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME!,
       Key: r2Key,
@@ -1098,11 +1105,6 @@ export async function publishMarksheet(
         },
       });
     }
-
-    await prisma.marksheet.update({
-      where: { id: marksheetId },
-      data: { status: "PUBLISHED", pdfR2Key: r2Key },
-    });
 
     const publicUrl = `${process.env.R2_PUBLIC_URL!.replace(/\/$/, "")}/${r2Key}`;
     res.json({ success: true, data: { pdfUrl: publicUrl, shareToken: marksheet.shareToken } });

@@ -176,15 +176,17 @@ async function assertClassTeacher(
   divisionId: string,
   institutionId: string
 ): Promise<void> {
+  // App-wide convention: the class teacher is the DivisionAssignment with subjectId = null.
   const division = await prisma.division.findFirst({
     where: { id: divisionId, institutionId },
-    select: { classTeacherId: true },
+    select: { id: true },
   });
   if (!division) throw { status: 404, message: "Division not found" };
-  if (!division.classTeacherId) {
-    throw { status: 403, message: "No class teacher assigned to this division yet. Admin must assign one first." };
-  }
-  if (division.classTeacherId !== teacherId) {
+  const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
+    where: { divisionId, teacherId, institutionId, subjectId: null },
+    select: { id: true },
+  });
+  if (!classTeacherAssignment) {
     throw { status: 403, message: "Only the class teacher can perform this action" };
   }
 }
@@ -209,11 +211,12 @@ async function isClassTeacherOf(
   divisionId: string,
   institutionId: string
 ): Promise<boolean> {
-  const division = await prisma.division.findFirst({
-    where: { id: divisionId, institutionId },
-    select: { classTeacherId: true },
+  // App-wide convention: the class teacher is the DivisionAssignment with subjectId = null.
+  const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
+    where: { divisionId, teacherId, institutionId, subjectId: null },
+    select: { id: true },
   });
-  return division?.classTeacherId === teacherId;
+  return !!classTeacherAssignment;
 }
 
 function getCurrentAcademicYear(): string {
@@ -349,7 +352,7 @@ export async function initMarksheet(
     const teacherId = await getTeacherId(userId, institutionId);
     const { academicYear } = initMarksheetSchema.parse(req.body);
 
-    // Single division fetch with subjects — also used for class-teacher guard
+    // Single division fetch with subjects — guard handled via DivisionAssignment below
     const division = await prisma.division.findFirst({
       where: { id: divisionId, institutionId },
       include: {
@@ -362,11 +365,12 @@ export async function initMarksheet(
       res.status(404).json({ success: false, error: "Division not found" });
       return;
     }
-    if (!division.classTeacherId) {
-      res.status(403).json({ success: false, error: "No class teacher assigned to this division yet. Admin must assign one first." });
-      return;
-    }
-    if (division.classTeacherId !== teacherId) {
+    // App-wide convention: the class teacher is the DivisionAssignment with subjectId = null.
+    const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
+      where: { divisionId, teacherId, institutionId, subjectId: null },
+      select: { id: true },
+    });
+    if (!classTeacherAssignment) {
       res.status(403).json({ success: false, error: "Only the class teacher can perform this action" });
       return;
     }
@@ -943,19 +947,13 @@ export async function getDivisionMarksheet(
 
     const teacherId = await getTeacherId(userId, institutionId);
 
-    // Fetch assignments and division class teacher check in parallel
-    const [assignments, division] = await Promise.all([
-      prisma.divisionAssignment.findMany({
-        where: { divisionId, teacherId, institutionId },
-        select: { subjectId: true },
-      }),
-      prisma.division.findFirst({
-        where: { id: divisionId, institutionId },
-        select: { classTeacherId: true },
-      }),
-    ]);
-    const isClassTeacher = division?.classTeacherId === teacherId;
-    if (assignments.length === 0 && !isClassTeacher) {
+    // App-wide convention: class teacher = DivisionAssignment with subjectId = null.
+    const assignments = await prisma.divisionAssignment.findMany({
+      where: { divisionId, teacherId, institutionId },
+      select: { subjectId: true },
+    });
+    const isClassTeacher = assignments.some(a => a.subjectId === null);
+    if (assignments.length === 0) {
       res.status(403).json({ success: false, error: "Not assigned to this division" });
       return;
     }

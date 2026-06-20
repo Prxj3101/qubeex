@@ -955,6 +955,254 @@ export async function getDivisionMarksheet(
   }
 }
 
+// ── Shared PDF data builder ─────────────────────────────────────────────────────
+
+type MarksheetPdfParams = Parameters<typeof generateMarksheetPdf>[0];
+
+async function buildMarksheetPdfData(
+  marksheetId: string,
+  institutionId: string
+): Promise<{ params: MarksheetPdfParams; columnCount: number }> {
+  const marksheet = await prisma.marksheet.findFirst({
+    where: { id: marksheetId, institutionId },
+    include: { division: { include: { standard: true } } },
+  });
+  if (!marksheet) throw { status: 404, message: "Marksheet not found" };
+
+  const institution = await prisma.institution.findUnique({
+    where: { id: institutionId },
+    select: { name: true },
+  });
+
+  const [subjects, examColumns, scores, gradedSubjects, gradedScores, students] = await Promise.all([
+    prisma.subject.findMany({
+      where: { standardId: marksheet.division.standardId, institutionId },
+      orderBy: { order: "asc" },
+      select: { id: true, name: true, code: true },
+    }),
+    prisma.marksheetExamColumn.findMany({
+      where: { marksheetId, institutionId },
+      orderBy: [{ subjectId: "asc" }, { order: "asc" }],
+      select: { id: true, subjectId: true, name: true, maxMarks: true },
+    }),
+    prisma.marksheetScore.findMany({
+      where: { marksheetId, institutionId },
+      select: { examColumnId: true, studentId: true, score: true, isAbsent: true },
+    }),
+    prisma.marksheetGradedSubject.findMany({
+      where: { marksheetId, institutionId },
+      orderBy: { order: "asc" },
+      select: { id: true, name: true },
+    }),
+    prisma.marksheetGradedScore.findMany({
+      where: { marksheetId, institutionId },
+      select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
+    }),
+    prisma.student.findMany({
+      where: { divisionId: marksheet.divisionId, institutionId },
+      include: { user: { select: { name: true } } },
+      orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+    }),
+  ]);
+
+  const columnsBySubject: Record<string, { id: string; name: string; maxMarks: number }[]> = {};
+  for (const col of examColumns) {
+    if (!columnsBySubject[col.subjectId]) columnsBySubject[col.subjectId] = [];
+    columnsBySubject[col.subjectId].push(col);
+  }
+  const scoreMap: Record<string, Record<string, { score: number | null; isAbsent: boolean }>> = {};
+  for (const sc of scores) {
+    if (!scoreMap[sc.examColumnId]) scoreMap[sc.examColumnId] = {};
+    scoreMap[sc.examColumnId][sc.studentId] = { score: sc.score, isAbsent: sc.isAbsent };
+  }
+  const gradedScoreMap: Record<string, Record<string, { term1Grade: string | null; term2Grade: string | null }>> = {};
+  for (const gs of gradedScores) {
+    if (!gradedScoreMap[gs.gradedSubjectId]) gradedScoreMap[gs.gradedSubjectId] = {};
+    gradedScoreMap[gs.gradedSubjectId][gs.studentId] = { term1Grade: gs.term1Grade, term2Grade: gs.term2Grade };
+  }
+
+  return {
+    columnCount: examColumns.length,
+    params: {
+      divisionName: marksheet.division.name,
+      standardName: marksheet.division.standard.name,
+      institutionName: institution?.name ?? "Institution",
+      academicYear: marksheet.academicYear,
+      subjects: subjects.map((s) => ({ id: s.id, name: s.name, code: s.code ?? s.name.slice(0, 4) })),
+      examColumnsBySubject: columnsBySubject,
+      students: students.map((s) => ({ id: s.id, name: s.user.name ?? "", rollNo: s.rollNo ?? "" })),
+      scoreMap,
+      gradedSubjects,
+      gradedScoreMap,
+      gradedSectionTitle: marksheet.gradedSectionTitle,
+    },
+  };
+}
+
+/** Narrow PDF params to a single subject (used for subject-teacher downloads). */
+function filterPdfParamsToSubject(params: MarksheetPdfParams, subjectId: string): MarksheetPdfParams {
+  return {
+    ...params,
+    subjects: params.subjects.filter((s) => s.id === subjectId),
+    examColumnsBySubject: { [subjectId]: params.examColumnsBySubject[subjectId] ?? [] },
+    gradedSubjects: [],
+    gradedScoreMap: {},
+  };
+}
+
+/** Full sheet reorganized exam-by-exam: one section per distinct exam-column name. */
+async function generateExamWisePdf(params: MarksheetPdfParams): Promise<Buffer> {
+  const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
+  const chunks: Buffer[] = [];
+  doc.on("data", (c: Buffer) => chunks.push(c));
+
+  return new Promise<Buffer>((resolve, reject) => {
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    doc.fontSize(14).font("Helvetica-Bold").fillColor("#2A1F10")
+      .text(`${params.institutionName} — Marksheet (Exam-wise)`, { align: "center" });
+    doc.fontSize(10).font("Helvetica").fillColor("#555")
+      .text(`${params.standardName} - ${params.divisionName} | Academic Year: ${params.academicYear}`, { align: "center" });
+    doc.moveDown(0.6);
+
+    // Distinct exam-column names, in first-seen order across subjects.
+    const examNames: string[] = [];
+    for (const sub of params.subjects) {
+      for (const col of params.examColumnsBySubject[sub.id] ?? []) {
+        if (!examNames.includes(col.name)) examNames.push(col.name);
+      }
+    }
+
+    const COL_W = 60, NAME_W = 120, ROLL_W = 40;
+    const startX = doc.page.margins.left;
+
+    if (examNames.length === 0) {
+      doc.fontSize(10).fillColor("#999").text("No exam columns yet.", { align: "center" });
+      doc.end();
+      return;
+    }
+
+    examNames.forEach((examName, idx) => {
+      const cols: { code: string; col: { id: string; name: string; maxMarks: number } }[] = [];
+      for (const sub of params.subjects) {
+        const col = (params.examColumnsBySubject[sub.id] ?? []).find((c) => c.name === examName);
+        if (col) cols.push({ code: sub.code, col });
+      }
+      if (cols.length === 0) return;
+
+      if (idx > 0) doc.moveDown(0.8);
+      let y = doc.y;
+      if (y > doc.page.height - doc.page.margins.bottom - 70) {
+        doc.addPage({ layout: "landscape", size: "A4", margin: 30 });
+        y = doc.page.margins.top;
+      }
+      doc.fontSize(11).font("Helvetica-Bold").fillColor("#2A1F10").text(examName, startX, y);
+      y = doc.y + 4;
+
+      const headerCols = [...cols.map((c) => `${c.code}\n/${c.col.maxMarks}`), "Total", "%"];
+      const totalWidth = ROLL_W + NAME_W + headerCols.length * COL_W;
+
+      doc.rect(startX, y, totalWidth, 28).fill("#E8DDD0");
+      doc.fillColor("#2A1F10").font("Helvetica-Bold").fontSize(7);
+      doc.text("Roll", startX + 2, y + 4, { width: ROLL_W - 4 });
+      doc.text("Student Name", startX + ROLL_W + 2, y + 4, { width: NAME_W - 4 });
+      headerCols.forEach((label, i) => doc.text(label, startX + ROLL_W + NAME_W + i * COL_W + 2, y + 4, { width: COL_W - 4 }));
+      y += 28;
+
+      doc.font("Helvetica").fontSize(7);
+      params.students.forEach((student, si) => {
+        if (y > doc.page.height - doc.page.margins.bottom - 20) {
+          doc.addPage({ layout: "landscape", size: "A4", margin: 30 });
+          y = doc.page.margins.top;
+        }
+        doc.rect(startX, y, totalWidth, 16).fill(si % 2 === 0 ? "#FAF5EE" : "#F5EFE5");
+        doc.fillColor("#2A1F10");
+        doc.text(student.rollNo, startX + 2, y + 3, { width: ROLL_W - 4 });
+        doc.text(student.name, startX + ROLL_W + 2, y + 3, { width: NAME_W - 4, ellipsis: true });
+        let scored = 0, max = 0;
+        cols.forEach((c, ci) => {
+          const entry = params.scoreMap[c.col.id]?.[student.id];
+          const sc = entry?.score ?? null;
+          const absent = entry?.isAbsent ?? false;
+          doc.text(absent ? "AB" : sc !== null ? String(sc) : "—", startX + ROLL_W + NAME_W + ci * COL_W + 2, y + 3, { width: COL_W - 4 });
+          if (sc !== null) { scored += sc; max += c.col.maxMarks; }
+          else if (!absent) { max += c.col.maxMarks; }
+        });
+        const pct = max > 0 ? Math.round((scored / max) * 100) : null;
+        doc.text(`${scored}/${max}`, startX + ROLL_W + NAME_W + cols.length * COL_W + 2, y + 3, { width: COL_W - 4 });
+        doc.text(pct !== null ? `${pct}%` : "—", startX + ROLL_W + NAME_W + (cols.length + 1) * COL_W + 2, y + 3, { width: COL_W - 4 });
+        y += 16;
+      });
+      doc.y = y;
+    });
+
+    doc.end();
+  });
+}
+
+// ── GET /:id/download?scope=full|subject&subjectId= ──────────────────────────────
+
+export async function downloadMarksheet(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const scope = (req.query.scope as string) || "full";
+    const subjectIdParam = req.query.subjectId as string | undefined;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+
+    const { params } = await buildMarksheetPdfData(marksheetId, institutionId);
+
+    let pdfBuffer: Buffer;
+    let filename: string;
+    const baseName = `${params.standardName}-${params.divisionName}`.replace(/[^\w-]+/g, "_");
+
+    if (scope === "subject") {
+      if (!subjectIdParam) { res.status(400).json({ success: false, error: "subjectId required for subject scope" }); return; }
+      // Subject teacher of this subject, or the class teacher, may download it.
+      const classTeacher = await prisma.divisionAssignment.findFirst({
+        where: { divisionId: marksheet.divisionId, teacherId, institutionId, subjectId: null },
+        select: { id: true },
+      });
+      if (!classTeacher) {
+        await assertSubjectTeacher(teacherId, marksheet.divisionId, subjectIdParam, institutionId);
+      }
+      const subjectName = params.subjects.find((s) => s.id === subjectIdParam)?.name ?? "subject";
+      pdfBuffer = await generateMarksheetPdf(filterPdfParamsToSubject(params, subjectIdParam));
+      filename = `${baseName}-${subjectName.replace(/[^\w-]+/g, "_")}.pdf`;
+    } else if (scope === "exam") {
+      // Exam-wise sheet — class teacher only.
+      await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+      pdfBuffer = await generateExamWisePdf(params);
+      filename = `${baseName}-exam-wise.pdf`;
+    } else {
+      // Full sheet — class teacher only.
+      await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+      pdfBuffer = await generateMarksheetPdf(params);
+      filename = `${baseName}-marksheet.pdf`;
+    }
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(pdfBuffer);
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
 // ── POST /:id/publish ─────────────────────────────────────────────────────────
 
 export async function publishMarksheet(
@@ -970,90 +1218,18 @@ export async function publishMarksheet(
 
     const marksheet = await prisma.marksheet.findFirst({
       where: { id: marksheetId, institutionId },
-      include: {
-        division: {
-          include: { standard: true },
-        },
-      },
+      select: { divisionId: true, pdfR2Key: true, shareToken: true },
     });
     if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
-    // Must have at least one exam column
-    const columnCount = await prisma.marksheetExamColumn.count({ where: { marksheetId, institutionId } });
+    const { params, columnCount } = await buildMarksheetPdfData(marksheetId, institutionId);
     if (columnCount === 0) {
       res.status(400).json({ success: false, error: "Add at least one exam column before publishing" });
       return;
     }
 
-    // Fetch institution name
-    const institution = await prisma.institution.findUnique({
-      where: { id: institutionId },
-      select: { name: true },
-    });
-
-    // Fetch all data needed for PDF
-    const [subjects, examColumns, scores, gradedSubjects, gradedScores, students] = await Promise.all([
-      prisma.subject.findMany({
-        where: { standardId: marksheet.division.standardId, institutionId },
-        orderBy: { order: "asc" },
-        select: { id: true, name: true, code: true },
-      }),
-      prisma.marksheetExamColumn.findMany({
-        where: { marksheetId, institutionId },
-        orderBy: [{ subjectId: "asc" }, { order: "asc" }],
-        select: { id: true, subjectId: true, name: true, maxMarks: true },
-      }),
-      prisma.marksheetScore.findMany({
-        where: { marksheetId, institutionId },
-        select: { examColumnId: true, studentId: true, score: true, isAbsent: true },
-      }),
-      prisma.marksheetGradedSubject.findMany({
-        where: { marksheetId, institutionId },
-        orderBy: { order: "asc" },
-        select: { id: true, name: true },
-      }),
-      prisma.marksheetGradedScore.findMany({
-        where: { marksheetId, institutionId },
-        select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
-      }),
-      prisma.student.findMany({
-        where: { divisionId: marksheet.divisionId, institutionId },
-        include: { user: { select: { name: true } } },
-        orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
-      }),
-    ]);
-
-    // Build maps
-    const columnsBySubject: Record<string, { id: string; name: string; maxMarks: number }[]> = {};
-    for (const col of examColumns) {
-      if (!columnsBySubject[col.subjectId]) columnsBySubject[col.subjectId] = [];
-      columnsBySubject[col.subjectId].push(col);
-    }
-    const scoreMap: Record<string, Record<string, { score: number | null; isAbsent: boolean }>> = {};
-    for (const sc of scores) {
-      if (!scoreMap[sc.examColumnId]) scoreMap[sc.examColumnId] = {};
-      scoreMap[sc.examColumnId][sc.studentId] = { score: sc.score, isAbsent: sc.isAbsent };
-    }
-    const gradedScoreMap: Record<string, Record<string, { term1Grade: string | null; term2Grade: string | null }>> = {};
-    for (const gs of gradedScores) {
-      if (!gradedScoreMap[gs.gradedSubjectId]) gradedScoreMap[gs.gradedSubjectId] = {};
-      gradedScoreMap[gs.gradedSubjectId][gs.studentId] = { term1Grade: gs.term1Grade, term2Grade: gs.term2Grade };
-    }
-
-    const pdfBuffer = await generateMarksheetPdf({
-      divisionName: marksheet.division.name,
-      standardName: marksheet.division.standard.name,
-      institutionName: institution?.name ?? "Institution",
-      academicYear: marksheet.academicYear,
-      subjects: subjects.map((s) => ({ id: s.id, name: s.name, code: s.code ?? s.name.slice(0, 4) })),
-      examColumnsBySubject: columnsBySubject,
-      students: students.map((s) => ({ id: s.id, name: s.user.name ?? "", rollNo: s.rollNo ?? "" })),
-      scoreMap,
-      gradedSubjects,
-      gradedScoreMap,
-      gradedSectionTitle: marksheet.gradedSectionTitle,
-    });
+    const pdfBuffer = await generateMarksheetPdf(params);
 
     const r2Key = `institutions/${institutionId}/marksheets/${marksheetId}.pdf`;
     const r2Client = getR2Client();

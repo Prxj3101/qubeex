@@ -301,11 +301,18 @@ router.get(
         return;
       }
 
-      const hasAssignment = await prisma.divisionAssignment.findFirst({
-        where: { divisionId, teacherId: teacher.id, institutionId },
-        select: { id: true },
-      });
-      if (!hasAssignment) {
+      const [assignment, division] = await Promise.all([
+        prisma.divisionAssignment.findFirst({
+          where: { divisionId, teacherId: teacher.id, institutionId },
+          select: { id: true },
+        }),
+        prisma.division.findFirst({
+          where: { id: divisionId, institutionId },
+          select: { classTeacherId: true },
+        }),
+      ]);
+      const isClassTeacher = division?.classTeacherId === teacher.id;
+      if (!assignment && !isClassTeacher) {
         res.status(403).json({ success: false, error: "Not assigned to this division" });
         return;
       }

@@ -206,19 +206,6 @@ async function assertSubjectTeacher(
   }
 }
 
-async function isClassTeacherOf(
-  teacherId: string,
-  divisionId: string,
-  institutionId: string
-): Promise<boolean> {
-  // App-wide convention: the class teacher is the DivisionAssignment with subjectId = null.
-  const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
-    where: { divisionId, teacherId, institutionId, subjectId: null },
-    select: { id: true },
-  });
-  return !!classTeacherAssignment;
-}
-
 function getCurrentAcademicYear(): string {
   const now = new Date();
   const month = now.getMonth(); // 0-indexed, June = 5
@@ -441,12 +428,9 @@ export async function addColumn(
     if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
 
     const { subjectId, name, maxMarks, examDate } = addColumnSchema.parse(req.body);
-    const isClassTeacher = await isClassTeacherOf(teacherId, marksheet.divisionId, institutionId);
-
-    if (!isClassTeacher) {
-      // Subject teacher — must be assigned to this subject in this division
-      await assertSubjectTeacher(teacherId, marksheet.divisionId, subjectId, institutionId);
-    }
+    // Structure (exam columns) is owned by the class teacher only.
+    // Subject teachers fill marks, they do not create/modify columns.
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
     // Determine next order value
     const maxOrder = await prisma.marksheetExamColumn.aggregate({
@@ -496,10 +480,8 @@ export async function editColumn(
     });
     if (!column) { res.status(404).json({ success: false, error: "Column not found" }); return; }
 
-    const isClassTeacher = await isClassTeacherOf(teacherId, column.marksheet.divisionId, institutionId);
-    if (!isClassTeacher) {
-      await assertSubjectTeacher(teacherId, column.marksheet.divisionId, column.subjectId, institutionId);
-    }
+    // Structure is class-teacher-only.
+    await assertClassTeacher(teacherId, column.marksheet.divisionId, institutionId);
 
     const data = editColumnSchema.parse(req.body);
     const updated = await prisma.marksheetExamColumn.update({
@@ -539,10 +521,8 @@ export async function deleteColumn(
     });
     if (!column) { res.status(404).json({ success: false, error: "Column not found" }); return; }
 
-    const isClassTeacher = await isClassTeacherOf(teacherId, column.marksheet.divisionId, institutionId);
-    if (!isClassTeacher) {
-      await assertSubjectTeacher(teacherId, column.marksheet.divisionId, column.subjectId, institutionId);
-    }
+    // Structure is class-teacher-only.
+    await assertClassTeacher(teacherId, column.marksheet.divisionId, institutionId);
 
     // Cascade deletes scores via onDelete: Cascade on MarksheetScore
     await prisma.marksheetExamColumn.delete({ where: { id: colId } });
@@ -574,10 +554,8 @@ export async function reorderColumns(
     });
     if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
 
-    const isClassTeacher = await isClassTeacherOf(teacherId, marksheet.divisionId, institutionId);
-    if (!isClassTeacher) {
-      await assertSubjectTeacher(teacherId, marksheet.divisionId, subjectId, institutionId);
-    }
+    // Structure is class-teacher-only.
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
     const { orderedIds } = reorderColumnsSchema.parse(req.body);
 

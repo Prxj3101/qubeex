@@ -388,6 +388,15 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
       });
     }
 
+    // A null subjectId means this is the class-teacher slot — keep the
+    // denormalized Division.classTeacherId field in sync with the assignment.
+    if (subjectId === null) {
+      await prisma.division.update({
+        where: { id: divisionId },
+        data: { classTeacherId: data.teacherId },
+      });
+    }
+
     res.status(201).json({ success: true, data: assignment });
     const slot = data.subjectId ? `subject "${assignment.subject?.name}"` : "class teacher";
     logAudit("TEACHER_ASSIGNED", {
@@ -412,6 +421,16 @@ export const removeAssignment = async (req: AuthRequest, res: Response, next: Ne
     if (!assignment) throw new NotFoundError("Assignment not found");
 
     await prisma.divisionAssignment.delete({ where: { id } });
+
+    // Removing the class-teacher slot (null subjectId) must also clear the
+    // denormalized Division.classTeacherId, but only if it pointed at this teacher.
+    if (assignment.subjectId === null) {
+      await prisma.division.updateMany({
+        where: { id: assignment.divisionId, institutionId, classTeacherId: assignment.teacherId },
+        data: { classTeacherId: null },
+      });
+    }
+
     res.json({ success: true });
     logAudit("TEACHER_UNASSIGNED", {
       userId: req.user!.userId,

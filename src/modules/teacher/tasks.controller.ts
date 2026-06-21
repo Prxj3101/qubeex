@@ -1071,18 +1071,20 @@ export const renameContainer = async (req: AuthRequest, res: Response, next: Nex
     const id = req.params.id as string;
     const { name } = renameContainerSchema.parse(req.body);
 
-    const container = await prisma.taskContainer.findFirst({ where: { id, teacherId, institutionId } });
+    const container = await prisma.taskContainer.findFirst({
+      where: { id, teacherId, institutionId },
+      include: { _count: { select: { questions: true } } },
+    });
     if (!container) throw new NotFoundError("Container not found");
 
-    const updated = await prisma.taskContainer.update({
-      where: { id },
+    await prisma.taskContainer.updateMany({
+      where: { id, teacherId, institutionId },
       data: { name },
-      include: { _count: { select: { questions: true } } },
     });
 
     res.json({
       success: true,
-      data: { id: updated.id, name: updated.name, createdAt: updated.createdAt, questionCount: updated._count.questions },
+      data: { id: container.id, name, createdAt: container.createdAt, questionCount: container._count.questions },
     });
   } catch (err) { next(err); }
 };
@@ -1097,7 +1099,7 @@ export const deleteContainer = async (req: AuthRequest, res: Response, next: Nex
     if (!container) throw new NotFoundError("Container not found");
 
     // onDelete: Cascade on TaskQuestion.containerId removes the questions inside.
-    await prisma.taskContainer.delete({ where: { id } });
+    await prisma.taskContainer.deleteMany({ where: { id, teacherId, institutionId } });
 
     res.json({ success: true });
   } catch (err) { next(err); }

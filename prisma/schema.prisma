@@ -119,6 +119,7 @@ model Institution {
   blackboardFolders  BlackboardFolder[]
   blackboardMaterials BlackboardMaterial[]
   taskQuestions      TaskQuestion[]
+  taskContainers     TaskContainer[]
   taskModules        TaskModule[]
   taskTests          TaskTest[]
   taskPdfUploads     TaskPdfUpload[]
@@ -280,6 +281,7 @@ model Teacher {
   blackboardFolders   BlackboardFolder[]
   blackboardMaterials BlackboardMaterial[]
   taskQuestions       TaskQuestion[]
+  taskContainers      TaskContainer[]
   taskModules         TaskModule[]
   taskTests           TaskTest[]
   taskPdfUploads      TaskPdfUpload[]
@@ -460,6 +462,7 @@ model Division {
   attendances        Attendance[]
   attendanceDayNotes AttendanceDayNote[]
   taskTests          TaskTest[]
+  taskContainers     TaskContainer[]
   marksheets         Marksheet[]
 
   @@unique([standardId, name])
@@ -485,6 +488,7 @@ model Subject {
   assignments      DivisionAssignment[]
   divisionSubjects DivisionSubject[]
   taskQuestions    TaskQuestion[]
+  taskContainers   TaskContainer[]
   taskModules      TaskModule[]
   taskTests        TaskTest[]
   marksheetConfigs MarksheetSubjectConfig[]
@@ -845,6 +849,27 @@ enum TaskTestStatus {
   COMPLETED
 }
 
+model TaskContainer {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  teacherId     String
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+  subjectId     String
+  subject       Subject     @relation(fields: [subjectId], references: [id])
+  divisionId    String
+  division      Division    @relation(fields: [divisionId], references: [id])
+
+  name          String
+  questions     TaskQuestion[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([teacherId, subjectId, divisionId])
+  @@index([institutionId])
+}
+
 model TaskQuestion {
   id            String             @id @default(uuid())
   institutionId String
@@ -853,6 +878,8 @@ model TaskQuestion {
   teacher       Teacher            @relation(fields: [teacherId], references: [id])
   subjectId     String
   subject       Subject            @relation(fields: [subjectId], references: [id])
+  containerId   String
+  container     TaskContainer @relation(fields: [containerId], references: [id], onDelete: Cascade)
 
   type             TaskQuestionType
   status           TaskQuestionStatus @default(APPROVED)
@@ -1008,6 +1035,7 @@ model TaskPdfUpload {
   teacherId     String
   teacher       Teacher     @relation(fields: [teacherId], references: [id])
   divisionId    String
+  containerId   String
 
   displayName   String
   originalName  String

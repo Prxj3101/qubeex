@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 export const generateQuestionsSchema = z.object({
-  divisionId: z.string().min(1),
+  containerId: z.string().uuid(),
   prompt: z.string().max(500).trim().optional(),
   more: z.boolean().optional().default(false),
 });
@@ -25,6 +25,15 @@ export const editModuleSchema = z.object({
   description: z.string().max(500).trim().optional(),
 }).refine(d => d.name !== undefined || d.description !== undefined, {
   message: "At least one field required",
+});
+
+export const createContainerSchema = z.object({
+  divisionId: z.string().min(1),
+  name: z.string().min(1).max(100).trim(),
+});
+
+export const renameContainerSchema = z.object({
+  name: z.string().min(1).max(100).trim(),
 });
 
 export const assignQuestionSchema = z.object({

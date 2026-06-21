@@ -17,6 +17,7 @@ import {
   reorderGradedSubjectsSchema,
   gradedSectionTitleSchema,
   bulkGradedScoresSchema,
+  updateMarksheetGradeScaleSchema,
 } from "./marksheet.schema";
 
 // ── R2 client ─────────────────────────────────────────────────────────────────
@@ -33,6 +34,24 @@ function getR2Client(): S3Client {
   });
 }
 
+type GradeScaleEntry = { grade: string; minPct: number };
+
+function resolveGrade(pct: number, scale: GradeScaleEntry[]): string {
+  if (scale.length === 0) {
+    // Fallback to built-in scale when institution hasn't configured one.
+    if (pct >= 75) return "A";
+    if (pct >= 60) return "B";
+    if (pct >= 45) return "C";
+    if (pct >= 35) return "D";
+    return "F";
+  }
+  const sorted = [...scale].sort((a, b) => b.minPct - a.minPct);
+  for (const entry of sorted) {
+    if (pct >= entry.minPct) return entry.grade;
+  }
+  return sorted[sorted.length - 1]?.grade ?? "F";
+}
+
 async function generateMarksheetPdf(params: {
   divisionName: string;
   standardName: string;
@@ -45,117 +64,238 @@ async function generateMarksheetPdf(params: {
   gradedSubjects: { id: string; name: string }[];
   gradedScoreMap: Record<string, Record<string, { term1Grade: string | null; term2Grade: string | null }>>;
   gradedSectionTitle: string;
+  gradeScale: GradeScaleEntry[];
 }): Promise<Buffer> {
-  const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
-  const chunks: Buffer[] = [];
+  // ── Layout constants ──────────────────────────────────────────────────────
+  const M       = 28;   // page margin
+  const ROLL_W  = 36;
+  const NAME_W  = 125;
+  const GRP_H   = 14;   // header row-1: subject group label
+  const COL_H   = 26;   // header row-2: exam column label
+  const ROW_H   = 14;   // data row height
 
-  doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+  // ── Colours ───────────────────────────────────────────────────────────────
+  const C_HDR_GRP  = "#D6C9B4";
+  const C_HDR_COL  = "#EDE4D6";
+  const C_OVRL_GRP = "#C8B8D8";
+  const C_GRD_GRP  = "#C0C8E8";
+  const C_SUMM     = "#F0E8D8";
+  const C_EVEN     = "#FAF5EE";
+  const C_ODD      = "#F3EBE0";
+  const C_TEXT     = "#1A100A";
+  const C_MUTED    = "#666666";
+  const C_BORDER   = "#C4AC88";
+
+  // ── Column definitions ────────────────────────────────────────────────────
+  type ColKind = "exam" | "subTotal" | "subPct" | "gradedT1" | "gradedT2" | "grandTotal" | "grandPct" | "grade";
+  interface ColDef { kind: ColKind; group: string; colId?: string; subjectId?: string; gsId?: string; maxMarks?: number; examName?: string; }
+
+  const cols: ColDef[] = [];
+  params.subjects.forEach((sub) => {
+    (params.examColumnsBySubject[sub.id] ?? []).forEach((ec) =>
+      cols.push({ kind: "exam", group: sub.name, subjectId: sub.id, colId: ec.id, examName: ec.name, maxMarks: ec.maxMarks })
+    );
+    cols.push({ kind: "subTotal", group: sub.name, subjectId: sub.id });
+    cols.push({ kind: "subPct",   group: sub.name, subjectId: sub.id });
+  });
+  params.gradedSubjects.forEach((gs) => {
+    cols.push({ kind: "gradedT1", group: params.gradedSectionTitle, gsId: gs.id });
+    cols.push({ kind: "gradedT2", group: params.gradedSectionTitle, gsId: gs.id });
+  });
+  cols.push({ kind: "grandTotal", group: "Overall" });
+  cols.push({ kind: "grandPct",   group: "Overall" });
+  cols.push({ kind: "grade",      group: "Overall" });
+
+  // ── Column width: fill usable space, clamp 26–52 ─────────────────────────
+  const doc = new PDFDocument({ margin: M, size: "A4", layout: "landscape", autoFirstPage: true });
+  const chunks: Buffer[] = [];
+  doc.on("data", (c: Buffer) => chunks.push(c));
 
   return new Promise<Buffer>((resolve, reject) => {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    // Title
-    doc.fontSize(14).font("Helvetica-Bold")
-      .text(`${params.institutionName} — Marksheet`, { align: "center" });
-    doc.fontSize(10).font("Helvetica").fillColor("#555")
-      .text(`${params.standardName} - ${params.divisionName} | Academic Year: ${params.academicYear}`, { align: "center" });
-    doc.moveDown(0.8);
+    const PW = doc.page.width;
+    const PH = doc.page.height;
+    const UW = PW - M * 2;
+    const availForCols = UW - ROLL_W - NAME_W;
+    const COL_W = cols.length > 0
+      ? Math.max(26, Math.min(52, Math.floor(availForCols / cols.length)))
+      : 40;
+    const TW = ROLL_W + NAME_W + cols.length * COL_W; // total table width
 
-    // Build header row
-    const COL_W = 55;
-    const NAME_W = 120;
-    const ROLL_W = 40;
-    const startX = doc.page.margins.left;
-    let y = doc.y;
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    /** Render text into a cell with NO line-break so doc.y never drifts. */
+    const ct = (
+      text: string,
+      x: number, y: number, w: number, h: number,
+      opts: { bold?: boolean; align?: "left" | "center" | "right"; size?: number; color?: string } = {}
+    ) => {
+      const { bold = false, align = "center", size = 6.5, color = C_TEXT } = opts;
+      const vPad = Math.max(2, Math.floor((h - size * 1.15) / 2));
+      doc.fontSize(size)
+        .font(bold ? "Helvetica-Bold" : "Helvetica")
+        .fillColor(color)
+        .text(text, x + 2, y + vPad, { width: w - 4, align, lineBreak: false, ellipsis: true });
+    };
 
-    const headerCols: string[] = [];
-    params.subjects.forEach((sub) => {
-      const cols = params.examColumnsBySubject[sub.id] ?? [];
-      cols.forEach((col) => headerCols.push(`${sub.code}\n${col.name}\n/${col.maxMarks}`));
-      headerCols.push(`${sub.code}\nTotal`);
-      headerCols.push(`${sub.code}\n%`);
-    });
-    if (params.gradedSubjects.length > 0) {
-      params.gradedSubjects.forEach((gs) => {
-        headerCols.push(`${gs.name}\nT1`);
-        headerCols.push(`${gs.name}\nT2`);
-      });
-    }
-    headerCols.push("Grand\nTotal");
-    headerCols.push("Grand\n%");
-    headerCols.push("Grade");
+    /** Draw a horizontal rule. */
+    const hline = (x: number, y: number, w: number, color = C_BORDER, lw = 0.3) =>
+      doc.lineWidth(lw).moveTo(x, y).lineTo(x + w, y).stroke(color);
 
-    const totalWidth = ROLL_W + NAME_W + headerCols.length * COL_W;
+    /** Draw a vertical rule. */
+    const vline = (x: number, y1: number, y2: number, color = C_BORDER, lw = 0.3) =>
+      doc.lineWidth(lw).moveTo(x, y1).lineTo(x, y2).stroke(color);
 
-    // Draw header background
-    doc.rect(startX, y, totalWidth, 32).fill("#E8DDD0");
-    doc.fillColor("#2A1F10").font("Helvetica-Bold").fontSize(7);
-    doc.text("Roll", startX + 2, y + 4, { width: ROLL_W - 4 });
-    doc.text("Student Name", startX + ROLL_W + 2, y + 4, { width: NAME_W - 4 });
-    headerCols.forEach((label, i) => {
-      doc.text(label, startX + ROLL_W + NAME_W + i * COL_W + 2, y + 4, { width: COL_W - 4 });
-    });
-    y += 32;
+    // ── Two-row table header ─────────────────────────────────────────────────
+    const drawHeader = (startY: number): number => {
+      const y1 = startY;
+      const y2 = y1 + GRP_H;
+      const hTot = GRP_H + COL_H;
 
-    // Draw rows
-    doc.font("Helvetica").fontSize(7);
-    params.students.forEach((student, si) => {
-      if (y > doc.page.height - doc.page.margins.bottom - 20) {
-        doc.addPage({ layout: "landscape", size: "A4", margin: 30 });
-        y = doc.page.margins.top;
+      // Roll + Name: tall cells spanning both header rows
+      doc.rect(M,           y1, ROLL_W, hTot).fill(C_HDR_GRP);
+      doc.rect(M + ROLL_W,  y1, NAME_W, hTot).fill(C_HDR_GRP);
+      ct("Roll",         M,          y1, ROLL_W, hTot, { bold: true, size: 7 });
+      ct("Student Name", M + ROLL_W, y1, NAME_W, hTot, { bold: true, align: "left", size: 7 });
+
+      // Row-1: group spans
+      let gx = M + ROLL_W + NAME_W;
+      let gi = 0;
+      while (gi < cols.length) {
+        const grp = cols[gi].group;
+        let span = 0;
+        while (gi + span < cols.length && cols[gi + span].group === grp) span++;
+        const gw = span * COL_W;
+        const bg = grp === "Overall" ? C_OVRL_GRP : grp === params.gradedSectionTitle ? C_GRD_GRP : C_HDR_GRP;
+        doc.rect(gx, y1, gw, GRP_H).fill(bg);
+        ct(grp, gx, y1, gw, GRP_H, { bold: true, size: 6 });
+        gx += gw; gi += span;
       }
-      const rowBg = si % 2 === 0 ? "#FAF5EE" : "#F5EFE5";
-      doc.rect(startX, y, totalWidth, 18).fill(rowBg);
-      doc.fillColor("#2A1F10");
-      doc.text(student.rollNo, startX + 2, y + 4, { width: ROLL_W - 4 });
-      doc.text(student.name, startX + ROLL_W + 2, y + 4, { width: NAME_W - 4, ellipsis: true });
 
-      let colIdx = 0;
-      let grandScored = 0, grandMax = 0;
+      // Row-2: individual column labels
+      cols.forEach((col, i) => {
+        const cx = M + ROLL_W + NAME_W + i * COL_W;
+        const isSummary = col.kind === "subTotal" || col.kind === "subPct" ||
+                          col.kind === "grandTotal" || col.kind === "grandPct" || col.kind === "grade";
+        doc.rect(cx, y2, COL_W, COL_H).fill(isSummary ? C_HDR_GRP : C_HDR_COL);
 
+        const lines: string[] =
+          col.kind === "exam"       ? [col.examName!, `/${col.maxMarks}`]
+          : col.kind === "subTotal" ? ["Total"]
+          : col.kind === "subPct"   ? ["%"]
+          : col.kind === "gradedT1" ? ["Term 1"]
+          : col.kind === "gradedT2" ? ["Term 2"]
+          : col.kind === "grandTotal" ? ["Grand", "Total"]
+          : col.kind === "grandPct"   ? ["Grand", "%"]
+          :                            ["Grade"];
+
+        const lineH = COL_H / (lines.length > 1 ? lines.length + 0.4 : 1);
+        lines.forEach((ln, li) =>
+          doc.fontSize(5.5).font("Helvetica-Bold").fillColor(C_TEXT)
+            .text(ln, cx + 2, y2 + 3 + li * lineH, { width: COL_W - 4, align: "center", lineBreak: false, ellipsis: true })
+        );
+      });
+
+      // Grid lines over header
+      doc.lineWidth(0.5).rect(M, y1, TW, hTot).stroke(C_BORDER);
+      hline(M + ROLL_W + NAME_W, y2, cols.length * COL_W, C_BORDER, 0.4);
+      vline(M + ROLL_W, y1, y1 + hTot, C_BORDER, 0.4);
+      vline(M + ROLL_W + NAME_W, y1, y1 + hTot, C_BORDER, 0.4);
+      for (let i = 1; i < cols.length; i++)
+        vline(M + ROLL_W + NAME_W + i * COL_W, y1, y1 + hTot, C_BORDER, 0.25);
+
+      return y2 + COL_H;
+    };
+
+    // ── Title block ──────────────────────────────────────────────────────────
+    doc.fontSize(13).font("Helvetica-Bold").fillColor(C_TEXT)
+      .text(params.institutionName, M, M, { width: UW, align: "center", lineBreak: false });
+    doc.fontSize(8).font("Helvetica").fillColor(C_MUTED)
+      .text(
+        `${params.standardName} – ${params.divisionName}   ·   Academic Year: ${params.academicYear}`,
+        M, M + 17, { width: UW, align: "center", lineBreak: false }
+      );
+
+    let y = M + 36;
+    let tableTopY = y;
+    y = drawHeader(y);
+
+    // ── Data rows ────────────────────────────────────────────────────────────
+    params.students.forEach((student, si) => {
+      if (y + ROW_H > PH - M) {
+        // Close table border on this page
+        doc.lineWidth(0.5).rect(M, tableTopY, TW, y - tableTopY).stroke(C_BORDER);
+        doc.addPage({ size: "A4", layout: "landscape", margin: M });
+        y = M; tableTopY = M;
+        y = drawHeader(y);
+      }
+
+      // Row background
+      doc.rect(M, y, TW, ROW_H).fill(si % 2 === 0 ? C_EVEN : C_ODD);
+
+      // Roll + Name
+      ct(student.rollNo || "—", M,          y, ROLL_W, ROW_H, { align: "center" });
+      ct(student.name   || "—", M + ROLL_W, y, NAME_W, ROW_H, { align: "left" });
+      vline(M + ROLL_W,         y, y + ROW_H, C_BORDER, 0.3);
+      vline(M + ROLL_W + NAME_W, y, y + ROW_H, C_BORDER, 0.3);
+
+      // Per-subject totals (computed once per row)
+      const subTotals: Record<string, { scored: number; max: number }> = {};
       params.subjects.forEach((sub) => {
-        const cols = params.examColumnsBySubject[sub.id] ?? [];
-        let subScored = 0, subMax = 0;
-        cols.forEach((col) => {
-          const entry = params.scoreMap[col.id]?.[student.id];
-          const score = entry?.score ?? null;
-          const absent = entry?.isAbsent ?? false;
-          const cellText = absent ? "AB" : score !== null ? String(score) : "—";
-          doc.text(cellText, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
-          if (score !== null) { subScored += score; subMax += col.maxMarks; }
-          else if (!absent) { subMax += col.maxMarks; }
-          colIdx++;
+        let scored = 0, max = 0;
+        (params.examColumnsBySubject[sub.id] ?? []).forEach((ec) => {
+          const e = params.scoreMap[ec.id]?.[student.id];
+          if (e?.score !== null && e?.score !== undefined) { scored += e.score!; max += ec.maxMarks; }
+          else if (!e?.isAbsent) { max += ec.maxMarks; }
         });
-        const subTotal = `${subScored}/${subMax}`;
-        const subPct = subMax > 0 ? `${Math.round((subScored / subMax) * 100)}%` : "—";
-        doc.text(subTotal, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
-        colIdx++;
-        doc.text(subPct, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
-        colIdx++;
-        grandScored += subScored;
-        grandMax += subMax;
+        subTotals[sub.id] = { scored, max };
+      });
+      const grandScored = Object.values(subTotals).reduce((s, v) => s + v.scored, 0);
+      const grandMax    = Object.values(subTotals).reduce((s, v) => s + v.max,    0);
+
+      // Draw data cells
+      cols.forEach((col, i) => {
+        const cx = M + ROLL_W + NAME_W + i * COL_W;
+
+        let text = "—", bold = false;
+        const isSummary = col.kind === "subTotal" || col.kind === "subPct" ||
+                          col.kind === "grandTotal" || col.kind === "grandPct" || col.kind === "grade";
+        if (isSummary) doc.rect(cx, y, COL_W, ROW_H).fill(C_SUMM);
+
+        if (col.kind === "exam") {
+          const e = params.scoreMap[col.colId!]?.[student.id];
+          text = e?.isAbsent ? "AB" : (e?.score !== null && e?.score !== undefined) ? String(e.score) : "—";
+        } else if (col.kind === "subTotal") {
+          const { scored, max } = subTotals[col.subjectId!];
+          text = `${scored}/${max}`; bold = true;
+        } else if (col.kind === "subPct") {
+          const { scored, max } = subTotals[col.subjectId!];
+          text = max > 0 ? `${Math.round((scored / max) * 100)}%` : "—";
+        } else if (col.kind === "gradedT1") {
+          text = params.gradedScoreMap[col.gsId!]?.[student.id]?.term1Grade ?? "—";
+        } else if (col.kind === "gradedT2") {
+          text = params.gradedScoreMap[col.gsId!]?.[student.id]?.term2Grade ?? "—";
+        } else if (col.kind === "grandTotal") {
+          text = `${grandScored}/${grandMax}`; bold = true;
+        } else if (col.kind === "grandPct") {
+          const pct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
+          text = pct !== null ? `${pct}%` : "—"; bold = true;
+        } else if (col.kind === "grade") {
+          const pct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
+          text = pct !== null ? resolveGrade(pct, params.gradeScale) : "—"; bold = true;
+        }
+
+        ct(text, cx, y, COL_W, ROW_H, { bold, align: "center" });
+        vline(cx + COL_W, y, y + ROW_H, C_BORDER, 0.25);
       });
 
-      params.gradedSubjects.forEach((gs) => {
-        const entry = params.gradedScoreMap[gs.id]?.[student.id];
-        doc.text(entry?.term1Grade ?? "—", startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
-        colIdx++;
-        doc.text(entry?.term2Grade ?? "—", startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
-        colIdx++;
-      });
-
-      const grandPct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
-      const gradeLabel = grandPct === null ? "—" : grandPct >= 75 ? "A" : grandPct >= 60 ? "B" : grandPct >= 45 ? "C" : grandPct >= 35 ? "D" : "F";
-      doc.text(`${grandScored}/${grandMax}`, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
-      colIdx++;
-      doc.text(grandPct !== null ? `${grandPct}%` : "—", startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
-      colIdx++;
-      doc.text(gradeLabel, startX + ROLL_W + NAME_W + colIdx * COL_W + 2, y + 4, { width: COL_W - 4 });
-
-      y += 18;
+      hline(M, y + ROW_H, TW, C_BORDER, 0.25);
+      y += ROW_H;
     });
 
+    // Outer border
+    doc.lineWidth(0.5).rect(M, tableTopY, TW, y - tableTopY).stroke(C_BORDER);
     doc.end();
   });
 }
@@ -232,6 +372,7 @@ async function fetchMarksheetFull(
           status: true,
           shareToken: true,
           gradedSectionTitle: true,
+          gradeScale: true,
           subjectConfigs: {
             select: { subjectId: true, passingMarks: true, gradeScale: true },
           },
@@ -307,6 +448,7 @@ async function fetchMarksheetFull(
       shareToken: marksheet.shareToken,
       gradedSectionTitle: marksheet.gradedSectionTitle,
     },
+    gradeScale: (marksheet.gradeScale ?? []) as { grade: string; minPct: number }[],
     subjectConfigs: isClassTeacher
       ? marksheet.subjectConfigs
       : marksheet.subjectConfigs.filter(c => mySubjectIds.includes(c.subjectId)),
@@ -857,6 +999,42 @@ export async function updateGradedSectionTitle(
   }
 }
 
+// ── PATCH /:id/grade-scale ────────────────────────────────────────────────────
+
+export async function updateMarksheetGradeScale(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await prisma.marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+
+    const { gradeScale } = updateMarksheetGradeScaleSchema.parse(req.body);
+    const sorted = [...gradeScale].sort((a, b) => b.minPct - a.minPct);
+
+    await prisma.marksheet.update({
+      where: { id: marksheetId },
+      data: { gradeScale: sorted },
+    });
+
+    res.json({ success: true, data: { gradeScale: sorted } });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
 // ── PUT /:id/graded-scores ────────────────────────────────────────────────────
 
 export async function bulkUpsertGradedScores(
@@ -1028,13 +1206,16 @@ async function buildMarksheetPdfData(
       standardName: marksheet.division.standard.name,
       institutionName: institution?.name ?? "Institution",
       academicYear: marksheet.academicYear,
-      subjects: subjects.map((s) => ({ id: s.id, name: s.name, code: s.code ?? s.name.slice(0, 4) })),
+      subjects: subjects
+        .filter((s) => (columnsBySubject[s.id]?.length ?? 0) > 0)
+        .map((s) => ({ id: s.id, name: s.name, code: s.code ?? s.name.slice(0, 4) })),
       examColumnsBySubject: columnsBySubject,
       students: students.map((s) => ({ id: s.id, name: s.user.name ?? "", rollNo: s.rollNo ?? "" })),
       scoreMap,
       gradedSubjects,
       gradedScoreMap,
       gradedSectionTitle: marksheet.gradedSectionTitle,
+      gradeScale: (marksheet.gradeScale ?? []) as GradeScaleEntry[],
     },
   };
 }
@@ -1084,10 +1265,10 @@ async function generateExamWisePdf(params: MarksheetPdfParams): Promise<Buffer> 
     }
 
     examNames.forEach((examName, idx) => {
-      const cols: { code: string; col: { id: string; name: string; maxMarks: number } }[] = [];
+      const cols: { name: string; col: { id: string; name: string; maxMarks: number } }[] = [];
       for (const sub of params.subjects) {
         const col = (params.examColumnsBySubject[sub.id] ?? []).find((c) => c.name === examName);
-        if (col) cols.push({ code: sub.code, col });
+        if (col) cols.push({ name: sub.name, col });
       }
       if (cols.length === 0) return;
 
@@ -1100,7 +1281,7 @@ async function generateExamWisePdf(params: MarksheetPdfParams): Promise<Buffer> 
       doc.fontSize(11).font("Helvetica-Bold").fillColor("#2A1F10").text(examName, startX, y);
       y = doc.y + 4;
 
-      const headerCols = [...cols.map((c) => `${c.code}\n/${c.col.maxMarks}`), "Total", "%"];
+      const headerCols = [...cols.map((c) => `${c.name}\n/${c.col.maxMarks}`), "Total", "%"];
       const totalWidth = ROLL_W + NAME_W + headerCols.length * COL_W;
 
       doc.rect(startX, y, totalWidth, 28).fill("#E8DDD0");
@@ -1223,43 +1404,20 @@ export async function publishMarksheet(
     if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
-    const { params, columnCount } = await buildMarksheetPdfData(marksheetId, institutionId);
+    const columnCount = await prisma.marksheetExamColumn.count({
+      where: { marksheetId, institutionId },
+    });
     if (columnCount === 0) {
       res.status(400).json({ success: false, error: "Add at least one exam column before publishing" });
       return;
     }
 
-    const pdfBuffer = await generateMarksheetPdf(params);
-
-    const r2Key = `institutions/${institutionId}/marksheets/${marksheetId}.pdf`;
-    const r2Client = getR2Client();
-
-    // Update DB first — if R2 upload fails, DB points at a missing-but-recoverable key
-    // rather than leaving an orphaned live PDF in R2 with no DB record.
     await prisma.marksheet.update({
       where: { id: marksheetId },
-      data: { status: "PUBLISHED", pdfR2Key: r2Key },
+      data: { status: "PUBLISHED" },
     });
 
-    await r2Client.send(new PutObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME!,
-      Key: r2Key,
-      Body: pdfBuffer,
-      ContentType: "application/pdf",
-    }));
-
-    // Queue old PDF for deletion if re-publishing with a different key
-    if (marksheet.pdfR2Key && marksheet.pdfR2Key !== r2Key) {
-      await prisma.pendingFileDeletion.create({
-        data: {
-          r2Key: marksheet.pdfR2Key,
-          scheduledAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-        },
-      });
-    }
-
-    const publicUrl = `${process.env.R2_PUBLIC_URL!.replace(/\/$/, "")}/${r2Key}`;
-    res.json({ success: true, data: { pdfUrl: publicUrl, shareToken: marksheet.shareToken } });
+    res.json({ success: true });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };
     if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }

@@ -77,3 +77,18 @@ const gradedScoreItemSchema = z.object({
 export const bulkGradedScoresSchema = z.object({
   scores: z.array(gradedScoreItemSchema).min(1),
 });
+
+const marksheetGradeScaleEntrySchema = z.object({
+  grade: z.string().min(1).max(10).trim(),
+  minPct: z.number().min(0).max(100),
+});
+
+export const updateMarksheetGradeScaleSchema = z.object({
+  gradeScale: z
+    .array(marksheetGradeScaleEntrySchema)
+    .min(1)
+    .refine(
+      (entries) => new Set(entries.map((e) => e.minPct)).size === entries.length,
+      { message: "Each grade must have a unique minimum percentage" }
+    ),
+});

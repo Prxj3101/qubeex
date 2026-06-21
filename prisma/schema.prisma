@@ -1036,6 +1036,7 @@ model Marksheet {
   pdfR2Key           String?
   shareToken         String          @unique
   gradedSectionTitle String          @default("Graded Subjects")
+  gradeScale         Json            @default("[]")
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 

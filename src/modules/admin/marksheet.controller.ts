@@ -82,7 +82,7 @@ export async function adminGetDivisionMarksheet(
       prisma.marksheet.findUnique({
         where: { id: marksheet.id },
         select: {
-          id: true, academicYear: true, status: true, shareToken: true, gradedSectionTitle: true,
+          id: true, academicYear: true, status: true, shareToken: true, gradedSectionTitle: true, gradeScale: true,
           subjectConfigs: { select: { subjectId: true, passingMarks: true, gradeScale: true } },
         },
       }),
@@ -136,6 +136,7 @@ export async function adminGetDivisionMarksheet(
           id: ms!.id, academicYear: ms!.academicYear, status: ms!.status,
           shareToken: ms!.shareToken, gradedSectionTitle: ms!.gradedSectionTitle,
         },
+        gradeScale: (ms!.gradeScale ?? []) as { grade: string; minPct: number }[],
         subjectConfigs: ms!.subjectConfigs,
         examColumns: columnsBySubject,
         scores: scoreMap,

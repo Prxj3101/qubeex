@@ -111,6 +111,10 @@ import {
   deleteModule,
   assignQuestionToModule,
   unassignQuestionFromModule,
+  listContainers,
+  createContainer,
+  renameContainer,
+  deleteContainer,
 } from "./tasks.controller";
 import {
   initMarksheet, getDivisionMarksheet,
@@ -762,6 +766,12 @@ router.get("/blackboard/images", ...T, searchImages);
 router.post("/tasks/generate", ...T, taskUpload.single("file"), generateQuestions);
 router.get("/tasks/uploads", ...T, listUploads);
 router.get("/tasks/uploads/:id", ...T, getUploadStatus);
+
+// ── Tasks — Containers ────────────────────────────────────────────────────────
+router.get("/tasks/containers", ...T, listContainers);
+router.post("/tasks/containers", ...T, createContainer);
+router.patch("/tasks/containers/:id", ...T, renameContainer);
+router.delete("/tasks/containers/:id", ...T, deleteContainer);
 
 // ── Tasks — Question Bank ─────────────────────────────────────────────────────
 router.get("/tasks/questions", ...T, listQuestions);

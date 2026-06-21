@@ -16,6 +16,8 @@ import {
   addTestQuestionSchema,
   startQuizSchema,
   submitQuizSchema,
+  createContainerSchema,
+  renameContainerSchema,
 } from "./tasks.schema";
 import { redis, isRedisReady } from "../../utils/redis";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -1013,6 +1015,91 @@ export const getTestResults = async (req: AuthRequest, res: Response, next: Next
     });
 
     res.json({ success: true, data: { test, attempts } });
+  } catch (err) { next(err); }
+};
+
+// ── Containers ────────────────────────────────────────────────────────────────
+export const listContainers = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const divisionId = req.query.divisionId as string;
+    if (!divisionId) throw new BadRequestError("divisionId query param is required");
+
+    const { subjectId } = await resolveSubjectAssignment(teacherId, divisionId, institutionId);
+
+    const containers = await prisma.taskContainer.findMany({
+      where: { teacherId, subjectId, divisionId, institutionId },
+      include: { _count: { select: { questions: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const data = containers.map((c) => ({
+      id: c.id,
+      name: c.name,
+      createdAt: c.createdAt,
+      questionCount: c._count.questions,
+    }));
+
+    res.json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
+export const createContainer = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const data = createContainerSchema.parse(req.body);
+
+    const { subjectId } = await resolveSubjectAssignment(teacherId, data.divisionId, institutionId);
+
+    const container = await prisma.taskContainer.create({
+      data: { institutionId, teacherId, subjectId, divisionId: data.divisionId, name: data.name },
+    });
+
+    res.status(201).json({
+      success: true,
+      data: { id: container.id, name: container.name, createdAt: container.createdAt, questionCount: 0 },
+    });
+  } catch (err) { next(err); }
+};
+
+export const renameContainer = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+    const { name } = renameContainerSchema.parse(req.body);
+
+    const container = await prisma.taskContainer.findFirst({ where: { id, teacherId, institutionId } });
+    if (!container) throw new NotFoundError("Container not found");
+
+    const updated = await prisma.taskContainer.update({
+      where: { id },
+      data: { name },
+      include: { _count: { select: { questions: true } } },
+    });
+
+    res.json({
+      success: true,
+      data: { id: updated.id, name: updated.name, createdAt: updated.createdAt, questionCount: updated._count.questions },
+    });
+  } catch (err) { next(err); }
+};
+
+export const deleteContainer = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+
+    const container = await prisma.taskContainer.findFirst({ where: { id, teacherId, institutionId } });
+    if (!container) throw new NotFoundError("Container not found");
+
+    // onDelete: Cascade on TaskQuestion.containerId removes the questions inside.
+    await prisma.taskContainer.delete({ where: { id } });
+
+    res.json({ success: true });
   } catch (err) { next(err); }
 };
 

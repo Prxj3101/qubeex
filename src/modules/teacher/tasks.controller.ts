@@ -651,14 +651,18 @@ export const exportQuestions = async (req: AuthRequest, res: Response, next: Nex
   try {
     const { institutionId, userId } = requireTeacher(req);
     const teacherId = await getTeacherId(userId, institutionId);
-    const divisionId = req.query.divisionId as string;
+    const containerId = req.query.containerId as string;
 
-    if (!divisionId) throw new BadRequestError("divisionId query param is required");
+    if (!containerId) throw new BadRequestError("containerId query param is required");
 
-    const { subjectId, subjectName } = await resolveSubjectAssignment(teacherId, divisionId, institutionId);
+    const container = await prisma.taskContainer.findFirst({
+      where: { id: containerId, teacherId, institutionId },
+      select: { id: true, name: true },
+    });
+    if (!container) throw new NotFoundError("Container not found");
 
     const questions = await prisma.taskQuestion.findMany({
-      where: { teacherId, subjectId, institutionId, status: "APPROVED" },
+      where: { containerId, teacherId, institutionId, status: "APPROVED" },
       orderBy: [{ type: "asc" }, { createdAt: "asc" }],
     });
 
@@ -671,10 +675,10 @@ export const exportQuestions = async (req: AuthRequest, res: Response, next: Nex
 
     const doc = new PDFDocument({ margin: 50, size: "A4" });
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${subjectName.replace(/\s+/g, "_")}_Question_Bank.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="${container.name.replace(/\s+/g, "_")}_Question_Bank.pdf"`);
     doc.pipe(res);
 
-    doc.fontSize(18).font("Helvetica-Bold").text(`${subjectName} — Question Bank`, { align: "center" });
+    doc.fontSize(18).font("Helvetica-Bold").text(`${container.name} — Question Bank`, { align: "center" });
     doc.fontSize(10).font("Helvetica").fillColor("#666666")
       .text(`Teacher: ${teacher?.user?.name ?? "Unknown"}   |   Generated: ${new Date().toLocaleDateString("en-IN")}`, { align: "center" });
     doc.moveDown(1.5);

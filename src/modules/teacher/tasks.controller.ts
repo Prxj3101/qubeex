@@ -290,7 +290,8 @@ async function processPdfInBackground(
   subjectId: string,
   institutionId: string,
   promptText: string,
-  more: boolean
+  more: boolean,
+  containerId: string
 ) {
   try {
     const text = await extractPdfText(buffer);
@@ -337,7 +338,7 @@ async function processPdfInBackground(
         for (const q of mocks) {
           allQuestions.push(await prisma.taskQuestion.create({
             data: {
-              institutionId, teacherId, subjectId,
+              institutionId, teacherId, subjectId, containerId,
               type: q.type, status: "PENDING_REVIEW",
               question: q.question,
               ...(q.type === "CONCEPTUAL" ? { questionTemplate: q.question } : {}),
@@ -385,7 +386,7 @@ async function processPdfInBackground(
             if (!isFinite(testResult)) continue;
             allQuestions.push(await prisma.taskQuestion.create({
               data: {
-                institutionId, teacherId, subjectId,
+                institutionId, teacherId, subjectId, containerId,
                 type: "NUMERICAL", status: "PENDING_REVIEW",
                 question: q.question, questionTemplate: q.question,
                 answer: roundNicely(testResult),
@@ -398,7 +399,7 @@ async function processPdfInBackground(
             if (!d.correct_answer || !Array.isArray(d.distractors) || d.distractors.length < 3) continue;
             allQuestions.push(await prisma.taskQuestion.create({
               data: {
-                institutionId, teacherId, subjectId,
+                institutionId, teacherId, subjectId, containerId,
                 type: "CONCEPTUAL", status: "PENDING_REVIEW",
                 question: q.question, questionTemplate: q.question,
                 answer: d.correct_answer,
@@ -411,7 +412,7 @@ async function processPdfInBackground(
             if (!answer) continue;
             allQuestions.push(await prisma.taskQuestion.create({
               data: {
-                institutionId, teacherId, subjectId,
+                institutionId, teacherId, subjectId, containerId,
                 type: "FILL_BLANK", status: "PENDING_REVIEW",
                 question: q.question, answer,
                 details: detailsJson, category,
@@ -424,7 +425,7 @@ async function processPdfInBackground(
             if (!answer) continue;
             allQuestions.push(await prisma.taskQuestion.create({
               data: {
-                institutionId, teacherId, subjectId,
+                institutionId, teacherId, subjectId, containerId,
                 type: "TRUE_FALSE", status: "PENDING_REVIEW",
                 question: q.question, answer,
                 details: detailsJson, category,
@@ -436,7 +437,7 @@ async function processPdfInBackground(
             if (!answer) continue;
             allQuestions.push(await prisma.taskQuestion.create({
               data: {
-                institutionId, teacherId, subjectId,
+                institutionId, teacherId, subjectId, containerId,
                 type: "SHORT_ANSWER", status: "PENDING_REVIEW",
                 question: q.question, answer,
                 details: detailsJson, category,
@@ -476,18 +477,23 @@ export const generateQuestions = async (
     if (!req.file) throw new BadRequestError("PDF file is required");
 
     const body = generateQuestionsSchema.parse({
-      divisionId: req.body.divisionId,
+      containerId: req.body.containerId,
       prompt: req.body.prompt,
       more: req.body.more === "true" || req.body.more === true,
     });
 
-    const { subjectId } = await resolveSubjectAssignment(teacherId, body.divisionId, institutionId);
+    const container = await prisma.taskContainer.findFirst({
+      where: { id: body.containerId, teacherId, institutionId },
+      select: { id: true, subjectId: true, divisionId: true },
+    });
+    if (!container) throw new NotFoundError("Container not found");
 
     // Record the upload
     const upload = await prisma.taskPdfUpload.create({
       data: {
         institutionId, teacherId,
-        divisionId: body.divisionId,
+        divisionId: container.divisionId,
+        containerId: container.id,
         displayName: req.file.originalname || "Uploaded PDF",
         originalName: req.file.originalname || "upload.pdf",
         status: "processing",
@@ -498,8 +504,8 @@ export const generateQuestions = async (
     const buffer = req.file.buffer;
     setImmediate(() => {
       processPdfInBackground(
-        upload.id, buffer, teacherId, subjectId, institutionId,
-        body.prompt ?? "", body.more ?? false
+        upload.id, buffer, teacherId, container.subjectId, institutionId,
+        body.prompt ?? "", body.more ?? false, container.id
       );
     });
 

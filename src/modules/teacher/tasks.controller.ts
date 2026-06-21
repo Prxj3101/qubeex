@@ -543,16 +543,20 @@ export const listQuestions = async (req: AuthRequest, res: Response, next: NextF
   try {
     const { institutionId, userId } = requireTeacher(req);
     const teacherId = await getTeacherId(userId, institutionId);
-    const divisionId = req.query.divisionId as string;
+    const containerId = req.query.containerId as string;
     const statusFilter = req.query.status as string | undefined;
 
-    if (!divisionId) throw new BadRequestError("divisionId query param is required");
+    if (!containerId) throw new BadRequestError("containerId query param is required");
 
-    const { subjectId } = await resolveSubjectAssignment(teacherId, divisionId, institutionId);
+    const container = await prisma.taskContainer.findFirst({
+      where: { id: containerId, teacherId, institutionId },
+      select: { id: true },
+    });
+    if (!container) throw new NotFoundError("Container not found");
 
     const questions = await prisma.taskQuestion.findMany({
       where: {
-        teacherId, subjectId, institutionId,
+        containerId, teacherId, institutionId,
         ...(statusFilter && ["PENDING_REVIEW", "APPROVED", "REJECTED"].includes(statusFilter)
           ? { status: statusFilter as "PENDING_REVIEW" | "APPROVED" | "REJECTED" }
           : {}),

@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+buildCommand = "NODE_ENV=development pnpm install --frozen-lockfile && pnpm prisma generate && pnpm build"
+
+[deploy]
+startCommand = "node dist/server.js"
+restartPolicyType = "on_failure"
+
+[variables]
+NIXPACKS_NODE_VERSION = "20"

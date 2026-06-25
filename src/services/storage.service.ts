@@ -1,0 +1,295 @@
+import crypto from "crypto";
+import path from "path";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { BadRequestError } from "../utils/errors";
+import { prisma } from "../utils/prisma";
+
+// ── Supabase (profile pics, logos — platform-level assets) ───────────────────
+
+const SUPABASE_URL              = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_BUCKET           = process.env.SUPABASE_STORAGE_BUCKET;
+
+// ── Cloudflare R2 (institutional data — messages, feed, class attachments) ───
+//
+// Required env vars:
+//   R2_ENDPOINT        = https://<account-id>.r2.cloudflarestorage.com
+//   R2_ACCESS_KEY_ID   = R2 API token access key
+//   R2_SECRET_ACCESS_KEY = R2 API token secret key
+//   R2_BUCKET_NAME     = bucket name (e.g. qubeex-institutional)
+//   R2_PUBLIC_URL      = public URL base (r2.dev subdomain or custom domain)
+//                        e.g. https://pub-xxxx.r2.dev  OR  https://files.yourdomain.com
+
+const R2_ENDPOINT      = process.env.R2_ENDPOINT;        // full URL incl. https://
+const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
+const R2_SECRET_KEY    = process.env.R2_SECRET_ACCESS_KEY;
+const R2_BUCKET        = process.env.R2_BUCKET_NAME;
+const R2_PUBLIC_URL    = process.env.R2_PUBLIC_URL;
+
+function getR2Client(): S3Client {
+  if (!R2_ENDPOINT || !R2_ACCESS_KEY_ID || !R2_SECRET_KEY) {
+    throw new BadRequestError(
+      "Cloudflare R2 is not configured. Set R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_PUBLIC_URL."
+    );
+  }
+  try { new URL(R2_ENDPOINT); } catch {
+    throw new BadRequestError(`R2_ENDPOINT is not a valid URL: "${R2_ENDPOINT}". It must be https://<account-id>.r2.cloudflarestorage.com`);
+  }
+  return new S3Client({
+    region: "auto",
+    endpoint: R2_ENDPOINT,
+    forcePathStyle: true, // required for R2 — prevents bucket name being prepended to hostname
+    credentials: {
+      accessKeyId: R2_ACCESS_KEY_ID,
+      secretAccessKey: R2_SECRET_KEY,
+    },
+  });
+}
+
+// ── File type + size limits ───────────────────────────────────────────────────
+
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+};
+
+const ALLOWED_ATTACHMENT_TYPES: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "application/vnd.ms-powerpoint": "ppt",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+  "text/plain": "txt",
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
+  "video/x-msvideo": "avi",
+};
+
+// Per-type size limits
+const SIZE_LIMITS: Record<string, number> = {
+  image:  5  * 1024 * 1024, //  5 MB — images
+  pdf:    10 * 1024 * 1024, // 10 MB — PDFs
+  video:  50 * 1024 * 1024, // 50 MB — videos (~3–5 min at 720p)
+  file:   15 * 1024 * 1024, // 15 MB — doc/xls/ppt/txt
+};
+
+const SIZE_LABELS: Record<string, string> = {
+  image: "5 MB", pdf: "10 MB", video: "50 MB", file: "15 MB",
+};
+
+function getAttachmentCategory(contentType: string): "image" | "pdf" | "video" | "file" {
+  if (contentType.startsWith("image/"))  return "image";
+  if (contentType.startsWith("video/"))  return "video";
+  if (contentType === "application/pdf") return "pdf";
+  return "file";
+}
+
+// Returned attachmentType stored in DB / sent to frontend
+export type AttachmentType = "image" | "video" | "file";
+
+function toAttachmentType(category: "image" | "pdf" | "video" | "file"): AttachmentType {
+  if (category === "image") return "image";
+  if (category === "video") return "video";
+  return "file";
+}
+
+// ── Supabase helpers (profile pics, logos) ────────────────────────────────────
+
+export function assertImageUpload(file: Buffer, contentType?: string) {
+  if (!contentType || !IMAGE_EXTENSIONS[contentType]) {
+    throw new BadRequestError("Only PNG, JPG, and WEBP images are allowed");
+  }
+  if (!file.length) throw new BadRequestError("Image file is required");
+  if (file.length > 2 * 1024 * 1024) throw new BadRequestError("Image must be 2 MB or smaller");
+}
+
+export async function uploadImageToSupabase(
+  file: Buffer,
+  options: { contentType: string; folder: string; ownerId: string }
+) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new BadRequestError("Supabase storage is not configured");
+  }
+
+  assertImageUpload(file, options.contentType);
+
+  const ext        = IMAGE_EXTENSIONS[options.contentType];
+  const objectPath = `${options.folder}/${options.ownerId}/${crypto.randomUUID()}.${ext}`;
+  const uploadUrl  = `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/${SUPABASE_BUCKET}/${objectPath}`;
+
+  const response = await fetch(uploadUrl, {
+    method: "POST",
+    headers: {
+      apikey:          SUPABASE_SERVICE_ROLE_KEY,
+      Authorization:   `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      "Content-Type":  options.contentType,
+      "x-upsert":      "true",
+    },
+    body: new Blob([new Uint8Array(file)], { type: options.contentType }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text().catch(() => "");
+    throw new BadRequestError(message || "Failed to upload image");
+  }
+
+  return {
+    path:      objectPath,
+    publicUrl: `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/${SUPABASE_BUCKET}/${objectPath}`,
+  };
+}
+
+// ── R2 upload (institutional attachments) ────────────────────────────────────
+//
+// Object key structure:
+//   institutions/{institutionId}/{area}/{uuid}-{safeFilename}
+//
+// Examples:
+//   institutions/inst_abc/staffroom/posts/550e8400-filename.mp4
+//   institutions/inst_abc/staffroom/dms/550e8400-filename.jpg
+//   institutions/inst_abc/feed/550e8400-filename.pdf
+//   institutions/inst_abc/classes/550e8400-filename.docx
+//
+// To wipe all data for an institution on deletion:
+//   list + delete all objects with prefix  institutions/{institutionId}/
+
+export async function uploadAttachmentToR2(
+  file: Buffer,
+  options: {
+    originalName: string;
+    contentType:  string;
+    institutionId: string;
+    area: string; // e.g. "staffroom/posts" | "staffroom/dms" | "feed" | "classes"
+  }
+): Promise<{ path: string; publicUrl: string; attachmentType: AttachmentType }> {
+  if (!R2_BUCKET || !R2_PUBLIC_URL) {
+    throw new BadRequestError("Cloudflare R2 is not configured");
+  }
+
+  const ext = ALLOWED_ATTACHMENT_TYPES[options.contentType];
+  if (!ext) throw new BadRequestError("File type not allowed");
+  if (!file.length) throw new BadRequestError("File is empty");
+
+  const category = getAttachmentCategory(options.contentType);
+  const limit    = SIZE_LIMITS[category];
+
+  if (file.length > limit) {
+    throw new BadRequestError(
+      `${category === "image" ? "Image" : category === "video" ? "Video" : category === "pdf" ? "PDF" : "File"} must be ${SIZE_LABELS[category]} or smaller`
+    );
+  }
+
+  const safeBasename = path
+    .basename(options.originalName)
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .slice(0, 80);
+
+  const objectKey = `institutions/${options.institutionId}/${options.area}/${crypto.randomUUID()}-${safeBasename}`;
+
+  const client = getR2Client();
+  await client.send(new PutObjectCommand({
+    Bucket:      R2_BUCKET,
+    Key:         objectKey,
+    Body:        file,
+    ContentType: options.contentType,
+  }));
+
+  const publicUrl = `${R2_PUBLIC_URL.replace(/\/$/, "")}/${objectKey}`;
+
+  return { path: objectKey, publicUrl, attachmentType: toAttachmentType(category) };
+}
+
+// Keep the old Supabase attachment upload for any legacy callers during transition
+export async function uploadAttachmentToSupabase(
+  file: Buffer,
+  options: {
+    originalName: string;
+    contentType: string;
+    folder: string;
+    ownerId: string;
+  }
+): Promise<{ path: string; publicUrl: string; attachmentType: AttachmentType }> {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new BadRequestError("Supabase storage is not configured");
+  }
+
+  const ext = ALLOWED_ATTACHMENT_TYPES[options.contentType];
+  if (!ext) throw new BadRequestError("File type not allowed");
+  if (!file.length) throw new BadRequestError("File is empty");
+
+  const category = getAttachmentCategory(options.contentType);
+  const limit    = SIZE_LIMITS[category];
+
+  if (file.length > limit) {
+    throw new BadRequestError(
+      `${category === "image" ? "Image" : category === "video" ? "Video" : category === "pdf" ? "PDF" : "File"} must be ${SIZE_LABELS[category]} or smaller`
+    );
+  }
+
+  const safeBasename = path
+    .basename(options.originalName)
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .slice(0, 80);
+
+  const objectPath = `${options.folder}/${options.ownerId}/${crypto.randomUUID()}-${safeBasename}`;
+  const uploadUrl  = `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/${SUPABASE_BUCKET}/${objectPath}`;
+
+  const response = await fetch(uploadUrl, {
+    method: "POST",
+    headers: {
+      apikey:         SUPABASE_SERVICE_ROLE_KEY,
+      Authorization:  `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      "Content-Type": options.contentType,
+      "x-upsert":     "true",
+    },
+    body: new Blob([new Uint8Array(file)], { type: options.contentType }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text().catch(() => "");
+    throw new BadRequestError(message || "Failed to upload file");
+  }
+
+  return {
+    path:           objectPath,
+    publicUrl:      `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/${SUPABASE_BUCKET}/${objectPath}`,
+    attachmentType: toAttachmentType(category),
+  };
+}
+
+// ── Deferred deletion (14-day grace period) ───────────────────────────────────
+
+/** Extracts the R2 object key from a public URL. Returns null if not an R2 URL. */
+export function r2KeyFromUrl(publicUrl: string): string | null {
+  if (!R2_PUBLIC_URL || !publicUrl) return null;
+  const base = R2_PUBLIC_URL.replace(/\/$/, "");
+  if (!publicUrl.startsWith(base + "/")) return null;
+  return publicUrl.slice(base.length + 1);
+}
+
+const DELETION_GRACE_DAYS = 14;
+
+/** Schedule an R2 file for deletion after DELETION_GRACE_DAYS days. */
+export async function scheduleR2FileDeletion(r2Key: string): Promise<void> {
+  const scheduledAt = new Date(Date.now() + DELETION_GRACE_DAYS * 24 * 60 * 60 * 1000);
+  await prisma.pendingFileDeletion.create({ data: { r2Key, scheduledAt } });
+}
+
+/** Delete a single object from R2 immediately. Used by the cron job. */
+export async function deleteFromR2(r2Key: string): Promise<void> {
+  if (!R2_BUCKET) return;
+  try {
+    const client = getR2Client();
+    await client.send(new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: r2Key }));
+  } catch (err) {
+    console.error(`[R2 delete] Failed to delete key "${r2Key}":`, err);
+  }
+}

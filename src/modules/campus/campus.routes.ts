@@ -1,0 +1,120 @@
+import { Router } from "express";
+import { authMiddleware } from "../../middlewares/auth.middleware";
+import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
+import { requirePermission } from "../../middlewares/requirePermission.middleware";
+import {
+  listStandards,
+  createStandard,
+  updateStandard,
+  deleteStandard,
+  createDivision,
+  updateDivision,
+  deleteDivision,
+  getDivision,
+  createSubject,
+  updateSubject,
+  deleteSubject,
+  selectSubject,
+  deselectSubject,
+  assignTeacher,
+  removeAssignment,
+} from "./campus.controller";
+import {
+  upload,
+  uploadFeedAttachment,
+  listPosts,
+  createPost,
+  deletePost,
+  listEvents,
+  createEvent,
+  deleteEvent,
+  listMergedEvents,
+} from "./campus.feed.controller";
+import { getFeeStructure, saveFeeStructure } from "./campus.fees.controller";
+import {
+  getDivisionStudents,
+  getAttendanceHolidays,
+  getDailyAttendance,
+  getMonthlyAttendance,
+  getAttendanceSummary,
+  getStudentAttendanceRecords,
+} from "./campus.attendance.controller";
+
+const router = Router();
+
+// Base: ADMIN or SUB_ADMIN (role check only)
+const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware];
+
+// ADMIN only
+const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
+
+// Any CAMPUS_* permission allows navigating to the campus section
+const ANY_CAMPUS = [...A, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW", "CAMPUS_MANAGE", "CAMPUS_FEES", "CAMPUS_ATTENDANCE", "CAMPUS_MARKSHEET")];
+
+// Feed tab — read requires CAMPUS_FEED; write requires CAMPUS_FEED (admin can always write)
+const CAMPUS_FEED_READ = [...A, requirePermission("CAMPUS_FEED")];
+
+// View tab in classes
+const CAMPUS_VIEW_PERM = [...A, requirePermission("CAMPUS_VIEW")];
+
+// Manage permission to write/modify class content
+const CAMPUS_MANAGE_PERM = [...A, requirePermission("CAMPUS_MANAGE")];
+
+// Fees
+const CAMPUS_FEES_PERM = [...A, requirePermission("CAMPUS_FEES")];
+
+// Standards — list is needed for any classes tab
+router.get("/standards", ...ANY_CAMPUS, listStandards);
+router.post("/standards", ...ADMIN_ONLY, createStandard);
+router.patch("/standards/:id", ...ADMIN_ONLY, updateStandard);
+router.delete("/standards/:id", ...ADMIN_ONLY, deleteStandard);
+
+// Divisions
+router.post("/standards/:standardId/divisions", ...ADMIN_ONLY, createDivision);
+router.get("/divisions/:divisionId", ...CAMPUS_VIEW_PERM, getDivision);
+router.patch("/divisions/:divisionId", ...ADMIN_ONLY, updateDivision);
+router.delete("/divisions/:divisionId", ...ADMIN_ONLY, deleteDivision);
+
+// Subjects
+router.post("/standards/:standardId/subjects", ...ADMIN_ONLY, createSubject);
+router.patch("/subjects/:subjectId", ...ADMIN_ONLY, updateSubject);
+router.delete("/subjects/:subjectId", ...ADMIN_ONLY, deleteSubject);
+
+// Division subject selection — CAMPUS_MANAGE
+router.post("/divisions/:divisionId/subjects/:subjectId", ...CAMPUS_MANAGE_PERM, selectSubject);
+router.delete("/divisions/:divisionId/subjects/:subjectId", ...CAMPUS_MANAGE_PERM, deselectSubject);
+
+// Teacher assignments — CAMPUS_MANAGE
+router.post("/divisions/:divisionId/assign", ...CAMPUS_MANAGE_PERM, assignTeacher);
+router.delete("/assignments/:assignmentId", ...CAMPUS_MANAGE_PERM, removeAssignment);
+
+// Fee structure — CAMPUS_FEES or CAMPUS_MANAGE
+router.get("/divisions/:divisionId/fee-structure", ...CAMPUS_FEES_PERM, getFeeStructure);
+router.put("/divisions/:divisionId/fee-structure", ...CAMPUS_FEES_PERM, saveFeeStructure);
+
+// Feed upload — campus feed OR class overview (VIEW)
+const FEED_WRITE = [...A, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW")];
+router.post("/feed/upload", ...FEED_WRITE, upload.single("file"), uploadFeedAttachment);
+
+// Feed posts — campus feed OR class overview (VIEW/MANAGE can read class posts)
+const FEED_READ = [...A, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW", "CAMPUS_MANAGE")];
+router.get("/feed/posts", ...FEED_READ, listPosts);
+router.post("/feed/posts", ...FEED_WRITE, createPost);
+router.delete("/feed/posts/:id", ...FEED_WRITE, deletePost);
+
+// Attendance — strict: CAMPUS_ATTENDANCE only
+const ATTENDANCE_PERM = [...A, requirePermission("CAMPUS_ATTENDANCE")];
+router.get("/divisions/:divisionId/students", ...ATTENDANCE_PERM, getDivisionStudents);
+router.get("/divisions/:divisionId/attendance/holidays", ...ATTENDANCE_PERM, getAttendanceHolidays);
+router.get("/divisions/:divisionId/attendance/daily", ...ATTENDANCE_PERM, getDailyAttendance);
+router.get("/divisions/:divisionId/attendance/monthly", ...ATTENDANCE_PERM, getMonthlyAttendance);
+router.get("/divisions/:divisionId/attendance/summary", ...ATTENDANCE_PERM, getAttendanceSummary);
+router.get("/divisions/:divisionId/attendance/student-records/:studentId", ...ATTENDANCE_PERM, getStudentAttendanceRecords);
+
+// Calendar events — readable from any campus tab; write via CAMPUS_FEED or CAMPUS_VIEW (class calendar)
+router.get("/feed/events", ...ANY_CAMPUS, listEvents);
+router.get("/feed/events/merged", ...ANY_CAMPUS, listMergedEvents);
+router.post("/feed/events", ...FEED_WRITE, createEvent);
+router.delete("/feed/events/:id", ...FEED_WRITE, deleteEvent);
+
+export default router;

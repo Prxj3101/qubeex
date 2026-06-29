@@ -411,6 +411,503 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
   }
 });
 
+// ── GET /student/overview — home/overview page bundle ────────────────────────
+router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+
+    const student = await prisma.student.findFirst({
+      where: { userId, institutionId },
+      include: {
+        user: { select: { name: true } },
+        division: { select: { id: true, name: true, standardId: true, standard: { select: { name: true } } } },
+      },
+    });
+    if (!student) {
+      res.status(404).json({ success: false, error: "Student not found" });
+      return;
+    }
+
+    const divisionId = student.divisionId;
+
+    // ── Attendance summary ────────────────────────────────────────────────────
+    const now = new Date();
+    const curMonth = now.getMonth();
+    const curYear = now.getFullYear();
+    const startYear = curMonth >= 5 ? curYear : curYear - 1;
+    const startDate = `${startYear}-06-01`;
+    const endDate = `${startYear + 1}-05-31`;
+
+    const attendanceRecords = await prisma.attendance.findMany({
+      where: { studentId: student.id, institutionId, date: { gte: startDate, lte: endDate } },
+      select: { status: true },
+    });
+    const totalAttendance = attendanceRecords.length;
+    const presentCount = attendanceRecords.filter(r => r.status === "P" || r.status === "L").length;
+    const attendancePct = totalAttendance > 0 ? Math.round((presentCount / totalAttendance) * 100) : null;
+
+    // ── Marks + leaderboard (only if marksheet published) ────────────────────
+    let marksPct: number | null = null;
+    let classRank: number | null = null;
+    let totalStudents = 0;
+    let leaderboard: { rank: number; name: string; rollNo: string; pct: number; isMe: boolean }[] = [];
+
+    if (divisionId) {
+      const marksheet = await prisma.marksheet.findFirst({
+        where: { divisionId, institutionId, status: "PUBLISHED" },
+        orderBy: { academicYear: "desc" },
+        select: { id: true },
+      });
+
+      if (marksheet) {
+        const [allScores, allStudents] = await Promise.all([
+          prisma.marksheetScore.findMany({
+            where: { marksheetId: marksheet.id, institutionId },
+            select: { studentId: true, score: true, isAbsent: true },
+          }),
+          prisma.student.findMany({
+            where: { divisionId, institutionId, status: "ACTIVE" },
+            select: { id: true, rollNo: true, user: { select: { name: true } } },
+          }),
+        ]);
+
+        const [allCols] = await Promise.all([
+          prisma.marksheetExamColumn.findMany({
+            where: { marksheetId: marksheet.id, institutionId },
+            select: { id: true, maxMarks: true },
+          }),
+        ]);
+        const grandMax = allCols.reduce((sum, c) => sum + c.maxMarks, 0);
+
+        // total scored per student
+        const totals = new Map<string, number>();
+        for (const sc of allScores) {
+          if (!sc.isAbsent && sc.score !== null) {
+            totals.set(sc.studentId, (totals.get(sc.studentId) ?? 0) + sc.score);
+          }
+        }
+
+        totalStudents = allStudents.length;
+        const myTotal = totals.get(student.id) ?? 0;
+        marksPct = grandMax > 0 ? Math.round((myTotal / grandMax) * 100) : null;
+        classRank = [...totals.values()].filter(t => t > myTotal).length + 1;
+
+        // Build leaderboard: sort all students by score desc, take top 5
+        const ranked = allStudents
+          .map(s => ({
+            id: s.id,
+            name: s.user.name ?? "Unknown",
+            rollNo: s.rollNo ?? "",
+            total: totals.get(s.id) ?? 0,
+            pct: grandMax > 0 ? Math.round(((totals.get(s.id) ?? 0) / grandMax) * 100) : 0,
+          }))
+          .sort((a, b) => b.total - a.total);
+
+        leaderboard = ranked.slice(0, 5).map((s, i) => ({
+          rank: i + 1,
+          name: s.name,
+          rollNo: s.rollNo,
+          pct: s.pct,
+          isMe: s.id === student.id,
+        }));
+      }
+    }
+
+    // ── Pending tasks (active assignments for this division) ──────────────────
+    const pendingTasks = divisionId
+      ? await prisma.taskAssignment.count({
+          where: { divisionId, institutionId, status: "ACTIVE" },
+        })
+      : 0;
+
+    // ── Next upcoming event (test/exam/submission/etc.) ───────────────────────
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const nextEventRow = divisionId
+      ? await prisma.calendarEvent.findFirst({
+          where: {
+            institutionId,
+            date: { gte: todayStart },
+            OR: [{ divisionId: null }, { divisionId }],
+          },
+          orderBy: { date: "asc" },
+          select: { type: true, label: true, date: true },
+        })
+      : await prisma.calendarEvent.findFirst({
+          where: { institutionId, date: { gte: todayStart }, divisionId: null },
+          orderBy: { date: "asc" },
+          select: { type: true, label: true, date: true },
+        });
+
+    let nextEvent: { type: string; label: string; date: string; daysAway: number } | null = null;
+    if (nextEventRow) {
+      const diffMs = nextEventRow.date.getTime() - todayStart.getTime();
+      const daysAway = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      nextEvent = { type: nextEventRow.type.toLowerCase(), label: nextEventRow.label, date: nextEventRow.date.toISOString(), daysAway };
+    }
+
+    // ── Latest announcement (most recent general or class post) ───────────────
+    const latestPost = await prisma.campusFeedPost.findFirst({
+      where: divisionId
+        ? { institutionId, OR: [{ divisionId: null }, { divisionId }] }
+        : { institutionId, divisionId: null },
+      orderBy: { createdAt: "desc" },
+      select: { title: true, type: true },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        student: {
+          name: student.user.name ?? "",
+          rollNo: student.rollNo ?? "",
+          divisionName: student.division?.name ?? "",
+          standardName: student.division?.standard?.name ?? "",
+        },
+        attendance: { pct: attendancePct, present: presentCount, total: totalAttendance },
+        marks: { pct: marksPct, classRank, totalStudents },
+        pendingTasks,
+        nextEvent,
+        latestPost: latestPost ? { title: latestPost.title, type: latestPost.type.toLowerCase() } : null,
+        leaderboard,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── GET /student/class — division info, classmates, my subject scores ────────
+router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+
+    const student = await prisma.student.findFirst({
+      where: { userId, institutionId },
+      include: {
+        division: {
+          include: {
+            standard: { select: { id: true, name: true } },
+            assignments: {
+              include: {
+                teacher: { include: { user: { select: { name: true } } } },
+                subject: { select: { id: true, name: true, code: true, color: true, order: true } },
+              },
+            },
+            classTeacher: { include: { user: { select: { name: true } } } },
+            _count: { select: { students: true } },
+          },
+        },
+      },
+    });
+    if (!student || !student.division) {
+      res.json({ success: true, data: { division: null, classmates: [], myScores: [] } });
+      return;
+    }
+
+    const division = student.division;
+    const divisionId = division.id;
+    const standardId = division.standard.id;
+
+    // ── Academic year (June–May) ─────────────────────────────────────────────
+    const now = new Date();
+    const curMonth = now.getMonth();
+    const curYear = now.getFullYear();
+    const startYear = curMonth >= 5 ? curYear : curYear - 1;
+    const academicYear = `${startYear}-${String(startYear + 1).slice(2)}`;
+    const ayStart = `${startYear}-06-01`;
+    const ayEnd = `${startYear + 1}-05-31`;
+
+    // ── Subjects list from division assignments ──────────────────────────────
+    const subjectList = division.assignments
+      .filter(a => a.subjectId != null && a.subject != null)
+      .sort((a, b) => (a.subject!.order ?? 0) - (b.subject!.order ?? 0))
+      .map(a => ({
+        id: a.subject!.id,
+        name: a.subject!.name,
+        code: a.subject!.code,
+        color: a.subject!.color ?? "#7C3AED",
+        teacherName: a.teacher.user.name,
+      }));
+
+    // ── Classmates with attendance % and marks % ─────────────────────────────
+    const [allStudents, attendanceRecords] = await Promise.all([
+      prisma.student.findMany({
+        where: { divisionId, institutionId },
+        include: { user: { select: { id: true, name: true } } },
+        orderBy: [{ rollNo: "asc" }],
+      }),
+      prisma.attendance.findMany({
+        where: { divisionId, institutionId, date: { gte: ayStart, lte: ayEnd } },
+        select: { studentId: true, status: true },
+      }),
+    ]);
+
+    // Attendance % per student
+    const attMap = new Map<string, { p: number; total: number }>();
+    for (const r of attendanceRecords) {
+      const cur = attMap.get(r.studentId) ?? { p: 0, total: 0 };
+      cur.total++;
+      if (r.status === "P" || r.status === "L") cur.p++;
+      attMap.set(r.studentId, cur);
+    }
+
+    // Fetch campus feed posts (RESULT + MATERIAL) for this division
+    const [feedPosts, allMarksheets] = await Promise.all([
+      prisma.campusFeedPost.findMany({
+        where: { divisionId, institutionId, type: { in: ["RESULT", "MATERIAL"] } },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true, type: true, title: true, subject: true,
+          attachmentUrl: true, attachmentType: true, attachmentName: true, createdAt: true,
+          author: { select: { name: true } },
+        },
+      }),
+      // Fetch all published marksheets for scoring/leaderboard only
+      prisma.marksheet.findMany({
+        where: { divisionId, institutionId, status: "PUBLISHED" },
+        orderBy: { academicYear: "desc" },
+        select: { id: true },
+      }),
+    ]);
+
+    // Separate into results and materials
+    const resultFiles = feedPosts
+      .filter(p => p.type === "RESULT")
+      .map(p => ({
+        id: p.id,
+        title: p.title,
+        attachmentUrl: p.attachmentUrl,
+        attachmentType: p.attachmentType,
+        attachmentName: p.attachmentName,
+        postedBy: p.author.name ?? "—",
+        createdAt: p.createdAt.toISOString(),
+      }));
+
+    // Materials grouped by subject name (case-insensitive)
+    const materialsRaw = feedPosts.filter(p => p.type === "MATERIAL");
+    const subjectMaterialsMap = new Map<string, typeof materialsRaw>();
+    for (const m of materialsRaw) {
+      const key = (m.subject ?? "").toLowerCase().trim();
+      const arr = subjectMaterialsMap.get(key) ?? [];
+      arr.push(m);
+      subjectMaterialsMap.set(key, arr);
+    }
+
+    // Use the most recent published marksheet for leaderboard/scoring
+    const marksheet = allMarksheets[0] ?? null;
+
+    const marksMap = new Map<string, number>(); // studentId → total combined scored
+    const offlineMarksMap = new Map<string, number>(); // studentId → offline scored
+    const onlineMarksMap = new Map<string, number>(); // studentId → online scored
+    let grandMax = 0;
+    let offlineGrandMax = 0;
+    let onlineGrandMax = 0;
+    let allColumns: { id: string; subjectId: string; name: string; maxMarks: number }[] = [];
+    let allScoreRows: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[] = [];
+    let mySubjectScores: { subjectId: string; subjectName: string; subjectCode: string; subjectColor: string; columns: { name: string; scored: number | null; max: number; isAbsent: boolean }[]; totalScored: number; totalMax: number; pct: number | null }[] = [];
+
+    if (marksheet) {
+
+      const [columns, allScores, myScoresRaw] = await Promise.all([
+        prisma.marksheetExamColumn.findMany({
+          where: { marksheetId: marksheet.id, institutionId },
+          orderBy: [{ subjectId: "asc" }, { order: "asc" }],
+          select: { id: true, subjectId: true, name: true, maxMarks: true },
+        }),
+        prisma.marksheetScore.findMany({
+          where: { marksheetId: marksheet.id, institutionId },
+          select: { studentId: true, examColumnId: true, score: true, isAbsent: true },
+        }),
+        prisma.marksheetScore.findMany({
+          where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
+          select: { examColumnId: true, score: true, isAbsent: true },
+        }),
+      ]);
+
+      allColumns = columns;
+      allScoreRows = allScores;
+
+      // Distinguish online vs offline by column name
+      const isOnlineCol = (name: string) => name.toLowerCase().includes("online");
+
+      // Grand max totals
+      for (const c of columns) {
+        grandMax += c.maxMarks;
+        if (isOnlineCol(c.name)) onlineGrandMax += c.maxMarks;
+        else offlineGrandMax += c.maxMarks;
+      }
+
+      // Build colId → isOnline map
+      const colOnlineMap = new Map(columns.map(c => [c.id, isOnlineCol(c.name)]));
+
+      // Per-student totals (combined, offline, online)
+      for (const sc of allScores) {
+        if (!sc.isAbsent && sc.score !== null) {
+          marksMap.set(sc.studentId, (marksMap.get(sc.studentId) ?? 0) + sc.score);
+          if (colOnlineMap.get(sc.examColumnId)) {
+            onlineMarksMap.set(sc.studentId, (onlineMarksMap.get(sc.studentId) ?? 0) + sc.score);
+          } else {
+            offlineMarksMap.set(sc.studentId, (offlineMarksMap.get(sc.studentId) ?? 0) + sc.score);
+          }
+        }
+      }
+
+      // My subject-wise scores
+      const myScoreByCol = new Map(myScoresRaw.map(s => [s.examColumnId, s]));
+      const colsBySubject = new Map<string, typeof columns>();
+      for (const c of columns) {
+        const arr = colsBySubject.get(c.subjectId) ?? [];
+        arr.push(c);
+        colsBySubject.set(c.subjectId, arr);
+      }
+
+      for (const subj of subjectList) {
+        const cols = colsBySubject.get(subj.id) ?? [];
+        if (cols.length === 0) continue;
+        const subCols = cols.map(c => {
+          const s = myScoreByCol.get(c.id);
+          return { name: c.name, scored: s?.score ?? null, max: c.maxMarks, isAbsent: s?.isAbsent ?? false };
+        });
+        const totalMax = cols.reduce((s, c) => s + c.maxMarks, 0);
+        const totalScored = subCols.reduce((s, c) => s + (c.isAbsent ? 0 : (c.scored ?? 0)), 0);
+        const pct = totalMax > 0 ? Math.round((totalScored / totalMax) * 100) : null;
+        mySubjectScores.push({ subjectId: subj.id, subjectName: subj.name, subjectCode: subj.code ?? "", subjectColor: subj.color, columns: subCols, totalScored, totalMax, pct });
+      }
+    }
+
+    // Build ranked classmates (sorted by combined score)
+    const sorted = [...allStudents].sort((a, b) => (marksMap.get(b.id) ?? -1) - (marksMap.get(a.id) ?? -1));
+    const classmates = sorted.map((s, i) => {
+      const att = attMap.get(s.id);
+      const attPct = att && att.total > 0 ? Math.round((att.p / att.total) * 100) : null;
+      const scored = marksMap.get(s.id) ?? null;
+      const marksPct = scored !== null && grandMax > 0 ? Math.round((scored / grandMax) * 100) : null;
+      const offlineScored = offlineMarksMap.get(s.id) ?? null;
+      const offlinePct = offlineScored !== null && offlineGrandMax > 0 ? Math.round((offlineScored / offlineGrandMax) * 100) : null;
+      const onlineScored = onlineMarksMap.get(s.id) ?? null;
+      const onlinePct = onlineScored !== null && onlineGrandMax > 0 ? Math.round((onlineScored / onlineGrandMax) * 100) : null;
+      return {
+        id: s.id,
+        name: s.user.name,
+        rollNo: s.rollNo ?? "—",
+        rank: marksheet ? i + 1 : null,
+        attendancePct: attPct,
+        marksPct,
+        offlinePct,
+        onlinePct,
+        isMe: s.id === student.id,
+      };
+    });
+
+    // ── Per-subject leaderboards (top 5, with combined/offline/online) ────────
+    type LbEntry = { name: string; combinedPct: number; offlinePct: number | null; onlinePct: number | null; isMe: boolean };
+    const subjectLeaderboards: Record<string, LbEntry[]> = {};
+    if (marksheet && allColumns.length > 0) {
+      const isOnlineCol = (name: string) => name.toLowerCase().includes("online");
+      const colSubjectMap = new Map(allColumns.map(c => [c.id, c.subjectId]));
+      const colOnlineMap = new Map(allColumns.map(c => [c.id, isOnlineCol(c.name)]));
+
+      const subjectCombinedMaxMap = new Map<string, number>();
+      const subjectOfflineMaxMap = new Map<string, number>();
+      const subjectOnlineMaxMap = new Map<string, number>();
+      for (const c of allColumns) {
+        subjectCombinedMaxMap.set(c.subjectId, (subjectCombinedMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
+        if (colOnlineMap.get(c.id)) subjectOnlineMaxMap.set(c.subjectId, (subjectOnlineMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
+        else subjectOfflineMaxMap.set(c.subjectId, (subjectOfflineMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
+      }
+
+      const subjectStudentCombined = new Map<string, Map<string, number>>();
+      const subjectStudentOffline = new Map<string, Map<string, number>>();
+      const subjectStudentOnline = new Map<string, Map<string, number>>();
+
+      for (const sc of allScoreRows) {
+        if (!sc.isAbsent && sc.score !== null) {
+          const subjectId = colSubjectMap.get(sc.examColumnId);
+          if (!subjectId) continue;
+          const isOnline = colOnlineMap.get(sc.examColumnId) ?? false;
+
+          const cMap = subjectStudentCombined.get(subjectId) ?? new Map<string, number>();
+          cMap.set(sc.studentId, (cMap.get(sc.studentId) ?? 0) + sc.score);
+          subjectStudentCombined.set(subjectId, cMap);
+
+          if (isOnline) {
+            const oMap = subjectStudentOnline.get(subjectId) ?? new Map<string, number>();
+            oMap.set(sc.studentId, (oMap.get(sc.studentId) ?? 0) + sc.score);
+            subjectStudentOnline.set(subjectId, oMap);
+          } else {
+            const fMap = subjectStudentOffline.get(subjectId) ?? new Map<string, number>();
+            fMap.set(sc.studentId, (fMap.get(sc.studentId) ?? 0) + sc.score);
+            subjectStudentOffline.set(subjectId, fMap);
+          }
+        }
+      }
+
+      const studentNameMap = new Map<string, string>();
+      for (const s of allStudents) studentNameMap.set(s.id, s.user.name ?? "—");
+
+      for (const subj of subjectList) {
+        const cMap = subjectStudentCombined.get(subj.id);
+        const combinedMax = subjectCombinedMaxMap.get(subj.id) ?? 0;
+        if (!cMap || combinedMax === 0) { subjectLeaderboards[subj.id] = []; continue; }
+        subjectLeaderboards[subj.id] = [...cMap.entries()]
+          .map(([sid, total]): LbEntry => {
+            const offMax = subjectOfflineMaxMap.get(subj.id) ?? 0;
+            const onMax = subjectOnlineMaxMap.get(subj.id) ?? 0;
+            const offScored = subjectStudentOffline.get(subj.id)?.get(sid) ?? null;
+            const onScored = subjectStudentOnline.get(subj.id)?.get(sid) ?? null;
+            return {
+              name: studentNameMap.get(sid) ?? "—",
+              combinedPct: Math.round((total / combinedMax) * 100),
+              offlinePct: offScored !== null && offMax > 0 ? Math.round((offScored / offMax) * 100) : null,
+              onlinePct: onScored !== null && onMax > 0 ? Math.round((onScored / onMax) * 100) : null,
+              isMe: sid === student.id,
+            };
+          })
+          .sort((a, b) => b.combinedPct - a.combinedPct)
+          .slice(0, 5);
+      }
+    }
+
+    // Build per-subject materials (match by subject name, case-insensitive)
+    type MaterialEntry = { id: string; title: string; attachmentUrl: string | null; attachmentType: string | null; attachmentName: string | null; postedBy: string; createdAt: string };
+    const subjectMaterials: Record<string, MaterialEntry[]> = {};
+    for (const subj of subjectList) {
+      const key = subj.name.toLowerCase().trim();
+      const posts = subjectMaterialsMap.get(key) ?? [];
+      subjectMaterials[subj.id] = posts.map(p => ({
+        id: p.id, title: p.title,
+        attachmentUrl: p.attachmentUrl,
+        attachmentType: p.attachmentType,
+        attachmentName: p.attachmentName,
+        postedBy: p.author.name ?? "—",
+        createdAt: p.createdAt.toISOString(),
+      }));
+    }
+
+    res.json({
+      success: true,
+      data: {
+        division: {
+          id: division.id,
+          name: division.name,
+          standardName: division.standard.name,
+          classTeacherName: division.classTeacher?.user.name ?? null,
+          totalStudents: division._count.students,
+          subjects: subjectList,
+        },
+        resultFiles,
+        subjectMaterials,
+        classmates,
+        myScores: mySubjectScores,
+        subjectLeaderboards,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ── GET /student/feed/debug — temp: verify student division & class post counts ─
 router.get("/feed/debug", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

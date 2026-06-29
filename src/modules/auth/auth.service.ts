@@ -364,7 +364,7 @@ export const studentSetInitialPassword = async (userId: string, newPassword: str
     });
     await tx.student.updateMany({
       where: { userId },
-      data: { tempPassword: null },
+      data: { tempPassword: null, hasLoggedIn: true },
     });
   });
 

@@ -103,6 +103,103 @@ function toAttachmentType(category: "image" | "pdf" | "video" | "file"): Attachm
 
 // ── Supabase helpers (profile pics, logos) ────────────────────────────────────
 
+/**
+ * Extracts the object path from a stored Supabase public/authenticated URL.
+ * e.g. "https://xyz.supabase.co/storage/v1/object/public/bucket/student-photos/id/file.jpg"
+ * → "student-photos/id/file.jpg"
+ */
+function extractSupabasePath(storedUrl: string): string | null {
+  if (!SUPABASE_URL || !SUPABASE_BUCKET) return null;
+  const base = SUPABASE_URL.replace(/\/$/, "");
+  for (const prefix of ["public", "authenticated"]) {
+    const p = `${base}/storage/v1/object/${prefix}/${SUPABASE_BUCKET}/`;
+    if (storedUrl.startsWith(p)) return storedUrl.slice(p.length);
+  }
+  return null;
+}
+
+/**
+ * Batch-signs multiple stored Supabase avatar URLs in a single API call.
+ * Returns a map of originalUrl → signedUrl for URLs that were successfully signed.
+ * URLs without an avatar or that fail signing are omitted from the result.
+ */
+export async function generateSignedAvatarUrlsBatch(
+  storedUrls: (string | null | undefined)[],
+  expiresIn = 3600
+): Promise<Record<string, string>> {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_BUCKET) return {};
+
+  // Extract paths, keeping track of which original URL each path came from
+  const entries: { original: string; path: string }[] = [];
+  for (const url of storedUrls) {
+    if (!url) continue;
+    const path = extractSupabasePath(url);
+    if (path) entries.push({ original: url, path });
+  }
+  if (entries.length === 0) return {};
+
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/sign/${SUPABASE_BUCKET}`,
+      {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ paths: entries.map(e => e.path), expiresIn }),
+      }
+    );
+    if (!res.ok) return {};
+    const data = (await res.json()) as { path: string; signedURL: string; error: string | null }[];
+    const base = `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1`;
+    const result: Record<string, string> = {};
+    for (const item of data) {
+      if (!item.error && item.signedURL) {
+        const entry = entries.find(e => e.path === item.path);
+        if (entry) result[entry.original] = `${base}${item.signedURL}`;
+      }
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Generates a short-lived signed URL for a stored Supabase avatar URL.
+ * Works whether the bucket is public or private.
+ * Returns null if Supabase is not configured or signing fails.
+ */
+export async function generateSignedAvatarUrl(
+  storedAvatarUrl: string,
+  expiresIn = 3600
+): Promise<string | null> {
+  const objectPath = extractSupabasePath(storedAvatarUrl);
+  if (!objectPath || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_BUCKET) return null;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/sign/${SUPABASE_BUCKET}/${objectPath}`,
+      {
+        method:  "POST",
+        headers: {
+          apikey:          SUPABASE_SERVICE_ROLE_KEY,
+          Authorization:   `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          "Content-Type":  "application/json",
+        },
+        body: JSON.stringify({ expiresIn }),
+      }
+    );
+    if (!res.ok) return null;
+    const data = (await res.json()) as { signedURL?: string };
+    if (!data.signedURL) return null;
+    return `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1${data.signedURL}`;
+  } catch {
+    return null;
+  }
+}
+
 export function assertImageUpload(file: Buffer, contentType?: string) {
   if (!contentType || !IMAGE_EXTENSIONS[contentType]) {
     throw new BadRequestError("Only PNG, JPG, and WEBP images are allowed");

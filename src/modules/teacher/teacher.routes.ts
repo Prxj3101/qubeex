@@ -5,6 +5,10 @@ import { prisma } from "../../utils/prisma";
 import bcrypt from "bcrypt";
 import PDFDocument from "pdfkit";
 import { z } from "zod";
+import multer from "multer";
+import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+
+const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
 const BCRYPT_ROUNDS = 12;
 
@@ -57,6 +61,8 @@ const updateStudentSchema = z.object({
   emergencyContact: z.string().trim().optional().nullable(),
   religion: z.string().trim().optional().nullable(),
   category: z.string().trim().optional().nullable(),
+  nationality: z.string().trim().optional().nullable(),
+  admissionYear: z.string().trim().optional().nullable(),
   address: z.string().trim().optional().nullable(),
   city: z.string().trim().optional().nullable(),
   state: z.string().trim().optional().nullable(),
@@ -154,11 +160,68 @@ router.post("/presence", ...T, async (req: AuthRequest, res: Response, next: Nex
 router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { userId, institutionId } = req.user!;
-    const user = await prisma.user.findFirst({
-      where: { id: userId, institutionId },
-      select: { id: true, name: true },
+
+    const teacher = await prisma.teacher.findFirst({
+      where: { userId, institutionId },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        assignments: {
+          include: {
+            division: { include: { standard: true } },
+            subject: { select: { id: true, name: true, color: true } },
+          },
+        },
+      },
     });
-    res.json({ success: true, data: { id: user?.id ?? userId, name: user?.name ?? "Teacher" } });
+
+    if (!teacher) {
+      res.status(404).json({ success: false, error: "Teacher profile not found" });
+      return;
+    }
+
+    let avatarUrl: string | null = teacher.avatarUrl;
+    if (avatarUrl) {
+      const signed = await generateSignedAvatarUrl(avatarUrl);
+      if (signed) avatarUrl = signed;
+    }
+
+    res.json({ success: true, data: { ...teacher, avatarUrl } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── POST /teacher/photo ───────────────────────────────────────────────────────
+router.post("/photo", ...T, photoUpload.single("photo"), async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!req.file) {
+      res.status(400).json({ success: false, error: "No photo file provided" });
+      return;
+    }
+
+    const teacher = await prisma.teacher.findFirst({
+      where: { userId, institutionId },
+      select: { id: true },
+    });
+    if (!teacher) {
+      res.status(404).json({ success: false, error: "Teacher profile not found" });
+      return;
+    }
+
+    const { publicUrl } = await uploadImageToSupabase(req.file.buffer, {
+      contentType: req.file.mimetype,
+      folder: "teacher-photos",
+      ownerId: teacher.id,
+    });
+
+    await prisma.teacher.update({
+      where: { id: teacher.id },
+      data: { avatarUrl: publicUrl },
+    });
+
+    const signedUrl = (await generateSignedAvatarUrl(publicUrl)) ?? publicUrl;
+    res.json({ success: true, data: { avatarUrl: signedUrl } });
   } catch (err) {
     next(err);
   }
@@ -347,7 +410,14 @@ router.get(
         orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
       });
 
-      res.json({ success: true, data: students });
+      // Sign all avatar URLs in one batch call
+      const signedMap = await generateSignedAvatarUrlsBatch(students.map(s => s.avatarUrl));
+      const data = students.map(s => ({
+        ...s,
+        avatarUrl: s.avatarUrl ? (signedMap[s.avatarUrl] ?? s.avatarUrl) : null,
+      }));
+
+      res.json({ success: true, data });
     } catch (err) {
       next(err);
     }
@@ -1232,14 +1302,23 @@ router.get(
       await assertDivisionAccess(userId, institutionId, divisionId);
 
       const yearStr = req.query.year as string | undefined;
-      const year = yearStr ? parseInt(yearStr, 10) : new Date().getFullYear();
+      const startDateParam = req.query.startDate as string | undefined;
+      const endDateParam = req.query.endDate as string | undefined;
+
+      let dateFilter: { gte: string; lte: string };
+      if (startDateParam && endDateParam) {
+        dateFilter = { gte: startDateParam, lte: endDateParam };
+      } else {
+        const year = yearStr ? parseInt(yearStr, 10) : new Date().getFullYear();
+        dateFilter = { gte: `${year}-01-01`, lte: `${year}-12-31` };
+      }
 
       const records = await prisma.attendance.findMany({
         where: {
           divisionId,
           institutionId,
           studentId,
-          date: { gte: `${year}-01-01`, lte: `${year}-12-31` },
+          date: dateFilter,
         },
         select: { date: true, status: true, remark: true },
         orderBy: { date: "asc" },
@@ -1272,5 +1351,199 @@ router.patch("/marksheet/:id/grade-scale", ...T, updateMarksheetGradeScale);
 router.put("/marksheet/:id/graded-scores", ...T, bulkUpsertGradedScores);
 router.post("/marksheet/:id/publish", ...T, publishMarksheet);
 router.get("/marksheet/:id/download", ...T, downloadMarksheet);
+
+// ── Students — Upload Photo (class teacher only) ──────────────────────────────
+router.post(
+  "/classes/:divisionId/students/:studentId/photo",
+  ...T,
+  photoUpload.single("photo"),
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      if (!req.file) { res.status(400).json({ success: false, error: "No photo file provided" }); return; }
+
+      const teacher = await prisma.teacher.findFirst({
+        where: { userId, institutionId },
+        select: { id: true },
+      });
+      if (!teacher) { res.status(404).json({ success: false, error: "Teacher profile not found" }); return; }
+
+      const classAssignment = await prisma.divisionAssignment.findFirst({
+        where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
+        select: { id: true },
+      });
+      if (!classAssignment) { res.status(403).json({ success: false, error: "Only class teacher can update student photos" }); return; }
+
+      const student = await prisma.student.findFirst({
+        where: { id: studentId, divisionId, institutionId },
+        select: { id: true },
+      });
+      if (!student) { res.status(404).json({ success: false, error: "Student not found" }); return; }
+
+      const { publicUrl } = await uploadImageToSupabase(req.file.buffer, {
+        contentType: req.file.mimetype,
+        folder: "student-photos",
+        ownerId: student.id,
+      });
+
+      await prisma.student.update({ where: { id: student.id }, data: { avatarUrl: publicUrl } });
+
+      const signedUrl = (await generateSignedAvatarUrl(publicUrl)) ?? publicUrl;
+      res.json({ success: true, data: { avatarUrl: signedUrl } });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// ── Students — Stats ──────────────────────────────────────────────────────────
+router.get(
+  "/classes/:divisionId/students/:studentId/stats",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      const teacher = await prisma.teacher.findFirst({
+        where: { userId, institutionId },
+        select: { id: true },
+      });
+      if (!teacher) {
+        res.status(404).json({ success: false, error: "Teacher profile not found" });
+        return;
+      }
+
+      const assignment = await prisma.divisionAssignment.findFirst({
+        where: { divisionId, teacherId: teacher.id, institutionId },
+        select: { id: true },
+      });
+      if (!assignment) {
+        res.status(403).json({ success: false, error: "Not assigned to this division" });
+        return;
+      }
+
+      // Attendance
+      const attendanceRecords = await prisma.attendance.findMany({
+        where: { studentId, divisionId, institutionId },
+        select: { status: true },
+      });
+      const attendanceTotal = attendanceRecords.length;
+      const attendancePresent = attendanceRecords.filter((r) => r.status === "P").length;
+      const attendancePct = attendanceTotal > 0
+        ? Math.round((attendancePresent / attendanceTotal) * 100)
+        : null;
+
+      // Score, Rank & per-subject performance from latest published marksheet
+      const [marksheet, division] = await Promise.all([
+        prisma.marksheet.findFirst({
+          where: { divisionId, institutionId, status: "PUBLISHED" },
+          orderBy: { updatedAt: "desc" },
+          select: {
+            id: true,
+            examColumns: { select: { id: true, subjectId: true, maxMarks: true } },
+          },
+        }),
+        prisma.division.findFirst({
+          where: { id: divisionId, institutionId },
+          select: { standardId: true },
+        }),
+      ]);
+
+      let scorePct: number | null = null;
+      let classRank: number | null = null;
+      type SubjectPerf = { name: string; code: string; color: string | null; scored: number; max: number; pct: number | null };
+      const subjects: SubjectPerf[] = [];
+
+      if (marksheet) {
+        const columnIds = marksheet.examColumns.map((c) => c.id);
+        const maxTotal = marksheet.examColumns.reduce((sum, c) => sum + c.maxMarks, 0);
+
+        if (columnIds.length > 0 && maxTotal > 0) {
+          // All scores for rank calculation + this student's scores for per-subject
+          const [allScores, studentScores] = await Promise.all([
+            prisma.marksheetScore.findMany({
+              where: { marksheetId: marksheet.id, institutionId },
+              select: { studentId: true, score: true, isAbsent: true },
+            }),
+            prisma.marksheetScore.findMany({
+              where: { marksheetId: marksheet.id, institutionId, studentId },
+              select: { examColumnId: true, score: true, isAbsent: true },
+            }),
+          ]);
+
+          // Aggregate per student for rank
+          const totals = new Map<string, number>();
+          for (const s of allScores) {
+            if (!s.isAbsent && s.score !== null) {
+              totals.set(s.studentId, (totals.get(s.studentId) ?? 0) + s.score);
+            }
+          }
+
+          const studentTotal = totals.get(studentId) ?? null;
+          if (studentTotal !== null) {
+            scorePct = Math.round((studentTotal / maxTotal) * 100);
+            const higher = [...totals.values()].filter((t) => t > studentTotal).length;
+            classRank = higher + 1;
+          }
+
+          // Per-subject performance
+          if (division) {
+            const subjectRows = await prisma.subject.findMany({
+              where: { standardId: division.standardId, institutionId },
+              orderBy: { order: "asc" },
+              select: { id: true, name: true, code: true, color: true },
+            });
+            const scoreByCol = new Map(studentScores.map(s => [s.examColumnId, s]));
+            for (const sub of subjectRows) {
+              const cols = marksheet.examColumns.filter(c => c.subjectId === sub.id);
+              if (cols.length === 0) continue;
+              let scored = 0, max = 0;
+              for (const col of cols) {
+                const e = scoreByCol.get(col.id);
+                if (e?.isAbsent) { max += col.maxMarks; continue; }
+                if (e?.score != null) { scored += e.score; }
+                max += col.maxMarks;
+              }
+              subjects.push({
+                name: sub.name,
+                code: sub.code ?? sub.name.slice(0, 4),
+                color: sub.color ?? null,
+                scored,
+                max,
+                pct: max > 0 ? Math.round((scored / max) * 100) : null,
+              });
+            }
+          }
+        }
+      }
+
+      res.json({
+        success: true,
+        data: {
+          attendance: {
+            present: attendancePresent,
+            total: attendanceTotal,
+            pct: attendancePct,
+          },
+          score: { pct: scorePct },
+          classRank,
+          subjects,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 export default router;

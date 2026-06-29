@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
+import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 
 function requireInstitution(req: AuthRequest) {
   const { institutionId } = req.user!;
@@ -30,7 +31,13 @@ export const getDivisionStudents = async (req: AuthRequest, res: Response, next:
       orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
     });
 
-    res.json({ success: true, data: students });
+    const signedMap = await generateSignedAvatarUrlsBatch(students.map(s => s.avatarUrl));
+    const data = students.map(s => ({
+      ...s,
+      avatarUrl: s.avatarUrl ? (signedMap[s.avatarUrl] ?? s.avatarUrl) : null,
+    }));
+
+    res.json({ success: true, data });
   } catch (err) {
     next(err);
   }
@@ -216,8 +223,17 @@ export const getStudentAttendanceRecords = async (req: AuthRequest, res: Respons
     const institutionId = requireInstitution(req);
     const divisionId = req.params.divisionId as string;
     const studentId = req.params.studentId as string;
-    const year = (req.query.year as string) ?? String(new Date().getFullYear());
-    if (!/^\d{4}$/.test(year)) throw new BadRequestError("Invalid year");
+    const yearStr = (req.query.year as string) ?? String(new Date().getFullYear());
+    const startDateParam = req.query.startDate as string | undefined;
+    const endDateParam = req.query.endDate as string | undefined;
+
+    let dateFilter: { gte: string; lte: string };
+    if (startDateParam && endDateParam) {
+      dateFilter = { gte: startDateParam, lte: endDateParam };
+    } else {
+      if (!/^\d{4}$/.test(yearStr)) throw new BadRequestError("Invalid year");
+      dateFilter = { gte: `${yearStr}-01-01`, lte: `${yearStr}-12-31` };
+    }
     await assertDivisionInInstitution(divisionId, institutionId);
 
     const records = await prisma.attendance.findMany({
@@ -225,7 +241,7 @@ export const getStudentAttendanceRecords = async (req: AuthRequest, res: Respons
         divisionId,
         institutionId,
         studentId,
-        date: { gte: `${year}-01-01`, lte: `${year}-12-31` },
+        date: dateFilter,
       },
       select: { date: true, status: true, remark: true },
       orderBy: { date: "asc" },

@@ -569,8 +569,11 @@ model Student {
   emergencyContact String?
   religion         String?
   category         String?
+  nationality      String?
+  admissionYear    String?
   guardians        Json?
   tempPassword     String?
+  hasLoggedIn      Boolean       @default(false)
   status           StudentStatus @default(ACTIVE)
   joinedAt         DateTime      @default(now())
 

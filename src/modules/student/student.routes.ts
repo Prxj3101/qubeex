@@ -411,4 +411,155 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
   }
 });
 
+// ── GET /student/feed/debug — temp: verify student division & class post counts ─
+router.get("/feed/debug", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+
+    const student = await prisma.student.findFirst({
+      where: { userId, institutionId },
+      select: { id: true, divisionId: true, division: { select: { id: true, name: true } } },
+    });
+
+    const generalPostCount = await prisma.campusFeedPost.count({
+      where: { institutionId, divisionId: null },
+    });
+
+    const classPostCount = student?.divisionId
+      ? await prisma.campusFeedPost.count({ where: { institutionId, divisionId: student.divisionId } })
+      : 0;
+
+    const allClassPostCount = await prisma.campusFeedPost.count({
+      where: { institutionId, NOT: { divisionId: null } },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        userId,
+        institutionId,
+        studentRecord: student ?? null,
+        divisionId: student?.divisionId ?? null,
+        divisionName: student?.division?.name ?? null,
+        generalPostCount,
+        classPostCountForThisDivision: classPostCount,
+        totalClassPostsInInstitution: allClassPostCount,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── GET /student/feed/posts — merged general + class feed ─────────────────────
+router.get("/feed/posts", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+
+    const student = await prisma.student.findFirst({
+      where: { userId, institutionId },
+      select: { divisionId: true },
+    });
+
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(50, parseInt(req.query.limit as string) || 20);
+    const typeFilter = req.query.type as string | undefined;
+    const typeCondition =
+      typeFilter && typeFilter !== "all"
+        ? { type: typeFilter.toUpperCase() as "ANNOUNCEMENT" | "NOTICE" | "MATERIAL" | "RESULT" }
+        : {};
+
+    const divisionId = student?.divisionId ?? null;
+
+    console.log(`[student/feed/posts] userId=${userId} institutionId=${institutionId} divisionId=${divisionId}`);
+
+    // Always return general posts; add class posts if student is assigned to a division
+    const where = divisionId
+      ? { institutionId, OR: [{ divisionId: null as string | null }, { divisionId }], ...typeCondition }
+      : { institutionId, divisionId: null as string | null, ...typeCondition };
+
+    const [posts, total] = await prisma.$transaction([
+      prisma.campusFeedPost.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { author: { select: { id: true, name: true, role: true } } },
+      }),
+      prisma.campusFeedPost.count({ where }),
+    ]);
+
+    console.log(`[student/feed/posts] total=${total} class_posts=${posts.filter(p => p.divisionId).length} general_posts=${posts.filter(p => !p.divisionId).length}`);
+
+    res.json({
+      success: true,
+      data: posts.map(p => ({
+        id: p.id,
+        type: p.type.toLowerCase(),
+        source: p.divisionId ? "class" : "general",
+        title: p.title,
+        body: p.body,
+        subject: p.subject,
+        attachmentUrl: p.attachmentUrl,
+        attachmentType: p.attachmentType,
+        attachmentName: p.attachmentName,
+        createdAt: p.createdAt.toISOString(),
+        author: { id: p.author.id, name: p.author.name ?? "Unknown", role: p.author.role },
+      })),
+      meta: { total, page, limit, pages: Math.ceil(total / limit) },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── GET /student/feed/events — merged general + class calendar ────────────────
+router.get("/feed/events", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+
+    const student = await prisma.student.findFirst({
+      where: { userId, institutionId },
+      select: { divisionId: true },
+    });
+
+    const year = parseInt(req.query.year as string) || new Date().getFullYear();
+    const month = parseInt(req.query.month as string);
+    const validMonth = Number.isNaN(month) ? new Date().getMonth() : month;
+
+    const start = new Date(year, validMonth, 1);
+    const end = new Date(year, validMonth + 1, 0, 23, 59, 59, 999);
+
+    const divisionId = student?.divisionId ?? null;
+
+    console.log(`[student/feed/events] userId=${userId} institutionId=${institutionId} divisionId=${divisionId} year=${year} month=${validMonth}`);
+
+    // Always return general events; add class events if student is assigned to a division
+    const where = divisionId
+      ? { institutionId, date: { gte: start, lte: end }, OR: [{ divisionId: null }, { divisionId }] }
+      : { institutionId, date: { gte: start, lte: end }, divisionId: null };
+
+    const events = await prisma.calendarEvent.findMany({
+      where,
+      orderBy: { date: "asc" },
+      include: { createdBy: { select: { id: true, name: true } } },
+    });
+
+    res.json({
+      success: true,
+      data: events.map(e => ({
+        id: e.id,
+        type: e.type.toLowerCase(),
+        label: e.label,
+        date: e.date.getUTCDate(),
+        fullDate: e.date.toISOString(),
+        isClassEvent: !!e.divisionId,
+        createdBy: e.createdBy ? { id: e.createdBy.id, name: e.createdBy.name } : null,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

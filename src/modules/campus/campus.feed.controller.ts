@@ -309,6 +309,47 @@ export const deleteEvent = async (req: AuthRequest, res: Response, next: NextFun
   }
 };
 
+// ── Merged feed posts (for students) — general + class combined ───────────────
+
+export const listMergedPosts = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId } = requireInstitution(req);
+
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(50, parseInt(req.query.limit as string) || 20);
+    const typeFilter = req.query.type as string | undefined;
+    const divisionId = req.query.divisionId as string | undefined;
+
+    const typeCondition = typeFilter && typeFilter !== "all"
+      ? { type: typeFilter.toUpperCase() as "ANNOUNCEMENT" | "NOTICE" | "MATERIAL" | "RESULT" }
+      : {};
+
+    // Merge: general (divisionId=null) + student's class posts
+    const where = divisionId
+      ? { institutionId, OR: [{ divisionId: null }, { divisionId }], ...typeCondition }
+      : { institutionId, divisionId: null, ...typeCondition };
+
+    const [posts, total] = await prisma.$transaction([
+      prisma.campusFeedPost.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { author: { select: { id: true, name: true, role: true } } },
+      }),
+      prisma.campusFeedPost.count({ where }),
+    ]);
+
+    res.json({
+      success: true,
+      data: posts.map(p => ({ ...formatPost(p), source: p.divisionId ? "class" : "general" })),
+      meta: { total, page, limit, pages: Math.ceil(total / limit) },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ── Merged calendar (for students) — main + class events combined ─────────────
 
 export const listMergedEvents = async (req: AuthRequest, res: Response, next: NextFunction) => {

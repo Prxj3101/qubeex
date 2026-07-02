@@ -133,7 +133,7 @@ async function resolveSubjectAssignment(
 }
 
 // ── Seeded RNG (no external dep) ──────────────────────────────────────────────
-function seededRng(seed: string): () => number {
+export function seededRng(seed: string): () => number {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     hash = (Math.imul(31, hash) + seed.charCodeAt(i)) | 0;
@@ -144,7 +144,7 @@ function seededRng(seed: string): () => number {
   };
 }
 
-function shuffleArray<T>(arr: T[], rng: () => number): T[] {
+export function shuffleArray<T>(arr: T[], rng: () => number): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
@@ -184,13 +184,13 @@ interface ConceptualDetails {
   category?: string;
 }
 
-type GeneratedQ = {
+export type GeneratedQ = {
   questionText: string;
   options: string[];
   correctAnswer: string;
 };
 
-function personaliseQuestion(
+export function personaliseQuestion(
   q: { id: string; type: string; question: string; questionTemplate: string | null; options: unknown; answer: string; details: unknown },
   rollNo: string
 ): GeneratedQ {
@@ -953,6 +953,7 @@ export const createTest = async (req: AuthRequest, res: Response, next: NextFunc
         totalMarks: data.totalMarks ?? 100,
         numberOfQuestions: data.numberOfQuestions,
         maxAttempts: data.maxAttempts ?? 1,
+        startDate: data.startDate ? new Date(data.startDate) : null,
         validUntil: data.validUntil ? new Date(data.validUntil) : null,
       },
       include: {
@@ -1012,6 +1013,7 @@ export const updateTest = async (req: AuthRequest, res: Response, next: NextFunc
         ...(data.totalMarks !== undefined && { totalMarks: data.totalMarks }),
         ...(data.numberOfQuestions !== undefined && { numberOfQuestions: data.numberOfQuestions }),
         ...(data.maxAttempts !== undefined && { maxAttempts: data.maxAttempts }),
+        ...(data.startDate !== undefined && { startDate: data.startDate ? new Date(data.startDate) : null }),
         ...(data.validUntil !== undefined && { validUntil: data.validUntil ? new Date(data.validUntil) : null }),
         ...(data.status !== undefined && { status: data.status }),
       },
@@ -1027,13 +1029,14 @@ export const savePaper = async (req: AuthRequest, res: Response, next: NextFunct
     const teacherId = await getTeacherId(userId, institutionId);
     const id = req.params.id as string;
 
-    const { title, description, paperType, durationMinutes, maxAttempts, validUntil, isRandomized, answerSpace, sections, questions } =
+    const { title, description, paperType, durationMinutes, maxAttempts, startDate, validUntil, isRandomized, answerSpace, sections, questions } =
       z.object({
         title: z.string().min(1).max(200),
-        description: z.string().max(1000).optional().nullable(),
+        description: z.string().max(2000).optional().nullable(),
         paperType: z.enum(["TEST", "ASSIGNMENT"]).default("TEST"),
         durationMinutes: z.number().int().min(1).max(600).default(60),
         maxAttempts: z.number().int().min(1).max(10).default(1),
+        startDate: z.string().optional().nullable(),
         validUntil: z.string().optional().nullable(),
         isRandomized: z.boolean().default(false),
         answerSpace: z.boolean().default(true),
@@ -1081,6 +1084,7 @@ export const savePaper = async (req: AuthRequest, res: Response, next: NextFunct
           answerSpace,
           sections: sections.length > 0 ? JSON.parse(JSON.stringify(sections)) : null,
           numberOfQuestions: questions.length,
+          startDate: startDate ? new Date(startDate) : null,
           validUntil: validUntil ? new Date(validUntil) : null,
         },
       });
@@ -1196,20 +1200,98 @@ export const getTestResults = async (req: AuthRequest, res: Response, next: Next
     const teacherId = await getTeacherId(userId, institutionId);
     const id = req.params.id as string;
 
-    const test = await prisma.taskTest.findFirst({ where: { id, teacherId, institutionId } });
+    const test = await prisma.taskTest.findFirst({
+      where: { id, teacherId, institutionId },
+      include: { subject: { select: { name: true } }, division: { select: { name: true } } },
+    });
     if (!test) throw new NotFoundError("Test not found");
 
     const attempts = await prisma.taskTestAttempt.findMany({
       where: { testId: id, status: "completed" },
-      include: {
-        answers: {
-          select: { questionId: true, isCorrect: true, studentAnswer: true, correctAnswer: true, generatedQuestion: true },
-        },
+      select: {
+        id: true,
+        studentName: true,
+        rollNo: true,
+        attemptNumber: true,
+        totalScore: true,
+        maxScore: true,
+        tabChangeCount: true,
+        malpracticeFlag: true,
+        startTime: true,
+        endTime: true,
+        student: { select: { id: true } },
       },
-      orderBy: { totalScore: "desc" },
+      orderBy: { rollNo: "asc" },
     });
 
     res.json({ success: true, data: { test, attempts } });
+  } catch (err) { next(err); }
+};
+
+export const downloadTestResults = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+
+    const test = await prisma.taskTest.findFirst({
+      where: { id, teacherId, institutionId },
+      include: { subject: { select: { name: true } }, division: { select: { name: true } } },
+    });
+    if (!test) throw new NotFoundError("Test not found");
+
+    const attempts = await prisma.taskTestAttempt.findMany({
+      where: { testId: id, status: "completed" },
+      select: {
+        studentName: true,
+        rollNo: true,
+        attemptNumber: true,
+        totalScore: true,
+        maxScore: true,
+        tabChangeCount: true,
+        malpracticeFlag: true,
+        student: { select: { id: true } },
+      },
+      orderBy: { rollNo: "asc" },
+    });
+
+    const rows = attempts.map((a) => ({
+      "Roll No": a.rollNo,
+      "Student Name": a.studentName,
+      "Student ID": a.student?.id ?? "",
+      "Class": test.division.name,
+      "Exam Title": test.title,
+      "Subject": test.subject.name,
+      "Attempt": a.attemptNumber,
+      "Score": a.totalScore,
+      "Max Score": a.maxScore,
+      "Percentage": a.maxScore > 0 ? `${Math.round((a.totalScore / a.maxScore) * 100)}%` : "0%",
+      "Tab Changes": a.tabChangeCount,
+      "Malpractice": a.malpracticeFlag ? "Yes" : "No",
+    }));
+
+    const headers = Object.keys(rows[0] ?? {
+      "Roll No": "", "Student Name": "", "Student ID": "", "Class": "", "Exam Title": "",
+      "Subject": "", "Attempt": "", "Score": "", "Max Score": "", "Percentage": "",
+      "Tab Changes": "", "Malpractice": "",
+    });
+
+    const csvLines = [
+      headers.join(","),
+      ...rows.map((row) =>
+        headers.map((h) => {
+          const val = String((row as Record<string, string | number>)[h] ?? "");
+          return val.includes(",") || val.includes('"') || val.includes("\n")
+            ? `"${val.replace(/"/g, '""')}"`
+            : val;
+        }).join(",")
+      ),
+    ];
+
+    const filename = `${test.title.replace(/[^a-z0-9]/gi, "_")}_results.csv`;
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(csvLines.join("\n"));
   } catch (err) { next(err); }
 };
 
@@ -1570,6 +1652,7 @@ export const createAssignment = async (req: AuthRequest, res: Response, next: Ne
         description: data.description ?? null,
         totalMarks: data.totalMarks ?? 10,
         dueDate: data.dueDate ? new Date(data.dueDate) : null,
+        submissionType: data.submissionType ?? "OFFLINE",
       },
     });
 
@@ -1594,6 +1677,7 @@ export const updateAssignment = async (req: AuthRequest, res: Response, next: Ne
         ...(data.description !== undefined && { description: data.description }),
         ...(data.totalMarks !== undefined && { totalMarks: data.totalMarks }),
         ...(data.dueDate !== undefined && { dueDate: data.dueDate ? new Date(data.dueDate) : null }),
+        ...(data.submissionType !== undefined && { submissionType: data.submissionType }),
         ...(data.status !== undefined && { status: data.status }),
       },
     });
@@ -1660,6 +1744,128 @@ export const getAssignment = async (req: AuthRequest, res: Response, next: NextF
         _count: { attempts: 0 },
       },
     });
+  } catch (err) { next(err); }
+};
+
+// ── Assignment Submission Management (Teacher) ────────────────────────────────
+
+export const getAssignmentSubmissions = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+
+    const assignment = await prisma.taskAssignment.findFirst({
+      where: { id, teacherId, institutionId },
+      select: { id: true, title: true, submissionType: true, divisionId: true, dueDate: true, totalMarks: true },
+    });
+    if (!assignment) throw new NotFoundError("Assignment not found");
+
+    // Get all students in the division
+    const students = await prisma.student.findMany({
+      where: { divisionId: assignment.divisionId, institutionId },
+      select: { id: true, rollNo: true, user: { select: { name: true } } },
+      orderBy: { rollNo: "asc" },
+    });
+
+    // Get all submissions for this assignment
+    const submissions = await prisma.taskAssignmentSubmission.findMany({
+      where: { assignmentId: id, institutionId },
+    });
+
+    const subMap = new Map(submissions.map(s => [s.studentId, s]));
+
+    const data = students.map(student => {
+      const sub = subMap.get(student.id) ?? null;
+      return {
+        student: { id: student.id, name: student.user.name, rollNo: student.rollNo },
+        submission: sub,
+      };
+    });
+
+    res.json({ success: true, data: { assignment, students: data } });
+  } catch (err) { next(err); }
+};
+
+export const reviewSubmission = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const assignmentId = req.params.id as string;
+    const studentId = req.params.studentId as string;
+
+    const { reviewStatus, reviewNote } = z.object({
+      reviewStatus: z.enum(["CORRECT", "WRITE_AGAIN"]),
+      reviewNote: z.string().max(500).trim().optional().nullable(),
+    }).parse(req.body);
+
+    const assignment = await prisma.taskAssignment.findFirst({
+      where: { id: assignmentId, teacherId, institutionId },
+    });
+    if (!assignment) throw new NotFoundError("Assignment not found");
+    if (assignment.submissionType !== "ONLINE") throw new BadRequestError("This assignment is OFFLINE-only");
+
+    const submission = await prisma.taskAssignmentSubmission.findUnique({
+      where: { assignmentId_studentId: { assignmentId, studentId } },
+    });
+    if (!submission) throw new NotFoundError("No submission found for this student");
+    if (!submission.submittedAt) throw new BadRequestError("Student has not submitted yet");
+
+    const updated = await prisma.taskAssignmentSubmission.update({
+      where: { assignmentId_studentId: { assignmentId, studentId } },
+      data: {
+        reviewStatus,
+        reviewNote: reviewNote ?? null,
+        reviewedAt: new Date(),
+        reviewedByTeacherId: teacherId,
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) { next(err); }
+};
+
+export const markOfflineSubmission = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const assignmentId = req.params.id as string;
+    const studentId = req.params.studentId as string;
+
+    const { submitted } = z.object({
+      submitted: z.boolean(),
+    }).parse(req.body);
+
+    const assignment = await prisma.taskAssignment.findFirst({
+      where: { id: assignmentId, teacherId, institutionId },
+    });
+    if (!assignment) throw new NotFoundError("Assignment not found");
+
+    // Upsert submission record — preserve existing offlineSubmittedAt if already set
+    const existing = await prisma.taskAssignmentSubmission.findUnique({
+      where: { assignmentId_studentId: { assignmentId, studentId } },
+      select: { offlineSubmittedAt: true },
+    });
+    const offlineTimestamp = submitted
+      ? (existing?.offlineSubmittedAt ?? new Date())
+      : null;
+
+    const updated = await prisma.taskAssignmentSubmission.upsert({
+      where: { assignmentId_studentId: { assignmentId, studentId } },
+      create: {
+        assignmentId,
+        studentId,
+        institutionId,
+        offlineSubmittedAt: offlineTimestamp,
+        offlineMarkedByTeacherId: submitted ? teacherId : null,
+      },
+      update: {
+        offlineSubmittedAt: offlineTimestamp,
+        offlineMarkedByTeacherId: submitted ? teacherId : null,
+      },
+    });
+
+    res.json({ success: true, data: updated });
   } catch (err) { next(err); }
 };
 

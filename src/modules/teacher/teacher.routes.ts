@@ -114,6 +114,7 @@ import {
   addTestQuestion,
   removeTestQuestion,
   getTestResults,
+  downloadTestResults,
   savePaper,
   listModules,
   createModule,
@@ -128,6 +129,9 @@ import {
   deleteAssignment,
   getAssignment,
   saveAssignmentPaper,
+  getAssignmentSubmissions,
+  reviewSubmission,
+  markOfflineSubmission,
   listContainers,
   createContainer,
   renameContainer,
@@ -186,6 +190,55 @@ router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFuncti
     }
 
     res.json({ success: true, data: { ...teacher, avatarUrl } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── PATCH /teacher/me ────────────────────────────────────────────────────────
+const updateProfileSchema = z.object({
+  name:          z.string().min(1).max(100).trim().optional(),
+  phone:         z.string().max(20).trim().optional().nullable(),
+  dob:           z.string().trim().optional().nullable(),
+  gender:        z.enum(["MALE", "FEMALE", "OTHER"]).optional().nullable(),
+  address:       z.string().trim().optional().nullable(),
+  city:          z.string().trim().optional().nullable(),
+  state:         z.string().trim().optional().nullable(),
+  pincode:       z.string().trim().optional().nullable(),
+  country:       z.string().trim().optional().nullable(),
+  qualification: z.string().trim().optional().nullable(),
+  experience:    z.string().trim().optional().nullable(),
+  prefix:        z.string().trim().optional().nullable(),
+  title:         z.string().trim().optional().nullable(),
+});
+
+router.patch("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    const data = updateProfileSchema.parse(req.body);
+
+    const teacher = await prisma.teacher.findFirst({
+      where: { userId, institutionId },
+      select: { id: true },
+    });
+    if (!teacher) {
+      res.status(404).json({ success: false, error: "Teacher profile not found" });
+      return;
+    }
+
+    const { name, ...teacherFields } = data;
+    const teacherUpdate: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(teacherFields)) {
+      if (v !== undefined) teacherUpdate[k] = v;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      if (name) await tx.user.update({ where: { id: userId }, data: { name } });
+      if (Object.keys(teacherUpdate).length > 0)
+        await tx.teacher.update({ where: { id: teacher.id }, data: teacherUpdate });
+    });
+
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }
@@ -937,6 +990,7 @@ router.put("/tasks/tests/:id/paper", ...T, savePaper);
 router.post("/tasks/tests/:id/questions", ...T, addTestQuestion);
 router.delete("/tasks/tests/:id/questions/:qid", ...T, removeTestQuestion);
 router.get("/tasks/tests/:id/results", ...T, getTestResults);
+router.get("/tasks/tests/:id/results/download", ...T, downloadTestResults);
 
 // ── Tasks — Assignments ───────────────────────────────────────────────────────
 router.get("/tasks/assignments", ...T, listAssignments);
@@ -945,6 +999,9 @@ router.get("/tasks/assignments/:id", ...T, getAssignment);
 router.patch("/tasks/assignments/:id", ...T, updateAssignment);
 router.delete("/tasks/assignments/:id", ...T, deleteAssignment);
 router.put("/tasks/assignments/:id/paper", ...T, saveAssignmentPaper);
+router.get("/tasks/assignments/:id/submissions", ...T, getAssignmentSubmissions);
+router.patch("/tasks/assignments/:id/submissions/:studentId/review", ...T, reviewSubmission);
+router.patch("/tasks/assignments/:id/submissions/:studentId/offline", ...T, markOfflineSubmission);
 
 // ── Tasks — Modules ───────────────────────────────────────────────────────────
 router.get("/tasks/modules", ...T, listModules);

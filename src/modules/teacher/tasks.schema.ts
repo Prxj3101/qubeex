@@ -38,16 +38,18 @@ export const createAssignmentSchema = z.object({
   divisionId: z.string().min(1),
   subjectId: z.string().uuid().optional(),
   title: z.string().min(1).max(200).trim(),
-  description: z.string().max(1000).trim().optional(),
+  description: z.string().max(2000).trim().optional(),
   totalMarks: z.number().int().min(1).max(500).optional().default(10),
   dueDate: z.string().datetime().optional().nullable(),
+  submissionType: z.enum(["OFFLINE", "ONLINE"]).optional().default("OFFLINE"),
 });
 
 export const updateAssignmentSchema = z.object({
   title: z.string().min(1).max(200).trim().optional(),
-  description: z.string().max(1000).trim().optional().nullable(),
+  description: z.string().max(2000).trim().optional().nullable(),
   totalMarks: z.number().int().min(1).max(500).optional(),
   dueDate: z.string().datetime().optional().nullable(),
+  submissionType: z.enum(["OFFLINE", "ONLINE"]).optional(),
   status: z.enum(["DRAFT", "ACTIVE", "COMPLETED"]).optional(),
 }).refine(d => Object.values(d).some(v => v !== undefined), { message: "At least one field required" });
 
@@ -83,21 +85,23 @@ export const createTestSchema = z.object({
   divisionId: z.string().min(1),
   subjectId: z.string().uuid().optional(),
   title: z.string().min(1).max(200).trim(),
-  description: z.string().max(1000).trim().optional(),
+  description: z.string().max(2000).trim().optional(),
   durationMinutes: z.number().int().min(5).max(300).optional(),
   totalMarks: z.number().int().min(1).max(1000).optional().default(100),
   numberOfQuestions: z.number().int().min(1).max(100),
   maxAttempts: z.number().int().min(1).max(10).optional(),
+  startDate: z.string().datetime().optional().nullable(),
   validUntil: z.string().datetime().optional().nullable(),
 });
 
 export const updateTestSchema = z.object({
   title: z.string().min(1).max(200).trim().optional(),
-  description: z.string().max(1000).trim().optional().nullable(),
+  description: z.string().max(2000).trim().optional().nullable(),
   durationMinutes: z.number().int().min(5).max(300).optional(),
   totalMarks: z.number().int().min(1).max(1000).optional(),
   numberOfQuestions: z.number().int().min(1).max(100).optional(),
   maxAttempts: z.number().int().min(1).max(10).optional(),
+  startDate: z.string().datetime().optional().nullable(),
   validUntil: z.string().datetime().optional().nullable(),
   status: z.enum(["DRAFT", "ACTIVE", "COMPLETED"]).optional(),
 });

@@ -4,7 +4,8 @@ import { institutionAccessMiddleware } from "../../middlewares/institutionAccess
 import { prisma } from "../../utils/prisma";
 import { z } from "zod";
 import multer from "multer";
-import { uploadImageToSupabase, generateSignedAvatarUrl } from "../../services/storage.service";
+import { listTests, startTest, submitTest, getAttempt, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload } from "./tasks.controller";
+import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -70,6 +71,23 @@ router.get("/me", ...S, async (req: AuthRequest, res: Response, next: NextFuncti
     next(err);
   }
 });
+
+// ── GET /student/tasks/tests ──────────────────────────────────────────────────
+router.get("/tasks/tests", ...S, listTests);
+
+// ── POST /student/tasks/tests/:id/start ────────────────────────────────────────
+router.post("/tasks/tests/:id/start", ...S, startTest);
+
+// ── POST /student/tasks/tests/:id/submit ───────────────────────────────────────
+router.post("/tasks/tests/:id/submit", ...S, submitTest);
+
+// ── GET /student/tasks/attempts/:id ────────────────────────────────────────────
+router.get("/tasks/attempts/:id", ...S, getAttempt);
+
+// ── Assignment routes ──────────────────────────────────────────────────────────
+router.get("/tasks/assignments", ...S, listAssignments);
+router.post("/tasks/assignments/:id/submit", ...S, assignmentUpload.single("file"), submitAssignment);
+router.get("/tasks/assignments/:id/submission", ...S, getOwnSubmission);
 
 // ── PATCH /student/profile ────────────────────────────────────────────────────
 // Students can edit personal info but NOT academic details (rollNo, houseColor, standardId, divisionId, studentId, status)
@@ -619,7 +637,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
     const ayEnd = `${startYear + 1}-05-31`;
 
     // ── Subjects list from division assignments ──────────────────────────────
-    const subjectList = division.assignments
+    const subjectListRaw = division.assignments
       .filter(a => a.subjectId != null && a.subject != null)
       .sort((a, b) => (a.subject!.order ?? 0) - (b.subject!.order ?? 0))
       .map(a => ({
@@ -628,6 +646,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
         code: a.subject!.code,
         color: a.subject!.color ?? "#7C3AED",
         teacherName: a.teacher.user.name,
+        teacherAvatarUrlRaw: (a.teacher as { avatarUrl?: string | null }).avatarUrl ?? null,
       }));
 
     // ── Classmates with attendance % and marks % ─────────────────────────────
@@ -642,6 +661,31 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
         select: { studentId: true, status: true },
       }),
     ]);
+
+    // Batch-sign all avatar URLs (students + teachers) in one round-trip
+    const rawAvatarUrls: (string | null | undefined)[] = [
+      ...allStudents.map(s => (s as { avatarUrl?: string | null }).avatarUrl),
+      ...subjectListRaw.map(s => s.teacherAvatarUrlRaw),
+    ];
+    const signedAvatarMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
+    const resolveAvatar = (url: string | null | undefined) =>
+      url ? (signedAvatarMap[url] ?? url) : null;
+
+    // Finalise subject list with signed teacher avatar URLs
+    const subjectList = subjectListRaw.map(s => ({
+      id: s.id,
+      name: s.name,
+      code: s.code,
+      color: s.color,
+      teacherName: s.teacherName,
+      teacherAvatarUrl: resolveAvatar(s.teacherAvatarUrlRaw),
+    }));
+
+    // Build studentId → signed avatar map for classmates + leaderboard
+    const studentAvatarMap = new Map<string, string | null>();
+    for (const s of allStudents) {
+      studentAvatarMap.set(s.id, resolveAvatar((s as { avatarUrl?: string | null }).avatarUrl));
+    }
 
     // Attendance % per student
     const attMap = new Map<string, { p: number; total: number }>();
@@ -797,11 +841,12 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
         offlinePct,
         onlinePct,
         isMe: s.id === student.id,
+        avatarUrl: studentAvatarMap.get(s.id) ?? null,
       };
     });
 
     // ── Per-subject leaderboards (top 5, with combined/offline/online) ────────
-    type LbEntry = { name: string; combinedPct: number; offlinePct: number | null; onlinePct: number | null; isMe: boolean };
+    type LbEntry = { name: string; avatarUrl: string | null; combinedPct: number; offlinePct: number | null; onlinePct: number | null; isMe: boolean };
     const subjectLeaderboards: Record<string, LbEntry[]> = {};
     if (marksheet && allColumns.length > 0) {
       const isOnlineCol = (name: string) => name.toLowerCase().includes("online");
@@ -858,6 +903,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
             const onScored = subjectStudentOnline.get(subj.id)?.get(sid) ?? null;
             return {
               name: studentNameMap.get(sid) ?? "—",
+              avatarUrl: studentAvatarMap.get(sid) ?? null,
               combinedPct: Math.round((total / combinedMax) * 100),
               offlinePct: offScored !== null && offMax > 0 ? Math.round((offScored / offMax) * 100) : null,
               onlinePct: onScored !== null && onMax > 0 ? Math.round((onScored / onMax) * 100) : null,

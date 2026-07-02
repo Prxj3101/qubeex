@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
-import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
+import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
@@ -41,19 +41,15 @@ function requireInstitution(req: AuthRequest) {
   return { institutionId, userId };
 }
 
-function formatPost(post: {
-  id: string;
-  type: string;
-  title: string;
-  body: string;
-  subject: string | null;
-  divisionId: string | null;
-  attachmentUrl: string | null;
-  attachmentType: string | null;
-  attachmentName: string | null;
-  createdAt: Date;
-  author: { id: string; name: string | null; role: string };
-}) {
+function formatPost(
+  post: {
+    id: string; type: string; title: string; body: string; subject: string | null;
+    divisionId: string | null; attachmentUrl: string | null; attachmentType: string | null;
+    attachmentName: string | null; createdAt: Date;
+    author: { id: string; name: string | null; role: string };
+  },
+  authorAvatarUrl: string | null = null
+) {
   return {
     id: post.id,
     type: post.type.toLowerCase() as "announcement" | "notice" | "material" | "result",
@@ -69,6 +65,7 @@ function formatPost(post: {
       id: post.author.id,
       name: post.author.name ?? "Unknown",
       role: post.author.role,
+      avatarUrl: authorAvatarUrl,
     },
   };
 }
@@ -134,14 +131,18 @@ export const listPosts = async (req: AuthRequest, res: Response, next: NextFunct
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
-        include: { author: { select: { id: true, name: true, role: true } } },
+        include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
       }),
       prisma.campusFeedPost.count({ where }),
     ]);
 
+    const rawAvatarUrls = posts.map(p => (p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null);
+    const signedMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
+    const resolveAvatar = (url: string | null | undefined) => url ? (signedMap[url] ?? url) : null;
+
     res.json({
       success: true,
-      data: posts.map(formatPost),
+      data: posts.map(p => formatPost(p, resolveAvatar((p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl))),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
@@ -167,10 +168,14 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
         attachmentType: data.attachmentType,
         attachmentName: data.attachmentName,
       },
-      include: { author: { select: { id: true, name: true, role: true } } },
+      include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
     });
 
-    res.status(201).json({ success: true, data: formatPost(post) });
+    const rawUrl = (post.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
+    const signedMap2 = await generateSignedAvatarUrlsBatch([rawUrl]);
+    const authorAvatarUrl = rawUrl ? (signedMap2[rawUrl] ?? rawUrl) : null;
+
+    res.status(201).json({ success: true, data: formatPost(post, authorAvatarUrl) });
     logAudit("ANNOUNCEMENT_POSTED", {
       userId,
       actorRole: req.user!.role,
@@ -335,14 +340,18 @@ export const listMergedPosts = async (req: AuthRequest, res: Response, next: Nex
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
-        include: { author: { select: { id: true, name: true, role: true } } },
+        include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
       }),
       prisma.campusFeedPost.count({ where }),
     ]);
 
+    const rawAvatarUrlsMerged = posts.map(p => (p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null);
+    const signedMapMerged = await generateSignedAvatarUrlsBatch(rawAvatarUrlsMerged);
+    const resolveAvatarMerged = (url: string | null | undefined) => url ? (signedMapMerged[url] ?? url) : null;
+
     res.json({
       success: true,
-      data: posts.map(p => ({ ...formatPost(p), source: p.divisionId ? "class" : "general" })),
+      data: posts.map(p => ({ ...formatPost(p, resolveAvatarMerged((p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl)), source: p.divisionId ? "class" : "general" })),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {

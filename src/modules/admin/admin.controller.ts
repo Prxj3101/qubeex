@@ -2,7 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { checkInstitutionAccess } from "../../utils/authorization";
-import { uploadImageToSupabase } from "../../services/storage.service";
+import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { NotFoundError, BadRequestError } from "../../utils/errors";
 import { generateToken, hashToken } from "../../utils/token";
@@ -14,6 +14,23 @@ const updateInstitutionSchema = z.object({
   name: z.string().min(2).max(200).trim().optional(),
   email: z.string().email().max(255).toLowerCase().trim().optional(),
   phone: z.string().max(20).trim().optional().nullable(),
+  address: z.string().trim().optional().nullable(),
+  city: z.string().trim().optional().nullable(),
+  state: z.string().trim().optional().nullable(),
+  country: z.string().trim().optional().nullable(),
+  pincode: z.string().trim().optional().nullable(),
+  board: z.string().trim().optional().nullable(),
+  medium: z.string().trim().optional().nullable(),
+  establishedOn: z.string().trim().optional().nullable(),
+});
+
+const updateAdminMeSchema = z.object({
+  name: z.string().min(2).max(100).trim().optional(),
+  prefix: z.string().max(20).trim().optional().nullable(),
+  title: z.string().max(100).trim().optional().nullable(),
+  phone: z.string().max(20).trim().optional().nullable(),
+  dob: z.string().optional().nullable(),
+  gender: z.string().optional().nullable(),
 });
 
 const addTeacherSchema = z.object({
@@ -142,7 +159,13 @@ export const getMyInstitution = async (
       throw new NotFoundError("Institution not found");
     }
 
-    res.json({ success: true, data: institution });
+    let adminAvatarUrl = institution.adminAvatarUrl;
+    if (adminAvatarUrl) {
+      const signed = await generateSignedAvatarUrl(adminAvatarUrl);
+      if (signed) adminAvatarUrl = signed;
+    }
+
+    res.json({ success: true, data: { ...institution, adminAvatarUrl } });
   } catch (error) {
     next(error);
   }
@@ -179,6 +202,73 @@ export const updateMyInstitution = async (
     });
 
     res.json({ success: true, data: institution });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAdminMe = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    if (!user.institutionId) throw new BadRequestError("No institution associated with this account");
+    checkInstitutionAccess(user, user.institutionId);
+
+    const data = updateAdminMeSchema.parse(req.body);
+
+    // Update User.name if provided
+    if (data.name) {
+      await prisma.user.update({ where: { id: user.userId }, data: { name: data.name } });
+    }
+
+    // Store prefix/title/phone/dob/gender on Institution (one admin per institution)
+    const { name: _name, ...institutionFields } = data;
+    const institutionUpdate: Record<string, string | null | undefined> = {};
+    if ('prefix' in institutionFields) institutionUpdate.adminPrefix = institutionFields.prefix;
+    if ('title' in institutionFields) institutionUpdate.adminTitle = institutionFields.title;
+    if ('phone' in institutionFields) institutionUpdate.adminPhone = institutionFields.phone;
+    if ('dob' in institutionFields) institutionUpdate.adminDob = institutionFields.dob;
+    if ('gender' in institutionFields) institutionUpdate.adminGender = institutionFields.gender;
+
+    if (Object.keys(institutionUpdate).length > 0) {
+      await prisma.institution.update({ where: { id: user.institutionId }, data: institutionUpdate });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadAdminPhoto = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    if (!user.institutionId) throw new BadRequestError("No institution associated with this account");
+    checkInstitutionAccess(user, user.institutionId);
+
+    const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+    if (!file.length) throw new BadRequestError("No photo file provided");
+
+    const { publicUrl } = await uploadImageToSupabase(file, {
+      contentType: req.headers["content-type"] ?? "",
+      folder: "admin-photos",
+      ownerId: user.institutionId,
+    });
+
+    await prisma.institution.update({
+      where: { id: user.institutionId },
+      data: { adminAvatarUrl: publicUrl },
+    });
+
+    const signedUrl = (await generateSignedAvatarUrl(publicUrl)) ?? publicUrl;
+    res.json({ success: true, data: { avatarUrl: signedUrl } });
   } catch (error) {
     next(error);
   }
@@ -255,13 +345,16 @@ export const listTeachers = async (
       })).map(i => i.email)
     );
 
+    const rawAvatarUrls = teachers.map(t => t.avatarUrl);
+    const signedMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
+
     const data = teachers.map((t) => ({
       id: t.id,
       teacherId: t.teacherId,
       name: t.user.name,
       email: t.user.email,
       phone: t.phone,
-      avatarUrl: t.avatarUrl,
+      avatarUrl: t.avatarUrl ? (signedMap[t.avatarUrl] ?? t.avatarUrl) : null,
       status: t.status,
       invitePending: pendingInviteEmails.has(t.user.email),
       joinedAt: t.joinedAt.toISOString(),

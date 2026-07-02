@@ -1,7 +1,7 @@
 import { Response, NextFunction, Request } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
-import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
+import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { getPresenceBatch } from "../../services/presence.service";
 import { z } from "zod";
@@ -62,7 +62,7 @@ function formatPost(post: {
     createdAt: Date;
     author: { id: string; name: string | null; role: string };
   }[];
-}, viewerId: string) {
+}, viewerId: string, authorAvatarUrl: string | null = null, commentAvatarMap: Map<string, string | null> = new Map()) {
   return {
     id: post.id,
     text: post.text,
@@ -74,6 +74,7 @@ function formatPost(post: {
       id: post.author.id,
       name: post.author.name ?? "Unknown",
       role: post.author.role,
+      avatarUrl: authorAvatarUrl,
     },
     likeCount: post.reactions.length,
     liked: post.reactions.some(r => r.userId === viewerId),
@@ -81,7 +82,7 @@ function formatPost(post: {
       id: c.id,
       text: c.text,
       createdAt: c.createdAt.toISOString(),
-      author: { id: c.author.id, name: c.author.name ?? "Unknown", role: c.author.role },
+      author: { id: c.author.id, name: c.author.name ?? "Unknown", role: c.author.role, avatarUrl: commentAvatarMap.get(c.author.id) ?? null },
     })),
   };
 }
@@ -142,20 +143,37 @@ export const listPosts = async (
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          author: { select: { id: true, name: true, role: true } },
+          author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } },
           reactions: { select: { userId: true } },
           comments: {
             orderBy: { createdAt: "asc" },
-            include: { author: { select: { id: true, name: true, role: true } } },
+            include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
           },
         },
       }),
       prisma.staffPost.count({ where: { institutionId } }),
     ]);
 
+    type PostWithTeacher = typeof posts[0];
+    type AuthorWithTeacher = PostWithTeacher['author'];
+    const getTeacherAvatar = (author: AuthorWithTeacher) => (author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
+
+    const allRawUrls = [
+      ...posts.map(p => getTeacherAvatar(p.author)),
+      ...posts.flatMap(p => p.comments.map(c => getTeacherAvatar(c.author))),
+    ];
+    const signedMap = await generateSignedAvatarUrlsBatch(allRawUrls);
+    const resolveAvatar = (url: string | null | undefined) => url ? (signedMap[url] ?? url) : null;
+
+    const commentAvatarMaps = posts.map(p => {
+      const m = new Map<string, string | null>();
+      for (const c of p.comments) m.set(c.author.id, resolveAvatar(getTeacherAvatar(c.author)));
+      return m;
+    });
+
     res.json({
       success: true,
-      data: posts.map(p => formatPost(p, userId)),
+      data: posts.map((p, i) => formatPost(p, userId, resolveAvatar(getTeacherAvatar(p.author)), commentAvatarMaps[i])),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
@@ -182,16 +200,20 @@ export const createPost = async (
         attachmentName: data.attachmentName,
       },
       include: {
-        author: { select: { id: true, name: true, role: true } },
+        author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } },
         reactions: { select: { userId: true } },
         comments: {
           orderBy: { createdAt: "asc" },
-          include: { author: { select: { id: true, name: true, role: true } } },
+          include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
         },
       },
     });
 
-    res.status(201).json({ success: true, data: formatPost(post, userId) });
+    const rawUrl = (post.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
+    const signedMap2 = await generateSignedAvatarUrlsBatch([rawUrl]);
+    const authorAvatarUrl = rawUrl ? (signedMap2[rawUrl] ?? rawUrl) : null;
+
+    res.status(201).json({ success: true, data: formatPost(post, userId, authorAvatarUrl) });
   } catch (err) {
     next(err);
   }

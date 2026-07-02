@@ -62,7 +62,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
       await Promise.all([
         prisma.institution.findUnique({
           where: { id: institutionId },
-          select: { id: true, name: true, type: true, status: true, logoUrl: true },
+          select: { id: true, name: true, type: true, status: true, logoUrl: true, createdAt: true },
         }),
         prisma.user.count({ where: { institutionId } }),
         prisma.teacher.count({ where: { institutionId } }),
@@ -116,6 +116,11 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
 
     if (!institution) throw new BadRequestError("Institution not found");
 
+    const daysSinceCreation = Math.floor(
+      (Date.now() - institution.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const showWelcomeBanner = daysSinceCreation < 15;
+
     const enrollmentGrowth = Array.from({ length: 6 }, (_, i) => {
       const d = new Date();
       d.setDate(1);
@@ -164,6 +169,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
           status: institution.status,
           logoUrl: institution.logoUrl,
         },
+        showWelcomeBanner,
         stats: {
           totalUsers: userCount,
           totalStudents: studentCount,

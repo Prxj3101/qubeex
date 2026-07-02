@@ -4,7 +4,7 @@ import { institutionAccessMiddleware } from "../../middlewares/institutionAccess
 import { requirePermission } from "../../middlewares/requirePermission.middleware";
 import { prisma } from "../../utils/prisma";
 import { setPresence } from "../../services/presence.service";
-import { getMyInstitution, updateMyInstitution, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdminPermissions, deactivateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
+import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdminPermissions, deactivateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
@@ -38,6 +38,13 @@ router.post("/presence", ...A, async (req: AuthRequest, res: Response) => {
 });
 
 router.get("/me", ...A, getMyInstitution);
+router.patch("/me", ...ADMIN_ONLY, updateAdminMe);
+router.post(
+  "/me/photo",
+  ...ADMIN_ONLY,
+  raw({ type: ["image/png", "image/jpeg", "image/webp"], limit: "5mb" }),
+  uploadAdminPhoto
+);
 router.get("/subadmin/me", ...A, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     if (req.user!.role !== "SUB_ADMIN") {

@@ -95,6 +95,15 @@ model Institution {
   medium  String?
   logoUrl String?
 
+  // Admin personal info (one admin per institution)
+  adminPrefix       String?
+  adminTitle        String?
+  adminPhone        String?
+  adminDob          String?
+  adminGender       String?
+  adminAvatarUrl    String?
+  establishedOn     String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -131,6 +140,8 @@ model Institution {
   attendanceDayNotes AttendanceDayNote[]
   subAdmins     SubAdmin[]
   marksheets    Marksheet[]
+  teacherNotes  TeacherNote[]
+  teacherTasks  TeacherTask[]
 }
 
 model User {
@@ -296,9 +307,39 @@ model Teacher {
   taskAssignments     TaskAssignment[]
   questionShareTokens QuestionShareToken[]
   taskPdfUploads      TaskPdfUpload[]
+  teacherNotes        TeacherNote[]
+  teacherTasks        TeacherTask[]
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
+}
+
+model TeacherNote {
+  id            String      @id @default(uuid())
+  teacherId     String
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  text          String
+  color         String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([teacherId])
+}
+
+model TeacherTask {
+  id            String      @id @default(uuid())
+  teacherId     String
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  text          String
+  done          Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([teacherId])
 }
 
 model SubAdmin {

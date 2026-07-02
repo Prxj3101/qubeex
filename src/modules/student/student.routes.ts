@@ -1027,12 +1027,16 @@ router.get("/feed/posts", ...S, async (req: AuthRequest, res: Response, next: Ne
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
-        include: { author: { select: { id: true, name: true, role: true } } },
+        include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
       }),
       prisma.campusFeedPost.count({ where }),
     ]);
 
     console.log(`[student/feed/posts] total=${total} class_posts=${posts.filter(p => p.divisionId).length} general_posts=${posts.filter(p => !p.divisionId).length}`);
+
+    const rawFeedAvatars = posts.map(p => (p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null);
+    const feedAvatarMap = await generateSignedAvatarUrlsBatch(rawFeedAvatars);
+    const resolveFeedAvatar = (url: string | null | undefined) => url ? (feedAvatarMap[url] ?? url) : null;
 
     res.json({
       success: true,
@@ -1047,7 +1051,12 @@ router.get("/feed/posts", ...S, async (req: AuthRequest, res: Response, next: Ne
         attachmentType: p.attachmentType,
         attachmentName: p.attachmentName,
         createdAt: p.createdAt.toISOString(),
-        author: { id: p.author.id, name: p.author.name ?? "Unknown", role: p.author.role },
+        author: {
+          id: p.author.id,
+          name: p.author.name ?? "Unknown",
+          role: p.author.role,
+          avatarUrl: resolveFeedAvatar((p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl),
+        },
       })),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+import { logAudit } from "../../services/audit.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const PDFDocument = require("pdfkit");
 import {
@@ -1415,6 +1416,17 @@ export async function publishMarksheet(
     await prisma.marksheet.update({
       where: { id: marksheetId },
       data: { status: "PUBLISHED" },
+    });
+
+    const pubDivision = await prisma.division.findFirst({
+      where: { id: marksheet.divisionId, institutionId },
+      select: { name: true, standard: { select: { name: true } } },
+    });
+    logAudit("RESULT_UPLOADED", {
+      userId,
+      actorRole: "TEACHER",
+      institutionId,
+      details: `Published marksheet results for ${pubDivision ? `${pubDivision.standard.name} - ${pubDivision.name}` : marksheet.divisionId}`,
     });
 
     res.json({ success: true });

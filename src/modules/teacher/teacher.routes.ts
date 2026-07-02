@@ -7,6 +7,7 @@ import PDFDocument from "pdfkit";
 import { z } from "zod";
 import multer from "multer";
 import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { logAudit } from "../../services/audit.service";
 
 const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -145,6 +146,16 @@ import {
   reorderGradedSubjects, updateGradedSectionTitle, bulkUpsertGradedScores,
   publishMarksheet, downloadMarksheet, updateMarksheetGradeScale,
 } from "./marksheet.controller";
+import {
+  getNotepad,
+  createNote,
+  updateNote,
+  deleteNote,
+  createTask,
+  updateTask,
+  deleteTask,
+} from "./notepad.controller";
+import { getOverview } from "./overview.controller";
 
 const router = Router();
 
@@ -159,6 +170,9 @@ router.post("/presence", ...T, async (req: AuthRequest, res: Response, next: Nex
     next(err);
   }
 });
+
+// ── Overview ──────────────────────────────────────────────────────────────────
+router.get("/overview", ...T, getOverview);
 
 // ── Me ────────────────────────────────────────────────────────────────────────
 router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -511,7 +525,7 @@ router.post(
 
       const division = await prisma.division.findFirst({
         where: { id: divisionId, institutionId },
-        select: { id: true, standardId: true },
+        select: { id: true, standardId: true, name: true, standard: { select: { name: true } } },
       });
       if (!division) {
         res.status(404).json({ success: false, error: "Division not found" });
@@ -601,6 +615,13 @@ router.post(
             },
           },
         });
+      });
+
+      logAudit("STUDENT_ADDED", {
+        userId,
+        actorRole: "TEACHER",
+        institutionId,
+        details: `Added student ${data.name} to ${division.standard.name} - ${division.name}`,
       });
 
       res.status(201).json({ success: true, data: { student, tempPassword: plainPassword } });
@@ -812,6 +833,13 @@ router.patch(
         },
       });
 
+      logAudit("STUDENT_UPDATED", {
+        userId,
+        actorRole: "TEACHER",
+        institutionId,
+        details: `Updated student ${updated?.user.name ?? studentId}`,
+      });
+
       res.json({ success: true, data: updated });
     } catch (err) {
       next(err);
@@ -872,6 +900,14 @@ router.patch(
           where: { id: student.userId },
           data: { isActive: status === "ACTIVE" },
         });
+      });
+
+      const statusUser = await prisma.user.findUnique({ where: { id: student.userId }, select: { name: true } });
+      logAudit(status === "ACTIVE" ? "STUDENT_ACTIVATED" : "STUDENT_DEACTIVATED", {
+        userId,
+        actorRole: "TEACHER",
+        institutionId,
+        details: `${status === "ACTIVE" ? "Activated" : "Deactivated"} student ${statusUser?.name ?? studentId}`,
       });
 
       res.json({ success: true, data: { status } });
@@ -1196,6 +1232,17 @@ router.post(
         }
       });
 
+      const attDivision = await prisma.division.findFirst({
+        where: { id: divisionId, institutionId },
+        select: { name: true, standard: { select: { name: true } } },
+      });
+      logAudit("ATTENDANCE_MARKED", {
+        userId,
+        actorRole: "TEACHER",
+        institutionId,
+        details: `Marked attendance for ${attDivision ? `${attDivision.standard.name} - ${attDivision.name}` : divisionId} (${records.length} students)`,
+      });
+
       res.json({ success: true });
     } catch (err: unknown) {
       const e = err as { status?: number; message?: string };
@@ -1304,11 +1351,19 @@ router.get(
           studentId: s.id,
           name: s.user.name,
           rollNo: s.rollNo ?? "",
+          avatarUrl: s.avatarUrl,
           overallPct,
           currentMonthPct,
           monthlyStats,
         };
       });
+
+      const rawSummaryAvatars = summaryStudents.map(st => st.avatarUrl ?? null);
+      const summaryAvatarMap = await generateSignedAvatarUrlsBatch(rawSummaryAvatars);
+      const resolvedSummaryStudents = summaryStudents.map(st => ({
+        ...st,
+        avatarUrl: st.avatarUrl ? (summaryAvatarMap[st.avatarUrl] ?? st.avatarUrl) : null,
+      }));
 
       // Class-level stats — only average students who have actual data
       const withOverall = summaryStudents.filter((st) => st.overallPct !== null);
@@ -1334,7 +1389,7 @@ router.get(
       res.json({
         success: true,
         data: {
-          students: summaryStudents,
+          students: resolvedSummaryStudents,
           classStats: { overallPct: classOverallPct, currentMonthPct: classCurrentMonthPct, monthlyStats: classMonthlyStats },
         },
       });
@@ -1408,6 +1463,15 @@ router.patch("/marksheet/:id/grade-scale", ...T, updateMarksheetGradeScale);
 router.put("/marksheet/:id/graded-scores", ...T, bulkUpsertGradedScores);
 router.post("/marksheet/:id/publish", ...T, publishMarksheet);
 router.get("/marksheet/:id/download", ...T, downloadMarksheet);
+
+// ── Notepad ───────────────────────────────────────────────────────────────────
+router.get("/notepad", ...T, getNotepad);
+router.post("/notepad/notes", ...T, createNote);
+router.patch("/notepad/notes/:id", ...T, updateNote);
+router.delete("/notepad/notes/:id", ...T, deleteNote);
+router.post("/notepad/tasks", ...T, createTask);
+router.patch("/notepad/tasks/:id", ...T, updateTask);
+router.delete("/notepad/tasks/:id", ...T, deleteTask);
 
 // ── Students — Upload Photo (class teacher only) ──────────────────────────────
 router.post(

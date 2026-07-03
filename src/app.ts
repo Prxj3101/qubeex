@@ -7,6 +7,8 @@ import adminRoutes from "./modules/admin/admin.routes";
 import staffroomRoutes from "./modules/staffroom/staffroom.routes";
 import teacherStaffroomRoutes from "./modules/staffroom/staffroom.teacher.routes";
 import campusRoutes from "./modules/campus/campus.routes";
+import promotionAdminRoutes from "./modules/promotion/promotion.admin.routes";
+import promotionTeacherRoutes from "./modules/promotion/promotion.teacher.routes";
 import teacherCampusRoutes from "./modules/campus/campus.teacher.routes";
 import teacherRoutes from "./modules/teacher/teacher.routes";
 import studentRoutes from "./modules/student/student.routes";
@@ -60,6 +62,8 @@ app.use("/api/teacher/staffroom", teacherStaffroomRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/quiz", quizRoutes);
+app.use("/api/admin/promotions", promotionAdminRoutes);
+app.use("/api/teacher/promotions", promotionTeacherRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Server is running...");

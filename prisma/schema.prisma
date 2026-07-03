@@ -20,6 +20,12 @@ enum Role {
 enum StudentStatus {
   ACTIVE
   INACTIVE
+  GRADUATED
+}
+
+enum PromotionOutcome {
+  PROMOTED
+  GRADUATED
 }
 
 enum InstitutionType {
@@ -142,6 +148,9 @@ model Institution {
   marksheets    Marksheet[]
   teacherNotes  TeacherNote[]
   teacherTasks  TeacherTask[]
+
+  studentEnrollments StudentEnrollment[]
+  promotionBatches   PromotionBatch[]
 }
 
 model User {
@@ -481,9 +490,10 @@ model Standard {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  divisions Division[]
-  students  Student[]
-  subjects  Subject[]
+  divisions   Division[]
+  students    Student[]
+  subjects    Subject[]
+  enrollments StudentEnrollment[]
 
   @@unique([institutionId, name])
   @@index([institutionId])
@@ -517,6 +527,7 @@ model Division {
   taskContainers     TaskContainer[]
   taskAssignments    TaskAssignment[]
   marksheets         Marksheet[]
+  enrollments        StudentEnrollment[]
 
   @@unique([standardId, name])
   @@index([institutionId])
@@ -629,9 +640,61 @@ model Student {
   taskAssignmentSubmissions TaskAssignmentSubmission[]
   marksheetScores          MarksheetScore[]
   marksheetGradedScores MarksheetGradedScore[]
+  enrollments           StudentEnrollment[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
+}
+
+model StudentEnrollment {
+  id            String @id @default(uuid())
+  studentId     String
+  student       Student @relation(fields: [studentId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  academicYear String
+  standardId   String
+  standard     Standard @relation(fields: [standardId], references: [id])
+  divisionId   String
+  division     Division @relation(fields: [divisionId], references: [id])
+
+  outcome          PromotionOutcome
+  promotionBatchId String
+  batch            PromotionBatch @relation(fields: [promotionBatchId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([institutionId, academicYear, standardId, divisionId])
+  @@index([studentId])
+  @@index([promotionBatchId])
+}
+
+model PromotionBatch {
+  id            String @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  fromStandardId String
+  fromDivisionId String
+  toStandardId   String?
+  toDivisionId   String?
+
+  academicYear  String
+  action        PromotionOutcome
+  studentCount  Int
+  previousState Json
+
+  triggeredById   String
+  triggeredByRole String
+  undoneAt        DateTime?
+
+  createdAt DateTime @default(now())
+
+  enrollments StudentEnrollment[]
+
+  @@index([institutionId, createdAt])
+  @@index([fromDivisionId])
 }
 
 // ─── Attendance ───────────────────────────────────────────────────────────────

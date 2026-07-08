@@ -1,0 +1,167 @@
+import { Response, NextFunction } from "express";
+import { AuthRequest } from "../../middlewares/auth.middleware";
+import { prisma } from "../../utils/prisma";
+import { BadRequestError, NotFoundError } from "../../utils/errors";
+import { z } from "zod";
+import { logAudit } from "../../services/audit.service";
+import { createRemarkSchema } from "../../services/remark.schema";
+import { createStudentRemark, listStudentRemarks } from "../../services/remark.service";
+import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
+import { getStudentStatsData } from "../../services/studentStats.service";
+import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
+import { getStudentAttendanceTrendData } from "../../services/studentAttendanceTrend.service";
+
+function requireInstitution(req: AuthRequest) {
+  const { institutionId } = req.user!;
+  if (!institutionId) throw new BadRequestError("No institution");
+  return institutionId;
+}
+
+async function findStudentInDivision(studentId: string, divisionId: string, institutionId: string) {
+  const student = await prisma.student.findFirst({
+    where: { id: studentId, divisionId, institutionId },
+    select: { id: true },
+  });
+  if (!student) throw new NotFoundError("Student not found in this division");
+}
+
+// GET /admin/campus/divisions/:divisionId/students/:studentId/stats
+export const getStudentStats = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const studentId = req.params.studentId as string;
+
+    await findStudentInDivision(studentId, divisionId, institutionId);
+
+    const data = await getStudentStatsData(studentId, divisionId, institutionId);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const updateStatusSchema = z.object({
+  status: z.enum(["ACTIVE", "INACTIVE"]),
+});
+
+// PATCH /admin/campus/divisions/:divisionId/students/:studentId
+export const updateStudentStatus = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const studentId = req.params.studentId as string;
+    const { status } = updateStatusSchema.parse(req.body);
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, divisionId, institutionId },
+      select: { id: true, userId: true },
+    });
+    if (!student) throw new NotFoundError("Student not found in this division");
+
+    const [updated] = await prisma.$transaction([
+      prisma.student.update({ where: { id: studentId }, data: { status } }),
+      prisma.user.update({ where: { id: student.userId }, data: { isActive: status === "ACTIVE" } }),
+    ]);
+
+    res.json({ success: true, data: { id: updated.id, status: updated.status } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /admin/campus/divisions/:divisionId/students/:studentId/remarks
+export const reportStudent = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const studentId = req.params.studentId as string;
+
+    await findStudentInDivision(studentId, divisionId, institutionId);
+
+    const data = createRemarkSchema.parse(req.body);
+    const remark = await createStudentRemark({
+      institutionId,
+      studentId,
+      reportedByUserId: req.user!.userId,
+      reportedByRole: "Admin",
+      data,
+    });
+
+    logAudit("STUDENT_REPORTED", {
+      userId: req.user!.userId,
+      actorRole: "ADMIN",
+      institutionId,
+      details: `${data.type === "yellow" ? "Yellow" : "Red"} card reported for student: ${data.title}`,
+    });
+
+    res.status(201).json({ success: true, data: remark });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET /admin/campus/divisions/:divisionId/students/:studentId/remarks
+export const getStudentRemarks = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const studentId = req.params.studentId as string;
+
+    await findStudentInDivision(studentId, divisionId, institutionId);
+
+    const remarks = await listStudentRemarks(studentId, institutionId);
+    res.json({ success: true, data: remarks });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET /admin/campus/divisions/:divisionId/students/:studentId/marksheet
+export const getStudentMarksheet = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const studentId = req.params.studentId as string;
+
+    await findStudentInDivision(studentId, divisionId, institutionId);
+
+    const data = await getStudentMarksheetData(divisionId, studentId, institutionId);
+    if (!data) {
+      res.status(404).json({ success: false, error: "Results not published yet" });
+      return;
+    }
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET /admin/campus/divisions/:divisionId/students/:studentId/attendance-trend
+export const getStudentAttendanceTrend = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const studentId = req.params.studentId as string;
+
+    await findStudentInDivision(studentId, divisionId, institutionId);
+
+    const data = await getStudentAttendanceTrendData(studentId, institutionId);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET /admin/campus/divisions/:divisionId/leaderboard
+export const getDivisionLeaderboard = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+
+    const data = await getDivisionLeaderboardData(divisionId, institutionId);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};

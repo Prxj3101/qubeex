@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
-import { BadRequestError, NotFoundError } from "../../utils/errors";
+import { BadRequestError, ConflictError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 
@@ -359,6 +359,20 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
         where: { divisionId_subjectId: { divisionId, subjectId: data.subjectId } },
       });
       if (!selected) throw new NotFoundError("Subject is not selected for this division");
+    }
+
+    // A teacher can be class teacher (null subjectId) of at most one division —
+    // reject if they're already the class teacher elsewhere.
+    if (data.subjectId == null) {
+      const existingClassTeacherDivision = await prisma.division.findFirst({
+        where: { institutionId, classTeacherId: data.teacherId, id: { not: divisionId } },
+        select: { name: true, standard: { select: { name: true } } },
+      });
+      if (existingClassTeacherDivision) {
+        throw new ConflictError(
+          `Teacher is already class teacher of ${existingClassTeacherDivision.standard.name} - ${existingClassTeacherDivision.name}`
+        );
+      }
     }
 
     // Upsert: replace existing assignment for this slot

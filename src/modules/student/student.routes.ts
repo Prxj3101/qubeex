@@ -6,6 +6,8 @@ import { z } from "zod";
 import multer from "multer";
 import { listTests, startTest, submitTest, getAttempt, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload } from "./tasks.controller";
 import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { listStudentRemarks } from "../../services/remark.service";
+import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -278,13 +280,9 @@ function getCurrentAcademicYear(): string {
   return `${startYear}-${String(startYear + 1).slice(2)}`;
 }
 
-function gradeFor(pct: number | null): string {
+function gradeFor(pct: number | null, scale: GradeScaleEntry[]): string {
   if (pct === null) return "—";
-  if (pct >= 75) return "A";
-  if (pct >= 60) return "B";
-  if (pct >= 45) return "C";
-  if (pct >= 35) return "D";
-  return "F";
+  return resolveGrade(pct, scale);
 }
 
 router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -310,14 +308,14 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     // year (e.g. 2025-26) are viewed in June of the new year (2026-27).
     let marksheet = await prisma.marksheet.findUnique({
       where: { divisionId_academicYear: { divisionId: student.division.id, academicYear } },
-      select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true },
+      select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true },
     });
     console.log("[marksheet] divisionId:", student.division.id, "academicYear:", academicYear, "found:", marksheet?.academicYear, "status:", marksheet?.status);
     if (!marksheet || marksheet.status !== "PUBLISHED") {
       marksheet = await prisma.marksheet.findFirst({
         where: { divisionId: student.division.id, institutionId, status: "PUBLISHED" },
         orderBy: { academicYear: "desc" },
-        select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true },
+        select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true },
       });
       console.log("[marksheet] fallback:", marksheet?.academicYear, "status:", marksheet?.status);
     }
@@ -373,7 +371,7 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
       grandScored += scored;
       grandMax += max;
       const pct = max > 0 ? Math.round((scored / max) * 100) : null;
-      return { id: sub.id, name: sub.name, code: sub.code ?? sub.name.slice(0, 4), color: sub.color ?? null, columns, total: { scored, max }, pct, grade: gradeFor(pct) };
+      return { id: sub.id, name: sub.name, code: sub.code ?? sub.name.slice(0, 4), color: sub.color ?? null, columns, total: { scored, max }, pct, grade: gradeFor(pct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]) };
     });
     const grandPct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
 
@@ -410,6 +408,7 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
       success: true,
       data: {
         academicYear: marksheet.academicYear,
+        gradeScale: (marksheet.gradeScale ?? []) as GradeScaleEntry[],
         gradedSectionTitle: marksheet.gradedSectionTitle,
         standardName: student.division.standard?.name ?? "",
         divisionName: student.division.name,
@@ -417,7 +416,7 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
         subjects: subjectResults,
         grandTotal: { scored: grandScored, max: grandMax },
         grandPct,
-        grade: gradeFor(grandPct),
+        grade: gradeFor(grandPct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
         classRank,
         classSize,
         gradedSubjects: gradedResults,
@@ -590,6 +589,27 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
         leaderboard,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── GET /student/remarks — Flags & Warnings (Report Cards) ───────────────────
+router.get("/remarks", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+
+    const student = await prisma.student.findFirst({
+      where: { userId, institutionId },
+      select: { id: true },
+    });
+    if (!student) {
+      res.status(404).json({ success: false, error: "Student not found" });
+      return;
+    }
+
+    const remarks = await listStudentRemarks(student.id, institutionId!);
+    res.json({ success: true, data: remarks });
   } catch (err) {
     next(err);
   }

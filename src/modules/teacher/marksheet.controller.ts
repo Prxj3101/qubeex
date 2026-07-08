@@ -4,6 +4,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { logAudit } from "../../services/audit.service";
+import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const PDFDocument = require("pdfkit");
 import {
@@ -33,24 +34,6 @@ function getR2Client(): S3Client {
       secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
     },
   });
-}
-
-type GradeScaleEntry = { grade: string; minPct: number };
-
-function resolveGrade(pct: number, scale: GradeScaleEntry[]): string {
-  if (scale.length === 0) {
-    // Fallback to built-in scale when institution hasn't configured one.
-    if (pct >= 75) return "A";
-    if (pct >= 60) return "B";
-    if (pct >= 45) return "C";
-    if (pct >= 35) return "D";
-    return "F";
-  }
-  const sorted = [...scale].sort((a, b) => b.minPct - a.minPct);
-  for (const entry of sorted) {
-    if (pct >= entry.minPct) return entry.grade;
-  }
-  return sorted[sorted.length - 1]?.grade ?? "F";
 }
 
 async function generateMarksheetPdf(params: {
@@ -1051,12 +1034,31 @@ export async function bulkUpsertGradedScores(
 
     const marksheet = await prisma.marksheet.findFirst({
       where: { id: marksheetId, institutionId },
-      select: { divisionId: true },
+      select: { divisionId: true, gradeScale: true },
     });
     if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
     const { scores } = bulkGradedScoresSchema.parse(req.body);
+
+    // Validate each grade against the marksheet's own configured grade scale
+    // (falls back to a default set only if the class teacher hasn't configured one).
+    const configuredScale = (marksheet.gradeScale ?? []) as { grade: string; minPct: number }[];
+    const validGrades = new Set(
+      configuredScale.length > 0
+        ? configuredScale.map((g) => g.grade)
+        : ["A+", "A", "B", "C", "D", "F"]
+    );
+    for (const sc of scores) {
+      if (sc.term1Grade != null && !validGrades.has(sc.term1Grade)) {
+        res.status(400).json({ success: false, error: `"${sc.term1Grade}" is not in the configured grade scale` });
+        return;
+      }
+      if (sc.term2Grade != null && !validGrades.has(sc.term2Grade)) {
+        res.status(400).json({ success: false, error: `"${sc.term2Grade}" is not in the configured grade scale` });
+        return;
+      }
+    }
 
     await prisma.$transaction(
       scores.map((sc) =>

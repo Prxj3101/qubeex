@@ -65,13 +65,14 @@ export const gradedSectionTitleSchema = z.object({
   title: z.string().min(1).max(100).trim(),
 });
 
-const VALID_GRADES = ["A+", "A", "B", "C", "D"] as const;
-
+// Grade letters are validated against the marksheet's own configured grade
+// scale in the controller (bulkUpsertGradedScores), not a fixed list here —
+// the class teacher can define arbitrary grade labels (e.g. "B+").
 const gradedScoreItemSchema = z.object({
   gradedSubjectId: z.string().uuid(),
   studentId: z.string().uuid(),
-  term1Grade: z.enum(VALID_GRADES).nullable().optional(),
-  term2Grade: z.enum(VALID_GRADES).nullable().optional(),
+  term1Grade: z.string().min(1).max(10).trim().nullable().optional(),
+  term2Grade: z.string().min(1).max(10).trim().nullable().optional(),
 });
 
 export const bulkGradedScoresSchema = z.object({

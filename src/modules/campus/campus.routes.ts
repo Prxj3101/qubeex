@@ -39,6 +39,15 @@ import {
   getAttendanceSummary,
   getStudentAttendanceRecords,
 } from "./campus.attendance.controller";
+import {
+  getStudentStats,
+  updateStudentStatus,
+  getDivisionLeaderboard,
+  reportStudent,
+  getStudentRemarks,
+  getStudentMarksheet,
+  getStudentAttendanceTrend,
+} from "./campus.students.controller";
 
 const router = Router();
 
@@ -104,7 +113,14 @@ router.delete("/feed/posts/:id", ...FEED_WRITE, deletePost);
 
 // Attendance — strict: CAMPUS_ATTENDANCE only
 const ATTENDANCE_PERM = [...A, requirePermission("CAMPUS_ATTENDANCE")];
-router.get("/divisions/:divisionId/students", ...ATTENDANCE_PERM, getDivisionStudents);
+router.get("/divisions/:divisionId/students", ...A, requirePermission("CAMPUS_ATTENDANCE", "CAMPUS_MANAGE"), getDivisionStudents);
+router.get("/divisions/:divisionId/students/:studentId/stats", ...CAMPUS_MANAGE_PERM, getStudentStats);
+router.patch("/divisions/:divisionId/students/:studentId", ...CAMPUS_MANAGE_PERM, updateStudentStatus);
+router.post("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANAGE_PERM, reportStudent);
+router.get("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANAGE_PERM, getStudentRemarks);
+router.get("/divisions/:divisionId/students/:studentId/marksheet", ...CAMPUS_MANAGE_PERM, getStudentMarksheet);
+router.get("/divisions/:divisionId/students/:studentId/attendance-trend", ...CAMPUS_MANAGE_PERM, getStudentAttendanceTrend);
+router.get("/divisions/:divisionId/leaderboard", ...CAMPUS_VIEW_PERM, getDivisionLeaderboard);
 router.get("/divisions/:divisionId/attendance/holidays", ...ATTENDANCE_PERM, getAttendanceHolidays);
 router.get("/divisions/:divisionId/attendance/daily", ...ATTENDANCE_PERM, getDailyAttendance);
 router.get("/divisions/:divisionId/attendance/monthly", ...ATTENDANCE_PERM, getMonthlyAttendance);

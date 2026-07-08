@@ -181,11 +181,43 @@ export async function assignClassTeacher(
         select: { id: true },
       });
       if (!teacher) { res.status(404).json({ success: false, error: "Teacher not found" }); return; }
+
+      // A teacher can be class teacher (null subjectId) of at most one division —
+      // reject if they're already the class teacher elsewhere.
+      const existingClassTeacherDivision = await prisma.division.findFirst({
+        where: { institutionId, classTeacherId: teacherId, id: { not: divisionId } },
+        select: { name: true, standard: { select: { name: true } } },
+      });
+      if (existingClassTeacherDivision) {
+        res.status(409).json({
+          success: false,
+          error: `Teacher is already class teacher of ${existingClassTeacherDivision.standard.name} - ${existingClassTeacherDivision.name}`,
+        });
+        return;
+      }
     }
 
-    await prisma.division.update({
-      where: { id: divisionId },
-      data: { classTeacherId: teacherId ?? null },
+    await prisma.$transaction(async (tx) => {
+      await tx.division.update({
+        where: { id: divisionId },
+        data: { classTeacherId: teacherId ?? null },
+      });
+
+      // Keep DivisionAssignment (the class-teacher slot: subjectId = null) in
+      // sync with the denormalized Division.classTeacherId field.
+      const existingSlot = await tx.divisionAssignment.findFirst({
+        where: { divisionId, subjectId: null },
+      });
+
+      if (teacherId === null) {
+        if (existingSlot) await tx.divisionAssignment.delete({ where: { id: existingSlot.id } });
+      } else if (existingSlot) {
+        await tx.divisionAssignment.update({ where: { id: existingSlot.id }, data: { teacherId } });
+      } else {
+        await tx.divisionAssignment.create({
+          data: { divisionId, institutionId, teacherId, subjectId: null },
+        });
+      }
     });
 
     res.json({ success: true, data: { divisionId, classTeacherId: teacherId ?? null } });

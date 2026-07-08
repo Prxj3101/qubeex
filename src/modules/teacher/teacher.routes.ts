@@ -8,6 +8,12 @@ import { z } from "zod";
 import multer from "multer";
 import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
+import { createRemarkSchema } from "../../services/remark.schema";
+import { createStudentRemark, listStudentRemarks } from "../../services/remark.service";
+import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
+import { getStudentStatsData } from "../../services/studentStats.service";
+import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
+import { getStudentAttendanceTrendData } from "../../services/studentAttendanceTrend.service";
 
 const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -1553,115 +1559,190 @@ router.get(
         return;
       }
 
-      // Attendance
-      const attendanceRecords = await prisma.attendance.findMany({
-        where: { studentId, divisionId, institutionId },
-        select: { status: true },
+      const data = await getStudentStatsData(studentId, divisionId, institutionId);
+      res.json({ success: true, data });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// ── Students — Report (Yellow/Red Card) ───────────────────────────────────────
+router.post(
+  "/classes/:divisionId/students/:studentId/remarks",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const student = await prisma.student.findFirst({
+        where: { id: studentId, divisionId, institutionId },
+        select: { id: true },
       });
-      const attendanceTotal = attendanceRecords.length;
-      const attendancePresent = attendanceRecords.filter((r) => r.status === "P").length;
-      const attendancePct = attendanceTotal > 0
-        ? Math.round((attendancePresent / attendanceTotal) * 100)
-        : null;
-
-      // Score, Rank & per-subject performance from latest published marksheet
-      const [marksheet, division] = await Promise.all([
-        prisma.marksheet.findFirst({
-          where: { divisionId, institutionId, status: "PUBLISHED" },
-          orderBy: { updatedAt: "desc" },
-          select: {
-            id: true,
-            examColumns: { select: { id: true, subjectId: true, maxMarks: true } },
-          },
-        }),
-        prisma.division.findFirst({
-          where: { id: divisionId, institutionId },
-          select: { standardId: true },
-        }),
-      ]);
-
-      let scorePct: number | null = null;
-      let classRank: number | null = null;
-      type SubjectPerf = { name: string; code: string; color: string | null; scored: number; max: number; pct: number | null };
-      const subjects: SubjectPerf[] = [];
-
-      if (marksheet) {
-        const columnIds = marksheet.examColumns.map((c) => c.id);
-        const maxTotal = marksheet.examColumns.reduce((sum, c) => sum + c.maxMarks, 0);
-
-        if (columnIds.length > 0 && maxTotal > 0) {
-          // All scores for rank calculation + this student's scores for per-subject
-          const [allScores, studentScores] = await Promise.all([
-            prisma.marksheetScore.findMany({
-              where: { marksheetId: marksheet.id, institutionId },
-              select: { studentId: true, score: true, isAbsent: true },
-            }),
-            prisma.marksheetScore.findMany({
-              where: { marksheetId: marksheet.id, institutionId, studentId },
-              select: { examColumnId: true, score: true, isAbsent: true },
-            }),
-          ]);
-
-          // Aggregate per student for rank
-          const totals = new Map<string, number>();
-          for (const s of allScores) {
-            if (!s.isAbsent && s.score !== null) {
-              totals.set(s.studentId, (totals.get(s.studentId) ?? 0) + s.score);
-            }
-          }
-
-          const studentTotal = totals.get(studentId) ?? null;
-          if (studentTotal !== null) {
-            scorePct = Math.round((studentTotal / maxTotal) * 100);
-            const higher = [...totals.values()].filter((t) => t > studentTotal).length;
-            classRank = higher + 1;
-          }
-
-          // Per-subject performance
-          if (division) {
-            const subjectRows = await prisma.subject.findMany({
-              where: { standardId: division.standardId, institutionId },
-              orderBy: { order: "asc" },
-              select: { id: true, name: true, code: true, color: true },
-            });
-            const scoreByCol = new Map(studentScores.map(s => [s.examColumnId, s]));
-            for (const sub of subjectRows) {
-              const cols = marksheet.examColumns.filter(c => c.subjectId === sub.id);
-              if (cols.length === 0) continue;
-              let scored = 0, max = 0;
-              for (const col of cols) {
-                const e = scoreByCol.get(col.id);
-                if (e?.isAbsent) { max += col.maxMarks; continue; }
-                if (e?.score != null) { scored += e.score; }
-                max += col.maxMarks;
-              }
-              subjects.push({
-                name: sub.name,
-                code: sub.code ?? sub.name.slice(0, 4),
-                color: sub.color ?? null,
-                scored,
-                max,
-                pct: max > 0 ? Math.round((scored / max) * 100) : null,
-              });
-            }
-          }
-        }
+      if (!student) {
+        res.status(404).json({ success: false, error: "Student not found in this division" });
+        return;
       }
 
-      res.json({
-        success: true,
-        data: {
-          attendance: {
-            present: attendancePresent,
-            total: attendanceTotal,
-            pct: attendancePct,
-          },
-          score: { pct: scorePct },
-          classRank,
-          subjects,
-        },
+      const data = createRemarkSchema.parse(req.body);
+      const remark = await createStudentRemark({
+        institutionId,
+        studentId,
+        reportedByUserId: userId,
+        reportedByRole: "Faculty",
+        data,
       });
-    } catch (err) {
+
+      logAudit("STUDENT_REPORTED", {
+        userId,
+        actorRole: "TEACHER",
+        institutionId,
+        details: `${data.type === "yellow" ? "Yellow" : "Red"} card reported for student: ${data.title}`,
+      });
+
+      res.status(201).json({ success: true, data: remark });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+// ── GET /classes/:divisionId/leaderboard — rank + attendance % per student ────
+router.get(
+  "/classes/:divisionId/leaderboard",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const data = await getDivisionLeaderboardData(divisionId, institutionId);
+      res.json({ success: true, data });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+// ── GET /classes/:divisionId/students/:studentId/remarks — list remarks ──────
+router.get(
+  "/classes/:divisionId/students/:studentId/remarks",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const student = await prisma.student.findFirst({
+        where: { id: studentId, divisionId, institutionId },
+        select: { id: true },
+      });
+      if (!student) {
+        res.status(404).json({ success: false, error: "Student not found in this division" });
+        return;
+      }
+
+      const remarks = await listStudentRemarks(studentId, institutionId);
+      res.json({ success: true, data: remarks });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+// ── GET /classes/:divisionId/students/:studentId/marksheet — full breakdown ──
+router.get(
+  "/classes/:divisionId/students/:studentId/marksheet",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const data = await getStudentMarksheetData(divisionId, studentId, institutionId);
+      if (!data) {
+        res.status(404).json({ success: false, error: "Results not published yet" });
+        return;
+      }
+      res.json({ success: true, data });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+// ── GET /classes/:divisionId/students/:studentId/attendance-trend ────────────
+router.get(
+  "/classes/:divisionId/students/:studentId/attendance-trend",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const data = await getStudentAttendanceTrendData(studentId, institutionId);
+      res.json({ success: true, data });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
       next(err);
     }
   }

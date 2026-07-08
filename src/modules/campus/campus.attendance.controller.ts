@@ -27,7 +27,7 @@ export const getDivisionStudents = async (req: AuthRequest, res: Response, next:
 
     const students = await prisma.student.findMany({
       where: { divisionId, institutionId },
-      include: { user: { select: { name: true } } },
+      include: { user: { select: { name: true, email: true, mustChangePassword: true } } },
       orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
     });
 

@@ -10,6 +10,8 @@ import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
 import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
 import { getStudentAttendanceTrendData } from "../../services/studentAttendanceTrend.service";
+import { getDivisionFeePaymentsData, upsertFeePaymentData } from "../../services/feePayment.service";
+import { upsertFeePaymentSchema } from "../../services/feePayment.schema";
 
 function requireInstitution(req: AuthRequest) {
   const { institutionId } = req.user!;
@@ -160,6 +162,41 @@ export const getDivisionLeaderboard = async (req: AuthRequest, res: Response, ne
     const divisionId = req.params.divisionId as string;
 
     const data = await getDivisionLeaderboardData(divisionId, institutionId);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET /admin/campus/divisions/:divisionId/fee-payments
+export const getDivisionFeePayments = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+
+    const data = await getDivisionFeePaymentsData(divisionId, institutionId);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// PATCH /admin/campus/divisions/:divisionId/fee-payments
+export const updateFeePayment = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const body = upsertFeePaymentSchema.parse(req.body);
+
+    await findStudentInDivision(body.studentId, divisionId, institutionId);
+
+    const data = await upsertFeePaymentData({
+      institutionId,
+      studentId: body.studentId,
+      feeMonthId: body.feeMonthId,
+      status: body.status,
+      paidDate: body.paidDate ?? null,
+    });
     res.json({ success: true, data });
   } catch (err) {
     next(err);

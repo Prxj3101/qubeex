@@ -47,6 +47,8 @@ import {
   getStudentRemarks,
   getStudentMarksheet,
   getStudentAttendanceTrend,
+  getDivisionFeePayments,
+  updateFeePayment,
 } from "./campus.students.controller";
 
 const router = Router();
@@ -100,6 +102,8 @@ router.delete("/assignments/:assignmentId", ...CAMPUS_MANAGE_PERM, removeAssignm
 // Fee structure — CAMPUS_FEES or CAMPUS_MANAGE
 router.get("/divisions/:divisionId/fee-structure", ...CAMPUS_FEES_PERM, getFeeStructure);
 router.put("/divisions/:divisionId/fee-structure", ...CAMPUS_FEES_PERM, saveFeeStructure);
+router.get("/divisions/:divisionId/fee-payments", ...CAMPUS_FEES_PERM, getDivisionFeePayments);
+router.patch("/divisions/:divisionId/fee-payments", ...CAMPUS_FEES_PERM, updateFeePayment);
 
 // Feed upload — campus feed OR class overview (VIEW)
 const FEED_WRITE = [...A, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW")];

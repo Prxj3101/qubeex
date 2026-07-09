@@ -163,6 +163,7 @@ model Institution {
   teacherNotes  TeacherNote[]
   teacherTasks  TeacherTask[]
   studentRemarks     StudentRemark[]
+  studentFeePayments StudentFeePayment[]
   promotionBatches         PromotionBatch[]
   studentPromotionOutcomes StudentPromotionOutcome[]
 }
@@ -654,6 +655,7 @@ model Student {
   marksheetScores          MarksheetScore[]
   marksheetGradedScores MarksheetGradedScore[]
   remarks               StudentRemark[]
+  feePayments           StudentFeePayment[]
   promotionOutcomes     StudentPromotionOutcome[]
 
   @@unique([studentId, institutionId])
@@ -920,6 +922,24 @@ model DivisionFeeStructure {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([institutionId])
+}
+
+model StudentFeePayment {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  studentId     String
+  student       Student     @relation(fields: [studentId], references: [id])
+
+  feeMonthId String // matches the `id` embedded in DivisionFeeStructure.feeMonths JSON entries
+  status     String  @default("PENDING") // PAID | PENDING
+  paidDate   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, feeMonthId])
   @@index([institutionId])
 }
 

@@ -20,6 +20,15 @@ enum Role {
 enum StudentStatus {
   ACTIVE
   INACTIVE
+  GRADUATED
+  WITHDRAWN
+}
+
+enum PromotionOutcome {
+  PROMOTED
+  REPEATED
+  GRADUATED
+  WITHDRAWN
 }
 
 enum InstitutionType {
@@ -154,6 +163,8 @@ model Institution {
   teacherNotes  TeacherNote[]
   teacherTasks  TeacherTask[]
   studentRemarks     StudentRemark[]
+  promotionBatches         PromotionBatch[]
+  studentPromotionOutcomes StudentPromotionOutcome[]
 }
 
 model User {
@@ -643,9 +654,49 @@ model Student {
   marksheetScores          MarksheetScore[]
   marksheetGradedScores MarksheetGradedScore[]
   remarks               StudentRemark[]
+  promotionOutcomes     StudentPromotionOutcome[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
+}
+
+model PromotionBatch {
+  id              String      @id @default(uuid())
+  institutionId   String
+  institution     Institution @relation(fields: [institutionId], references: [id])
+  fromStandardId  String
+  fromDivisionId  String
+  toDivisionId    String?
+  academicYear    String
+  triggeredById   String
+  triggeredByRole String
+  undoneAt        DateTime?
+  createdAt       DateTime    @default(now())
+
+  outcomes StudentPromotionOutcome[]
+
+  @@index([institutionId, createdAt])
+  @@index([fromDivisionId])
+}
+
+model StudentPromotionOutcome {
+  id                 String           @id @default(uuid())
+  batchId            String
+  batch              PromotionBatch   @relation(fields: [batchId], references: [id])
+  studentId          String
+  student            Student          @relation(fields: [studentId], references: [id])
+  institutionId      String
+  institution        Institution      @relation(fields: [institutionId], references: [id])
+  outcome            PromotionOutcome
+
+  previousStandardId String
+  previousDivisionId String
+  previousStatus     StudentStatus
+
+  createdAt DateTime @default(now())
+
+  @@index([batchId])
+  @@index([studentId])
 }
 
 model StudentRemark {

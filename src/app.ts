@@ -8,6 +8,8 @@ import staffroomRoutes from "./modules/staffroom/staffroom.routes";
 import teacherStaffroomRoutes from "./modules/staffroom/staffroom.teacher.routes";
 import campusRoutes from "./modules/campus/campus.routes";
 import teacherCampusRoutes from "./modules/campus/campus.teacher.routes";
+import promotionAdminRoutes from "./modules/promotion/promotion.admin.routes";
+import promotionTeacherRoutes from "./modules/promotion/promotion.teacher.routes";
 import teacherRoutes from "./modules/teacher/teacher.routes";
 import studentRoutes from "./modules/student/student.routes";
 import { razorpayWebhookHandler } from "./modules/webhooks/razorpay.webhook";
@@ -60,6 +62,8 @@ app.use("/api/teacher/staffroom", teacherStaffroomRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/quiz", quizRoutes);
+app.use("/api/teacher/promotions", promotionTeacherRoutes);
+app.use("/api/admin/promotions", promotionAdminRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Server is running...");

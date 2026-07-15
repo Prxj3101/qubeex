@@ -10,6 +10,7 @@ import {
 } from "../../services/billing.service";
 import { cancelPaymentLink } from "../../services/razorpay.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
+import { generateUserId } from "../../utils/userId";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooManyRequestsError } from "../../utils/errors";
 import { getCache, setCache, delCache } from "../../utils/cache";
 import bcrypt from "bcrypt";
@@ -387,6 +388,7 @@ export const createInstitutionService = async (data: any) => {
       },
     });
 
+    const adminDisplayId = await generateUserId(newInstitution.id, "A", tx);
     await tx.user.create({
       data: {
         name: adminName,
@@ -394,6 +396,7 @@ export const createInstitutionService = async (data: any) => {
         role: "ADMIN",
         institutionId: newInstitution.id,
         isActive: false,
+        displayId: adminDisplayId,
       },
     });
 
@@ -733,30 +736,79 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
   });
   const userIds = institutionUsers.map((u) => u.id);
 
-  // Delete in dependency order — everything tied to this institution
-  await prisma.ticketReply.deleteMany({ where: { ticket: { institutionId: id } } });
-  await prisma.supportTicket.deleteMany({ where: { institutionId: id } });
-  await prisma.notificationRecipient.deleteMany({ where: { institutionId: id } });
-  await prisma.review.deleteMany({ where: { institutionId: id } });
-  await prisma.invite.deleteMany({ where: { institutionId: id } });
-  await prisma.bill.deleteMany({ where: { institutionId: id } });
-  await prisma.subscription.deleteMany({ where: { institutionId: id } });
+  // Delete in dependency order — everything tied to this institution.
+  // Run as a single transaction so a missed edge case rolls back cleanly
+  // instead of leaving the institution half-deleted.
+  await prisma.$transaction([
+    // ── Leaves that reference posts/tickets/users directly ──────────────────
+    prisma.ticketReply.deleteMany({ where: { ticket: { institutionId: id } } }),
+    prisma.staffPostReaction.deleteMany({ where: { institutionId: id } }),
+    prisma.staffPostComment.deleteMany({ where: { institutionId: id } }),
+    prisma.studentPromotionOutcome.deleteMany({ where: { institutionId: id } }),
+    prisma.notificationRecipient.deleteMany({ where: { institutionId: id } }),
 
-  // Wipe all audit logs belonging to this institution
-  await prisma.auditLog.deleteMany({ where: { institutionId: id } });
+    // ── Things that reference the above, or reference Users/Students directly ──
+    prisma.supportTicket.deleteMany({ where: { institutionId: id } }),
+    prisma.staffPost.deleteMany({ where: { institutionId: id } }),
+    prisma.staffMessage.deleteMany({ where: { institutionId: id } }),
+    prisma.campusFeedPost.deleteMany({ where: { institutionId: id } }),
+    prisma.calendarEvent.deleteMany({ where: { institutionId: id } }),
+    prisma.review.deleteMany({ where: { institutionId: id } }),
+    prisma.invite.deleteMany({ where: { institutionId: id } }),
+    prisma.bill.deleteMany({ where: { institutionId: id } }),
+    prisma.subscription.deleteMany({ where: { institutionId: id } }),
+    prisma.attendance.deleteMany({ where: { institutionId: id } }),
+    prisma.schoolHoliday.deleteMany({ where: { institutionId: id } }),
+    prisma.attendanceDayNote.deleteMany({ where: { institutionId: id } }),
+    prisma.studentRemark.deleteMany({ where: { institutionId: id } }),
+    prisma.studentFeePayment.deleteMany({ where: { institutionId: id } }),
+    prisma.divisionFeeStructure.deleteMany({ where: { institutionId: id } }),
+    prisma.blackboardMaterial.deleteMany({ where: { institutionId: id } }),
+    prisma.taskPdfUpload.deleteMany({ where: { institutionId: id } }),
+    prisma.questionShareToken.deleteMany({ where: { institutionId: id } }),
+    // Cascades: TaskTestQuestion, TaskTestAttempt, TaskStudentAnswer
+    prisma.taskTest.deleteMany({ where: { institutionId: id } }),
+    // Cascades: TaskModuleQuestion
+    prisma.taskModule.deleteMany({ where: { institutionId: id } }),
+    // Cascades: TaskAssignmentSubmission
+    prisma.taskAssignment.deleteMany({ where: { institutionId: id } }),
+    // Cascades: TaskQuestion (which was already stripped of test/module/assignment refs above)
+    prisma.taskContainer.deleteMany({ where: { institutionId: id } }),
+    // Cascades: MarksheetSubjectConfig, MarksheetExamColumn, MarksheetScore,
+    // MarksheetGradedSubject, MarksheetGradedScore
+    prisma.marksheet.deleteMany({ where: { institutionId: id } }),
+    prisma.teacherNote.deleteMany({ where: { institutionId: id } }),
+    prisma.teacherTask.deleteMany({ where: { institutionId: id } }),
+    prisma.divisionAssignment.deleteMany({ where: { institutionId: id } }),
+    prisma.divisionSubject.deleteMany({ where: { institutionId: id } }),
 
-  // Nullify any audit log entries referencing institution users (safety — prevents FK violation)
-  if (userIds.length > 0) {
-    await prisma.auditLog.updateMany({
-      where: { userId: { in: userIds } },
-      data: { userId: null },
-    });
-  }
+    // ── Now safe to remove promotion batches, blackboard folders (self-referential) ──
+    prisma.promotionBatch.deleteMany({ where: { institutionId: id } }),
+    prisma.blackboardFolder.deleteMany({ where: { institutionId: id } }),
 
-  // Hard delete all users belonging to this institution
-  await prisma.user.deleteMany({ where: { institutionId: id } });
+    // ── Campus structure — Division before Standard/Subject, both before Student ──
+    prisma.division.deleteMany({ where: { institutionId: id } }),
+    prisma.subject.deleteMany({ where: { institutionId: id } }),
+    prisma.student.deleteMany({ where: { institutionId: id } }),
+    prisma.standard.deleteMany({ where: { institutionId: id } }),
 
-  await prisma.institution.delete({ where: { id } });
+    // ── Staff records — Teacher/SubAdmin after everything above that references them ──
+    prisma.teacher.deleteMany({ where: { institutionId: id } }),
+    prisma.subAdmin.deleteMany({ where: { institutionId: id } }),
+
+    // ── Audit logs tied to this institution ──────────────────────────────────
+    prisma.auditLog.deleteMany({ where: { institutionId: id } }),
+    // Nullify any audit log entries referencing institution users that aren't
+    // scoped to this institution (e.g. superadmin-level logs) — safety net.
+    ...(userIds.length > 0
+      ? [prisma.auditLog.updateMany({ where: { userId: { in: userIds } }, data: { userId: null } })]
+      : []),
+
+    // ── Users last (Teacher/Student/SubAdmin no longer reference them) ──────
+    prisma.user.deleteMany({ where: { institutionId: id } }),
+
+    prisma.institution.delete({ where: { id } }),
+  ]);
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
 

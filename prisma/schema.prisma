@@ -100,6 +100,13 @@ model Institution {
   name            String
   email           String            @unique
   type            InstitutionType
+
+  // ── User ID scheme (XXXX-XXXXX-XXXX) ──────────────────────────────────────
+  userIdPrefix         String? // 4-letter code from school initials, e.g. "SXHS"
+  userIdDisambiguator  String? // 2-char alphanumeric, disambiguates institutions sharing a prefix
+  nextAdminSeq         Int     @default(0) // never resets; shared by ADMIN + SUB_ADMIN
+  nextTeacherSeq       Int     @default(0)
+  nextStudentSeq       Int     @default(0)
   status          InstitutionStatus @default(PENDING)
 
   // Contact & Location
@@ -176,6 +183,7 @@ model User {
   role     Role
   isActive           Boolean @default(false)
   mustChangePassword Boolean @default(false)
+  displayId          String? // human-readable ID (XXXX-XXXXX-XXXX) — populated for ADMIN/SUB_ADMIN
 
   institutionId String?
   institution   Institution? @relation(fields: [institutionId], references: [id])

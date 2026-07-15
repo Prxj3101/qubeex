@@ -2,6 +2,7 @@ import { Router, Response, NextFunction } from "express";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
 import { prisma } from "../../utils/prisma";
+import { generateUserId } from "../../utils/userId";
 import bcrypt from "bcrypt";
 import PDFDocument from "pdfkit";
 import { z } from "zod";
@@ -540,22 +541,7 @@ router.post(
 
       const data = addStudentSchema.parse(req.body);
 
-      // Generate student ID with school abbreviation
-      const institution = await prisma.institution.findUnique({
-        where: { id: institutionId },
-        select: { name: true },
-      });
-      const abbr = institution
-        ? institution.name
-            .split(/\s+/)
-            .filter((w) => w.length > 2 && !["and", "the", "of", "for"].includes(w.toLowerCase()))
-            .slice(0, 4)
-            .map((w) => w[0].toUpperCase())
-            .join("")
-        : "STU";
-      const year = new Date().getFullYear();
-      const count = await prisma.student.count({});
-      const studentId = `${abbr}-${year}-${String(count + 1).padStart(4, "0")}`;
+      const studentId = await generateUserId(institutionId, "S");
 
       // Generate and hash password
       const plainPassword = generateStudentPassword();

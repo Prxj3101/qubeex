@@ -8,6 +8,7 @@ import { NotFoundError, BadRequestError } from "../../utils/errors";
 import { generateToken, hashToken } from "../../utils/token";
 import { sendTeacherInviteEmail, sendSubAdminInviteEmail } from "../../services/email.service";
 import { cacheSubAdminPermissions } from "../../middlewares/requirePermission.middleware";
+import { generateUserId } from "../../utils/userId";
 import { z } from "zod";
 
 const updateInstitutionSchema = z.object({
@@ -398,8 +399,7 @@ export const addTeacher = async (
     const tokenHash = hashToken(rawToken);
 
     const teacher = await prisma.$transaction(async (tx) => {
-      const count = await tx.teacher.count({ where: { institutionId: institutionId! } });
-      const teacherId = `TCH-${String(count + 1).padStart(3, "0")}`;
+      const teacherId = await generateUserId(institutionId!, "T", tx);
 
       const newUser = await tx.user.create({
         data: {
@@ -843,8 +843,7 @@ export const addStudent = async (req: AuthRequest, res: Response, next: NextFunc
     }
 
     const student = await prisma.$transaction(async (tx) => {
-      const count = await tx.student.count({ where: { institutionId } });
-      const studentId = `STD-${String(count + 1).padStart(3, "0")}`;
+      const studentId = await generateUserId(institutionId, "S", tx);
 
       const newUser = await tx.user.create({
         data: {
@@ -1183,6 +1182,7 @@ export const listSubAdmins = async (
         userId: s.userId,
         name: s.user.name,
         email: s.user.email,
+        displayId: s.user.displayId,
         isActive: s.user.isActive,
         permissions: s.permissions,
         invitePending: pendingSet.has(s.user.email),
@@ -1222,6 +1222,7 @@ export const addSubAdmin = async (
     const tokenHash = hashToken(rawToken);
 
     const subAdmin = await prisma.$transaction(async (tx) => {
+      const displayId = await generateUserId(institutionId!, "A", tx);
       const newUser = await tx.user.create({
         data: {
           name: data.name,
@@ -1229,6 +1230,7 @@ export const addSubAdmin = async (
           role: "SUB_ADMIN",
           institutionId: institutionId!,
           isActive: false,
+          displayId,
         },
       });
 

@@ -34,6 +34,7 @@ export const verifyInvite = async (token: string) => {
     institutionName: invite.institution.name,
     institutionCode: invite.institution.institutionCode,
     adminName: adminUser?.name ?? "",
+    adminDisplayId: adminUser?.displayId ?? "",
     institution: invite.institution.name,
   };
 };

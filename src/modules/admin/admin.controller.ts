@@ -152,7 +152,9 @@ export const getMyInstitution = async (
         users: {
           omit: { password: true },
         },
-        subscription: true,
+        subscription: {
+          include: { plan: true },
+        },
       },
     });
 
@@ -166,7 +168,9 @@ export const getMyInstitution = async (
       if (signed) adminAvatarUrl = signed;
     }
 
-    res.json({ success: true, data: { ...institution, adminAvatarUrl } });
+    const isTrial = !institution.subscription || institution.subscription.status === "TRIAL";
+
+    res.json({ success: true, data: { ...institution, adminAvatarUrl, isTrial } });
   } catch (error) {
     next(error);
   }

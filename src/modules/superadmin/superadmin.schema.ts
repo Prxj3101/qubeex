@@ -20,10 +20,14 @@ export const createInstitutionSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(200).trim(),
   email: emailSchema,
   type: z.enum(["SCHOOL", "COLLEGE", "COACHING"]),
+  abbreviation: z.string().trim().toUpperCase().regex(/^[A-Z0-9]{4}$/, "Abbreviation must be exactly 4 letters/digits"),
 
   // Admin
   adminName: z.string().min(2, "Admin name must be at least 2 characters").max(200).trim(),
   adminEmail: emailSchema,
+  adminPhone:  z.string().max(20).trim().optional(),
+  adminDob:    z.string().optional(),
+  adminGender: z.string().optional(),
 
   // Contact & Location
   phone:   z.string().max(20).trim().optional(),
@@ -37,6 +41,7 @@ export const createInstitutionSchema = z.object({
   board:   z.string().max(100).trim().optional(),
   medium:  z.string().max(100).trim().optional(),
   logoUrl: z.string().url().optional(),
+  establishedOn: z.string().optional(),
 
   // Subscription
   plan: z.enum(["BASIC", "PRO", "TRIAL"]).default("BASIC"),
@@ -58,6 +63,19 @@ export const updateInstitutionSchema = z.object({
   board:   z.string().max(100).trim().optional(),
   medium:  z.string().max(100).trim().optional(),
   logoUrl: z.string().url().optional(),
+  establishedOn: z.string().optional(),
+});
+
+// ─── Institution Admin Update (superadmin editing the institution's admin) ────
+
+export const updateInstitutionAdminSchema = z.object({
+  adminName:   z.string().min(2).max(200).trim().optional(),
+  adminEmail:  emailSchema.optional(),
+  adminPhone:  z.string().max(20).trim().optional(),
+  adminDob:    z.string().optional(),
+  adminGender: z.string().optional(),
+  adminPrefix: z.string().max(20).trim().optional(),
+  adminTitle:  z.string().max(100).trim().optional(),
 });
 
 // ─── Status Toggle ────────────────────────────────────────────────────────────

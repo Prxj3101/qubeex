@@ -13,6 +13,7 @@ import {
   getInstitutions,
   getInstitution,
   updateInstitution,
+  updateInstitutionAdmin,
   uploadInstitutionLogo,
   toggleStatus,
   getTrialUsage,
@@ -79,6 +80,7 @@ router.post("/institutions/logo",                      SA, raw({ type: ["image/p
 router.get("/institutions",                            SA, getInstitutions);
 router.get("/institutions/:id",                        SA, getInstitution);
 router.put("/institutions/:id",                        SA, updateInstitution);
+router.patch("/institutions/:id/admin",                 SA, updateInstitutionAdmin);
 router.patch("/institutions/:id/status",               SA, toggleStatus);
 router.delete("/institutions/:id",                     SA, deleteInstitution);
 router.post("/institutions/:id/resend-invite",         SA, resendInvite);

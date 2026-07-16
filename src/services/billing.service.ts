@@ -81,7 +81,7 @@ const getDaysInMonth = (date: Date) =>
 const isSameBillingMonth = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
 
-const getRate = (planName: PlanName, userCount: number): number => {
+export const getRate = (planName: PlanName, userCount: number): number => {
   const tiers = PER_USER_RATES[planName] ?? PER_USER_RATES.BASIC;
   return tiers.find((tier) => userCount >= tier.min && userCount <= tier.max)?.rate ?? tiers[0].rate;
 };
@@ -490,7 +490,8 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
 
 export const markBillPaid = async (
   billId: string,
-  razorpayPaymentId?: string
+  razorpayPaymentId?: string,
+  paymentMethod?: string
 ): Promise<{ reactivated: boolean }> => {
   const bill = await prisma.bill.findUnique({
     where: { id: billId },
@@ -504,6 +505,7 @@ export const markBillPaid = async (
       status: "PAID",
       paidAt: new Date(),
       ...(razorpayPaymentId ? { razorpayPaymentId } : {}),
+      ...(paymentMethod ? { paymentMethod } : {}),
     },
   });
 

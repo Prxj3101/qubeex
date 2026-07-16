@@ -6,6 +6,7 @@ import {
   changePasswordSchema,
   createInstitutionSchema,
   updateInstitutionSchema,
+  updateInstitutionAdminSchema,
   toggleStatusSchema,
   updatePlanSchema,
   updateFeaturesSchema,
@@ -149,6 +150,20 @@ export const updateInstitution = async (
   try {
     const data = updateInstitutionSchema.parse(req.body);
     const result = await service.updateInstitution(req.params.id as string, data);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateInstitutionAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = updateInstitutionAdminSchema.parse(req.body);
+    const result = await service.updateInstitutionAdmin(req.params.id as string, data);
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);

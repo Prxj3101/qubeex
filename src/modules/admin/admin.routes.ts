@@ -10,7 +10,7 @@ import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
 import { getOverview } from "./overview.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, assignClassTeacher } from "./marksheet.controller";
-import { listBills, getPaymentLink } from "./bills.controller";
+import { listBills, getPaymentLink, getPlanHistory } from "./bills.controller";
 
 const router = Router();
 
@@ -126,5 +126,6 @@ router.patch("/campus/divisions/:divisionId/class-teacher", ...ADMIN_ONLY, assig
 // ── Bills ─────────────────────────────────────────────────────────────────────
 router.get("/bills", ...ADMIN_ONLY, listBills);
 router.get("/bills/:id/payment-link", ...ADMIN_ONLY, getPaymentLink);
+router.get("/plan-history", ...ADMIN_ONLY, getPlanHistory);
 
 export default router;

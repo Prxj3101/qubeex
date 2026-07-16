@@ -47,7 +47,9 @@ export const razorpayWebhookHandler = async (req: Request, res: Response): Promi
         | undefined;
 
       const billId = (plEntity?.entity as Record<string, unknown>)?.reference_id as string;
-      const razorpayPaymentId = (payEntity?.entity as Record<string, unknown>)?.id as string;
+      const paymentDetails = payEntity?.entity as Record<string, unknown> | undefined;
+      const razorpayPaymentId = paymentDetails?.id as string;
+      const paymentMethod = paymentDetails?.method as string | undefined;
 
       if (!billId) {
         console.warn("[Webhook] payment_link.paid missing reference_id");
@@ -55,7 +57,7 @@ export const razorpayWebhookHandler = async (req: Request, res: Response): Promi
         return;
       }
 
-      await markBillPaid(billId, razorpayPaymentId);
+      await markBillPaid(billId, razorpayPaymentId, paymentMethod);
       console.log(`[Webhook] Bill ${billId} marked paid via Razorpay ${razorpayPaymentId}`);
     } catch (err) {
       console.error("[Webhook] markBillPaid failed:", err);

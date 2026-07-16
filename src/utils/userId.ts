@@ -55,7 +55,11 @@ async function ensureInstitutionUserIdBase(
     return { prefix: inst.userIdPrefix, disambiguator: inst.userIdDisambiguator, joinYear: joinYearOf(inst.createdAt) };
   }
 
-  const prefix = deriveInstitutionPrefix(inst.name);
+  // The 4-letter prefix is normally provided explicitly by the superadmin at
+  // institution-creation time (Institution.userIdPrefix, set directly on
+  // create). Falling back to a name-derived prefix only covers institutions
+  // created before that field existed.
+  const prefix = inst.userIdPrefix ?? deriveInstitutionPrefix(inst.name);
   const siblingCount = await db.institution.count({ where: { userIdPrefix: prefix, id: { not: institutionId } } });
   const disambiguator = encodeDisambiguator(siblingCount + 1);
 

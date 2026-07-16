@@ -25,6 +25,7 @@ export const listBills = async (req: AuthRequest, res: Response, next: NextFunct
           paidAt: true,
           generatedAt: true,
           razorpayLinkUrl: true,
+          paymentMethod: true,
         },
       }),
       prisma.bill.count({ where: { institutionId } }),
@@ -33,6 +34,26 @@ export const listBills = async (req: AuthRequest, res: Response, next: NextFunct
     res.json({
       success: true,
       data: { bills, total, page, limit, pages: Math.ceil(total / limit) },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getPlanHistory = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = req.user!.institutionId;
+
+    const logs = await prisma.auditLog.findMany({
+      where: { institutionId, action: "PLAN_UPGRADED" },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: { id: true, details: true, createdAt: true },
+    });
+
+    res.json({
+      success: true,
+      data: logs.map((log) => ({ id: log.id, details: log.details, date: log.createdAt })),
     });
   } catch (err) {
     next(err);

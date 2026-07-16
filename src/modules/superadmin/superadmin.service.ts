@@ -352,9 +352,10 @@ export const getOverviewStats = async () => {
 
 export const createInstitutionService = async (data: any) => {
   const {
-    name, email, type, adminName, adminEmail,
+    name, email, type, abbreviation, adminName, adminEmail,
+    adminPhone, adminDob, adminGender,
     phone, city, state, address, pincode, country,
-    board, medium, logoUrl,
+    board, medium, logoUrl, establishedOn,
     plan: selectedPlan = "BASIC",
     trialDays = 14,
   } = data;
@@ -375,16 +376,19 @@ export const createInstitutionService = async (data: any) => {
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
   // Generate human-readable code before the transaction
-  const institutionCode = await generateInstitutionCode(type);
+  const institutionCode = await generateInstitutionCode(abbreviation);
 
   const institution = await prisma.$transaction(async (tx) => {
     const newInstitution = await tx.institution.create({
       data: {
         institutionCode,
-        name, email, type, status: "PENDING",
+        // Trial institutions are activated by default — no manual activation step.
+        name, email, type, status: isTrial ? "ACTIVE" : "PENDING",
         phone, city, state, address, pincode,
         country: country ?? "India",
-        board, medium, logoUrl,
+        board, medium, logoUrl, establishedOn,
+        adminPhone, adminDob, adminGender,
+        userIdPrefix: abbreviation,
       },
     });
 
@@ -415,15 +419,20 @@ export const createInstitutionService = async (data: any) => {
     if (!plan) throw new NotFoundError(`Plan '${activePlanName}' not found`);
 
     const now = new Date();
+    // Trial subscriptions are auto-activated on creation: start the clock now
+    // and compute the end date from trialDays.
+    const trialEndDate = isTrial
+      ? new Date(now.getTime() + Number(trialDays) * 24 * 60 * 60 * 1000)
+      : null;
     await tx.subscription.create({
       data: {
         institutionId: newInstitution.id,
         planId:        plan.id,
         status:        isTrial ? "TRIAL" : "ACTIVE",
-        startDate:     isTrial ? null : now,  // trial starts only when explicitly activated
-        endDate:       null,
+        startDate:     now,
+        endDate:       trialEndDate,
         trialDays:     isTrial ? Number(trialDays) : null,
-        activationDate: isTrial ? null : now,
+        activationDate: now,
       },
     });
 
@@ -514,6 +523,60 @@ export const updateInstitution = async (id: string, data: any) => {
   return result;
 };
 
+export const updateInstitutionAdmin = async (institutionId: string, data: any) => {
+  const { adminName, adminEmail, adminPhone, adminDob, adminGender, adminPrefix, adminTitle } = data;
+
+  const institution = await prisma.institution.findUnique({ where: { id: institutionId } });
+  if (!institution) throw new NotFoundError("Institution not found");
+
+  const adminUser = await prisma.user.findFirst({ where: { institutionId, role: "ADMIN" } });
+  if (!adminUser) throw new NotFoundError("Admin user not found for this institution");
+
+  if (adminEmail && adminEmail !== adminUser.email) {
+    const existing = await prisma.user.findUnique({ where: { email: adminEmail } });
+    if (existing) throw new ConflictError("A user with this email already exists");
+  }
+
+  const [updatedUser, updatedInstitution] = await prisma.$transaction([
+    prisma.user.update({
+      where: { id: adminUser.id },
+      data: {
+        ...(adminName !== undefined ? { name: adminName } : {}),
+        ...(adminEmail !== undefined ? { email: adminEmail } : {}),
+      },
+    }),
+    prisma.institution.update({
+      where: { id: institutionId },
+      data: {
+        ...(adminPhone !== undefined ? { adminPhone } : {}),
+        ...(adminDob !== undefined ? { adminDob } : {}),
+        ...(adminGender !== undefined ? { adminGender } : {}),
+        ...(adminPrefix !== undefined ? { adminPrefix } : {}),
+        ...(adminTitle !== undefined ? { adminTitle } : {}),
+      },
+    }),
+  ]);
+
+  logAudit("INSTITUTION_ADMIN_UPDATED", {
+    institutionId,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
+    details: `Admin details updated for ${institution.name}`,
+  });
+
+  await delCache(CACHE_KEYS.institutions);
+
+  return {
+    adminName: updatedUser.name,
+    adminEmail: updatedUser.email,
+    adminPhone: updatedInstitution.adminPhone,
+    adminDob: updatedInstitution.adminDob,
+    adminGender: updatedInstitution.adminGender,
+    adminPrefix: updatedInstitution.adminPrefix,
+    adminTitle: updatedInstitution.adminTitle,
+  };
+};
+
 export const uploadInstitutionLogo = async (
   file: Buffer,
   contentType: string,
@@ -547,7 +610,8 @@ export const toggleInstitutionStatus = async (
   if (!existing) throw new NotFoundError("Institution not found");
 
   const result = await prisma.institution.update({ where: { id }, data: { status } });
-  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
+  // Invalidate the access-gate cache so suspension/reactivation takes effect immediately.
+  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
 
   const action = status === "ACTIVE"
     ? "INSTITUTION_ACTIVATED"
@@ -695,13 +759,24 @@ export const getTrialUsage = async (id: string) => {
 
   const sub = institution.subscription;
   const now = new Date();
-  const endDate = sub?.endDate ? new Date(sub.endDate) : null;
+  const trialDays = sub?.trialDays ?? 14;
+
+  // Prefer the stored endDate, but fall back to (trial start + trialDays) for trials
+  // created before the end date was persisted. Trials are auto-activated at creation,
+  // so the institution's createdAt is the ultimate fallback for the start of the trial.
+  const trialStart = sub?.startDate ?? sub?.activationDate ?? institution.createdAt;
+  const endDate = sub?.endDate
+    ? new Date(sub.endDate)
+    : new Date(new Date(trialStart).getTime() + trialDays * 24 * 60 * 60 * 1000);
+
   const daysRemaining = endDate
     ? Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
     : null;
 
   return {
     users:      { used: institution._count.users, limit: 500 },
+    // TODO: wire real usage later — storage from R2/Supabase, aiTokens from Redis pool.
+    // Frontend currently renders these as "Not tracked yet" and ignores the 0.
     storageGb:  { used: 0,                        limit: 10 },
     aiTokens:   { used: 0,                        limit: PLAN_AI_TOKENS.TRIAL },
     daysRemaining,

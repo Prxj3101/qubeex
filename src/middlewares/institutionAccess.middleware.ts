@@ -10,7 +10,7 @@ const PAUSED_ALLOWED_ROLES = new Set(["SUPER_ADMIN", "ADMIN", "TEACHER"]);
 // Subscription statuses that block ALL institution user access.
 const BLOCKED_STATUSES = new Set(["EXPIRED", "LOCKED"]);
 
-type CachedStatus = { subscriptionStatus: string };
+type CachedStatus = { institutionStatus: string; subscriptionStatus: string };
 
 export const institutionAccessMiddleware = async (
   req: AuthRequest,
@@ -27,16 +27,29 @@ export const institutionAccessMiddleware = async (
     let cached = await getCache<CachedStatus>(cacheKey);
 
     if (!cached) {
-      const sub = await prisma.subscription.findUnique({
-        where: { institutionId: user.institutionId },
-        select: { status: true },
+      const institution = await prisma.institution.findUnique({
+        where: { id: user.institutionId },
+        select: { status: true, subscription: { select: { status: true } } },
       });
-      cached = { subscriptionStatus: sub?.status ?? "ACTIVE" };
+      cached = {
+        institutionStatus: institution?.status ?? "ACTIVE",
+        subscriptionStatus: institution?.subscription?.status ?? "ACTIVE",
+      };
       // Short TTL — status changes need to propagate quickly
       await setCache(cacheKey, cached, 30);
     }
 
-    const { subscriptionStatus } = cached;
+    const { institutionStatus, subscriptionStatus } = cached;
+
+    // Superadmin-triggered suspension blocks the whole institution.
+    if (institutionStatus === "SUSPENDED") {
+      res.status(403).json({
+        success: false,
+        code: "INSTITUTION_SUSPENDED",
+        message: "Your institution's access has been suspended. Please contact support.",
+      });
+      return;
+    }
 
     if (BLOCKED_STATUSES.has(subscriptionStatus)) {
       res.status(403).json({

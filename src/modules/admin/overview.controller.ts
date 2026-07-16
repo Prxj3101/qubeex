@@ -3,6 +3,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
 import { redis, isRedisReady } from "../../utils/redis";
+import { getRate } from "../../services/billing.service";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
-    const [institution, userCount, teacherCount, studentCount, classCount, subscription, recentLogs, recentTickets, teachersForGrowth, studentsForGrowth] =
+    const [institution, userCount, teacherCount, studentCount, adminCount, classCount, subscription, recentLogs, recentTickets, teachersForGrowth, studentsForGrowth] =
       await Promise.all([
         prisma.institution.findUnique({
           where: { id: institutionId },
@@ -67,6 +68,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
         prisma.user.count({ where: { institutionId } }),
         prisma.teacher.count({ where: { institutionId } }),
         prisma.student.count({ where: { institutionId } }),
+        prisma.user.count({ where: { institutionId, role: { in: ["ADMIN", "SUB_ADMIN"] } } }),
         prisma.standard.count({ where: { institutionId } }),
         prisma.subscription.findUnique({
           where: { institutionId },
@@ -138,6 +140,9 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
     const userLimit = isTrial ? 500 : 10000;
     const storageLimit = isTrial ? 10240 : 51200; // MB — storage tracking not yet wired
     const testLimit = isTrial ? 500 : 10000;      // test tracking not yet wired
+    const billedUsers = Math.max(200, userCount);
+    const perUserRate = isTrial ? 0 : getRate(planName as "BASIC" | "PRO", billedUsers);
+    const estMonthlyBill = perUserRate * billedUsers;
 
     // ── Audit logs ──
     const auditLogs = recentLogs.map(log => ({
@@ -168,17 +173,24 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
           type: institution.type,
           status: institution.status,
           logoUrl: institution.logoUrl,
+          createdAt: institution.createdAt,
         },
         showWelcomeBanner,
         stats: {
           totalUsers: userCount,
           totalStudents: studentCount,
           totalTeachers: teacherCount,
+          totalAdmins: adminCount,
           totalClasses: classCount,
         },
         enrollmentGrowth,
         plan: {
           name: planName,
+          isTrial,
+          activationDate: subscription?.activationDate ?? null,
+          perUserRate,
+          billedUsers,
+          estMonthlyBill,
           usage: {
             users: { used: userCount, limit: userLimit },
             storage: { used: 0, limit: storageLimit },

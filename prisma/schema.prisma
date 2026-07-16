@@ -279,6 +279,7 @@ model Bill {
   razorpayLinkId    String? // Razorpay payment link ID (plink_...)
   razorpayLinkUrl   String? // Short URL for the hosted payment page
   razorpayPaymentId String? // Set after payment confirmed via webhook
+  paymentMethod     String? // card / upi / netbanking / wallet — from Razorpay webhook payment entity
 }
 
 model Invite {

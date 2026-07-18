@@ -1,6 +1,14 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
+import { BadRequestError } from "../../utils/errors";
 import * as service from "./superadmin.service";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const multer = require("multer");
+
+export const ticketAttachmentUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 15 * 1024 * 1024, files: 1 },
+});
 import {
   updateProfileSchema,
   changePasswordSchema,
@@ -509,9 +517,24 @@ export const replyToTicket = async (
   next: NextFunction
 ) => {
   try {
-    const { message } = ticketReplySchema.parse(req.body);
-    const result = await service.replyToTicket(req.params.id as string, message);
+    const { message, attachments } = ticketReplySchema.parse(req.body);
+    const result = await service.replyToTicket(req.params.id as string, message, attachments);
     res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadTicketReplyAttachment = async (
+  req: AuthRequest & { file?: Express.Multer.File },
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const file = req.file;
+    if (!file) throw new BadRequestError("No file provided");
+    const result = await service.uploadTicketReplyAttachment(req.params.id as string, file);
+    res.json({ success: true, data: result });
   } catch (error) {
     next(error);
   }

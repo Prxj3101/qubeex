@@ -2,19 +2,38 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
+import { uploadAttachmentToR2 } from "../../services/storage.service";
 import { z } from "zod";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const multer = require("multer");
+
+// ── Multer (memory) — ticket attachments ───────────────────────────────────────
+
+export const ticketAttachmentUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 15 * 1024 * 1024, files: 1 },
+});
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
+
+const attachmentSchema = z.object({
+  url: z.string().url(),
+  name: z.string().max(200),
+  type: z.enum(["image", "video", "file"]),
+  size: z.number().int().nonnegative(),
+});
 
 const createTicketSchema = z.object({
   title: z.string().min(1).max(200).trim(),
   description: z.string().min(1).max(5000).trim(),
   category: z.enum(["BUG", "FEATURE", "BILLING", "OTHER"]),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
+  attachments: z.array(attachmentSchema).max(5).optional(),
 });
 
 const addReplySchema = z.object({
   message: z.string().min(1).max(2000).trim(),
+  attachments: z.array(attachmentSchema).max(5).optional(),
 });
 
 const createReviewSchema = z.object({
@@ -36,6 +55,40 @@ function requireInstitution(req: AuthRequest) {
   if (!institutionId) throw new BadRequestError("No institution associated with this account");
   return { institutionId, userId };
 }
+
+// ── Ticket attachment upload ───────────────────────────────────────────────────
+
+export const uploadTicketAttachment = async (
+  req: AuthRequest & { file?: Express.Multer.File },
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { institutionId } = requireInstitution(req);
+
+    const file = req.file;
+    if (!file) throw new BadRequestError("No file provided");
+
+    const result = await uploadAttachmentToR2(file.buffer, {
+      originalName: file.originalname,
+      contentType: file.mimetype,
+      institutionId,
+      area: "support/tickets",
+    });
+
+    res.json({
+      success: true,
+      data: {
+        url: result.publicUrl,
+        name: file.originalname,
+        type: result.attachmentType,
+        size: file.size,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 // ── Tickets ───────────────────────────────────────────────────────────────────
 
@@ -78,6 +131,7 @@ export const createTicket = async (req: AuthRequest, res: Response, next: NextFu
         category: data.category,
         priority: data.priority,
         status: "OPEN",
+        attachments: data.attachments ?? undefined,
       },
       include: { replies: true },
     });
@@ -104,6 +158,7 @@ export const addTicketReply = async (req: AuthRequest, res: Response, next: Next
         author: "Admin",
         role: "ADMIN",
         message: data.message,
+        attachments: data.attachments ?? undefined,
       },
     });
 

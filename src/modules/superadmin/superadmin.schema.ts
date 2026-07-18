@@ -120,8 +120,16 @@ export const updateTicketStatusSchema = z.object({
   status: z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"]),
 });
 
+const ticketAttachmentSchema = z.object({
+  url: z.string().url(),
+  name: z.string().max(200),
+  type: z.enum(["image", "video", "file"]),
+  size: z.number().int().nonnegative(),
+});
+
 export const ticketReplySchema = z.object({
   message: z.string().min(1).max(2000).trim(),
+  attachments: z.array(ticketAttachmentSchema).max(5).optional(),
 });
 
 // ─── Reviews ─────────────────────────────────────────────────────────────────

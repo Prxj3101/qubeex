@@ -462,6 +462,7 @@ model SupportTicket {
   category    String
   priority    String
   status      String @default("OPEN")
+  attachments Json? // TicketAttachment[] — {url, name, type, size}
 
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
@@ -478,9 +479,10 @@ model TicketReply {
   ticketId String
   ticket   SupportTicket @relation(fields: [ticketId], references: [id])
 
-  author  String
-  role    String
-  message String
+  author      String
+  role        String
+  message     String
+  attachments Json? // TicketAttachment[] — {url, name, type, size}
 
   createdAt DateTime @default(now())
 }

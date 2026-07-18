@@ -2,7 +2,7 @@ import { prisma } from "../../utils/prisma";
 import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail, sendActivationEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
-import { uploadImageToSupabase } from "../../services/storage.service";
+import { uploadImageToSupabase, uploadAttachmentToR2 } from "../../services/storage.service";
 import {
   generateUpgradeProrationBill,
   markBillPaid,
@@ -1350,12 +1350,33 @@ export const updateTicketStatus = async (id: string, status: string) => {
   return prisma.supportTicket.update({ where: { id }, data: { status } });
 };
 
-export const replyToTicket = async (id: string, message: string) => {
+export const uploadTicketReplyAttachment = async (
+  ticketId: string,
+  file: { buffer: Buffer; originalname: string; mimetype: string; size: number }
+) => {
+  const ticket = await prisma.supportTicket.findUnique({ where: { id: ticketId }, select: { institutionId: true } });
+  if (!ticket) throw new NotFoundError("Ticket not found");
+
+  const result = await uploadAttachmentToR2(file.buffer, {
+    originalName: file.originalname,
+    contentType: file.mimetype,
+    institutionId: ticket.institutionId,
+    area: "support/tickets",
+  });
+
+  return { url: result.publicUrl, name: file.originalname, type: result.attachmentType, size: file.size };
+};
+
+export const replyToTicket = async (
+  id: string,
+  message: string,
+  attachments?: { url: string; name: string; type: string; size: number }[]
+) => {
   const existing = await prisma.supportTicket.findUnique({ where: { id } });
   if (!existing) throw new NotFoundError("Ticket not found");
 
   const reply = await prisma.ticketReply.create({
-    data: { ticketId: id, author: "Super Admin", role: "SUPER_ADMIN", message },
+    data: { ticketId: id, author: "Super Admin", role: "SUPER_ADMIN", message, attachments: attachments ?? undefined },
   });
 
   if (existing.status === "OPEN") {

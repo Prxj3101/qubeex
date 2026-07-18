@@ -38,6 +38,8 @@ import {
   getTicket,
   updateTicketStatus,
   replyToTicket,
+  uploadTicketReplyAttachment,
+  ticketAttachmentUpload,
   // Reviews
   getReviews,
   replyToReview,
@@ -125,6 +127,7 @@ router.get("/support/tickets",                         SA, getTickets);
 router.get("/support/tickets/:id",                     SA, getTicket);
 router.patch("/support/tickets/:id/status",            SA, updateTicketStatus);
 router.post("/support/tickets/:id/reply",              SA, replyToTicket);
+router.post("/support/tickets/:id/attachments",         SA, ticketAttachmentUpload.single("file"), uploadTicketReplyAttachment);
 
 // ─── Support — Reviews ────────────────────────────────────────────────────────
 router.get("/support/reviews",                         SA, getReviews);

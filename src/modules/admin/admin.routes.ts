@@ -5,7 +5,7 @@ import { requirePermission } from "../../middlewares/requirePermission.middlewar
 import { prisma } from "../../utils/prisma";
 import { setPresence } from "../../services/presence.service";
 import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdminPermissions, deactivateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
-import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview } from "./support.controller";
+import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview, uploadTicketAttachment, ticketAttachmentUpload } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
 import { getOverview } from "./overview.controller";
@@ -103,6 +103,7 @@ router.get("/structure", ...A, getInstitutionStructure);
 router.get("/support/tickets", ...SUPPORT_PERM, listTickets);
 router.post("/support/tickets", ...SUPPORT_PERM, createTicket);
 router.post("/support/tickets/:ticketId/replies", ...SUPPORT_PERM, addTicketReply);
+router.post("/support/tickets/attachments", ...SUPPORT_PERM, ticketAttachmentUpload.single("file"), uploadTicketAttachment);
 router.get("/support/reviews", ...SUPPORT_PERM, listReviews);
 router.post("/support/reviews", ...SUPPORT_PERM, createReview);
 router.patch("/support/reviews/:id", ...SUPPORT_PERM, updateReview);

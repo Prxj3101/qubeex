@@ -541,6 +541,22 @@ router.post(
 
       const data = addStudentSchema.parse(req.body);
 
+      if (data.rollNo && data.rollNo.trim()) {
+        const rollNoConflict = await prisma.student.findFirst({
+          where: {
+            divisionId,
+            institutionId,
+            rollNo: data.rollNo.trim(),
+            status: { notIn: ["WITHDRAWN", "GRADUATED"] },
+          },
+          select: { id: true },
+        });
+        if (rollNoConflict) {
+          res.status(400).json({ success: false, error: `Roll No ${data.rollNo.trim()} is already assigned to another student in this class` });
+          return;
+        }
+      }
+
       const studentId = await generateUserId(institutionId, "S");
 
       // Generate and hash password
@@ -799,6 +815,23 @@ router.patch(
 
       const data = updateStudentSchema.parse(req.body);
       const { name, guardians, ...studentFields } = data;
+
+      if (data.rollNo && data.rollNo.trim()) {
+        const rollNoConflict = await prisma.student.findFirst({
+          where: {
+            divisionId,
+            institutionId,
+            rollNo: data.rollNo.trim(),
+            status: { notIn: ["WITHDRAWN", "GRADUATED"] },
+            id: { not: student.id },
+          },
+          select: { id: true },
+        });
+        if (rollNoConflict) {
+          res.status(400).json({ success: false, error: `Roll No ${data.rollNo.trim()} is already assigned to another student in this class` });
+          return;
+        }
+      }
 
       await prisma.$transaction(async (tx) => {
         if (name) {

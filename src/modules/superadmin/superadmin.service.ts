@@ -606,10 +606,52 @@ export const toggleInstitutionStatus = async (
   actorId?: string,
   actorRole?: string
 ) => {
-  const existing = await prisma.institution.findUnique({ where: { id } });
+  const existing = await prisma.institution.findUnique({
+    where: { id },
+    include: { subscription: { include: { plan: true } } },
+  });
   if (!existing) throw new NotFoundError("Institution not found");
 
-  const result = await prisma.institution.update({ where: { id }, data: { status } });
+  // Reactivating must also lift any subscription-level block (LOCKED after a churn,
+  // EXPIRED after auto-deactivation) — otherwise users still can't log in because the
+  // login gate and access middleware block on subscription status.
+  const sub = existing.subscription;
+  const unlockSubscription =
+    status === "ACTIVE" &&
+    sub != null &&
+    (sub.status === "LOCKED" || sub.status === "EXPIRED");
+
+  const buildSubscriptionUnlock = () => {
+    if (!unlockSubscription || !sub) return null;
+    if (sub.plan.name === "TRIAL") {
+      // Re-grant the trial: fresh window from now so the hourly auto-lock cron
+      // (which only re-locks expired TRIALs) doesn't immediately lock it again.
+      const now = new Date();
+      const trialEnd = new Date(now.getTime() + (sub.trialDays ?? 14) * 24 * 60 * 60 * 1000);
+      return prisma.subscription.update({
+        where: { institutionId: id },
+        data: {
+          status: "TRIAL",
+          trialOutcome: null,
+          startDate: sub.startDate ?? now,
+          endDate: trialEnd,
+          trialWarningSent: false,
+          trialExpiryNotified: false,
+        },
+      });
+    }
+    // Paid plans return to ACTIVE; clear the churned outcome.
+    return prisma.subscription.update({
+      where: { institutionId: id },
+      data: { status: "ACTIVE", trialOutcome: null },
+    });
+  };
+
+  const subscriptionUnlock = buildSubscriptionUnlock();
+  const [result] = await prisma.$transaction([
+    prisma.institution.update({ where: { id }, data: { status } }),
+    ...(subscriptionUnlock ? [subscriptionUnlock] : []),
+  ]);
   // Invalidate the access-gate cache so suspension/reactivation takes effect immediately.
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
 
@@ -1290,6 +1332,45 @@ export const getNotifications = async (page = 1, limit = 20) => {
   return { notifications, pagination: { total, page, limit, pages: Math.ceil(total / limit) } };
 };
 
+// Superadmin bell feed: notifications only for things admins do that need attention —
+// new support tickets ("reported something") and new reviews. Merged newest-first.
+export const getSuperadminNotificationFeed = async (limit = 20) => {
+  const [tickets, reviews] = await Promise.all([
+    prisma.supportTicket.findMany({
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: { institution: { select: { name: true } } },
+    }),
+    prisma.review.findMany({
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: { institution: { select: { name: true } } },
+    }),
+  ]);
+
+  const ticketItems = tickets.map((t) => ({
+    id: `ticket-${t.id}`,
+    title: `New support ticket: ${t.title}`,
+    message: `${t.institution.name} (${t.adminEmail}): ${t.description}`,
+    tag: "NEW_TICKET",
+    createdAt: t.createdAt,
+  }));
+
+  const reviewItems = reviews.map((r) => ({
+    id: `review-${r.id}`,
+    title: `New review · ${r.rating}★ — ${r.title}`,
+    message: `${r.institution.name} (${r.adminName}): ${r.body}`,
+    tag: "NEW_REVIEW",
+    createdAt: r.createdAt,
+  }));
+
+  const notifications = [...ticketItems, ...reviewItems]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, limit);
+
+  return { notifications };
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SUPPORT TICKETS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1685,69 +1766,6 @@ export const generateLicenceBill = async (data: {
       dueDate,
     },
   });
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PAUSE / RESUME
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const pauseInstitution = async (id: string, actorId?: string) => {
-  const institution = await prisma.institution.findUnique({ where: { id } });
-  if (!institution) throw new NotFoundError("Institution not found");
-
-  const sub = await prisma.subscription.findUnique({ where: { institutionId: id } });
-  if (!sub) throw new NotFoundError("Subscription not found");
-  if (sub.status !== "ACTIVE") throw new BadRequestError("Can only pause an active subscription");
-  if (sub.pauseMonthsUsed >= 3) throw new BadRequestError("Maximum 3 pause months per calendar year reached");
-
-  const updated = await prisma.subscription.update({
-    where: { institutionId: id },
-    data: { status: "PAUSED", pausedAt: new Date() },
-  });
-
-  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
-  logAudit("INSTITUTION_PAUSED", {
-    userId: actorId,
-    actorRole: "SUPER_ADMIN",
-    institutionId: id,
-    category: "SUPERADMIN_ACTION",
-    severity: "WARNING",
-    details: `${institution.name} subscription paused`,
-    metadata: { pausedAt: updated.pausedAt },
-  });
-
-  return updated;
-};
-
-export const resumeInstitution = async (id: string, actorId?: string) => {
-  const institution = await prisma.institution.findUnique({ where: { id } });
-  if (!institution) throw new NotFoundError("Institution not found");
-
-  const sub = await prisma.subscription.findUnique({ where: { institutionId: id } });
-  if (!sub) throw new NotFoundError("Subscription not found");
-  if (sub.status !== "PAUSED") throw new BadRequestError("Subscription is not paused");
-
-  const updated = await prisma.subscription.update({
-    where: { institutionId: id },
-    data: {
-      status: "ACTIVE",
-      pausedAt: null,
-      pauseMonthsUsed: { increment: 1 },
-    },
-  });
-
-  await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview, `inst:access:${id}`);
-  logAudit("INSTITUTION_RESUMED", {
-    userId: actorId,
-    actorRole: "SUPER_ADMIN",
-    institutionId: id,
-    category: "SUPERADMIN_ACTION",
-    severity: "INFO",
-    details: `${institution.name} subscription resumed`,
-    metadata: {},
-  });
-
-  return updated;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -462,6 +462,20 @@ export const getNotifications = async (
   }
 };
 
+export const getNotificationFeed = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { limit } = req.query as Record<string, string>;
+    const data = await service.getSuperadminNotificationFeed(limit ? parseInt(limit) : 20);
+    res.json({ success: true, ...data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SUPPORT TICKETS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -658,24 +672,6 @@ export const updateBillStatus = async (req: AuthRequest, res: Response, next: Ne
   try {
     const { status } = updateBillStatusSchema.parse(req.body);
     const result = await service.updateBillStatus(req.params.billId as string, status, req.user?.userId);
-    res.json({ success: true, data: result });
-  } catch (error) { next(error); }
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PAUSE / RESUME
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const pauseInstitution = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  try {
-    const result = await service.pauseInstitution(req.params.id as string, req.user?.userId);
-    res.json({ success: true, data: result });
-  } catch (error) { next(error); }
-};
-
-export const resumeInstitution = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  try {
-    const result = await service.resumeInstitution(req.params.id as string, req.user?.userId);
     res.json({ success: true, data: result });
   } catch (error) { next(error); }
 };

@@ -218,7 +218,7 @@ export const sendInviteEmail = async ({
               ` : ''}
 
               <p style="margin:0 0 28px;font-size:13px;color:rgba(255,255,255,0.35);">
-                This link expires in <strong style="color:rgba(255,255,255,0.55);">24 hours</strong>.
+                This link expires in <strong style="color:rgba(255,255,255,0.55);">1 hour</strong>.
               </p>
 
               <!-- CTA Button -->

@@ -33,6 +33,7 @@ import {
   // Notifications
   broadcastNotification,
   getNotifications,
+  getNotificationFeed,
   // Tickets
   getTickets,
   getTicket,
@@ -52,9 +53,6 @@ import {
   // Billing
   getBills,
   updateBillStatus,
-  // Pause / Resume
-  pauseInstitution,
-  resumeInstitution,
   // Addons
   updateAddons,
   resendBill,
@@ -104,10 +102,6 @@ router.get("/institutions/:id/bills",                       SA, getBills);
 router.patch("/institutions/:id/bills/:billId/status",      SA, updateBillStatus);
 router.post("/institutions/:id/bills/:billId/resend",       SA, resendBill);
 
-// ─── Pause / Resume ───────────────────────────────────────────────────────────
-router.post("/institutions/:id/pause",                      SA, pauseInstitution);
-router.post("/institutions/:id/resume",                     SA, resumeInstitution);
-
 // ─── Addons ───────────────────────────────────────────────────────────────────
 router.patch("/institutions/:id/addons",                    SA, updateAddons);
 
@@ -120,6 +114,7 @@ router.get("/audit-logs",                              SA, getAuditLogs);
 
 // ─── Notifications ────────────────────────────────────────────────────────────
 router.post("/notifications",                          SA, broadcastNotification);
+router.get("/notifications/feed",                      SA, getNotificationFeed);
 router.get("/notifications",                           SA, getNotifications);
 
 // ─── Support — Tickets ────────────────────────────────────────────────────────

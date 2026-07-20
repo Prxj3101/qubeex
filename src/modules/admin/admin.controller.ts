@@ -1396,6 +1396,45 @@ export const deactivateSubAdmin = async (
   }
 };
 
+export const activateSubAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution");
+
+    const id = req.params.id as string;
+
+    const subAdmin = await prisma.subAdmin.findFirst({
+      where: { id, institutionId: institutionId! },
+      include: { user: true },
+    });
+    if (!subAdmin) throw new NotFoundError("SubAdmin not found");
+
+    await prisma.user.update({
+      where: { id: subAdmin.userId },
+      data: { isActive: true },
+    });
+
+    logAudit("SUBADMIN_ACTIVATED", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId: institutionId!,
+      details: `SubAdmin ${subAdmin.user.email} activated`,
+      metadata: { subAdminId: id },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
+    });
+
+    res.json({ success: true, data: { message: "SubAdmin activated" } });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const resendSubAdminInvite = async (
   req: AuthRequest,
   res: Response,

@@ -57,7 +57,7 @@ export const updateStudentStatus = async (req: AuthRequest, res: Response, next:
 
     const student = await prisma.student.findFirst({
       where: { id: studentId, divisionId, institutionId },
-      select: { id: true, userId: true },
+      select: { id: true, userId: true, user: { select: { name: true } } },
     });
     if (!student) throw new NotFoundError("Student not found in this division");
 
@@ -65,6 +65,16 @@ export const updateStudentStatus = async (req: AuthRequest, res: Response, next:
       prisma.student.update({ where: { id: studentId }, data: { status } }),
       prisma.user.update({ where: { id: student.userId }, data: { isActive: status === "ACTIVE" } }),
     ]);
+
+    logAudit(status === "INACTIVE" ? "STUDENT_DEACTIVATED" : "STUDENT_ACTIVATED", {
+      userId: req.user!.userId,
+      actorRole: req.user!.role,
+      institutionId,
+      details: `Student ${student.user?.name ?? ""} ${status === "INACTIVE" ? "deactivated" : "activated"}`,
+      metadata: { studentId },
+      category: "ADMIN_ACTION",
+      severity: status === "INACTIVE" ? "WARNING" : "INFO",
+    });
 
     res.json({ success: true, data: { id: updated.id, status: updated.status } });
   } catch (err) {

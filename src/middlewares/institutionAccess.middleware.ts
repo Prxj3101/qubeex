@@ -3,10 +3,6 @@ import { AuthRequest } from "./auth.middleware";
 import { prisma } from "../utils/prisma";
 import { getCache, setCache } from "../utils/cache";
 
-// Roles allowed to operate when the institution subscription is PAUSED.
-// Students lose access; admin and teachers can still manage the institution.
-const PAUSED_ALLOWED_ROLES = new Set(["SUPER_ADMIN", "ADMIN", "TEACHER"]);
-
 // Subscription statuses that block ALL institution user access.
 const BLOCKED_STATUSES = new Set(["EXPIRED", "LOCKED"]);
 
@@ -56,15 +52,6 @@ export const institutionAccessMiddleware = async (
         success: false,
         code: "INSTITUTION_SUSPENDED",
         message: "Your institution's access has been suspended. Please contact support.",
-      });
-      return;
-    }
-
-    if (subscriptionStatus === "PAUSED" && !PAUSED_ALLOWED_ROLES.has(user.role)) {
-      res.status(403).json({
-        success: false,
-        code: "INSTITUTION_PAUSED",
-        message: "Your institution is currently paused. Student access is restricted during this period.",
       });
       return;
     }

@@ -193,7 +193,7 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
   const daysInMonth = getDaysInMonth(billingDate);
 
   const subscriptions = await prisma.subscription.findMany({
-    where: { status: { in: ["ACTIVE", "PAUSED"] } },
+    where: { status: "ACTIVE" },
     include: {
       plan: true,
       institution: {
@@ -225,17 +225,14 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
     const rate = getRate(planName, billedUsers);
     const activeDays = getActiveDaysForMonth(billingDate, sub.activationDate);
     const fullMonthAmount = billedUsers * rate;
-    const baseBeforePause = Math.round((fullMonthAmount / daysInMonth) * activeDays);
-    const isPaused = sub.status === "PAUSED";
-    const pauseDiscount = isPaused ? Math.round(baseBeforePause * 0.5) : 0;
-    const baseAmount = baseBeforePause;
+    const baseAmount = Math.round((fullMonthAmount / daysInMonth) * activeDays);
 
     const addons = normalizeAddons(sub.addons);
     const { items: addonItems, updatedAddons } = getAddonItems(addons, billingDate);
     const addonAmount = addonItems
       .filter((item) => item.type === "addon")
       .reduce((sum, item) => sum + item.amount, 0);
-    const totalAmount = Math.max(0, baseAmount - pauseDiscount + addonAmount);
+    const totalAmount = Math.max(0, baseAmount + addonAmount);
     const dueDate = new Date(billingDate.getFullYear(), billingDate.getMonth() + 1, 7);
 
     const items: BillItem[] = [
@@ -248,15 +245,6 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
       ...addonItems,
     ];
 
-    if (pauseDiscount > 0) {
-      items.push({
-        label: "Pause Discount (50%)",
-        desc: "50% billing applied during paused month",
-        amount: -pauseDiscount,
-        type: "discount",
-      });
-    }
-
     const bill = await prisma.bill.create({
       data: {
         institutionId: sub.institutionId,
@@ -264,7 +252,7 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
         billingMonth,
         userCount: billedUsers,
         baseAmount,
-        discountAmount: pauseDiscount,
+        discountAmount: 0,
         addonAmount,
         totalAmount,
         items,
@@ -339,7 +327,7 @@ export const autoDeactivateOverdueInstitutions = async (runDate = new Date()) =>
       dueDate: { lt: runDate },
       institution: {
         subscription: {
-          status: { in: ["ACTIVE", "PAUSED"] },
+          status: "ACTIVE",
         },
       },
     },

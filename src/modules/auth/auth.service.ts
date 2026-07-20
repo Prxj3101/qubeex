@@ -25,16 +25,36 @@ export const verifyInvite = async (token: string) => {
     throw new BadRequestError("Invalid or expired invite");
   }
 
-  // Look up the admin user's name
-  const adminUser = await prisma.user.findUnique({ where: { email: invite.email } });
+  // Look up the INVITED user so we surface THEIR own login ID — not the admin's.
+  // The user-facing login ID differs by role: teachers and students use their
+  // role-specific ID (teacherId / studentId), while admins/sub-admins use the
+  // user displayId.
+  const invitedUser = await prisma.user.findUnique({
+    where: { email: invite.email },
+    include: {
+      teacher: { select: { teacherId: true } },
+      student: { select: { studentId: true } },
+    },
+  });
+
+  const userDisplayId =
+    invitedUser?.role === "TEACHER"
+      ? invitedUser.teacher?.teacherId ?? ""
+      : invitedUser?.role === "STUDENT"
+        ? invitedUser.student?.studentId ?? ""
+        : invitedUser?.displayId ?? "";
 
   return {
     valid: true,
     email: invite.email,
     institutionName: invite.institution.name,
     institutionCode: invite.institution.institutionCode,
-    adminName: adminUser?.name ?? "",
-    adminDisplayId: adminUser?.displayId ?? "",
+    role: invite.role,
+    adminName: invitedUser?.name ?? "",
+    // Kept for backward compatibility with the frontend field name, but now
+    // holds the invited user's own ID rather than always the admin's.
+    adminDisplayId: userDisplayId,
+    userDisplayId,
     institution: invite.institution.name,
   };
 };

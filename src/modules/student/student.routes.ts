@@ -8,12 +8,26 @@ import { listTests, startTest, submitTest, getAttempt, listAssignments, submitAs
 import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
+// Notifications are institution-scoped (per NotificationRecipient.institutionId),
+// so the same handlers serve every role within an institution.
+import {
+  listNotifications,
+  markNotificationRead,
+  dismissNotification,
+  markAllNotificationsRead,
+} from "../admin/notifications.controller";
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
 const router = Router();
 
 const S = [authMiddleware(["STUDENT"]), institutionAccessMiddleware];
+
+// ── Notifications (institution-scoped) ────────────────────────────────────────
+router.get("/notifications", ...S, listNotifications);
+router.patch("/notifications/read-all", ...S, markAllNotificationsRead);
+router.patch("/notifications/:recipientId/read", ...S, markNotificationRead);
+router.patch("/notifications/:recipientId/dismiss", ...S, dismissNotification);
 
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).trim().optional(),

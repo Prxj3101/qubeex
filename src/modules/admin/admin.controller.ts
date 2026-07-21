@@ -373,6 +373,8 @@ export const listTeachers = async (
       country: t.country,
       qualification: t.qualification,
       experience: t.experience,
+      prefix: t.prefix,
+      title: t.title,
     }));
 
     res.json({ success: true, data });
@@ -556,6 +558,8 @@ export const getTeacher = async (
         address: teacher.address,
         pincode: teacher.pincode,
         country: teacher.country,
+        prefix: teacher.prefix,
+        title: teacher.title,
       },
     });
   } catch (error) {
@@ -667,6 +671,8 @@ export const updateTeacher = async (
         address: teacher.address,
         pincode: teacher.pincode,
         country: teacher.country,
+        prefix: teacher.prefix,
+        title: teacher.title,
       },
     });
   } catch (error) {

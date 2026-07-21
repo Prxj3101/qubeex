@@ -4,6 +4,7 @@ import { prisma } from "../../utils/prisma";
 import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { getPresenceBatch } from "../../services/presence.service";
+import { resolveAuthorDisplay, DisplayInfo } from "../../utils/authorDisplay";
 import { z } from "zod";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
@@ -62,7 +63,7 @@ function formatPost(post: {
     createdAt: Date;
     author: { id: string; name: string | null; role: string };
   }[];
-}, viewerId: string, authorAvatarUrl: string | null = null, commentAvatarMap: Map<string, string | null> = new Map()) {
+}, viewerId: string, authorAvatarUrl: string | null = null, commentAvatarMap: Map<string, string | null> = new Map(), displayMap: Map<string, DisplayInfo> = new Map()) {
   return {
     id: post.id,
     text: post.text,
@@ -75,6 +76,8 @@ function formatPost(post: {
       name: post.author.name ?? "Unknown",
       role: post.author.role,
       avatarUrl: authorAvatarUrl,
+      prefix: displayMap.get(post.author.id)?.prefix ?? null,
+      title: displayMap.get(post.author.id)?.title ?? null,
     },
     likeCount: post.reactions.length,
     liked: post.reactions.some(r => r.userId === viewerId),
@@ -82,7 +85,14 @@ function formatPost(post: {
       id: c.id,
       text: c.text,
       createdAt: c.createdAt.toISOString(),
-      author: { id: c.author.id, name: c.author.name ?? "Unknown", role: c.author.role, avatarUrl: commentAvatarMap.get(c.author.id) ?? null },
+      author: {
+        id: c.author.id,
+        name: c.author.name ?? "Unknown",
+        role: c.author.role,
+        avatarUrl: commentAvatarMap.get(c.author.id) ?? null,
+        prefix: displayMap.get(c.author.id)?.prefix ?? null,
+        title: displayMap.get(c.author.id)?.title ?? null,
+      },
     })),
   };
 }
@@ -156,24 +166,36 @@ export const listPosts = async (
 
     type PostWithTeacher = typeof posts[0];
     type AuthorWithTeacher = PostWithTeacher['author'];
-    const getTeacherAvatar = (author: AuthorWithTeacher) => (author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
+
+    const allAuthors = [
+      ...posts.map(p => p.author),
+      ...posts.flatMap(p => p.comments.map(c => c.author)),
+    ];
+    const displayMap = await resolveAuthorDisplay(allAuthors, institutionId);
+
+    // Admin avatars live on Institution.adminAvatarUrl (resolved via
+    // displayMap); Teacher avatars live on the Teacher row directly.
+    const getRawAvatarUrl = (author: AuthorWithTeacher) =>
+      author.role === "ADMIN"
+        ? displayMap.get(author.id)?.avatarUrl ?? null
+        : (author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
 
     const allRawUrls = [
-      ...posts.map(p => getTeacherAvatar(p.author)),
-      ...posts.flatMap(p => p.comments.map(c => getTeacherAvatar(c.author))),
+      ...posts.map(p => getRawAvatarUrl(p.author)),
+      ...posts.flatMap(p => p.comments.map(c => getRawAvatarUrl(c.author))),
     ];
     const signedMap = await generateSignedAvatarUrlsBatch(allRawUrls);
     const resolveAvatar = (url: string | null | undefined) => url ? (signedMap[url] ?? url) : null;
 
     const commentAvatarMaps = posts.map(p => {
       const m = new Map<string, string | null>();
-      for (const c of p.comments) m.set(c.author.id, resolveAvatar(getTeacherAvatar(c.author)));
+      for (const c of p.comments) m.set(c.author.id, resolveAvatar(getRawAvatarUrl(c.author)));
       return m;
     });
 
     res.json({
       success: true,
-      data: posts.map((p, i) => formatPost(p, userId, resolveAvatar(getTeacherAvatar(p.author)), commentAvatarMaps[i])),
+      data: posts.map((p, i) => formatPost(p, userId, resolveAvatar(getRawAvatarUrl(p.author)), commentAvatarMaps[i], displayMap)),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
@@ -209,11 +231,14 @@ export const createPost = async (
       },
     });
 
-    const rawUrl = (post.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
+    const displayMap = await resolveAuthorDisplay([post.author], institutionId);
+    const rawUrl = post.author.role === "ADMIN"
+      ? displayMap.get(post.author.id)?.avatarUrl ?? null
+      : (post.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
     const signedMap2 = await generateSignedAvatarUrlsBatch([rawUrl]);
     const authorAvatarUrl = rawUrl ? (signedMap2[rawUrl] ?? rawUrl) : null;
 
-    res.status(201).json({ success: true, data: formatPost(post, userId, authorAvatarUrl) });
+    res.status(201).json({ success: true, data: formatPost(post, userId, authorAvatarUrl, new Map(), displayMap) });
   } catch (err) {
     next(err);
   }
@@ -297,6 +322,11 @@ export const addComment = async (
       include: { author: { select: { id: true, name: true, role: true } } },
     });
 
+    const displayMap = await resolveAuthorDisplay([comment.author], institutionId);
+    const rawUrl = displayMap.get(comment.author.id)?.avatarUrl ?? null;
+    const signedMap = await generateSignedAvatarUrlsBatch([rawUrl]);
+    const avatarUrl = rawUrl ? (signedMap[rawUrl] ?? rawUrl) : null;
+
     res.status(201).json({
       success: true,
       data: {
@@ -307,6 +337,9 @@ export const addComment = async (
           id: comment.author.id,
           name: comment.author.name ?? "Unknown",
           role: comment.author.role,
+          avatarUrl,
+          prefix: displayMap.get(comment.author.id)?.prefix ?? null,
+          title: displayMap.get(comment.author.id)?.title ?? null,
         },
       },
     });
@@ -355,7 +388,14 @@ export const listDmThreads = async (
       name: string;
       avatarUrl: string | null;
       isActive: boolean;
+      prefix: string | null;
+      title: string | null;
     };
+
+    const institution = await prisma.institution.findUnique({
+      where: { id: institutionId },
+      select: { adminPrefix: true, adminTitle: true, adminAvatarUrl: true },
+    });
 
     let contacts: Contact[] = [];
 
@@ -372,6 +412,8 @@ export const listDmThreads = async (
         name: t.user.name ?? "Unknown",
         avatarUrl: t.avatarUrl,
         isActive: t.user.isActive,
+        prefix: t.prefix,
+        title: t.title,
       }));
     } else {
       // Teacher sees other teachers (not self) + admin users
@@ -392,8 +434,10 @@ export const listDmThreads = async (
           teacherId: a.id,
           contactUserId: a.id,
           name: a.name ?? "Admin",
-          avatarUrl: null,
+          avatarUrl: institution?.adminAvatarUrl ?? null,
           isActive: a.isActive,
+          prefix: institution?.adminPrefix ?? null,
+          title: institution?.adminTitle ?? null,
         })),
         ...teachers.map((t) => ({
           teacherId: t.id,
@@ -401,6 +445,8 @@ export const listDmThreads = async (
           name: t.user.name ?? "Unknown",
           avatarUrl: t.avatarUrl,
           isActive: t.user.isActive,
+          prefix: t.prefix,
+          title: t.title,
         })),
       ];
     }
@@ -408,6 +454,9 @@ export const listDmThreads = async (
     const presenceMap = await getPresenceBatch(contacts.map((c) => c.contactUserId));
     // If Redis is unavailable (empty map), fall back to the static DB isActive field
     const redisAvailable = Object.keys(presenceMap).length > 0 || contacts.length === 0;
+
+    const signedContactAvatars = await generateSignedAvatarUrlsBatch(contacts.map((c) => c.avatarUrl));
+    const resolveContactAvatar = (url: string | null) => url ? (signedContactAvatars[url] ?? url) : null;
 
     const threads = await Promise.all(
       contacts.map(async (c) => {
@@ -436,7 +485,9 @@ export const listDmThreads = async (
           teacherId: c.teacherId,
           teacherUserId: c.contactUserId,
           name: c.name,
-          avatarUrl: c.avatarUrl,
+          avatarUrl: resolveContactAvatar(c.avatarUrl),
+          prefix: c.prefix,
+          title: c.title,
           isActive: redisAvailable ? (presenceMap[c.contactUserId] ?? false) : c.isActive,
           lastMessage: lastMessage
             ? (lastMessage.text ?? lastMessage.attachmentName ?? "Attachment")

@@ -8,6 +8,7 @@ import { listTests, startTest, submitTest, getAttempt, listAssignments, submitAs
 import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
+import { resolveAuthorDisplay } from "../../utils/authorDisplay";
 // Notifications are institution-scoped (per NotificationRecipient.institutionId),
 // so the same handlers serve every role within an institution.
 import {
@@ -1068,7 +1069,8 @@ router.get("/feed/posts", ...S, async (req: AuthRequest, res: Response, next: Ne
 
     console.log(`[student/feed/posts] total=${total} class_posts=${posts.filter(p => p.divisionId).length} general_posts=${posts.filter(p => !p.divisionId).length}`);
 
-    const rawFeedAvatars = posts.map(p => (p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null);
+    const displayMap = await resolveAuthorDisplay(posts.map(p => p.author), institutionId!);
+    const rawFeedAvatars = posts.map(p => displayMap.get(p.author.id)?.avatarUrl ?? null);
     const feedAvatarMap = await generateSignedAvatarUrlsBatch(rawFeedAvatars);
     const resolveFeedAvatar = (url: string | null | undefined) => url ? (feedAvatarMap[url] ?? url) : null;
 
@@ -1089,7 +1091,9 @@ router.get("/feed/posts", ...S, async (req: AuthRequest, res: Response, next: Ne
           id: p.author.id,
           name: p.author.name ?? "Unknown",
           role: p.author.role,
-          avatarUrl: resolveFeedAvatar((p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl),
+          avatarUrl: resolveFeedAvatar(displayMap.get(p.author.id)?.avatarUrl),
+          prefix: displayMap.get(p.author.id)?.prefix ?? null,
+          title: displayMap.get(p.author.id)?.title ?? null,
         },
       })),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },

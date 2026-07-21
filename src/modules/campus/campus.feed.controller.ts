@@ -5,6 +5,7 @@ import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl, generateSig
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
+import { resolveAuthorDisplay, DisplayInfo } from "../../utils/authorDisplay";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 
@@ -48,7 +49,8 @@ function formatPost(
     attachmentName: string | null; createdAt: Date;
     author: { id: string; name: string | null; role: string };
   },
-  authorAvatarUrl: string | null = null
+  authorAvatarUrl: string | null = null,
+  displayInfo: DisplayInfo | undefined = undefined
 ) {
   return {
     id: post.id,
@@ -66,6 +68,8 @@ function formatPost(
       name: post.author.name ?? "Unknown",
       role: post.author.role,
       avatarUrl: authorAvatarUrl,
+      prefix: displayInfo?.prefix ?? null,
+      title: displayInfo?.title ?? null,
     },
   };
 }
@@ -136,13 +140,14 @@ export const listPosts = async (req: AuthRequest, res: Response, next: NextFunct
       prisma.campusFeedPost.count({ where }),
     ]);
 
-    const rawAvatarUrls = posts.map(p => (p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null);
+    const displayMap = await resolveAuthorDisplay(posts.map(p => p.author), institutionId);
+    const rawAvatarUrls = posts.map(p => displayMap.get(p.author.id)?.avatarUrl ?? null);
     const signedMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
     const resolveAvatar = (url: string | null | undefined) => url ? (signedMap[url] ?? url) : null;
 
     res.json({
       success: true,
-      data: posts.map(p => formatPost(p, resolveAvatar((p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl))),
+      data: posts.map(p => formatPost(p, resolveAvatar(displayMap.get(p.author.id)?.avatarUrl), displayMap.get(p.author.id))),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
@@ -171,11 +176,12 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
       include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
     });
 
-    const rawUrl = (post.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
+    const displayMap = await resolveAuthorDisplay([post.author], institutionId);
+    const rawUrl = displayMap.get(post.author.id)?.avatarUrl ?? null;
     const signedMap2 = await generateSignedAvatarUrlsBatch([rawUrl]);
     const authorAvatarUrl = rawUrl ? (signedMap2[rawUrl] ?? rawUrl) : null;
 
-    res.status(201).json({ success: true, data: formatPost(post, authorAvatarUrl) });
+    res.status(201).json({ success: true, data: formatPost(post, authorAvatarUrl, displayMap.get(post.author.id)) });
     logAudit("ANNOUNCEMENT_POSTED", {
       userId,
       actorRole: req.user!.role,
@@ -345,13 +351,14 @@ export const listMergedPosts = async (req: AuthRequest, res: Response, next: Nex
       prisma.campusFeedPost.count({ where }),
     ]);
 
-    const rawAvatarUrlsMerged = posts.map(p => (p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null);
+    const displayMapMerged = await resolveAuthorDisplay(posts.map(p => p.author), institutionId);
+    const rawAvatarUrlsMerged = posts.map(p => displayMapMerged.get(p.author.id)?.avatarUrl ?? null);
     const signedMapMerged = await generateSignedAvatarUrlsBatch(rawAvatarUrlsMerged);
     const resolveAvatarMerged = (url: string | null | undefined) => url ? (signedMapMerged[url] ?? url) : null;
 
     res.json({
       success: true,
-      data: posts.map(p => ({ ...formatPost(p, resolveAvatarMerged((p.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl)), source: p.divisionId ? "class" : "general" })),
+      data: posts.map(p => ({ ...formatPost(p, resolveAvatarMerged(displayMapMerged.get(p.author.id)?.avatarUrl), displayMapMerged.get(p.author.id)), source: p.divisionId ? "class" : "general" })),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {

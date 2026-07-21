@@ -4,6 +4,7 @@ import { prisma } from "../../utils/prisma";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
+import { assignSubjectColor } from "../../utils/subjectColors";
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
@@ -264,8 +265,16 @@ export const createSubject = async (req: AuthRequest, res: Response, next: NextF
     });
     if (existing) throw new BadRequestError("A subject with this name already exists in this standard");
 
+    const siblingCount = await prisma.subject.count({ where: { standardId } });
+
     const subject = await prisma.subject.create({
-      data: { standardId, institutionId, ...data, order: data.order ?? 0 },
+      data: {
+        standardId,
+        institutionId,
+        ...data,
+        color: data.color ?? assignSubjectColor(siblingCount),
+        order: data.order ?? 0,
+      },
     });
 
     res.status(201).json({ success: true, data: subject });

@@ -5,6 +5,7 @@ import { BadRequestError, ConflictError, NotFoundError } from "../../utils/error
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 import { assignSubjectColor } from "../../utils/subjectColors";
+import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
@@ -592,7 +593,17 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
     });
     if (!division) throw new NotFoundError("Division not found");
 
-    res.json({ success: true, data: division });
+    const rawUrls = division.assignments.map((a) => a.teacher.avatarUrl);
+    const signedMap = await generateSignedAvatarUrlsBatch(rawUrls);
+    const assignments = division.assignments.map((a) => ({
+      ...a,
+      teacher: {
+        ...a.teacher,
+        avatarUrl: a.teacher.avatarUrl ? (signedMap[a.teacher.avatarUrl] ?? a.teacher.avatarUrl) : null,
+      },
+    }));
+
+    res.json({ success: true, data: { ...division, assignments } });
   } catch (err) {
     next(err);
   }

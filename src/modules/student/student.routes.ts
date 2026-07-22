@@ -701,6 +701,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
     const rawAvatarUrls: (string | null | undefined)[] = [
       ...allStudents.map(s => (s as { avatarUrl?: string | null }).avatarUrl),
       ...subjectListRaw.map(s => s.teacherAvatarUrlRaw),
+      (division.classTeacher as { avatarUrl?: string | null } | null)?.avatarUrl,
     ];
     const signedAvatarMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
     const resolveAvatar = (url: string | null | undefined) =>
@@ -974,6 +975,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
           name: division.name,
           standardName: division.standard.name,
           classTeacherName: division.classTeacher?.user.name ?? null,
+          classTeacherAvatarUrl: resolveAvatar((division.classTeacher as { avatarUrl?: string | null } | null)?.avatarUrl),
           totalStudents: division._count.students,
           subjects: subjectList,
         },

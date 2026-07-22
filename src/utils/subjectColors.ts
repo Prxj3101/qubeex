@@ -1,5 +1,5 @@
 // Canonical subject color sequence — must stay in sync with
-// qubeex-web/lib/subjectColors.ts and qubeex-app/utils/subjectColors.ts so a
+// qubeex-web/lib/subjectColors.ts and qubeex-app/lib/subjectColors.ts so a
 // subject renders the same color everywhere on the platform.
 export const SUBJECT_PALETTE = [
   "#DA7756", // terracotta

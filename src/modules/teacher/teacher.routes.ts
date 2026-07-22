@@ -427,7 +427,17 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
       return;
     }
 
-    res.json({ success: true, data: division });
+    const rawTeacherAvatarUrls = division.assignments.map((a) => a.teacher.avatarUrl);
+    const signedTeacherAvatarMap = await generateSignedAvatarUrlsBatch(rawTeacherAvatarUrls);
+    const assignmentsWithAvatars = division.assignments.map((a) => ({
+      ...a,
+      teacher: {
+        ...a.teacher,
+        avatarUrl: a.teacher.avatarUrl ? (signedTeacherAvatarMap[a.teacher.avatarUrl] ?? a.teacher.avatarUrl) : null,
+      },
+    }));
+
+    res.json({ success: true, data: { ...division, assignments: assignmentsWithAvatars } });
   } catch (err) {
     next(err);
   }

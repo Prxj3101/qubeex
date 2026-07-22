@@ -324,6 +324,47 @@ export const uploadMyInstitutionLogo = async (
   }
 };
 
+// Real Division/Standard/Subject assignments for one or more teachers, shaped
+// to match the frontend's generic level1(Standard)/level2(Division)/level3(Subject)
+// TeacherAssignment type. subjectId === null means a class-teacher assignment.
+async function getTeacherAssignmentsMap(institutionId: string, teacherIds: string[]) {
+  const rows = await prisma.divisionAssignment.findMany({
+    where: { institutionId, teacherId: { in: teacherIds } },
+    include: {
+      division: { include: { standard: true } },
+      subject: true,
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  const map = new Map<string, {
+    id: string;
+    level1Id: string; level1Name: string;
+    level2Id: string; level2Name: string;
+    level3Id: string; level3Name: string;
+    subjectColor: string | null;
+    role: "CLASS_TEACHER" | "SUBJECT_TEACHER";
+  }[]>();
+
+  for (const a of rows) {
+    const list = map.get(a.teacherId) ?? [];
+    list.push({
+      id: a.id,
+      level1Id: a.division.standard.id,
+      level1Name: a.division.standard.name,
+      level2Id: a.division.id,
+      level2Name: a.division.name,
+      level3Id: a.subject?.id ?? a.division.id,
+      level3Name: a.subject?.name ?? "Class Teacher",
+      subjectColor: a.subject?.color ?? null,
+      role: a.subjectId === null ? "CLASS_TEACHER" : "SUBJECT_TEACHER",
+    });
+    map.set(a.teacherId, list);
+  }
+
+  return map;
+}
+
 export const listTeachers = async (
   req: AuthRequest,
   res: Response,
@@ -338,6 +379,8 @@ export const listTeachers = async (
       include: { user: { omit: { password: true } } },
       orderBy: { createdAt: "asc" },
     });
+
+    const assignmentsMap = await getTeacherAssignmentsMap(institutionId, teachers.map((t) => t.id));
 
     const pendingInviteEmails = new Set(
       (await prisma.invite.findMany({
@@ -363,7 +406,7 @@ export const listTeachers = async (
       status: t.status,
       invitePending: pendingInviteEmails.has(t.user.email),
       joinedAt: t.joinedAt.toISOString(),
-      assignments: [],
+      assignments: assignmentsMap.get(t.id) ?? [],
       dob: t.dob,
       gender: t.gender,
       address: t.address,
@@ -536,6 +579,8 @@ export const getTeacher = async (
       select: { id: true },
     });
 
+    const assignmentsMap = await getTeacherAssignmentsMap(institutionId!, [teacher.id]);
+
     res.json({
       success: true,
       data: {
@@ -548,7 +593,7 @@ export const getTeacher = async (
         status: teacher.status,
         invitePending: pendingInvite !== null,
         joinedAt: teacher.joinedAt.toISOString(),
-        assignments: [],
+        assignments: assignmentsMap.get(teacher.id) ?? [],
         experience: teacher.experience,
         city: teacher.city,
         state: teacher.state,
@@ -626,6 +671,8 @@ export const updateTeacher = async (
       select: { id: true },
     });
 
+    const assignmentsMapForUpdate = await getTeacherAssignmentsMap(institutionId!, [teacher.id]);
+
     {
       const actionName = data.status === "INACTIVE"
         ? "TEACHER_DEACTIVATED"
@@ -661,7 +708,7 @@ export const updateTeacher = async (
         status: teacher.status,
         invitePending: pendingInviteForUpdate !== null,
         joinedAt: teacher.joinedAt.toISOString(),
-        assignments: [],
+        assignments: assignmentsMapForUpdate.get(teacher.id) ?? [],
         experience: teacher.experience,
         city: teacher.city,
         state: teacher.state,

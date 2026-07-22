@@ -648,7 +648,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
               },
             },
             classTeacher: { include: { user: { select: { name: true } } } },
-            _count: { select: { students: true } },
+            _count: { select: { students: { where: { status: "ACTIVE" } } } },
           },
         },
       },

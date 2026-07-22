@@ -14,6 +14,7 @@ import {
   createSubject,
   updateSubject,
   deleteSubject,
+  reorderSubjects,
   selectSubject,
   deselectSubject,
   assignTeacher,
@@ -88,6 +89,7 @@ router.delete("/divisions/:divisionId", ...ADMIN_ONLY, deleteDivision);
 
 // Subjects
 router.post("/standards/:standardId/subjects", ...ADMIN_ONLY, createSubject);
+router.patch("/standards/:standardId/subjects/reorder", ...ADMIN_ONLY, reorderSubjects);
 router.patch("/subjects/:subjectId", ...ADMIN_ONLY, updateSubject);
 router.delete("/subjects/:subjectId", ...ADMIN_ONLY, deleteSubject);
 

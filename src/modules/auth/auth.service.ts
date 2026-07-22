@@ -188,19 +188,26 @@ async function clearLoginAttempts(email: string) {
 export const login = async (email: string, password: string, context: LoginContext = {}) => {
   await checkLoginLockout(email);
 
-  // Resolve studentId → user email if the identifier looks like a student ID.
-  // Student IDs never contain '@', so this is a safe heuristic.
+  // Resolve a user ID → email if the identifier isn't an email address.
+  // User IDs never contain '@', so this is a safe heuristic. Checks every ID
+  // field the platform issues: Student.studentId, Teacher.teacherId, and
+  // User.displayId (Admin/SubAdmin).
   let resolvedEmail = email;
   if (!email.includes('@')) {
-    const student = await prisma.student.findFirst({
-      where: { studentId: email.trim() },
-      include: { user: { select: { email: true } } },
-    });
-    if (!student?.user?.email) {
+    const identifier = email.trim();
+
+    const [student, teacher, user] = await Promise.all([
+      prisma.student.findFirst({ where: { studentId: identifier }, include: { user: { select: { email: true } } } }),
+      prisma.teacher.findFirst({ where: { teacherId: identifier }, include: { user: { select: { email: true } } } }),
+      prisma.user.findFirst({ where: { displayId: identifier }, select: { email: true } }),
+    ]);
+
+    const matchedEmail = student?.user?.email ?? teacher?.user?.email ?? user?.email;
+    if (!matchedEmail) {
       await recordFailedAttempt(email);
       throw new UnauthorizedError("Invalid credentials");
     }
-    resolvedEmail = student.user.email;
+    resolvedEmail = matchedEmail;
   }
 
   const user = await prisma.user.findUnique({

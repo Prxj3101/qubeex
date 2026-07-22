@@ -325,17 +325,19 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
         division: {
           include: {
             standard: true,
-            _count: { select: { students: true } },
+            _count: { select: { students: { where: { status: "ACTIVE" } } } },
             assignments: {
               include: {
                 teacher: { include: { user: { select: { id: true, name: true } } } },
                 subject: true,
               },
+              orderBy: { subject: { order: "asc" } },
             },
           },
         },
         subject: true,
       },
+      orderBy: { subject: { order: "asc" } },
     });
 
     const classTeacher = assignments
@@ -417,7 +419,7 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
             subject: true,
           },
         },
-        _count: { select: { students: true } },
+        _count: { select: { students: { where: { status: "ACTIVE" } } } },
       },
     });
     if (!division) {

@@ -31,6 +31,10 @@ const createSubjectSchema = z.object({
 
 const updateSubjectSchema = createSubjectSchema.partial();
 
+const reorderSubjectsSchema = z.object({
+  orderedIds: z.array(z.string().uuid()).min(1),
+});
+
 const assignTeacherSchema = z.object({
   teacherId: z.string().uuid(),
   subjectId: z.string().uuid().nullable().optional(),
@@ -67,12 +71,21 @@ export const listStandards = async (req: AuthRequest, res: Response, next: NextF
                 subject: true,
               },
             },
+            _count: { select: { students: { where: { status: "ACTIVE" } } } },
           },
         },
       },
     });
 
-    res.json({ success: true, data: standards });
+    const data = standards.map((standard) => ({
+      ...standard,
+      divisions: standard.divisions.map((division) => ({
+        ...division,
+        studentCount: division._count.students,
+      })),
+    }));
+
+    res.json({ success: true, data });
   } catch (err) {
     next(err);
   }
@@ -273,7 +286,7 @@ export const createSubject = async (req: AuthRequest, res: Response, next: NextF
         institutionId,
         ...data,
         color: data.color ?? assignSubjectColor(siblingCount),
-        order: data.order ?? 0,
+        order: data.order ?? siblingCount,
       },
     });
 
@@ -314,6 +327,46 @@ export const updateSubject = async (req: AuthRequest, res: Response, next: NextF
       actorRole: req.user!.role,
       institutionId,
       details: `Subject "${updated.name}" updated`,
+      category: "ADMIN_ACTION",
+      severity: "INFO",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const reorderSubjects = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const standardId = req.params.standardId as string;
+    const { orderedIds } = reorderSubjectsSchema.parse(req.body);
+
+    const standard = await prisma.standard.findFirst({ where: { id: standardId, institutionId } });
+    if (!standard) throw new NotFoundError("Standard not found");
+
+    const subjects = await prisma.subject.findMany({ where: { standardId, institutionId } });
+    const subjectIds = new Set(subjects.map((s) => s.id));
+    if (orderedIds.length !== subjects.length || !orderedIds.every((id) => subjectIds.has(id))) {
+      throw new BadRequestError("orderedIds must include every subject in this standard exactly once");
+    }
+
+    // Reassigning order also reassigns color to match the new sequence
+    // position — position 1 is always the first palette color, etc. Deleting
+    // a subject never renumbers its surviving siblings (see deleteSubject),
+    // so this only ever runs on an explicit, user-initiated reorder.
+    await prisma.$transaction(
+      orderedIds.map((id, index) =>
+        prisma.subject.update({ where: { id }, data: { order: index, color: assignSubjectColor(index) } })
+      )
+    );
+
+    const updated = await prisma.subject.findMany({ where: { standardId }, orderBy: { order: "asc" } });
+    res.json({ success: true, data: updated });
+    logAudit("SUBJECT_UPDATED", {
+      userId: req.user!.userId,
+      actorRole: req.user!.role,
+      institutionId,
+      details: `Subjects reordered in standard "${standard.name}"`,
       category: "ADMIN_ACTION",
       severity: "INFO",
     });

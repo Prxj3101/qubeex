@@ -27,6 +27,7 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
       res.status(404).json({ success: false, error: "Teacher profile not found" });
       return;
     }
+    const teacherPrefix = teacher.prefix;
 
     const [assignmentRows, testsConducted, classTeacherDivision, auditLogRows] = await Promise.all([
       prisma.divisionAssignment.findMany({
@@ -130,6 +131,7 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
       data: {
         teacher: {
           name: teacher.user.name ?? "",
+          prefix: teacherPrefix,
           institutionName: teacher.institution.name,
           classTeacherDivisionName: classTeacherDivision
             ? `${classTeacherDivision.standard.name} - ${classTeacherDivision.name}`

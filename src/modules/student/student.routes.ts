@@ -8,7 +8,7 @@ import { listTests, startTest, submitTest, getAttempt, listAssignments, submitAs
 import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
-import { resolveAuthorDisplay } from "../../utils/authorDisplay";
+import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
 // Notifications are institution-scoped (per NotificationRecipient.institutionId),
 // so the same handlers serve every role within an institution.
 import {
@@ -681,6 +681,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
         code: a.subject!.code,
         color: a.subject!.color ?? "#7C3AED",
         teacherName: a.teacher.user.name,
+        teacherPrefix: a.teacher.prefix,
         teacherAvatarUrlRaw: (a.teacher as { avatarUrl?: string | null }).avatarUrl ?? null,
       }));
 
@@ -714,6 +715,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       code: s.code,
       color: s.color,
       teacherName: s.teacherName,
+      teacherPrefix: s.teacherPrefix,
       teacherAvatarUrl: resolveAvatar(s.teacherAvatarUrlRaw),
     }));
 
@@ -738,9 +740,9 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
         where: { divisionId, institutionId, type: { in: ["RESULT", "MATERIAL"] } },
         orderBy: { createdAt: "desc" },
         select: {
-          id: true, type: true, title: true, subject: true,
+          id: true, type: true, title: true, subject: true, subjectId: true,
           attachmentUrl: true, attachmentType: true, attachmentName: true, createdAt: true,
-          author: { select: { name: true } },
+          author: { select: { id: true, name: true, role: true } },
         },
       }),
       // Fetch all published marksheets for scoring/leaderboard only
@@ -751,6 +753,10 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       }),
     ]);
 
+    const feedAuthorDisplayMap = await resolveAuthorDisplay(feedPosts.map(p => p.author), institutionId!);
+    const postedByOf = (p: (typeof feedPosts)[number]) =>
+      p.author.name ? formatDisplayName(p.author.name, feedAuthorDisplayMap.get(p.author.id)?.prefix) : "—";
+
     // Separate into results and materials
     const resultFiles = feedPosts
       .filter(p => p.type === "RESULT")
@@ -760,18 +766,32 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
         attachmentUrl: p.attachmentUrl,
         attachmentType: p.attachmentType,
         attachmentName: p.attachmentName,
-        postedBy: p.author.name ?? "—",
+        postedBy: postedByOf(p),
         createdAt: p.createdAt.toISOString(),
       }));
 
-    // Materials grouped by subject name (case-insensitive)
+    // Materials grouped by subjectId (exact match — set at creation time via a
+    // subject picker, so this can't drift like free-text subject names could).
+    // Posts with no subjectId are class-wide/general materials (e.g. posted by
+    // the class teacher) and are surfaced separately in `generalMaterials`.
+    // Legacy posts created before subjectId existed fall back to name matching.
     const materialsRaw = feedPosts.filter(p => p.type === "MATERIAL");
-    const subjectMaterialsMap = new Map<string, typeof materialsRaw>();
+    const subjectMaterialsByIdMap = new Map<string, typeof materialsRaw>();
+    const subjectMaterialsByNameMap = new Map<string, typeof materialsRaw>();
+    const generalMaterialsRaw: typeof materialsRaw = [];
     for (const m of materialsRaw) {
-      const key = (m.subject ?? "").toLowerCase().trim();
-      const arr = subjectMaterialsMap.get(key) ?? [];
-      arr.push(m);
-      subjectMaterialsMap.set(key, arr);
+      if (m.subjectId) {
+        const arr = subjectMaterialsByIdMap.get(m.subjectId) ?? [];
+        arr.push(m);
+        subjectMaterialsByIdMap.set(m.subjectId, arr);
+      } else if (m.subject && m.subject.trim()) {
+        const key = m.subject.toLowerCase().trim();
+        const arr = subjectMaterialsByNameMap.get(key) ?? [];
+        arr.push(m);
+        subjectMaterialsByNameMap.set(key, arr);
+      } else {
+        generalMaterialsRaw.push(m);
+      }
     }
 
     // Use the most recent published marksheet for leaderboard/scoring
@@ -951,21 +971,26 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       }
     }
 
-    // Build per-subject materials (match by subject name, case-insensitive)
+    // Build per-subject materials — prefer exact subjectId match, falling back
+    // to legacy name-based matching for posts created before subjectId existed.
     type MaterialEntry = { id: string; title: string; attachmentUrl: string | null; attachmentType: string | null; attachmentName: string | null; postedBy: string; createdAt: string };
+    const toEntry = (p: (typeof materialsRaw)[number]): MaterialEntry => ({
+      id: p.id, title: p.title,
+      attachmentUrl: p.attachmentUrl,
+      attachmentType: p.attachmentType,
+      attachmentName: p.attachmentName,
+      postedBy: postedByOf(p),
+      createdAt: p.createdAt.toISOString(),
+    });
     const subjectMaterials: Record<string, MaterialEntry[]> = {};
     for (const subj of subjectList) {
-      const key = subj.name.toLowerCase().trim();
-      const posts = subjectMaterialsMap.get(key) ?? [];
-      subjectMaterials[subj.id] = posts.map(p => ({
-        id: p.id, title: p.title,
-        attachmentUrl: p.attachmentUrl,
-        attachmentType: p.attachmentType,
-        attachmentName: p.attachmentName,
-        postedBy: p.author.name ?? "—",
-        createdAt: p.createdAt.toISOString(),
-      }));
+      const byId = subjectMaterialsByIdMap.get(subj.id) ?? [];
+      const byName = subjectMaterialsByNameMap.get(subj.name.toLowerCase().trim()) ?? [];
+      subjectMaterials[subj.id] = [...byId, ...byName]
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .map(toEntry);
     }
+    const generalMaterials: MaterialEntry[] = generalMaterialsRaw.map(toEntry);
 
     res.json({
       success: true,
@@ -975,12 +1000,14 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
           name: division.name,
           standardName: division.standard.name,
           classTeacherName: division.classTeacher?.user.name ?? null,
+          classTeacherPrefix: division.classTeacher?.prefix ?? null,
           classTeacherAvatarUrl: resolveAvatar((division.classTeacher as { avatarUrl?: string | null } | null)?.avatarUrl),
           totalStudents: division._count.students,
           subjects: subjectList,
         },
         resultFiles,
         subjectMaterials,
+        generalMaterials,
         classmates,
         myScores: mySubjectScores,
         subjectLeaderboards,

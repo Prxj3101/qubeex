@@ -9,6 +9,8 @@ import { z } from "zod";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 
+const UNSEND_WINDOW_MS = 60 * 60 * 1000;
+
 // ── Multer (memory) ───────────────────────────────────────────────────────────
 
 export const upload = multer({
@@ -635,6 +637,37 @@ export const sendMessage = async (
         createdAt: message.createdAt.toISOString(),
       },
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const unsendMessage = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { institutionId, userId } = requireInstitution(req);
+    const messageId = req.params.messageId as string;
+
+    const message = await prisma.staffMessage.findFirst({ where: { id: messageId, institutionId } });
+    if (!message) throw new NotFoundError("Message not found");
+    if (message.senderId !== userId) {
+      throw new BadRequestError("You can only unsend your own messages");
+    }
+    if (Date.now() - message.createdAt.getTime() > UNSEND_WINDOW_MS) {
+      throw new BadRequestError("Messages can only be unsent within 1 hour of sending");
+    }
+
+    await prisma.staffMessage.delete({ where: { id: messageId } });
+
+    if (message.attachmentUrl) {
+      const key = r2KeyFromUrl(message.attachmentUrl);
+      if (key) await scheduleR2FileDeletion(key);
+    }
+
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

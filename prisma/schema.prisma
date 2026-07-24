@@ -583,6 +583,7 @@ model Subject {
   taskAssignments  TaskAssignment[]
   marksheetConfigs MarksheetSubjectConfig[]
   marksheetColumns MarksheetExamColumn[]
+  campusFeedPosts  CampusFeedPost[]
 
   @@unique([standardId, name])
   @@index([standardId])
@@ -881,6 +882,8 @@ model CampusFeedPost {
   author        User           @relation("CampusFeedPostAuthor", fields: [authorId], references: [id])
   divisionId    String?
   division      Division?      @relation(fields: [divisionId], references: [id])
+  subjectId     String?
+  subjectRef    Subject?       @relation(fields: [subjectId], references: [id])
 
   type           CampusPostType
   title          String
@@ -894,6 +897,7 @@ model CampusFeedPost {
 
   @@index([institutionId])
   @@index([divisionId])
+  @@index([subjectId])
 }
 
 model CalendarEvent {

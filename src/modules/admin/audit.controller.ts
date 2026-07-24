@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
+import { resolveAuthorDisplay } from "../../utils/authorDisplay";
 
 const VALID_CATEGORIES = ["ADMIN_ACTION", "SECURITY", "SYSTEM", "BILLING", "SUPERADMIN_ACTION"] as const;
 type AuditCategory = typeof VALID_CATEGORIES[number];
@@ -73,10 +74,19 @@ export const listAuditLogs = async (req: AuthRequest, res: Response, next: NextF
       prisma.auditLog.count({ where }),
     ]);
 
+    const displayMap = await resolveAuthorDisplay(
+      logs.filter((l) => l.user && l.actorRole).map((l) => ({ id: l.user!.id, role: l.actorRole! })),
+      institutionId
+    );
+    const logsWithPrefix = logs.map((l) => ({
+      ...l,
+      user: l.user ? { ...l.user, prefix: displayMap.get(l.user.id)?.prefix ?? null } : l.user,
+    }));
+
     res.json({
       success: true,
       data: {
-        logs,
+        logs: logsWithPrefix,
         pagination: {
           total,
           page,

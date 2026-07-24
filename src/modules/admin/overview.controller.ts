@@ -56,14 +56,14 @@ function actionLabel(action: string): string {
 
 export const getOverview = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = req.user!;
+    const { institutionId, role } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
     const [institution, userCount, teacherCount, studentCount, adminCount, classCount, subscription, recentLogs, recentTickets, teachersForGrowth, studentsForGrowth] =
       await Promise.all([
         prisma.institution.findUnique({
           where: { id: institutionId },
-          select: { id: true, name: true, type: true, status: true, logoUrl: true, createdAt: true },
+          select: { id: true, name: true, type: true, status: true, logoUrl: true, createdAt: true, adminPrefix: true },
         }),
         prisma.user.count({ where: { institutionId } }),
         prisma.teacher.count({ where: { institutionId } }),
@@ -174,6 +174,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
           status: institution.status,
           logoUrl: institution.logoUrl,
           createdAt: institution.createdAt,
+          adminPrefix: role === "ADMIN" ? institution.adminPrefix : null,
         },
         showWelcomeBanner,
         stats: {

@@ -197,7 +197,7 @@ async function generateMarksheetPdf(params: {
       .text(params.institutionName, M, M, { width: UW, align: "center", lineBreak: false });
     doc.fontSize(8).font("Helvetica").fillColor(C_MUTED)
       .text(
-        `${params.standardName} – ${params.divisionName}   ·   Academic Year: ${params.academicYear}`,
+        `${params.standardName} – Division ${params.divisionName.split("-").pop() ?? params.divisionName}   ·   Academic Year: ${params.academicYear}`,
         M, M + 17, { width: UW, align: "center", lineBreak: false }
       );
 
@@ -1247,7 +1247,7 @@ async function generateExamWisePdf(params: MarksheetPdfParams): Promise<Buffer> 
     doc.fontSize(14).font("Helvetica-Bold").fillColor("#2A1F10")
       .text(`${params.institutionName} — Marksheet (Exam-wise)`, { align: "center" });
     doc.fontSize(10).font("Helvetica").fillColor("#555")
-      .text(`${params.standardName} - ${params.divisionName} | Academic Year: ${params.academicYear}`, { align: "center" });
+      .text(`${params.standardName} - Division ${params.divisionName.split("-").pop() ?? params.divisionName} | Academic Year: ${params.academicYear}`, { align: "center" });
     doc.moveDown(0.6);
 
     // Distinct exam-column names, in first-seen order across subjects.

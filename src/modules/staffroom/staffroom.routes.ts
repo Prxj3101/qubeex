@@ -14,6 +14,7 @@ import {
   listDmThreads,
   getMessages,
   sendMessage,
+  unsendMessage,
   markRead,
 } from "./staffroom.controller";
 
@@ -43,6 +44,7 @@ router.delete("/posts/:id/comments/:commentId", ...STAFFROOM_PERM, deleteComment
 router.get("/dms", ...STAFFROOM_PERM, listDmThreads);
 router.get("/dms/:teacherUserId", ...STAFFROOM_PERM, getMessages);
 router.post("/dms/:teacherUserId", ...STAFFROOM_PERM, sendMessage);
+router.delete("/dms/:teacherUserId/messages/:messageId", ...STAFFROOM_PERM, unsendMessage);
 router.patch("/dms/:teacherUserId/read", ...STAFFROOM_PERM, markRead);
 
 export default router;

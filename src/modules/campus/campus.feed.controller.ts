@@ -21,6 +21,7 @@ const createPostSchema = z.object({
   title: z.string().min(1).max(300).trim(),
   body: z.string().max(5000).trim().optional().default(""),
   subject: z.string().max(100).trim().optional(),
+  subjectId: z.string().uuid().optional(),
   divisionId: z.string().uuid().optional(),
   attachmentUrl: z.string().url().optional(),
   attachmentType: z.string().max(20).optional(),
@@ -45,6 +46,7 @@ function requireInstitution(req: AuthRequest) {
 function formatPost(
   post: {
     id: string; type: string; title: string; body: string; subject: string | null;
+    subjectId?: string | null;
     divisionId: string | null; attachmentUrl: string | null; attachmentType: string | null;
     attachmentName: string | null; createdAt: Date;
     author: { id: string; name: string | null; role: string };
@@ -58,6 +60,7 @@ function formatPost(
     title: post.title,
     body: post.body,
     subject: post.subject,
+    subjectId: post.subjectId ?? null,
     divisionId: post.divisionId,
     attachmentUrl: post.attachmentUrl,
     attachmentType: post.attachmentType,
@@ -160,6 +163,35 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
     const { institutionId, userId } = requireInstitution(req);
     const data = createPostSchema.parse(req.body);
 
+    let subjectName = data.subject;
+
+    if (data.subjectId) {
+      const subject = await prisma.subject.findFirst({
+        where: { id: data.subjectId, institutionId },
+        select: { id: true, name: true },
+      });
+      if (!subject) throw new NotFoundError("Subject not found");
+      subjectName = subject.name;
+
+      // A teacher (not admin) may only tag a subject they're actually assigned to
+      // teach in that division, or if they're the division's class teacher.
+      if (req.user!.role === "TEACHER" && data.divisionId) {
+        const teacher = await prisma.teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
+        const assignment = teacher
+          ? await prisma.divisionAssignment.findFirst({
+              where: {
+                divisionId: data.divisionId,
+                teacherId: teacher.id,
+                institutionId,
+                OR: [{ subjectId: data.subjectId }, { subjectId: null }],
+              },
+              select: { id: true },
+            })
+          : null;
+        if (!assignment) throw new BadRequestError("You can only post materials for a subject you teach in this class");
+      }
+    }
+
     const post = await prisma.campusFeedPost.create({
       data: {
         institutionId,
@@ -167,7 +199,8 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
         type: data.type,
         title: data.title,
         body: data.body,
-        subject: data.subject,
+        subject: subjectName,
+        subjectId: data.subjectId ?? null,
         divisionId: data.divisionId ?? null,
         attachmentUrl: data.attachmentUrl,
         attachmentType: data.attachmentType,

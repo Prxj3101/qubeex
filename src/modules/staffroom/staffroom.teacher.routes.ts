@@ -13,6 +13,7 @@ import {
   listDmThreads,
   getMessages,
   sendMessage,
+  unsendMessage,
   markRead,
 } from "./staffroom.controller";
 
@@ -35,6 +36,7 @@ router.delete("/posts/:id/comments/:commentId", ...T, deleteComment);
 router.get("/dms", ...T, listDmThreads);
 router.get("/dms/:teacherUserId", ...T, getMessages);
 router.post("/dms/:teacherUserId", ...T, sendMessage);
+router.delete("/dms/:teacherUserId/messages/:messageId", ...T, unsendMessage);
 router.patch("/dms/:teacherUserId/read", ...T, markRead);
 
 export default router;

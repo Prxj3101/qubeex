@@ -4,7 +4,7 @@ import { institutionAccessMiddleware } from "../../middlewares/institutionAccess
 import { requirePermission } from "../../middlewares/requirePermission.middleware";
 import { prisma } from "../../utils/prisma";
 import { setPresence } from "../../services/presence.service";
-import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdminPermissions, deactivateSubAdmin, activateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
+import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdmin, updateSubAdminPermissions, deactivateSubAdmin, activateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview, uploadTicketAttachment, ticketAttachmentUpload } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
@@ -85,6 +85,7 @@ router.delete("/teachers/:id", ...ADMIN_ONLY, deleteTeacher);
 // Subadmin management — ADMIN only for CRUD; SUB_ADMIN with STAFF_SUBADMINS can list
 router.get("/subadmins", ...SUBADMINS_READ, listSubAdmins);
 router.post("/subadmins", ...ADMIN_ONLY, addSubAdmin);
+router.patch("/subadmins/:id", ...ADMIN_ONLY, updateSubAdmin);
 router.patch("/subadmins/:id/permissions", ...ADMIN_ONLY, updateSubAdminPermissions);
 router.patch("/subadmins/:id/deactivate", ...ADMIN_ONLY, deactivateSubAdmin);
 router.patch("/subadmins/:id/activate", ...ADMIN_ONLY, activateSubAdmin);

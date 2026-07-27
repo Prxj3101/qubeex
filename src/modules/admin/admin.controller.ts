@@ -101,6 +101,21 @@ const updateSubAdminPermissionsSchema = z.object({
   permissions: z.array(z.enum(VALID_PERMISSIONS)).min(1, "Grant at least one permission"),
 });
 
+const updateSubAdminSchema = z.object({
+  name: z.string().min(2).max(100).trim().optional(),
+  designation: z.string().max(100).trim().optional(),
+  phone: z.string().max(20).trim().optional(),
+  dob: z.string().optional(),
+  gender: z.string().optional(),
+  address: z.string().trim().optional(),
+  city: z.string().trim().optional(),
+  state: z.string().trim().optional(),
+  pincode: z.string().trim().optional(),
+  country: z.string().trim().optional(),
+  qualification: z.string().trim().optional(),
+  experience: z.string().trim().optional(),
+});
+
 const addStudentSchema = z.object({
   name: z.string().min(2).max(100).trim(),
   email: z.string().email().toLowerCase().trim(),
@@ -1246,8 +1261,13 @@ export const listSubAdmins = async (
         createdAt: s.createdAt,
         designation: s.designation,
         phone: s.phone,
+        dob: s.dob,
+        gender: s.gender,
+        address: s.address,
         city: s.city,
         state: s.state,
+        pincode: s.pincode,
+        country: s.country,
         qualification: s.qualification,
         experience: s.experience,
       })),
@@ -1361,6 +1381,71 @@ export const addSubAdmin = async (
         state: subAdmin.state,
         qualification: subAdmin.qualification,
         experience: subAdmin.experience,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateSubAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    const { institutionId } = user;
+    if (!institutionId) throw new BadRequestError("No institution");
+
+    const id = req.params.id as string;
+    const data = updateSubAdminSchema.parse(req.body);
+
+    const subAdmin = await prisma.subAdmin.findFirst({
+      where: { id, institutionId: institutionId! },
+    });
+    if (!subAdmin) throw new NotFoundError("SubAdmin not found");
+
+    const { name, ...subAdminFields } = data;
+
+    const updated = await prisma.$transaction(async (tx) => {
+      if (name) {
+        await tx.user.update({ where: { id: subAdmin.userId }, data: { name } });
+      }
+      return tx.subAdmin.update({
+        where: { id },
+        data: subAdminFields,
+        include: { user: { omit: { password: true } } },
+      });
+    });
+
+    logAudit("SUBADMIN_UPDATED", {
+      userId: user.userId,
+      actorRole: user.role,
+      institutionId: institutionId!,
+      details: `SubAdmin ${updated.user.name} details updated`,
+      metadata: { subAdminId: id },
+      category: "ADMIN_ACTION",
+      severity: "INFO",
+    });
+
+    res.json({
+      success: true,
+      data: {
+        id: updated.id,
+        name: updated.user.name,
+        email: updated.user.email,
+        designation: updated.designation,
+        phone: updated.phone,
+        dob: updated.dob,
+        gender: updated.gender,
+        address: updated.address,
+        city: updated.city,
+        state: updated.state,
+        pincode: updated.pincode,
+        country: updated.country,
+        qualification: updated.qualification,
+        experience: updated.experience,
       },
     });
   } catch (err) {

@@ -21,11 +21,11 @@ describe("POST /superadmin/institutions — abbreviation-driven codes", () => {
     });
     superAdminToken = jwt.sign({ userId: superAdminUser.id, role: "SUPER_ADMIN" }, process.env.JWT_SECRET!);
 
-    // The institutionCode sequence is a single global counter across every
-    // institution ever created (not scoped by abbreviation or year), so we
-    // record the current count to compute the expected sequence for the
-    // institutions this test creates, rather than assuming a clean slate.
-    institutionCountBefore = await prisma.institution.count();
+    // The institutionCode sequence is scoped to the institution TYPE (schools,
+    // colleges and coaching each number independently from 0001). Both
+    // institutions this test creates are SCHOOL, so we record the current SCHOOL
+    // count to compute the expected sequence rather than assuming a clean slate.
+    institutionCountBefore = await prisma.institution.count({ where: { type: "SCHOOL" } });
   });
 
   afterAll(async () => {
@@ -93,7 +93,7 @@ describe("POST /superadmin/institutions — abbreviation-driven codes", () => {
     expect(res.status).toBe(400);
   });
 
-  it("assigns a distinct disambiguator to a second institution sharing the same abbreviation, with the sequence continuing globally (not resetting per abbreviation)", async () => {
+  it("assigns a distinct disambiguator to a second institution sharing the same abbreviation, with the sequence continuing within the type (not resetting per abbreviation)", async () => {
     const res = await request(app)
       .post("/api/superadmin/institutions")
       .set("Authorization", `Bearer ${superAdminToken}`)

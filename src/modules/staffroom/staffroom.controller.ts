@@ -402,21 +402,39 @@ export const listDmThreads = async (
     let contacts: Contact[] = [];
 
     if (role === "ADMIN") {
-      // Admin sees all teachers
-      const teachers = await prisma.teacher.findMany({
-        where: { institutionId },
-        include: { user: { select: { id: true, name: true, isActive: true } } },
-        orderBy: { createdAt: "asc" },
-      });
-      contacts = teachers.map((t) => ({
-        teacherId: t.id,
-        contactUserId: t.userId,
-        name: t.user.name ?? "Unknown",
-        avatarUrl: t.avatarUrl,
-        isActive: t.user.isActive,
-        prefix: t.prefix,
-        title: t.title,
-      }));
+      // Admin sees all teachers + sub-admins
+      const [teachers, subAdmins] = await Promise.all([
+        prisma.teacher.findMany({
+          where: { institutionId },
+          include: { user: { select: { id: true, name: true, isActive: true } } },
+          orderBy: { createdAt: "asc" },
+        }),
+        prisma.subAdmin.findMany({
+          where: { institutionId },
+          include: { user: { select: { id: true, name: true, isActive: true } } },
+          orderBy: { createdAt: "asc" },
+        }),
+      ]);
+      contacts = [
+        ...teachers.map((t) => ({
+          teacherId: t.id,
+          contactUserId: t.userId,
+          name: t.user.name ?? "Unknown",
+          avatarUrl: t.avatarUrl,
+          isActive: t.user.isActive,
+          prefix: t.prefix,
+          title: t.title,
+        })),
+        ...subAdmins.map((s) => ({
+          teacherId: s.id,
+          contactUserId: s.userId,
+          name: s.user.name ?? "Sub Admin",
+          avatarUrl: null,
+          isActive: s.user.isActive,
+          prefix: null,
+          title: s.designation,
+        })),
+      ];
     } else {
       // Teacher sees other teachers (not self) + admin users
       const [teachers, admins] = await Promise.all([
@@ -519,7 +537,7 @@ export const getMessages = async (
     const contact = await prisma.user.findFirst({
       where: {
         id: teacherUserId,
-        role: { in: ["TEACHER", "ADMIN"] },
+        role: { in: ["TEACHER", "ADMIN", "SUB_ADMIN"] },
         OR: [
           { institutionId },
           { teacher: { institutionId } },
@@ -595,7 +613,7 @@ export const sendMessage = async (
     const contact = await prisma.user.findFirst({
       where: {
         id: teacherUserId,
-        role: { in: ["TEACHER", "ADMIN"] },
+        role: { in: ["TEACHER", "ADMIN", "SUB_ADMIN"] },
         OR: [
           { institutionId },
           { teacher: { institutionId } },

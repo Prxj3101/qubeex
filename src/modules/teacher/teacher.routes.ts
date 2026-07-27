@@ -1332,21 +1332,38 @@ router.get(
       const now = new Date();
       const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
-      const [students, allRecords] = await Promise.all([
+      // Academic session runs June–May — the cumulative % must reset at the
+      // start of each session and only ever accumulate within it.
+      const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear() - 1;
+      const sessionStart = `${startYear}-06-01`;
+      const sessionEnd = `${startYear + 1}-05-31`;
+
+      const [students, allRecords, holidays] = await Promise.all([
         prisma.student.findMany({
           where: { divisionId, institutionId },
           include: { user: { select: { name: true } } },
           orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
         }),
         prisma.attendance.findMany({
-          where: { divisionId, institutionId },
+          where: { divisionId, institutionId, date: { gte: sessionStart, lte: sessionEnd } },
           select: { studentId: true, date: true, status: true },
+        }),
+        prisma.schoolHoliday.findMany({
+          where: { institutionId, date: { gte: sessionStart, lte: sessionEnd } },
+          select: { date: true },
         }),
       ]);
 
+      // A date later declared a holiday must not count toward attendance %,
+      // even if a record was marked before the holiday was declared — this
+      // matches the sheet UI, which already excludes holiday cells from its
+      // own on-screen totals.
+      const holidayDates = new Set(holidays.map((h) => h.date));
+      const validRecords = allRecords.filter((r) => !holidayDates.has(r.date));
+
       // Group records by studentId
       const byStudent: Record<string, { date: string; status: string }[]> = {};
-      allRecords.forEach((r) => {
+      validRecords.forEach((r) => {
         if (!byStudent[r.studentId]) byStudent[r.studentId] = [];
         byStudent[r.studentId].push({ date: r.date, status: r.status });
       });
@@ -1358,11 +1375,6 @@ router.get(
 
       const summaryStudents = students.map((s) => {
         const recs = byStudent[s.id] ?? [];
-
-        // Overall
-        let tP = 0, tA = 0, tL = 0;
-        recs.forEach((r) => { if (r.status === "P") tP++; else if (r.status === "A") tA++; else if (r.status === "L") tL++; });
-        const overallPct = calcPct(tP, tA, tL);
 
         // Current month
         const curRecs = recs.filter((r) => r.date.startsWith(currentMonth));
@@ -1380,9 +1392,25 @@ router.get(
           else if (r.status === "L") monthGroups[mk].l++;
         });
 
+        // monthKey strings sort chronologically within a single June–May
+        // session. The cumulative % through a given month is the running
+        // average of each month's own % from session start through that
+        // month (not a weighted total of raw record counts).
+        let pctSum = 0;
+        let pctCount = 0;
         const monthlyStats = Object.entries(monthGroups)
           .sort(([a], [b]) => a.localeCompare(b))
-          .map(([mk, c]) => ({ monthKey: mk, p: c.p, a: c.a, l: c.l, pct: calcPct(c.p, c.a, c.l) }));
+          .map(([mk, c]) => {
+            const pct = calcPct(c.p, c.a, c.l);
+            if (pct !== null) { pctSum += pct; pctCount++; }
+            return {
+              monthKey: mk, p: c.p, a: c.a, l: c.l, pct,
+              cumulativePct: pctCount > 0 ? Math.round(pctSum / pctCount) : null,
+            };
+          });
+
+        // "Overall" = cumulative through the most recent month with data.
+        const overallPct = monthlyStats.length > 0 ? monthlyStats[monthlyStats.length - 1].cumulativePct : null;
 
         return {
           studentId: s.id,
@@ -1420,7 +1448,11 @@ router.get(
           .map((st) => st.monthlyStats.find((m) => m.monthKey === mk)?.pct ?? null)
           .filter((p): p is number => p !== null);
         const avg = pcts.length > 0 ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : null;
-        return { monthKey: mk, avg };
+        const cumPcts = summaryStudents
+          .map((st) => st.monthlyStats.find((m) => m.monthKey === mk)?.cumulativePct ?? null)
+          .filter((p): p is number => p !== null);
+        const cumulativeAvg = cumPcts.length > 0 ? Math.round(cumPcts.reduce((a, b) => a + b, 0) / cumPcts.length) : null;
+        return { monthKey: mk, avg, cumulativeAvg };
       });
 
       res.json({

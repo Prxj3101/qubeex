@@ -375,8 +375,8 @@ export const createInstitutionService = async (data: any) => {
   const tokenHash = hashToken(rawToken);
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-  // Generate human-readable code before the transaction
-  const institutionCode = await generateInstitutionCode(abbreviation);
+  // Generate human-readable code before the transaction (numbered per institution type)
+  const institutionCode = await generateInstitutionCode(abbreviation, type);
 
   const institution = await prisma.$transaction(async (tx) => {
     const newInstitution = await tx.institution.create({

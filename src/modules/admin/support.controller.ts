@@ -2,7 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
-import { uploadAttachmentToR2 } from "../../services/storage.service";
+import { uploadAttachmentToR2, generateSignedAvatarUrl } from "../../services/storage.service";
 import { z } from "zod";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
@@ -108,7 +108,17 @@ export const listTickets = async (req: AuthRequest, res: Response, next: NextFun
       },
     });
 
-    res.json({ success: true, data: tickets });
+    // Attach the institution admin's avatar so ADMIN replies can render their photo.
+    const institution = await prisma.institution.findUnique({
+      where: { id: institutionId },
+      select: { adminAvatarUrl: true },
+    });
+    let adminAvatarUrl = institution?.adminAvatarUrl ?? null;
+    if (adminAvatarUrl) {
+      adminAvatarUrl = (await generateSignedAvatarUrl(adminAvatarUrl)) ?? adminAvatarUrl;
+    }
+
+    res.json({ success: true, data: tickets.map((t) => ({ ...t, adminAvatarUrl })) });
   } catch (err) {
     next(err);
   }

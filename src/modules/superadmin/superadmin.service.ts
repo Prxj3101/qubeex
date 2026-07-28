@@ -2,7 +2,7 @@ import { prisma } from "../../utils/prisma";
 import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail, sendActivationEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
-import { uploadImageToSupabase, uploadAttachmentToR2 } from "../../services/storage.service";
+import { uploadImageToSupabase, uploadAttachmentToR2, generateSignedAvatarUrl } from "../../services/storage.service";
 import {
   generateUpgradeProrationBill,
   markBillPaid,
@@ -512,7 +512,15 @@ export const getInstitutionById = async (id: string) => {
     },
   });
   if (!institution) throw new NotFoundError("Institution not found");
-  return institution;
+
+  // Sign the admin's stored avatar path so the superadmin view can render the
+  // admin's current profile photo (kept in sync with the admin's own uploads).
+  let adminAvatarUrl = institution.adminAvatarUrl;
+  if (adminAvatarUrl) {
+    adminAvatarUrl = (await generateSignedAvatarUrl(adminAvatarUrl)) ?? adminAvatarUrl;
+  }
+
+  return { ...institution, adminAvatarUrl };
 };
 
 export const updateInstitution = async (id: string, data: any) => {
@@ -624,20 +632,12 @@ export const toggleInstitutionStatus = async (
   const buildSubscriptionUnlock = () => {
     if (!unlockSubscription || !sub) return null;
     if (sub.plan.name === "TRIAL") {
-      // Re-grant the trial: fresh window from now so the hourly auto-lock cron
-      // (which only re-locks expired TRIALs) doesn't immediately lock it again.
-      const now = new Date();
-      const trialEnd = new Date(now.getTime() + (sub.trialDays ?? 14) * 24 * 60 * 60 * 1000);
+      // Restore trial access WITHOUT resetting the countdown — reactivation only
+      // lifts the block; the original startDate/endDate stay untouched so the trial
+      // continues from where it left off.
       return prisma.subscription.update({
         where: { institutionId: id },
-        data: {
-          status: "TRIAL",
-          trialOutcome: null,
-          startDate: sub.startDate ?? now,
-          endDate: trialEnd,
-          trialWarningSent: false,
-          trialExpiryNotified: false,
-        },
+        data: { status: "TRIAL", trialOutcome: null },
       });
     }
     // Paid plans return to ACTIVE; clear the churned outcome.
@@ -1403,14 +1403,25 @@ export const getTickets = async (query: {
       take: limit,
       orderBy: { createdAt: "desc" },
       include: {
-        institution: { select: { name: true, type: true } },
+        institution: { select: { name: true, type: true, adminAvatarUrl: true } },
         replies: { orderBy: { createdAt: "asc" } },
       },
     }),
     prisma.supportTicket.count({ where }),
   ]);
 
-  return { tickets, pagination: { total, page, limit, pages: Math.ceil(total / limit) } };
+  // Sign each institution admin's avatar so ADMIN replies can render their photo.
+  const ticketsWithAvatar = await Promise.all(
+    tickets.map(async (t) => {
+      let adminAvatarUrl = t.institution.adminAvatarUrl ?? null;
+      if (adminAvatarUrl) {
+        adminAvatarUrl = (await generateSignedAvatarUrl(adminAvatarUrl)) ?? adminAvatarUrl;
+      }
+      return { ...t, adminAvatarUrl };
+    })
+  );
+
+  return { tickets: ticketsWithAvatar, pagination: { total, page, limit, pages: Math.ceil(total / limit) } };
 };
 
 export const getTicketById = async (id: string) => {

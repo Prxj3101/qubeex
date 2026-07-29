@@ -32,6 +32,12 @@ const AUDIT_PERM = [...A, requirePermission("AUDIT_LOGS")];
 // SUB_ADMIN needs STAFF_SUBADMINS to view subadmin list
 const SUBADMINS_READ = [...A, requirePermission("STAFF_SUBADMINS")];
 
+// SUB_ADMIN needs INSIGHTS_SUBSCRIPTION to view billing/plan info
+const INSIGHTS_SUBSCRIPTION_PERM = [...A, requirePermission("INSIGHTS_SUBSCRIPTION")];
+
+// SUB_ADMIN needs CAMPUS_MARKSHEET to view class marksheets
+const MARKSHEET_PERM = [...A, requirePermission("CAMPUS_MARKSHEET")];
+
 router.post("/presence", ...A, async (req: AuthRequest, res: Response) => {
   await setPresence(req.user!.userId);
   res.json({ success: true });
@@ -120,15 +126,15 @@ router.patch("/notifications/:recipientId/read", ...A, markNotificationRead);
 router.patch("/notifications/:recipientId/dismiss", ...A, dismissNotification);
 
 // ── Marksheet (admin read-only) ───────────────────────────────────────────────
-router.get("/marksheet", ...A, adminListMarksheets);
-router.get("/marksheet/division/:divisionId", ...A, adminGetDivisionMarksheet);
+router.get("/marksheet", ...MARKSHEET_PERM, adminListMarksheets);
+router.get("/marksheet/division/:divisionId", ...MARKSHEET_PERM, adminGetDivisionMarksheet);
 
 // ── Class teacher assignment ──────────────────────────────────────────────────
 router.patch("/campus/divisions/:divisionId/class-teacher", ...ADMIN_ONLY, assignClassTeacher);
 
 // ── Bills ─────────────────────────────────────────────────────────────────────
-router.get("/bills", ...ADMIN_ONLY, listBills);
-router.get("/bills/:id/payment-link", ...ADMIN_ONLY, getPaymentLink);
-router.get("/plan-history", ...ADMIN_ONLY, getPlanHistory);
+router.get("/bills", ...INSIGHTS_SUBSCRIPTION_PERM, listBills);
+router.get("/bills/:id/payment-link", ...INSIGHTS_SUBSCRIPTION_PERM, getPaymentLink);
+router.get("/plan-history", ...INSIGHTS_SUBSCRIPTION_PERM, getPlanHistory);
 
 export default router;

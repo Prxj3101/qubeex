@@ -58,6 +58,7 @@ const addStudentSchema = z.object({
 
 const updateStudentSchema = z.object({
   name: z.string().min(1).max(100).trim().optional(),
+  email: z.string().email().trim().optional(),
   dob: z.string().optional().nullable(),
   gender: z.string().optional().nullable(),
   phone: z.string().max(20).trim().optional().nullable(),
@@ -826,7 +827,7 @@ router.patch(
       }
 
       const data = updateStudentSchema.parse(req.body);
-      const { name, guardians, ...studentFields } = data;
+      const { name, email, guardians, ...studentFields } = data;
 
       if (data.rollNo && data.rollNo.trim()) {
         const rollNoConflict = await prisma.student.findFirst({
@@ -845,9 +846,20 @@ router.patch(
         }
       }
 
+      if (email) {
+        const emailConflict = await prisma.user.findFirst({
+          where: { email, id: { not: student.userId } },
+          select: { id: true },
+        });
+        if (emailConflict) {
+          res.status(400).json({ success: false, error: "A user with this email already exists" });
+          return;
+        }
+      }
+
       await prisma.$transaction(async (tx) => {
-        if (name) {
-          await tx.user.update({ where: { id: student.userId }, data: { name } });
+        if (name || email) {
+          await tx.user.update({ where: { id: student.userId }, data: { ...(name && { name }), ...(email && { email }) } });
         }
         await tx.student.update({
           where: { id: student.id },

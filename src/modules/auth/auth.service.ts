@@ -157,7 +157,7 @@ type LoginContext = {
 };
 
 const LOGIN_MAX_ATTEMPTS = 5;
-const LOGIN_WINDOW_SECS  = 15 * 60; // 15 min
+const LOGIN_WINDOW_SECS = 15 * 60; // 15 min
 
 async function checkLoginLockout(email: string) {
   if (!redis || !isRedisReady) return;
@@ -272,6 +272,7 @@ export const login = async (email: string, password: string, context: LoginConte
 
   let institutionStatus: string | null = null;
   let subscriptionStatus: string | null = null;
+  let institutionType: string | null = null;
   if (user.institutionId) {
     const sub = await prisma.subscription.findUnique({
       where: { institutionId: user.institutionId },
@@ -280,9 +281,10 @@ export const login = async (email: string, password: string, context: LoginConte
     subscriptionStatus = sub?.status ?? null;
     const inst = await prisma.institution.findUnique({
       where: { id: user.institutionId },
-      select: { status: true },
+      select: { status: true, type: true },
     });
     institutionStatus = inst?.status ?? null;
+    institutionType = inst?.type ?? null;
   }
 
   return {
@@ -298,7 +300,7 @@ export const login = async (email: string, password: string, context: LoginConte
       mustChangePassword: user.mustChangePassword,
     },
     institution: user.institutionId
-      ? { status: institutionStatus, subscriptionStatus }
+      ? { status: institutionStatus, subscriptionStatus, type: institutionType }
       : null,
   };
 };

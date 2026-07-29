@@ -32,6 +32,7 @@ router.patch("/notifications/:recipientId/dismiss", ...S, dismissNotification);
 
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).trim().optional(),
+  email: z.string().email().toLowerCase().trim().optional(),
   dob: z.string().optional().nullable(),
   gender: z.string().optional().nullable(),
   phone: z.string().max(20).trim().optional().nullable(),
@@ -123,11 +124,20 @@ router.patch("/profile", ...S, async (req: AuthRequest, res: Response, next: Nex
     }
 
     const data = updateProfileSchema.parse(req.body);
-    const { name, guardians, ...studentFields } = data;
+    const { name, email, guardians, ...studentFields } = data;
 
     await prisma.$transaction(async (tx) => {
-      if (name) {
-        await tx.user.update({ where: { id: userId }, data: { name } });
+      const userChanges: { name?: string; email?: string } = {};
+      if (name) userChanges.name = name;
+      if (email) {
+        const conflict = await tx.user.findFirst({ where: { email, NOT: { id: userId } } });
+        if (conflict) {
+          throw new Error("EMAIL_TAKEN");
+        }
+        userChanges.email = email;
+      }
+      if (Object.keys(userChanges).length > 0) {
+        await tx.user.update({ where: { id: userId }, data: userChanges });
       }
       await tx.student.update({
         where: { id: student.id },
@@ -154,6 +164,10 @@ router.patch("/profile", ...S, async (req: AuthRequest, res: Response, next: Nex
 
     res.json({ success: true, data: updated });
   } catch (err) {
+    if (err instanceof Error && err.message === "EMAIL_TAKEN") {
+      res.status(400).json({ success: false, error: "This email is already in use by another account" });
+      return;
+    }
     next(err);
   }
 });

@@ -90,23 +90,59 @@ async function generateMarksheetPdf(params: {
   cols.push({ kind: "grandPct",   group: "Overall" });
   cols.push({ kind: "grade",      group: "Overall" });
 
-  // ── Column width: fill usable space, clamp 26–52 ─────────────────────────
+  // ── Column width: fill usable space, clamp 24–52 ─────────────────────────
+  // A minimum readable width is enforced (24pt). If more columns exist than
+  // fit on one page at that minimum, the columns are split into groups —
+  // each group gets its own page(s), with Roll/Name repeated so every page
+  // is self-contained — instead of silently shrinking columns until they
+  // overflow the page edge and get cut off.
+  const MIN_COL_W = 24;
+  const MAX_COL_W = 52;
+
+  const pdfBuffers: Buffer[] = [];
   const doc = new PDFDocument({ margin: M, size: "A4", layout: "landscape", autoFirstPage: true });
-  const chunks: Buffer[] = [];
-  doc.on("data", (c: Buffer) => chunks.push(c));
+  doc.on("data", (c: Buffer) => pdfBuffers.push(c));
 
   return new Promise<Buffer>((resolve, reject) => {
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("end", () => resolve(Buffer.concat(pdfBuffers)));
     doc.on("error", reject);
 
     const PW = doc.page.width;
     const PH = doc.page.height;
     const UW = PW - M * 2;
     const availForCols = UW - ROLL_W - NAME_W;
-    const COL_W = cols.length > 0
-      ? Math.max(26, Math.min(52, Math.floor(availForCols / cols.length)))
-      : 40;
-    const TW = ROLL_W + NAME_W + cols.length * COL_W; // total table width
+    const maxColsPerGroup = Math.max(1, Math.floor(availForCols / MIN_COL_W));
+
+    // Split columns into page-groups, preferring to keep each subject's own
+    // columns (exam scores + total + %) together within a single group.
+    const colGroups: ColDef[][] = [];
+    {
+      let current: ColDef[] = [];
+      let i = 0;
+      while (i < cols.length) {
+        const grp = cols[i].group;
+        let span = 0;
+        while (i + span < cols.length && cols[i + span].group === grp) span++;
+
+        if (span > maxColsPerGroup) {
+          // A single group alone doesn't fit — flush pending, then split
+          // just this group across as many page-groups as it needs.
+          if (current.length > 0) { colGroups.push(current); current = []; }
+          for (let s = 0; s < span; s += maxColsPerGroup) {
+            colGroups.push(cols.slice(i + s, i + Math.min(s + maxColsPerGroup, span)));
+          }
+        } else {
+          if (current.length + span > maxColsPerGroup) {
+            colGroups.push(current);
+            current = [];
+          }
+          current = current.concat(cols.slice(i, i + span));
+        }
+        i += span;
+      }
+      if (current.length > 0) colGroups.push(current);
+      if (colGroups.length === 0) colGroups.push([]);
+    }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
     /** Render text into a cell with NO line-break so doc.y never drifts. */
@@ -131,11 +167,12 @@ async function generateMarksheetPdf(params: {
     const vline = (x: number, y1: number, y2: number, color = C_BORDER, lw = 0.3) =>
       doc.lineWidth(lw).moveTo(x, y1).lineTo(x, y2).stroke(color);
 
-    // ── Two-row table header ─────────────────────────────────────────────────
-    const drawHeader = (startY: number): number => {
+    // ── Two-row table header (for one horizontal group of columns) ───────────
+    const drawHeader = (groupCols: ColDef[], colW: number, startY: number): number => {
       const y1 = startY;
       const y2 = y1 + GRP_H;
       const hTot = GRP_H + COL_H;
+      const groupW = groupCols.length * colW;
 
       // Roll + Name: tall cells spanning both header rows
       doc.rect(M,           y1, ROLL_W, hTot).fill(C_HDR_GRP);
@@ -146,11 +183,11 @@ async function generateMarksheetPdf(params: {
       // Row-1: group spans
       let gx = M + ROLL_W + NAME_W;
       let gi = 0;
-      while (gi < cols.length) {
-        const grp = cols[gi].group;
+      while (gi < groupCols.length) {
+        const grp = groupCols[gi].group;
         let span = 0;
-        while (gi + span < cols.length && cols[gi + span].group === grp) span++;
-        const gw = span * COL_W;
+        while (gi + span < groupCols.length && groupCols[gi + span].group === grp) span++;
+        const gw = span * colW;
         const bg = grp === "Overall" ? C_OVRL_GRP : grp === params.gradedSectionTitle ? C_GRD_GRP : C_HDR_GRP;
         doc.rect(gx, y1, gw, GRP_H).fill(bg);
         ct(grp, gx, y1, gw, GRP_H, { bold: true, size: 6 });
@@ -158,11 +195,11 @@ async function generateMarksheetPdf(params: {
       }
 
       // Row-2: individual column labels
-      cols.forEach((col, i) => {
-        const cx = M + ROLL_W + NAME_W + i * COL_W;
+      groupCols.forEach((col, i) => {
+        const cx = M + ROLL_W + NAME_W + i * colW;
         const isSummary = col.kind === "subTotal" || col.kind === "subPct" ||
                           col.kind === "grandTotal" || col.kind === "grandPct" || col.kind === "grade";
-        doc.rect(cx, y2, COL_W, COL_H).fill(isSummary ? C_HDR_GRP : C_HDR_COL);
+        doc.rect(cx, y2, colW, COL_H).fill(isSummary ? C_HDR_GRP : C_HDR_COL);
 
         const lines: string[] =
           col.kind === "exam"       ? [col.examName!, `/${col.maxMarks}`]
@@ -177,54 +214,37 @@ async function generateMarksheetPdf(params: {
         const lineH = COL_H / (lines.length > 1 ? lines.length + 0.4 : 1);
         lines.forEach((ln, li) =>
           doc.fontSize(5.5).font("Helvetica-Bold").fillColor(C_TEXT)
-            .text(ln, cx + 2, y2 + 3 + li * lineH, { width: COL_W - 4, align: "center", lineBreak: false, ellipsis: true })
+            .text(ln, cx + 2, y2 + 3 + li * lineH, { width: colW - 4, align: "center", lineBreak: false, ellipsis: true })
         );
       });
 
       // Grid lines over header
-      doc.lineWidth(0.5).rect(M, y1, TW, hTot).stroke(C_BORDER);
-      hline(M + ROLL_W + NAME_W, y2, cols.length * COL_W, C_BORDER, 0.4);
+      doc.lineWidth(0.5).rect(M, y1, ROLL_W + NAME_W + groupW, hTot).stroke(C_BORDER);
+      hline(M + ROLL_W + NAME_W, y2, groupW, C_BORDER, 0.4);
       vline(M + ROLL_W, y1, y1 + hTot, C_BORDER, 0.4);
       vline(M + ROLL_W + NAME_W, y1, y1 + hTot, C_BORDER, 0.4);
-      for (let i = 1; i < cols.length; i++)
-        vline(M + ROLL_W + NAME_W + i * COL_W, y1, y1 + hTot, C_BORDER, 0.25);
+      for (let i = 1; i < groupCols.length; i++)
+        vline(M + ROLL_W + NAME_W + i * colW, y1, y1 + hTot, C_BORDER, 0.25);
 
       return y2 + COL_H;
     };
 
-    // ── Title block ──────────────────────────────────────────────────────────
-    doc.fontSize(13).font("Helvetica-Bold").fillColor(C_TEXT)
-      .text(params.institutionName, M, M, { width: UW, align: "center", lineBreak: false });
-    doc.fontSize(8).font("Helvetica").fillColor(C_MUTED)
-      .text(
-        `${params.standardName} – Division ${params.divisionName.split("-").pop() ?? params.divisionName}   ·   Academic Year: ${params.academicYear}`,
-        M, M + 17, { width: UW, align: "center", lineBreak: false }
-      );
+    // ── Title block (repeated at the top of each horizontal column-group) ────
+    const drawTitle = (groupIdx: number, groupCount: number) => {
+      doc.fontSize(13).font("Helvetica-Bold").fillColor(C_TEXT)
+        .text(params.institutionName, M, M, { width: UW, align: "center", lineBreak: false });
+      const pageNote = groupCount > 1 ? `   ·   Columns ${groupIdx + 1}/${groupCount}` : "";
+      doc.fontSize(8).font("Helvetica").fillColor(C_MUTED)
+        .text(
+          `${params.standardName} – Division ${params.divisionName.split("-").pop() ?? params.divisionName}   ·   Academic Year: ${params.academicYear}${pageNote}`,
+          M, M + 17, { width: UW, align: "center", lineBreak: false }
+        );
+    };
 
-    let y = M + 36;
-    let tableTopY = y;
-    y = drawHeader(y);
-
-    // ── Data rows ────────────────────────────────────────────────────────────
-    params.students.forEach((student, si) => {
-      if (y + ROW_H > PH - M) {
-        // Close table border on this page
-        doc.lineWidth(0.5).rect(M, tableTopY, TW, y - tableTopY).stroke(C_BORDER);
-        doc.addPage({ size: "A4", layout: "landscape", margin: M });
-        y = M; tableTopY = M;
-        y = drawHeader(y);
-      }
-
-      // Row background
-      doc.rect(M, y, TW, ROW_H).fill(si % 2 === 0 ? C_EVEN : C_ODD);
-
-      // Roll + Name
-      ct(student.rollNo || "—", M,          y, ROLL_W, ROW_H, { align: "center" });
-      ct(student.name   || "—", M + ROLL_W, y, NAME_W, ROW_H, { align: "left" });
-      vline(M + ROLL_W,         y, y + ROW_H, C_BORDER, 0.3);
-      vline(M + ROLL_W + NAME_W, y, y + ROW_H, C_BORDER, 0.3);
-
-      // Per-subject totals (computed once per row)
+    // Per-student subject totals + grand total, computed once up front so
+    // every horizontal column-group can reuse them without recomputing.
+    const rowTotals = new Map<string, { subTotals: Record<string, { scored: number; max: number }>; grandScored: number; grandMax: number }>();
+    params.students.forEach((student) => {
       const subTotals: Record<string, { scored: number; max: number }> = {};
       params.subjects.forEach((sub) => {
         let scored = 0, max = 0;
@@ -237,49 +257,89 @@ async function generateMarksheetPdf(params: {
       });
       const grandScored = Object.values(subTotals).reduce((s, v) => s + v.scored, 0);
       const grandMax    = Object.values(subTotals).reduce((s, v) => s + v.max,    0);
-
-      // Draw data cells
-      cols.forEach((col, i) => {
-        const cx = M + ROLL_W + NAME_W + i * COL_W;
-
-        let text = "—", bold = false;
-        const isSummary = col.kind === "subTotal" || col.kind === "subPct" ||
-                          col.kind === "grandTotal" || col.kind === "grandPct" || col.kind === "grade";
-        if (isSummary) doc.rect(cx, y, COL_W, ROW_H).fill(C_SUMM);
-
-        if (col.kind === "exam") {
-          const e = params.scoreMap[col.colId!]?.[student.id];
-          text = e?.isAbsent ? "AB" : (e?.score !== null && e?.score !== undefined) ? String(e.score) : "—";
-        } else if (col.kind === "subTotal") {
-          const { scored, max } = subTotals[col.subjectId!];
-          text = `${scored}/${max}`; bold = true;
-        } else if (col.kind === "subPct") {
-          const { scored, max } = subTotals[col.subjectId!];
-          text = max > 0 ? `${Math.round((scored / max) * 100)}%` : "—";
-        } else if (col.kind === "gradedT1") {
-          text = params.gradedScoreMap[col.gsId!]?.[student.id]?.term1Grade ?? "—";
-        } else if (col.kind === "gradedT2") {
-          text = params.gradedScoreMap[col.gsId!]?.[student.id]?.term2Grade ?? "—";
-        } else if (col.kind === "grandTotal") {
-          text = `${grandScored}/${grandMax}`; bold = true;
-        } else if (col.kind === "grandPct") {
-          const pct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
-          text = pct !== null ? `${pct}%` : "—"; bold = true;
-        } else if (col.kind === "grade") {
-          const pct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
-          text = pct !== null ? resolveGrade(pct, params.gradeScale) : "—"; bold = true;
-        }
-
-        ct(text, cx, y, COL_W, ROW_H, { bold, align: "center" });
-        vline(cx + COL_W, y, y + ROW_H, C_BORDER, 0.25);
-      });
-
-      hline(M, y + ROW_H, TW, C_BORDER, 0.25);
-      y += ROW_H;
+      rowTotals.set(student.id, { subTotals, grandScored, grandMax });
     });
 
-    // Outer border
-    doc.lineWidth(0.5).rect(M, tableTopY, TW, y - tableTopY).stroke(C_BORDER);
+    // ── Render each horizontal group of columns as its own page-set ──────────
+    colGroups.forEach((groupCols, groupIdx) => {
+      if (groupIdx > 0) doc.addPage({ size: "A4", layout: "landscape", margin: M });
+
+      const colW = groupCols.length > 0
+        ? Math.max(MIN_COL_W, Math.min(MAX_COL_W, Math.floor(availForCols / groupCols.length)))
+        : 40;
+      const tw = ROLL_W + NAME_W + groupCols.length * colW;
+
+      drawTitle(groupIdx, colGroups.length);
+
+      let y = M + 36;
+      let tableTopY = y;
+      y = drawHeader(groupCols, colW, y);
+
+      params.students.forEach((student, si) => {
+        if (y + ROW_H > PH - M) {
+          // Close table border on this page
+          doc.lineWidth(0.5).rect(M, tableTopY, tw, y - tableTopY).stroke(C_BORDER);
+          doc.addPage({ size: "A4", layout: "landscape", margin: M });
+          drawTitle(groupIdx, colGroups.length);
+          y = M + 36; tableTopY = y;
+          y = drawHeader(groupCols, colW, y);
+        }
+
+        // Row background
+        doc.rect(M, y, tw, ROW_H).fill(si % 2 === 0 ? C_EVEN : C_ODD);
+
+        // Roll + Name
+        ct(student.rollNo || "—", M,          y, ROLL_W, ROW_H, { align: "center" });
+        ct(student.name   || "—", M + ROLL_W, y, NAME_W, ROW_H, { align: "left" });
+        vline(M + ROLL_W,         y, y + ROW_H, C_BORDER, 0.3);
+        vline(M + ROLL_W + NAME_W, y, y + ROW_H, C_BORDER, 0.3);
+
+        const { subTotals, grandScored, grandMax } = rowTotals.get(student.id)!;
+
+        // Draw data cells
+        groupCols.forEach((col, i) => {
+          const cx = M + ROLL_W + NAME_W + i * colW;
+
+          let text = "—", bold = false;
+          const isSummary = col.kind === "subTotal" || col.kind === "subPct" ||
+                            col.kind === "grandTotal" || col.kind === "grandPct" || col.kind === "grade";
+          if (isSummary) doc.rect(cx, y, colW, ROW_H).fill(C_SUMM);
+
+          if (col.kind === "exam") {
+            const e = params.scoreMap[col.colId!]?.[student.id];
+            text = e?.isAbsent ? "AB" : (e?.score !== null && e?.score !== undefined) ? String(e.score) : "—";
+          } else if (col.kind === "subTotal") {
+            const { scored, max } = subTotals[col.subjectId!];
+            text = `${scored}/${max}`; bold = true;
+          } else if (col.kind === "subPct") {
+            const { scored, max } = subTotals[col.subjectId!];
+            text = max > 0 ? `${Math.round((scored / max) * 100)}%` : "—";
+          } else if (col.kind === "gradedT1") {
+            text = params.gradedScoreMap[col.gsId!]?.[student.id]?.term1Grade ?? "—";
+          } else if (col.kind === "gradedT2") {
+            text = params.gradedScoreMap[col.gsId!]?.[student.id]?.term2Grade ?? "—";
+          } else if (col.kind === "grandTotal") {
+            text = `${grandScored}/${grandMax}`; bold = true;
+          } else if (col.kind === "grandPct") {
+            const pct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
+            text = pct !== null ? `${pct}%` : "—"; bold = true;
+          } else if (col.kind === "grade") {
+            const pct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
+            text = pct !== null ? resolveGrade(pct, params.gradeScale) : "—"; bold = true;
+          }
+
+          ct(text, cx, y, colW, ROW_H, { bold, align: "center" });
+          vline(cx + colW, y, y + ROW_H, C_BORDER, 0.25);
+        });
+
+        hline(M, y + ROW_H, tw, C_BORDER, 0.25);
+        y += ROW_H;
+      });
+
+      // Outer border for this column-group's table
+      doc.lineWidth(0.5).rect(M, tableTopY, tw, y - tableTopY).stroke(C_BORDER);
+    });
+
     doc.end();
   });
 }
@@ -1258,8 +1318,18 @@ async function generateExamWisePdf(params: MarksheetPdfParams): Promise<Buffer> 
       }
     }
 
-    const COL_W = 60, NAME_W = 120, ROLL_W = 40;
+    const NAME_W = 120, ROLL_W = 40;
     const startX = doc.page.margins.left;
+    // Minimum readable width for a subject column. If more subjects exist
+    // than fit on one page at this width, they're split into groups — each
+    // group gets its own table(s) — instead of shrinking columns until they
+    // overflow the page edge and get cut off.
+    const MIN_COL_W = 40;
+    const MAX_COL_W = 60;
+    const availW = doc.page.width - doc.page.margins.left - doc.page.margins.right - ROLL_W - NAME_W;
+    // Reserve 2 slots' worth of width for the Total/% columns, which are
+    // repeated in every group so each page-set is self-contained.
+    const maxSubjectsPerGroup = Math.max(1, Math.floor(availW / MIN_COL_W) - 2);
 
     if (examNames.length === 0) {
       doc.fontSize(10).fillColor("#999").text("No exam columns yet.", { align: "center" });
@@ -1268,57 +1338,83 @@ async function generateExamWisePdf(params: MarksheetPdfParams): Promise<Buffer> 
     }
 
     examNames.forEach((examName, idx) => {
-      const cols: { name: string; col: { id: string; name: string; maxMarks: number } }[] = [];
+      const examCols: { name: string; col: { id: string; name: string; maxMarks: number } }[] = [];
       for (const sub of params.subjects) {
         const col = (params.examColumnsBySubject[sub.id] ?? []).find((c) => c.name === examName);
-        if (col) cols.push({ name: sub.name, col });
+        if (col) examCols.push({ name: sub.name, col });
       }
-      if (cols.length === 0) return;
+      if (examCols.length === 0) return;
 
-      if (idx > 0) doc.moveDown(0.8);
-      let y = doc.y;
-      if (y > doc.page.height - doc.page.margins.bottom - 70) {
-        doc.addPage({ layout: "landscape", size: "A4", margin: 30 });
-        y = doc.page.margins.top;
+      const subjectGroups: (typeof examCols)[] = [];
+      for (let s = 0; s < examCols.length; s += maxSubjectsPerGroup) {
+        subjectGroups.push(examCols.slice(s, s + maxSubjectsPerGroup));
       }
-      doc.fontSize(11).font("Helvetica-Bold").fillColor("#2A1F10").text(examName, startX, y);
-      y = doc.y + 4;
 
-      const headerCols = [...cols.map((c) => `${c.name}\n/${c.col.maxMarks}`), "Total", "%"];
-      const totalWidth = ROLL_W + NAME_W + headerCols.length * COL_W;
-
-      doc.rect(startX, y, totalWidth, 28).fill("#E8DDD0");
-      doc.fillColor("#2A1F10").font("Helvetica-Bold").fontSize(7);
-      doc.text("Roll", startX + 2, y + 4, { width: ROLL_W - 4 });
-      doc.text("Student Name", startX + ROLL_W + 2, y + 4, { width: NAME_W - 4 });
-      headerCols.forEach((label, i) => doc.text(label, startX + ROLL_W + NAME_W + i * COL_W + 2, y + 4, { width: COL_W - 4 }));
-      y += 28;
-
-      doc.font("Helvetica").fontSize(7);
-      params.students.forEach((student, si) => {
-        if (y > doc.page.height - doc.page.margins.bottom - 20) {
+      subjectGroups.forEach((cols, groupIdx) => {
+        let y: number;
+        if (groupIdx > 0) {
+          // A new subject-group within the same exam always starts on a
+          // fresh page, so its columns are never confused with the previous
+          // group's and always have the full page width available.
           doc.addPage({ layout: "landscape", size: "A4", margin: 30 });
           y = doc.page.margins.top;
+        } else {
+          if (idx > 0) doc.moveDown(0.8);
+          y = doc.y;
+          if (y > doc.page.height - doc.page.margins.bottom - 70) {
+            doc.addPage({ layout: "landscape", size: "A4", margin: 30 });
+            y = doc.page.margins.top;
+          }
         }
-        doc.rect(startX, y, totalWidth, 16).fill(si % 2 === 0 ? "#FAF5EE" : "#F5EFE5");
-        doc.fillColor("#2A1F10");
-        doc.text(student.rollNo, startX + 2, y + 3, { width: ROLL_W - 4 });
-        doc.text(student.name, startX + ROLL_W + 2, y + 3, { width: NAME_W - 4, ellipsis: true });
-        let scored = 0, max = 0;
-        cols.forEach((c, ci) => {
-          const entry = params.scoreMap[c.col.id]?.[student.id];
-          const sc = entry?.score ?? null;
-          const absent = entry?.isAbsent ?? false;
-          doc.text(absent ? "AB" : sc !== null ? String(sc) : "—", startX + ROLL_W + NAME_W + ci * COL_W + 2, y + 3, { width: COL_W - 4 });
-          if (sc !== null) { scored += sc; max += c.col.maxMarks; }
-          else if (!absent) { max += c.col.maxMarks; }
+        const groupNote = subjectGroups.length > 1 ? ` (${groupIdx + 1}/${subjectGroups.length})` : "";
+        doc.fontSize(11).font("Helvetica-Bold").fillColor("#2A1F10").text(`${examName}${groupNote}`, startX, y);
+        y = doc.y + 4;
+
+        const colW = Math.max(MIN_COL_W, Math.min(MAX_COL_W, Math.floor(availW / (cols.length + 2))));
+        const headerCols = [...cols.map((c) => `${c.name}\n/${c.col.maxMarks}`), "Total", "%"];
+        const totalWidth = ROLL_W + NAME_W + headerCols.length * colW;
+
+        doc.rect(startX, y, totalWidth, 28).fill("#E8DDD0");
+        doc.fillColor("#2A1F10").font("Helvetica-Bold").fontSize(7);
+        doc.text("Roll", startX + 2, y + 4, { width: ROLL_W - 4 });
+        doc.text("Student Name", startX + ROLL_W + 2, y + 4, { width: NAME_W - 4 });
+        headerCols.forEach((label, i) => doc.text(label, startX + ROLL_W + NAME_W + i * colW + 2, y + 4, { width: colW - 4 }));
+        y += 28;
+
+        doc.font("Helvetica").fontSize(7);
+        params.students.forEach((student, si) => {
+          if (y > doc.page.height - doc.page.margins.bottom - 20) {
+            doc.addPage({ layout: "landscape", size: "A4", margin: 30 });
+            y = doc.page.margins.top;
+          }
+          doc.rect(startX, y, totalWidth, 16).fill(si % 2 === 0 ? "#FAF5EE" : "#F5EFE5");
+          doc.fillColor("#2A1F10");
+          doc.text(student.rollNo, startX + 2, y + 3, { width: ROLL_W - 4 });
+          doc.text(student.name, startX + ROLL_W + 2, y + 3, { width: NAME_W - 4, ellipsis: true });
+
+          // Total/% always reflect the FULL exam (all subjects), not just
+          // the subset of subject columns visible in this group.
+          cols.forEach((c, ci) => {
+            const entry = params.scoreMap[c.col.id]?.[student.id];
+            const sc = entry?.score ?? null;
+            const absent = entry?.isAbsent ?? false;
+            doc.text(absent ? "AB" : sc !== null ? String(sc) : "—", startX + ROLL_W + NAME_W + ci * colW + 2, y + 3, { width: colW - 4 });
+          });
+          let fullScored = 0, fullMax = 0;
+          examCols.forEach((c) => {
+            const entry = params.scoreMap[c.col.id]?.[student.id];
+            const sc = entry?.score ?? null;
+            const absent = entry?.isAbsent ?? false;
+            if (sc !== null) { fullScored += sc; fullMax += c.col.maxMarks; }
+            else if (!absent) { fullMax += c.col.maxMarks; }
+          });
+          const pct = fullMax > 0 ? Math.round((fullScored / fullMax) * 100) : null;
+          doc.text(`${fullScored}/${fullMax}`, startX + ROLL_W + NAME_W + cols.length * colW + 2, y + 3, { width: colW - 4 });
+          doc.text(pct !== null ? `${pct}%` : "—", startX + ROLL_W + NAME_W + (cols.length + 1) * colW + 2, y + 3, { width: colW - 4 });
+          y += 16;
         });
-        const pct = max > 0 ? Math.round((scored / max) * 100) : null;
-        doc.text(`${scored}/${max}`, startX + ROLL_W + NAME_W + cols.length * COL_W + 2, y + 3, { width: COL_W - 4 });
-        doc.text(pct !== null ? `${pct}%` : "—", startX + ROLL_W + NAME_W + (cols.length + 1) * COL_W + 2, y + 3, { width: COL_W - 4 });
-        y += 16;
+        doc.y = y;
       });
-      doc.y = y;
     });
 
     doc.end();

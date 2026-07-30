@@ -69,6 +69,10 @@ const CAMPUS_FEED_READ = [...A, requirePermission("CAMPUS_FEED")];
 // View tab in classes
 const CAMPUS_VIEW_PERM = [...A, requirePermission("CAMPUS_VIEW")];
 
+// Division core data — needed by every class tab, not just View, so any
+// class-tab permission should unlock it.
+const ANY_CLASS_TAB_PERM = [...A, requirePermission("CAMPUS_VIEW", "CAMPUS_MANAGE", "CAMPUS_FEES", "CAMPUS_ATTENDANCE", "CAMPUS_MARKSHEET")];
+
 // Manage permission to write/modify class content
 const CAMPUS_MANAGE_PERM = [...A, requirePermission("CAMPUS_MANAGE")];
 
@@ -83,7 +87,7 @@ router.delete("/standards/:id", ...ADMIN_ONLY, deleteStandard);
 
 // Divisions
 router.post("/standards/:standardId/divisions", ...ADMIN_ONLY, createDivision);
-router.get("/divisions/:divisionId", ...CAMPUS_VIEW_PERM, getDivision);
+router.get("/divisions/:divisionId", ...ANY_CLASS_TAB_PERM, getDivision);
 router.patch("/divisions/:divisionId", ...ADMIN_ONLY, updateDivision);
 router.delete("/divisions/:divisionId", ...ADMIN_ONLY, deleteDivision);
 
@@ -126,7 +130,7 @@ router.post("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANA
 router.get("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANAGE_PERM, getStudentRemarks);
 router.get("/divisions/:divisionId/students/:studentId/marksheet", ...CAMPUS_MANAGE_PERM, getStudentMarksheet);
 router.get("/divisions/:divisionId/students/:studentId/attendance-trend", ...CAMPUS_MANAGE_PERM, getStudentAttendanceTrend);
-router.get("/divisions/:divisionId/leaderboard", ...CAMPUS_VIEW_PERM, getDivisionLeaderboard);
+router.get("/divisions/:divisionId/leaderboard", ...A, requirePermission("CAMPUS_VIEW", "CAMPUS_MANAGE"), getDivisionLeaderboard);
 router.get("/divisions/:divisionId/attendance/holidays", ...ATTENDANCE_PERM, getAttendanceHolidays);
 router.get("/divisions/:divisionId/attendance/daily", ...ATTENDANCE_PERM, getDailyAttendance);
 router.get("/divisions/:divisionId/attendance/monthly", ...ATTENDANCE_PERM, getMonthlyAttendance);

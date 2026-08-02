@@ -932,8 +932,12 @@ model DivisionFeeStructure {
   bankDetails        Json?
   qrImageUrl         String?
   extraColumns       Json
-  extraStudentFields Json
+  extraStudentFields Json  // StudentDetailField[] — { id, kind, defaultKey?, label, value? }
   generalRemark      String?
+  feeCardTheme       String? // one of FEE_CARD_THEMES keys on the frontend (yellow/green/blue/pink)
+  schoolLogoUrl      String?
+  schoolName         String?
+  rulesAndRegs       Json?   // { id, text }[] — shown on the back of the fee card
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

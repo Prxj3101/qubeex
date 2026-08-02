@@ -22,7 +22,9 @@ const feeItemSchema = z.object({
 const feeStructureSchema = z.object({
   id: z.string(),
   name: z.string().min(1).max(100),
-  type: z.enum(["REGULAR", "ADDON", "EVENT", "ONE_TIME"]),
+  // "EVENT" kept for backward compatibility with any structures saved before
+  // the frontend renamed this type to "PENALTY" (Penalty / Fine).
+  type: z.enum(["REGULAR", "ADDON", "EVENT", "PENALTY", "ONE_TIME"]),
   color: z.string(),
   items: z.array(feeItemSchema),
 });
@@ -44,14 +46,37 @@ const bankDetailsSchema = z.object({
   upiId: z.string().optional(),
 });
 
+// Matches the frontend's `StudentDetailField` shape exactly — a default field
+// (name/rollNo/studentId/class/division) or a custom one, reorderable, with an
+// optional value override. Previously this schema only accepted a bare
+// { label, value } shape under a different key (`extraStudentFields`), which
+// didn't match what the UI actually sends (`studentFields`) and made every
+// save fail validation, not just this one field.
+const studentFieldSchema = z.object({
+  id: z.string(),
+  kind: z.enum(["default", "custom"]),
+  defaultKey: z.enum(["name", "rollNo", "studentId", "class", "division"]).optional(),
+  label: z.string(),
+  value: z.string().optional(),
+});
+
+const ruleSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+});
+
 const saveFeeStructureSchema = z.object({
   feeStructures: z.array(feeStructureSchema),
   feeMonths: z.array(feeMonthSchema),
   bankDetails: bankDetailsSchema.optional().nullable(),
   qrImageUrl: z.string().url().optional().nullable(),
   extraColumns: z.array(z.object({ label: z.string() })),
-  extraStudentFields: z.array(z.object({ label: z.string(), value: z.string() })),
+  studentFields: z.array(studentFieldSchema),
   generalRemark: z.string().max(2000).optional().nullable(),
+  feeCardTheme: z.string().optional().nullable(),
+  schoolLogoUrl: z.string().url().optional().nullable(),
+  schoolName: z.string().max(150).optional().nullable(),
+  rulesAndRegs: z.array(ruleSchema).optional().default([]),
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -62,6 +87,9 @@ function requireInstitution(req: AuthRequest) {
   return { institutionId, userId };
 }
 
+// The DB column is `extraStudentFields` (kept as-is to avoid a column rename
+// migration), but the frontend's request/response key is `studentFields` —
+// this maps DB shape -> API shape so callers never see the column name.
 function formatStructure(s: {
   id: string | null;
   divisionId: string;
@@ -73,10 +101,15 @@ function formatStructure(s: {
   extraColumns: unknown;
   extraStudentFields: unknown;
   generalRemark: string | null;
+  feeCardTheme?: string | null;
+  schoolLogoUrl?: string | null;
+  schoolName?: string | null;
+  rulesAndRegs?: unknown;
   isTemplate: boolean;
   templateFrom: string | null;
 }) {
-  return s;
+  const { extraStudentFields, ...rest } = s;
+  return { ...rest, studentFields: extraStudentFields };
 }
 
 // ── Controllers ───────────────────────────────────────────────────────────────
@@ -123,8 +156,17 @@ export const getFeeStructure = async (req: AuthRequest, res: Response, next: Nex
           bankDetails: template.bankDetails,
           qrImageUrl: template.qrImageUrl,
           extraColumns: template.extraColumns,
-          extraStudentFields: template.extraStudentFields,
+          studentFields: template.extraStudentFields,
           generalRemark: template.generalRemark,
+          // Card branding (theme/logo/school name) is deliberately NOT copied
+          // from another division's template — those are specific to the
+          // division whose card this is, not something to inherit.
+          feeCardTheme: null,
+          schoolLogoUrl: null,
+          schoolName: null,
+          // Rules & regs are also division-specific (fee counter timings, late
+          // fee policy) — not something to carry over from another division.
+          rulesAndRegs: [],
           isTemplate: true,
           templateFrom: `${template.division.standard.name} ${template.division.name}`,
           createdAt: null,
@@ -159,8 +201,12 @@ export const saveFeeStructure = async (req: AuthRequest, res: Response, next: Ne
         bankDetails: data.bankDetails ?? undefined,
         qrImageUrl: data.qrImageUrl ?? null,
         extraColumns: data.extraColumns,
-        extraStudentFields: data.extraStudentFields,
+        extraStudentFields: data.studentFields,
         generalRemark: data.generalRemark ?? null,
+        feeCardTheme: data.feeCardTheme ?? null,
+        schoolLogoUrl: data.schoolLogoUrl ?? null,
+        schoolName: data.schoolName ?? null,
+        rulesAndRegs: data.rulesAndRegs,
       },
       update: {
         feeStructures: data.feeStructures,
@@ -168,14 +214,18 @@ export const saveFeeStructure = async (req: AuthRequest, res: Response, next: Ne
         bankDetails: data.bankDetails ?? undefined,
         qrImageUrl: data.qrImageUrl ?? null,
         extraColumns: data.extraColumns,
-        extraStudentFields: data.extraStudentFields,
+        extraStudentFields: data.studentFields,
         generalRemark: data.generalRemark ?? null,
+        feeCardTheme: data.feeCardTheme ?? null,
+        schoolLogoUrl: data.schoolLogoUrl ?? null,
+        schoolName: data.schoolName ?? null,
+        rulesAndRegs: data.rulesAndRegs,
       },
     });
 
     res.json({
       success: true,
-      data: { ...structure, isTemplate: false, templateFrom: null },
+      data: formatStructure({ ...structure, isTemplate: false, templateFrom: null }),
     });
   } catch (err) {
     next(err);

@@ -1,0 +1,2 @@
+ALTER TABLE "SubAdmin"
+  ADD COLUMN IF NOT EXISTS "avatarUrl" TEXT;

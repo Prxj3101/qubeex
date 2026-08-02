@@ -2,7 +2,7 @@ import { prisma } from "../../utils/prisma";
 import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail, sendActivationEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
-import { uploadImageToSupabase, uploadAttachmentToR2, generateSignedAvatarUrl } from "../../services/storage.service";
+import { uploadImageToSupabase, uploadAttachmentToR2, generateSignedAvatarUrl, getInstitutionStorageBytes, bytesToGb } from "../../services/storage.service";
 import {
   generateUpgradeProrationBill,
   markBillPaid,
@@ -815,11 +815,12 @@ export const getTrialUsage = async (id: string) => {
     ? Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
     : null;
 
+  const storageGbUsed = bytesToGb(await getInstitutionStorageBytes(id));
+
   return {
     users:      { used: institution._count.users, limit: 500 },
-    // TODO: wire real usage later — storage from R2/Supabase, aiTokens from Redis pool.
-    // Frontend currently renders these as "Not tracked yet" and ignores the 0.
-    storageGb:  { used: 0,                        limit: 10 },
+    // Storage is real (summed from Cloudflare R2); AI tokens still pending.
+    storageGb:  { used: storageGbUsed,            limit: 10 },
     aiTokens:   { used: 0,                        limit: PLAN_AI_TOKENS.TRIAL },
     daysRemaining,
     trialEndDate: endDate?.toISOString() ?? null,
@@ -1018,7 +1019,7 @@ export const getAuditLogs = async (query: {
 // PLAN MANAGEMENT
 // ─────────────────────────────────────────────────────────────────────────────
 
-function computeUsageMeters(planName: string, addons: unknown) {
+function computeUsageMeters(planName: string, addons: unknown, storageGbUsed = 0) {
   const baseTokens = PLAN_AI_TOKENS[planName as keyof typeof PLAN_AI_TOKENS] ?? PLAN_AI_TOKENS.BASIC;
   const normalizedAddons = (addons && typeof addons === "object" && !Array.isArray(addons))
     ? addons as Record<string, unknown>
@@ -1036,7 +1037,7 @@ function computeUsageMeters(planName: string, addons: unknown) {
 
   return {
     aiTokens: { used: 0, total: baseTokens + extraTokens },
-    storageGb: { used: 0, total: basePlanStorageGb + extraStorageGb },
+    storageGb: { used: storageGbUsed, total: basePlanStorageGb + extraStorageGb },
   };
 }
 
@@ -1099,7 +1100,11 @@ export const getInstitutionPlanDashboard = async (id: string) => {
         }
       : null,
     addonStatus: (institution.subscription.addons ?? {}) as Record<string, unknown>,
-    usageMeters: computeUsageMeters(institution.subscription.plan.name, institution.subscription.addons),
+    usageMeters: computeUsageMeters(
+      institution.subscription.plan.name,
+      institution.subscription.addons,
+      bytesToGb(await getInstitutionStorageBytes(id)),
+    ),
   };
 };
 

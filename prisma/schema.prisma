@@ -396,6 +396,7 @@ model SubAdmin {
   country       String?     @default("India")
   qualification String?
   experience    String?
+  avatarUrl     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

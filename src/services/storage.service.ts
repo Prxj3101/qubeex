@@ -1,8 +1,9 @@
 import crypto from "crypto";
 import path from "path";
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { BadRequestError } from "../utils/errors";
 import { prisma } from "../utils/prisma";
+import { getCache, setCache, delCache } from "../utils/cache";
 
 // ── Supabase (profile pics, logos — platform-level assets) ───────────────────
 
@@ -301,6 +302,9 @@ export async function uploadAttachmentToR2(
 
   const publicUrl = `${R2_PUBLIC_URL.replace(/\/$/, "")}/${objectKey}`;
 
+  // New object added — drop the cached storage total so the next read recomputes.
+  await invalidateInstitutionStorage(options.institutionId);
+
   return { path: objectKey, publicUrl, attachmentType: toAttachmentType(category) };
 }
 
@@ -389,4 +393,53 @@ export async function deleteFromR2(r2Key: string): Promise<void> {
   } catch (err) {
     console.error(`[R2 delete] Failed to delete key "${r2Key}":`, err);
   }
+  // Keep the cached storage total fresh — the key encodes the institution id
+  // (institutions/{id}/...), so we can invalidate that institution's cache.
+  const instId = r2Key.split("/")[1];
+  if (r2Key.startsWith("institutions/") && instId) {
+    await delCache(storageCacheKey(instId));
+  }
 }
+
+const storageCacheKey = (institutionId: string) => `storage:used:${institutionId}`;
+
+/**
+ * Total bytes stored in R2 for an institution — sum of every object under
+ * `institutions/{institutionId}/`. Cached in Redis (~10 min) so the paginated
+ * bucket listing runs at most once per window. Returns 0 if R2 isn't configured
+ * so usage meters keep rendering instead of erroring.
+ */
+export async function getInstitutionStorageBytes(institutionId: string): Promise<number> {
+  const cacheKey = storageCacheKey(institutionId);
+  const cached = await getCache<number>(cacheKey);
+  if (cached != null) return cached;
+
+  if (!R2_BUCKET || !R2_ENDPOINT || !R2_ACCESS_KEY_ID || !R2_SECRET_KEY) return 0;
+
+  const client = getR2Client();
+  const prefix = `institutions/${institutionId}/`;
+  let total = 0;
+  let continuationToken: string | undefined;
+  try {
+    do {
+      const res = await client.send(
+        new ListObjectsV2Command({ Bucket: R2_BUCKET, Prefix: prefix, ContinuationToken: continuationToken })
+      );
+      for (const obj of res.Contents ?? []) total += obj.Size ?? 0;
+      continuationToken = res.IsTruncated ? res.NextContinuationToken : undefined;
+    } while (continuationToken);
+  } catch (err) {
+    console.error(`[R2 storage] Failed to sum usage for institution ${institutionId}:`, err);
+    return 0;
+  }
+
+  await setCache(cacheKey, total, 600);
+  return total;
+}
+
+/** Invalidate an institution's cached storage total (call after an upload/delete). */
+export async function invalidateInstitutionStorage(institutionId: string): Promise<void> {
+  await delCache(storageCacheKey(institutionId));
+}
+
+export const bytesToGb = (bytes: number) => bytes / 1024 ** 3;

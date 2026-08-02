@@ -1454,6 +1454,100 @@ export const updateSubAdmin = async (
   }
 };
 
+// Self-service — a sub-admin editing their own profile. Deliberately reuses
+// updateSubAdminSchema (same fields an ADMIN can set for them) but scopes the
+// lookup to req.user.userId instead of a :id param, so a sub-admin can only
+// ever touch their own row — permissions/status stay ADMIN_ONLY elsewhere.
+export const updateSubAdminMe = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    if (!user.institutionId) throw new BadRequestError("No institution associated with this account");
+
+    const data = updateSubAdminSchema.parse(req.body);
+
+    const subAdmin = await prisma.subAdmin.findFirst({
+      where: { userId: user.userId, institutionId: user.institutionId },
+    });
+    if (!subAdmin) throw new NotFoundError("SubAdmin profile not found");
+
+    const { name, ...subAdminFields } = data;
+
+    const updated = await prisma.$transaction(async (tx) => {
+      if (name) {
+        await tx.user.update({ where: { id: user.userId }, data: { name } });
+      }
+      return tx.subAdmin.update({
+        where: { id: subAdmin.id },
+        data: subAdminFields,
+        include: { user: { omit: { password: true } } },
+      });
+    });
+
+    res.json({
+      success: true,
+      data: {
+        id: updated.id,
+        name: updated.user.name,
+        email: updated.user.email,
+        displayId: updated.user.displayId,
+        avatarUrl: updated.avatarUrl,
+        designation: updated.designation,
+        phone: updated.phone,
+        dob: updated.dob,
+        gender: updated.gender,
+        address: updated.address,
+        city: updated.city,
+        state: updated.state,
+        pincode: updated.pincode,
+        country: updated.country,
+        qualification: updated.qualification,
+        experience: updated.experience,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const uploadSubAdminPhoto = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user!;
+    if (!user.institutionId) throw new BadRequestError("No institution associated with this account");
+
+    const subAdmin = await prisma.subAdmin.findFirst({
+      where: { userId: user.userId, institutionId: user.institutionId },
+    });
+    if (!subAdmin) throw new NotFoundError("SubAdmin profile not found");
+
+    const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+    if (!file.length) throw new BadRequestError("No photo file provided");
+
+    const { publicUrl } = await uploadImageToSupabase(file, {
+      contentType: req.headers["content-type"] ?? "",
+      folder: "subadmin-photos",
+      ownerId: user.institutionId,
+    });
+
+    await prisma.subAdmin.update({
+      where: { id: subAdmin.id },
+      data: { avatarUrl: publicUrl },
+    });
+
+    const signedUrl = (await generateSignedAvatarUrl(publicUrl)) ?? publicUrl;
+    res.json({ success: true, data: { avatarUrl: signedUrl } });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const updateSubAdminPermissions = async (
   req: AuthRequest,
   res: Response,

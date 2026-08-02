@@ -4,6 +4,7 @@ import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
 import { redis, isRedisReady } from "../../utils/redis";
 import { getRate } from "../../services/billing.service";
+import { getInstitutionStorageBytes } from "../../services/storage.service";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -138,7 +139,9 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
     const isTrial = !subscription || subscription.status === "TRIAL";
     const planName = subscription?.plan?.name ?? "Trial";
     const userLimit = isTrial ? 500 : 10000;
-    const storageLimit = isTrial ? 10240 : 51200; // MB — storage tracking not yet wired
+    // Storage limits in MB: Trial 10 GB, Pro 1 TB, Basic 500 GB.
+    const storageLimit = isTrial ? 10 * 1024 : planName === "PRO" ? 1024 * 1024 : 500 * 1024;
+    const storageUsedMb = (await getInstitutionStorageBytes(institutionId)) / (1024 * 1024);
     const testLimit = isTrial ? 500 : 10000;      // test tracking not yet wired
     const billedUsers = Math.max(200, userCount);
     const perUserRate = isTrial ? 0 : getRate(planName as "BASIC" | "PRO", billedUsers);
@@ -194,7 +197,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
           estMonthlyBill,
           usage: {
             users: { used: userCount, limit: userLimit },
-            storage: { used: 0, limit: storageLimit },
+            storage: { used: storageUsedMb, limit: storageLimit },
             tests: { used: 0, limit: testLimit },
             aiTokens: aiUsage,
           },

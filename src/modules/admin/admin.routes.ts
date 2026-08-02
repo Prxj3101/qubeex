@@ -4,7 +4,8 @@ import { institutionAccessMiddleware } from "../../middlewares/institutionAccess
 import { requirePermission } from "../../middlewares/requirePermission.middleware";
 import { prisma } from "../../utils/prisma";
 import { setPresence } from "../../services/presence.service";
-import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdmin, updateSubAdminPermissions, deactivateSubAdmin, activateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
+import { generateSignedAvatarUrl } from "../../services/storage.service";
+import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdmin, updateSubAdminMe, uploadSubAdminPhoto, updateSubAdminPermissions, deactivateSubAdmin, activateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview, uploadTicketAttachment, ticketAttachmentUpload } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
@@ -58,13 +59,48 @@ router.get("/subadmin/me", ...A, async (req: AuthRequest, res: Response, next: N
     }
     const subAdmin = await prisma.subAdmin.findFirst({
       where: { userId: req.user!.userId },
-      select: { permissions: true },
+      include: { user: { omit: { password: true } } },
     });
-    res.json({ success: true, data: { permissions: subAdmin?.permissions ?? [] } });
+    if (!subAdmin) {
+      res.status(404).json({ success: false, error: "SubAdmin profile not found" });
+      return;
+    }
+    const avatarUrl = subAdmin.avatarUrl ? (await generateSignedAvatarUrl(subAdmin.avatarUrl)) ?? subAdmin.avatarUrl : null;
+    res.json({
+      success: true,
+      data: {
+        id: subAdmin.id,
+        name: subAdmin.user.name,
+        email: subAdmin.user.email,
+        displayId: subAdmin.user.displayId,
+        avatarUrl,
+        designation: subAdmin.designation,
+        phone: subAdmin.phone,
+        dob: subAdmin.dob,
+        gender: subAdmin.gender,
+        address: subAdmin.address,
+        city: subAdmin.city,
+        state: subAdmin.state,
+        pincode: subAdmin.pincode,
+        country: subAdmin.country,
+        qualification: subAdmin.qualification,
+        experience: subAdmin.experience,
+        createdAt: subAdmin.createdAt,
+        isActive: subAdmin.user.isActive,
+        permissions: subAdmin.permissions,
+      },
+    });
   } catch (err) {
     next(err);
   }
 });
+router.patch("/subadmin/me", ...A, updateSubAdminMe);
+router.post(
+  "/subadmin/me/photo",
+  ...A,
+  raw({ type: ["image/png", "image/jpeg", "image/webp"], limit: "5mb" }),
+  uploadSubAdminPhoto
+);
 router.get("/overview", ...A, getOverview);
 router.patch("/institution", ...ADMIN_ONLY, updateMyInstitution);
 router.post(

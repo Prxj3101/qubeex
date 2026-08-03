@@ -80,12 +80,12 @@ describe("POST /api/teacher/classes/:divisionId/students/:studentId/remarks", ()
     await prisma.$disconnect();
   });
 
-  it("creates a remark and returns it in the FlagItem-compatible shape", async () => {
+  it("creates a report and returns it in the FlagItem-compatible shape", async () => {
     const res = await request(app)
       .post(`/api/teacher/classes/${divisionId}/students/${studentId}/remarks`)
       .set("Authorization", `Bearer ${teacherToken}`)
       .send({
-        type: "yellow",
+        severity: "LOW",
         category: "Late Submission",
         title: "Assignment submitted late",
         detail: "Submitted 2 days after deadline.",
@@ -97,24 +97,40 @@ describe("POST /api/teacher/classes/:divisionId/students/:studentId/remarks", ()
     expect(res.body.success).toBe(true);
     expect(res.body.data).toMatchObject({
       type: "yellow",
+      severity: "low",
       category: "Late Submission",
       title: "Assignment submitted late",
       detail: "Submitted 2 days after deadline.",
       subject: "Maths",
       reportedBy: "Test Teacher",
       role: "Faculty",
-      status: "active",
+      status: "open",
       actionTaken: "Marks deducted.",
+      // The class teacher (this same teacher, in this fixture) is assigned
+      // automatically, and can therefore review their own submission.
+      assignedToName: "Test Teacher",
+      canReview: true,
     });
     expect(typeof res.body.data.date).toBe("string");
     expect(Number.isNaN(new Date(res.body.data.date).getTime())).toBe(false);
+  });
+
+  it("derives a RED card from HIGH severity", async () => {
+    const res = await request(app)
+      .post(`/api/teacher/classes/${divisionId}/students/${studentId}/remarks`)
+      .set("Authorization", `Bearer ${teacherToken}`)
+      .send({ severity: "HIGH", category: "Misconduct", title: "T", detail: "D" });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.type).toBe("red");
+    expect(res.body.data.severity).toBe("high");
   });
 
   it("rejects a teacher not assigned to the division", async () => {
     const res = await request(app)
       .post(`/api/teacher/classes/${divisionId}/students/${studentId}/remarks`)
       .set("Authorization", `Bearer ${unassignedTeacherToken}`)
-      .send({ type: "red", category: "Test", title: "T", detail: "D" });
+      .send({ severity: "HIGH", category: "Test", title: "T", detail: "D" });
 
     expect(res.status).toBe(403);
   });
@@ -123,7 +139,7 @@ describe("POST /api/teacher/classes/:divisionId/students/:studentId/remarks", ()
     const res = await request(app)
       .post(`/api/teacher/classes/${otherDivisionId}/students/${studentId}/remarks`)
       .set("Authorization", `Bearer ${teacherToken}`)
-      .send({ type: "red", category: "Test", title: "T", detail: "D" });
+      .send({ severity: "HIGH", category: "Test", title: "T", detail: "D" });
 
     expect(res.status).toBe(403);
   });

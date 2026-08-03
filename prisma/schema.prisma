@@ -87,9 +87,17 @@ enum RemarkCardType {
 }
 
 enum RemarkStatus {
-  ACTIVE
+  ACTIVE // displayed as "Open"
+  UNDER_REVIEW
   RESOLVED
+  REJECTED
   APPEALED
+}
+
+enum RemarkSeverity {
+  LOW
+  MEDIUM
+  HIGH
 }
 
 // ─── Models ───────────────────────────────────────────────────────────────────
@@ -203,7 +211,9 @@ model User {
   staffMessagesReceived StaffMessage[]       @relation("StaffMessageReceiver")
   campusPostsAuthored   CampusFeedPost[]     @relation("CampusFeedPostAuthor")
   calendarEventsCreated CalendarEvent[]      @relation("CalendarEventCreator")
-  studentRemarksReported StudentRemark[]
+  studentRemarksReported  StudentRemark[] @relation("StudentRemarkReporter")
+  studentRemarksAssigned  StudentRemark[] @relation("StudentRemarkAssignee")
+  studentRemarksReviewed  StudentRemark[] @relation("StudentRemarkReviewer")
 }
 
 enum TrialOutcome {
@@ -723,6 +733,7 @@ model StudentRemark {
   student       Student        @relation(fields: [studentId], references: [id])
 
   type          RemarkCardType
+  severity      RemarkSeverity @default(MEDIUM)
   category      String
   title         String
   detail        String
@@ -730,14 +741,30 @@ model StudentRemark {
   actionTaken   String?
   status        RemarkStatus   @default(ACTIVE)
 
+  attachmentUrl    String?
+  attachmentType   String?
+  attachmentName   String?
+
   reportedByUserId String
-  reportedByUser   User        @relation(fields: [reportedByUserId], references: [id])
+  reportedByUser   User        @relation("StudentRemarkReporter", fields: [reportedByUserId], references: [id])
   reportedByRole   String
+
+  // Fixed routing rule: reports are auto-assigned to the student's class
+  // teacher at creation time. Admin can review/action any report regardless
+  // of assignment.
+  assignedToUserId String?
+  assignedTo       User?       @relation("StudentRemarkAssignee", fields: [assignedToUserId], references: [id])
+
+  reviewRemark     String?
+  reviewedByUserId String?
+  reviewedBy       User?       @relation("StudentRemarkReviewer", fields: [reviewedByUserId], references: [id])
+  reviewedAt       DateTime?
 
   createdAt DateTime @default(now())
 
   @@index([studentId])
   @@index([institutionId])
+  @@index([assignedToUserId, status])
 }
 
 // ─── Attendance ───────────────────────────────────────────────────────────────

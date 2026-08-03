@@ -1,10 +1,16 @@
 // src/services/remark.service.ts
 import { prisma } from "../utils/prisma";
-import { CreateRemarkInput } from "./remark.schema";
+import { CreateRemarkInput, ReviewRemarkInput } from "./remark.schema";
 
 export interface StudentRemarkDTO {
   id: string;
+  studentId: string;
+  studentName: string;
+  divisionId: string | null;
+  standardId: string | null;
+  className?: string;
   type: "yellow" | "red";
+  severity: "low" | "medium" | "high";
   category: string;
   title: string;
   detail: string;
@@ -12,9 +18,43 @@ export interface StudentRemarkDTO {
   subject?: string;
   reportedBy: string;
   role: string;
-  status: "active" | "resolved" | "appealed";
+  status: "open" | "under_review" | "resolved" | "rejected" | "appealed";
   actionTaken?: string;
+  attachmentUrl?: string;
+  attachmentType?: string;
+  attachmentName?: string;
+  assignedToName?: string;
+  reviewRemark?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  /** True if the current viewer (passed in at read time) may action this report. */
+  canReview: boolean;
 }
+
+type RemarkRow = {
+  id: string;
+  studentId: string;
+  student: { studentId: string; divisionId: string | null; standardId: string | null; user: { name: string | null }; division: { name: string } | null };
+  type: "YELLOW" | "RED";
+  severity: "LOW" | "MEDIUM" | "HIGH";
+  category: string;
+  title: string;
+  detail: string;
+  createdAt: Date;
+  subject: string | null;
+  status: "ACTIVE" | "UNDER_REVIEW" | "RESOLVED" | "REJECTED" | "APPEALED";
+  actionTaken: string | null;
+  attachmentUrl: string | null;
+  attachmentType: string | null;
+  attachmentName: string | null;
+  reportedByRole: string;
+  reportedByUser: { name: string | null };
+  assignedToUserId: string | null;
+  assignedTo: { name: string | null } | null;
+  reviewRemark: string | null;
+  reviewedAt: Date | null;
+  reviewedBy: { name: string | null } | null;
+};
 
 function formatRemarkDate(d: Date): string {
   const day = d.getDate();
@@ -24,22 +64,28 @@ function formatRemarkDate(d: Date): string {
   return `${day} ${month} ${year}, ${time}`;
 }
 
-function toDTO(row: {
-  id: string;
-  type: "YELLOW" | "RED";
-  category: string;
-  title: string;
-  detail: string;
-  createdAt: Date;
-  subject: string | null;
-  status: "ACTIVE" | "RESOLVED" | "APPEALED";
-  actionTaken: string | null;
-  reportedByRole: string;
-  reportedByUser: { name: string | null };
-}): StudentRemarkDTO {
+const STATUS_MAP: Record<RemarkRow["status"], StudentRemarkDTO["status"]> = {
+  ACTIVE: "open",
+  UNDER_REVIEW: "under_review",
+  RESOLVED: "resolved",
+  REJECTED: "rejected",
+  APPEALED: "appealed",
+};
+
+function toDTO(row: RemarkRow, viewer: { userId: string; role: string }): StudentRemarkDTO {
+  const isAdmin = viewer.role === "ADMIN" || viewer.role === "SUB_ADMIN";
+  const isAssignee = row.assignedToUserId === viewer.userId;
+  const isActionable = row.status === "ACTIVE" || row.status === "UNDER_REVIEW";
+
   return {
     id: row.id,
+    studentId: row.studentId,
+    studentName: row.student.user.name ?? "Unknown",
+    divisionId: row.student.divisionId,
+    standardId: row.student.standardId,
+    className: row.student.division?.name,
     type: row.type === "YELLOW" ? "yellow" : "red",
+    severity: row.severity.toLowerCase() as StudentRemarkDTO["severity"],
     category: row.category,
     title: row.title,
     detail: row.detail,
@@ -47,19 +93,47 @@ function toDTO(row: {
     subject: row.subject ?? undefined,
     reportedBy: row.reportedByUser.name ?? "Unknown",
     role: row.reportedByRole,
-    status: row.status.toLowerCase() as "active" | "resolved" | "appealed",
+    status: STATUS_MAP[row.status],
     actionTaken: row.actionTaken ?? undefined,
+    attachmentUrl: row.attachmentUrl ?? undefined,
+    attachmentType: row.attachmentType ?? undefined,
+    attachmentName: row.attachmentName ?? undefined,
+    assignedToName: row.assignedTo?.name ?? undefined,
+    reviewRemark: row.reviewRemark ?? undefined,
+    reviewedBy: row.reviewedBy?.name ?? undefined,
+    reviewedAt: row.reviewedAt ? formatRemarkDate(row.reviewedAt) : undefined,
+    canReview: isActionable && (isAdmin || isAssignee),
   };
 }
+
+const REMARK_INCLUDE = {
+  student: { select: { studentId: true, divisionId: true, standardId: true, user: { select: { name: true } }, division: { select: { name: true } } } },
+  reportedByUser: { select: { name: true } },
+  assignedTo: { select: { name: true } },
+  reviewedBy: { select: { name: true } },
+} as const;
 
 export async function createStudentRemark(params: {
   institutionId: string;
   studentId: string;
+  divisionId: string;
   reportedByUserId: string;
   reportedByRole: "Faculty" | "Admin";
+  viewer: { userId: string; role: string };
   data: CreateRemarkInput;
 }): Promise<StudentRemarkDTO> {
-  const { institutionId, studentId, reportedByUserId, reportedByRole, data } = params;
+  const { institutionId, studentId, divisionId, reportedByUserId, reportedByRole, viewer, data } = params;
+
+  // Fixed routing rule: every report is auto-assigned to the student's class
+  // teacher (the DivisionAssignment with subjectId = null) at creation time.
+  // Admin can review any report regardless of assignment.
+  const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
+    where: { divisionId, institutionId, subjectId: null },
+    select: { teacher: { select: { userId: true } } },
+  });
+  const assignedToUserId = classTeacherAssignment?.teacher.userId ?? null;
+
+  const type = data.severity === "HIGH" ? "RED" : "YELLOW";
 
   const row = await prisma.studentRemark.create({
     data: {
@@ -67,28 +141,103 @@ export async function createStudentRemark(params: {
       studentId,
       reportedByUserId,
       reportedByRole,
-      type: data.type === "yellow" ? "YELLOW" : "RED",
+      assignedToUserId,
+      type,
+      severity: data.severity,
       category: data.category,
       title: data.title,
       detail: data.detail,
       subject: data.subject,
       actionTaken: data.actionTaken,
+      attachmentUrl: data.attachmentUrl,
+      attachmentType: data.attachmentType,
+      attachmentName: data.attachmentName,
     },
-    include: { reportedByUser: { select: { name: true } } },
+    include: REMARK_INCLUDE,
   });
 
-  return toDTO(row);
+  return toDTO(row, viewer);
 }
 
 export async function listStudentRemarks(
   studentId: string,
-  institutionId: string
+  institutionId: string,
+  viewer: { userId: string; role: string }
 ): Promise<StudentRemarkDTO[]> {
   const rows = await prisma.studentRemark.findMany({
     where: { studentId, institutionId },
     orderBy: { createdAt: "desc" },
-    include: { reportedByUser: { select: { name: true } } },
+    include: REMARK_INCLUDE,
   });
 
-  return rows.map(toDTO);
+  return rows.map((r) => toDTO(r, viewer));
+}
+
+/** Reports assigned to (or, for admins, all reports for) the given institution, for a reviewer inbox. */
+export async function listAssignedRemarks(
+  institutionId: string,
+  viewer: { userId: string; role: string }
+): Promise<StudentRemarkDTO[]> {
+  const isAdmin = viewer.role === "ADMIN" || viewer.role === "SUB_ADMIN";
+  const rows = await prisma.studentRemark.findMany({
+    where: {
+      institutionId,
+      ...(isAdmin ? {} : { assignedToUserId: viewer.userId }),
+    },
+    orderBy: [{ createdAt: "desc" }],
+    include: REMARK_INCLUDE,
+  });
+
+  return rows.map((r) => toDTO(r, viewer));
+}
+
+/** Reports a given user has personally submitted, for a "my reports" history view. */
+export async function listSubmittedRemarks(
+  institutionId: string,
+  viewer: { userId: string; role: string }
+): Promise<StudentRemarkDTO[]> {
+  const rows = await prisma.studentRemark.findMany({
+    where: { institutionId, reportedByUserId: viewer.userId },
+    orderBy: { createdAt: "desc" },
+    include: REMARK_INCLUDE,
+  });
+
+  return rows.map((r) => toDTO(r, viewer));
+}
+
+export async function reviewStudentRemark(params: {
+  remarkId: string;
+  institutionId: string;
+  viewer: { userId: string; role: string };
+  data: ReviewRemarkInput;
+}): Promise<StudentRemarkDTO> {
+  const { remarkId, institutionId, viewer, data } = params;
+
+  const existing = await prisma.studentRemark.findFirst({
+    where: { id: remarkId, institutionId },
+    select: { assignedToUserId: true, status: true },
+  });
+  if (!existing) throw { status: 404, message: "Report not found" };
+
+  const isAdmin = viewer.role === "ADMIN" || viewer.role === "SUB_ADMIN";
+  const isAssignee = existing.assignedToUserId === viewer.userId;
+  if (!isAdmin && !isAssignee) {
+    throw { status: 403, message: "Only the assigned reviewer or an admin can action this report" };
+  }
+  if (existing.status === "RESOLVED" || existing.status === "REJECTED") {
+    throw { status: 409, message: "This report has already been closed" };
+  }
+
+  const row = await prisma.studentRemark.update({
+    where: { id: remarkId },
+    data: {
+      status: data.status,
+      reviewRemark: data.reviewRemark,
+      reviewedByUserId: viewer.userId,
+      reviewedAt: new Date(),
+    },
+    include: REMARK_INCLUDE,
+  });
+
+  return toDTO(row, viewer);
 }

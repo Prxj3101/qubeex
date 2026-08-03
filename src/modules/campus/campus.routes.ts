@@ -46,6 +46,8 @@ import {
   getDivisionLeaderboard,
   reportStudent,
   getStudentRemarks,
+  getReportsInbox,
+  reviewReport,
   getStudentMarksheet,
   getStudentAttendanceTrend,
   getDivisionFeePayments,
@@ -128,6 +130,8 @@ router.get("/divisions/:divisionId/students/:studentId/stats", ...CAMPUS_MANAGE_
 router.patch("/divisions/:divisionId/students/:studentId", ...CAMPUS_MANAGE_PERM, updateStudentStatus);
 router.post("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANAGE_PERM, reportStudent);
 router.get("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANAGE_PERM, getStudentRemarks);
+router.get("/reports/inbox", ...CAMPUS_MANAGE_PERM, getReportsInbox);
+router.patch("/reports/:remarkId", ...CAMPUS_MANAGE_PERM, reviewReport);
 router.get("/divisions/:divisionId/students/:studentId/marksheet", ...CAMPUS_MANAGE_PERM, getStudentMarksheet);
 router.get("/divisions/:divisionId/students/:studentId/attendance-trend", ...CAMPUS_MANAGE_PERM, getStudentAttendanceTrend);
 router.get("/divisions/:divisionId/leaderboard", ...A, requirePermission("CAMPUS_VIEW", "CAMPUS_MANAGE"), getDivisionLeaderboard);

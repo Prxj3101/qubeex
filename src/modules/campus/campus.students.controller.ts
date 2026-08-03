@@ -4,8 +4,8 @@ import { prisma } from "../../utils/prisma";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
-import { createRemarkSchema } from "../../services/remark.schema";
-import { createStudentRemark, listStudentRemarks } from "../../services/remark.service";
+import { createRemarkSchema, reviewRemarkSchema } from "../../services/remark.schema";
+import { createStudentRemark, listStudentRemarks, listAssignedRemarks, reviewStudentRemark } from "../../services/remark.service";
 import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
 import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
@@ -95,8 +95,10 @@ export const reportStudent = async (req: AuthRequest, res: Response, next: NextF
     const remark = await createStudentRemark({
       institutionId,
       studentId,
+      divisionId,
       reportedByUserId: req.user!.userId,
       reportedByRole: "Admin",
+      viewer: { userId: req.user!.userId, role: req.user!.role },
       data,
     });
 
@@ -104,7 +106,7 @@ export const reportStudent = async (req: AuthRequest, res: Response, next: NextF
       userId: req.user!.userId,
       actorRole: "ADMIN",
       institutionId,
-      details: `${data.type === "yellow" ? "Yellow" : "Red"} card reported for student: ${data.title}`,
+      details: `${data.severity} severity report filed for student: ${data.title}`,
     });
 
     res.status(201).json({ success: true, data: remark });
@@ -122,9 +124,43 @@ export const getStudentRemarks = async (req: AuthRequest, res: Response, next: N
 
     await findStudentInDivision(studentId, divisionId, institutionId);
 
-    const remarks = await listStudentRemarks(studentId, institutionId);
+    const remarks = await listStudentRemarks(studentId, institutionId, { userId: req.user!.userId, role: req.user!.role });
     res.json({ success: true, data: remarks });
   } catch (err) {
+    next(err);
+  }
+};
+
+// GET /admin/campus/reports/inbox — all institution reports (admin sees everything)
+export const getReportsInbox = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const reports = await listAssignedRemarks(institutionId, { userId: req.user!.userId, role: req.user!.role });
+    res.json({ success: true, data: reports });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// PATCH /admin/campus/reports/:remarkId — review/action a report
+export const reviewReport = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const remarkId = req.params.remarkId as string;
+    const data = reviewRemarkSchema.parse(req.body);
+    const updated = await reviewStudentRemark({
+      remarkId,
+      institutionId,
+      viewer: { userId: req.user!.userId, role: req.user!.role },
+      data,
+    });
+    res.json({ success: true, data: updated });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) {
+      res.status(e.status).json({ success: false, error: e.message });
+      return;
+    }
     next(err);
   }
 };

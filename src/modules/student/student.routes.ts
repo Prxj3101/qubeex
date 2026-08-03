@@ -637,7 +637,7 @@ router.get("/remarks", ...S, async (req: AuthRequest, res: Response, next: NextF
       return;
     }
 
-    const remarks = await listStudentRemarks(student.id, institutionId!);
+    const remarks = await listStudentRemarks(student.id, institutionId!, { userId, role: "STUDENT" });
     res.json({ success: true, data: remarks });
   } catch (err) {
     next(err);

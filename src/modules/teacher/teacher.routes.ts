@@ -9,8 +9,8 @@ import { z } from "zod";
 import multer from "multer";
 import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
-import { createRemarkSchema } from "../../services/remark.schema";
-import { createStudentRemark, listStudentRemarks } from "../../services/remark.service";
+import { createRemarkSchema, reviewRemarkSchema } from "../../services/remark.schema";
+import { createStudentRemark, listStudentRemarks, listAssignedRemarks, listSubmittedRemarks, reviewStudentRemark } from "../../services/remark.service";
 import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
 import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
@@ -164,10 +164,17 @@ import {
   deleteTask,
 } from "./notepad.controller";
 import { getOverview } from "./overview.controller";
+import { getProfile, updateProfile, changePassword, getLoginActivity } from "../shared/profile.controller";
 
 const router = Router();
 
 const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware];
+
+// ── Account settings (profile / password / login activity) ────────────────────
+router.get("/profile", ...T, getProfile);
+router.put("/profile", ...T, updateProfile);
+router.put("/profile/password", ...T, changePassword);
+router.get("/profile/login-activity", ...T, getLoginActivity);
 
 // ── Presence heartbeat ────────────────────────────────────────────────────────
 router.post("/presence", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -1671,8 +1678,10 @@ router.post(
       const remark = await createStudentRemark({
         institutionId,
         studentId,
+        divisionId,
         reportedByUserId: userId,
         reportedByRole: "Faculty",
+        viewer: { userId, role: "TEACHER" },
         data,
       });
 
@@ -1680,7 +1689,7 @@ router.post(
         userId,
         actorRole: "TEACHER",
         institutionId,
-        details: `${data.type === "yellow" ? "Yellow" : "Red"} card reported for student: ${data.title}`,
+        details: `${data.severity} severity report filed for student: ${data.title}`,
       });
 
       res.status(201).json({ success: true, data: remark });
@@ -1748,7 +1757,7 @@ router.get(
         return;
       }
 
-      const remarks = await listStudentRemarks(studentId, institutionId);
+      const remarks = await listStudentRemarks(studentId, institutionId, { userId, role: "TEACHER" });
       res.json({ success: true, data: remarks });
     } catch (err: unknown) {
       const e = err as { status?: number; message?: string };
@@ -1760,6 +1769,63 @@ router.get(
     }
   }
 );
+
+// ── GET /reports/inbox — reports assigned to me for review ───────────────────
+router.get("/reports/inbox", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution" });
+      return;
+    }
+    const reports = await listAssignedRemarks(institutionId, { userId, role: "TEACHER" });
+    res.json({ success: true, data: reports });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── GET /reports/submitted — reports I have filed, with status history ───────
+router.get("/reports/submitted", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution" });
+      return;
+    }
+    const reports = await listSubmittedRemarks(institutionId, { userId, role: "TEACHER" });
+    res.json({ success: true, data: reports });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── PATCH /reports/:remarkId — review/action a report (assignee or admin) ────
+router.patch("/reports/:remarkId", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution" });
+      return;
+    }
+    const remarkId = req.params.remarkId as string;
+    const data = reviewRemarkSchema.parse(req.body);
+    const updated = await reviewStudentRemark({
+      remarkId,
+      institutionId,
+      viewer: { userId, role: "TEACHER" },
+      data,
+    });
+    res.json({ success: true, data: updated });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) {
+      res.status(e.status).json({ success: false, error: e.message });
+      return;
+    }
+    next(err);
+  }
+});
 
 // ── GET /classes/:divisionId/students/:studentId/marksheet — full breakdown ──
 router.get(

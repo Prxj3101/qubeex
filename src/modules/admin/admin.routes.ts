@@ -12,6 +12,12 @@ import { listNotifications, markNotificationRead, dismissNotification, markAllNo
 import { getOverview } from "./overview.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, assignClassTeacher } from "./marksheet.controller";
 import { listBills, getPaymentLink, getPlanHistory } from "./bills.controller";
+import {
+  getProfile as sharedGetProfile,
+  updateProfile as sharedUpdateProfile,
+  changePassword as sharedChangePassword,
+  getLoginActivity as sharedGetLoginActivity,
+} from "../shared/profile.controller";
 
 const router = Router();
 
@@ -46,6 +52,12 @@ router.post("/presence", ...A, async (req: AuthRequest, res: Response) => {
 
 router.get("/me", ...A, getMyInstitution);
 router.patch("/me", ...ADMIN_ONLY, updateAdminMe);
+
+// ── Account settings (profile / password / login activity) — admin & sub-admin ─
+router.get("/profile", ...A, sharedGetProfile);
+router.put("/profile", ...A, sharedUpdateProfile);
+router.put("/profile/password", ...A, sharedChangePassword);
+router.get("/profile/login-activity", ...A, sharedGetLoginActivity);
 router.post(
   "/me/photo",
   ...ADMIN_ONLY,

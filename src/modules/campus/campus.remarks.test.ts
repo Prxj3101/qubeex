@@ -60,17 +60,18 @@ describe("POST /api/admin/campus/divisions/:divisionId/students/:studentId/remar
     const res = await request(app)
       .post(`/api/admin/campus/divisions/${divisionId}/students/${studentId}/remarks`)
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ type: "red", category: "Academic Dishonesty", title: "Copying in exam", detail: "Caught with notes." });
+      .send({ severity: "HIGH", category: "Academic Dishonesty", title: "Copying in exam", detail: "Caught with notes." });
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toMatchObject({
       type: "red",
+      severity: "high",
       category: "Academic Dishonesty",
       title: "Copying in exam",
       reportedBy: "Test Admin",
       role: "Admin",
-      status: "active",
+      status: "open",
     });
   });
 
@@ -85,7 +86,7 @@ describe("POST /api/admin/campus/divisions/:divisionId/students/:studentId/remar
     const res = await request(app)
       .post(`/api/admin/campus/divisions/${otherDivision.id}/students/${studentId}/remarks`)
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ type: "red", category: "Test", title: "T", detail: "D" });
+      .send({ severity: "HIGH", category: "Test", title: "T", detail: "D" });
 
     expect(res.status).toBe(404);
   });

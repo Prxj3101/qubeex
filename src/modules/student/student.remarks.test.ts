@@ -110,7 +110,7 @@ describe("GET /api/student/remarks", () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toHaveLength(2);
-    expect(res.body.data[0]).toMatchObject({ title: "Copying", type: "red", role: "Faculty", status: "active" });
+    expect(res.body.data[0]).toMatchObject({ title: "Copying", type: "red", role: "Faculty", status: "open" });
     expect(res.body.data[1]).toMatchObject({ title: "Late assignment", type: "yellow" });
     expect(res.body.data.some((r: { title: string }) => r.title === "Should never appear")).toBe(false);
   });

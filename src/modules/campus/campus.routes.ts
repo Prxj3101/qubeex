@@ -81,21 +81,21 @@ const CAMPUS_FEES_PERM = [...A, requirePermission("CAMPUS_FEES")];
 
 // Standards — list is needed for any classes tab
 router.get("/standards", ...ANY_CAMPUS, listStandards);
-router.post("/standards", ...ADMIN_ONLY, createStandard);
-router.patch("/standards/:id", ...ADMIN_ONLY, updateStandard);
-router.delete("/standards/:id", ...ADMIN_ONLY, deleteStandard);
+router.post("/standards", ...CAMPUS_MANAGE_PERM, createStandard);
+router.patch("/standards/:id", ...CAMPUS_MANAGE_PERM, updateStandard);
+router.delete("/standards/:id", ...CAMPUS_MANAGE_PERM, deleteStandard);
 
 // Divisions
-router.post("/standards/:standardId/divisions", ...ADMIN_ONLY, createDivision);
+router.post("/standards/:standardId/divisions", ...CAMPUS_MANAGE_PERM, createDivision);
 router.get("/divisions/:divisionId", ...ANY_CLASS_TAB_PERM, getDivision);
-router.patch("/divisions/:divisionId", ...ADMIN_ONLY, updateDivision);
-router.delete("/divisions/:divisionId", ...ADMIN_ONLY, deleteDivision);
+router.patch("/divisions/:divisionId", ...CAMPUS_MANAGE_PERM, updateDivision);
+router.delete("/divisions/:divisionId", ...CAMPUS_MANAGE_PERM, deleteDivision);
 
 // Subjects
-router.post("/standards/:standardId/subjects", ...ADMIN_ONLY, createSubject);
-router.patch("/standards/:standardId/subjects/reorder", ...ADMIN_ONLY, reorderSubjects);
-router.patch("/subjects/:subjectId", ...ADMIN_ONLY, updateSubject);
-router.delete("/subjects/:subjectId", ...ADMIN_ONLY, deleteSubject);
+router.post("/standards/:standardId/subjects", ...CAMPUS_MANAGE_PERM, createSubject);
+router.patch("/standards/:standardId/subjects/reorder", ...CAMPUS_MANAGE_PERM, reorderSubjects);
+router.patch("/subjects/:subjectId", ...CAMPUS_MANAGE_PERM, updateSubject);
+router.delete("/subjects/:subjectId", ...CAMPUS_MANAGE_PERM, deleteSubject);
 
 // Division subject selection — CAMPUS_MANAGE
 router.post("/divisions/:divisionId/subjects/:subjectId", ...CAMPUS_MANAGE_PERM, selectSubject);

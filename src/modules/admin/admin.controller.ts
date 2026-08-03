@@ -104,6 +104,7 @@ const updateSubAdminPermissionsSchema = z.object({
 
 const updateSubAdminSchema = z.object({
   name: z.string().min(2).max(100).trim().optional(),
+  prefix: z.string().max(20).trim().optional().nullable(),
   designation: z.string().max(100).trim().optional(),
   phone: z.string().max(20).trim().optional(),
   dob: z.string().optional(),
@@ -1248,6 +1249,9 @@ export const listSubAdmins = async (
     });
     const pendingSet = new Set(pendingInvites.map(i => i.email));
 
+    const rawAvatarUrls = subAdmins.map(s => s.avatarUrl);
+    const signedMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
+
     res.json({
       success: true,
       data: subAdmins.map(s => ({
@@ -1260,6 +1264,8 @@ export const listSubAdmins = async (
         permissions: s.permissions,
         invitePending: pendingSet.has(s.user.email),
         createdAt: s.createdAt,
+        avatarUrl: s.avatarUrl ? (signedMap[s.avatarUrl] ?? s.avatarUrl) : null,
+        prefix: s.prefix,
         designation: s.designation,
         phone: s.phone,
         dob: s.dob,
@@ -1495,6 +1501,7 @@ export const updateSubAdminMe = async (
         email: updated.user.email,
         displayId: updated.user.displayId,
         avatarUrl: updated.avatarUrl,
+        prefix: updated.prefix,
         designation: updated.designation,
         phone: updated.phone,
         dob: updated.dob,

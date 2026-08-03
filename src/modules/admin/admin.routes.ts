@@ -74,6 +74,7 @@ router.get("/subadmin/me", ...A, async (req: AuthRequest, res: Response, next: N
         email: subAdmin.user.email,
         displayId: subAdmin.user.displayId,
         avatarUrl,
+        prefix: subAdmin.prefix,
         designation: subAdmin.designation,
         phone: subAdmin.phone,
         dob: subAdmin.dob,

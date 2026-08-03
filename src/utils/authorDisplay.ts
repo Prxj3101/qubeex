@@ -15,13 +15,23 @@ export async function resolveAuthorDisplay(
   const map = new Map<string, DisplayInfo>();
 
   const teacherIds = authors.filter((a) => a.role === "TEACHER").map((a) => a.id);
+  const subAdminIds = authors.filter((a) => a.role === "SUB_ADMIN").map((a) => a.id);
   const hasAdmin = authors.some((a) => a.role === "ADMIN");
 
-  const [teachers, institution] = await Promise.all([
+  const [teachers, subAdmins, institution] = await Promise.all([
     teacherIds.length
       ? prisma.teacher.findMany({
           where: { userId: { in: teacherIds } },
           select: { userId: true, prefix: true, title: true, avatarUrl: true },
+        })
+      : Promise.resolve([]),
+    // Sub-admins don't have a fixed "title" field — their designation (e.g.
+    // "Fee Collector") plays the same role Teacher.title does, so it's what
+    // gets shown next to their name everywhere (feed, class workspace, etc.).
+    subAdminIds.length
+      ? prisma.subAdmin.findMany({
+          where: { userId: { in: subAdminIds } },
+          select: { userId: true, prefix: true, designation: true, avatarUrl: true },
         })
       : Promise.resolve([]),
     hasAdmin
@@ -33,6 +43,7 @@ export async function resolveAuthorDisplay(
   ]);
 
   for (const t of teachers) map.set(t.userId, { prefix: t.prefix, title: t.title, avatarUrl: t.avatarUrl });
+  for (const s of subAdmins) map.set(s.userId, { prefix: s.prefix, title: s.designation, avatarUrl: s.avatarUrl });
   if (institution) {
     for (const a of authors) {
       if (a.role === "ADMIN") {

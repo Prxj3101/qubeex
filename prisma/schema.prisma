@@ -385,6 +385,7 @@ model SubAdmin {
   permissions   String[]
   createdById   String
 
+  prefix        String? // e.g. Mr./Ms./Mrs./Dr. — same options as the Admin's prefix picker
   designation   String?
   phone         String?
   dob           String?

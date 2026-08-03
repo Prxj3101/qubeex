@@ -175,12 +175,13 @@ export const listPosts = async (
     ];
     const displayMap = await resolveAuthorDisplay(allAuthors, institutionId);
 
-    // Admin avatars live on Institution.adminAvatarUrl (resolved via
-    // displayMap); Teacher avatars live on the Teacher row directly.
+    // Admin and Sub-admin avatars are resolved via displayMap (Institution.
+    // adminAvatarUrl / SubAdmin.avatarUrl respectively); Teacher avatars live
+    // on the Teacher row directly (included above).
     const getRawAvatarUrl = (author: AuthorWithTeacher) =>
-      author.role === "ADMIN"
-        ? displayMap.get(author.id)?.avatarUrl ?? null
-        : (author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
+      author.role === "TEACHER"
+        ? (author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null
+        : displayMap.get(author.id)?.avatarUrl ?? null;
 
     const allRawUrls = [
       ...posts.map(p => getRawAvatarUrl(p.author)),
@@ -234,9 +235,9 @@ export const createPost = async (
     });
 
     const displayMap = await resolveAuthorDisplay([post.author], institutionId);
-    const rawUrl = post.author.role === "ADMIN"
-      ? displayMap.get(post.author.id)?.avatarUrl ?? null
-      : (post.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null;
+    const rawUrl = post.author.role === "TEACHER"
+      ? (post.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null
+      : displayMap.get(post.author.id)?.avatarUrl ?? null;
     const signedMap2 = await generateSignedAvatarUrlsBatch([rawUrl]);
     const authorAvatarUrl = rawUrl ? (signedMap2[rawUrl] ?? rawUrl) : null;
 
@@ -429,15 +430,15 @@ export const listDmThreads = async (
           teacherId: s.id,
           contactUserId: s.userId,
           name: s.user.name ?? "Sub Admin",
-          avatarUrl: null,
+          avatarUrl: s.avatarUrl,
           isActive: s.user.isActive,
-          prefix: null,
+          prefix: s.prefix,
           title: s.designation,
         })),
       ];
     } else {
-      // Teacher sees other teachers (not self) + admin users
-      const [teachers, admins] = await Promise.all([
+      // Teacher sees other teachers (not self) + admin + sub-admin users
+      const [teachers, admins, subAdmins] = await Promise.all([
         prisma.teacher.findMany({
           where: { institutionId, userId: { not: userId } },
           include: { user: { select: { id: true, name: true, isActive: true } } },
@@ -447,6 +448,11 @@ export const listDmThreads = async (
           where: { institutionId, role: "ADMIN" },
           select: { id: true, name: true, isActive: true },
           orderBy: { name: "asc" },
+        }),
+        prisma.subAdmin.findMany({
+          where: { institutionId, userId: { not: userId } },
+          include: { user: { select: { id: true, name: true, isActive: true } } },
+          orderBy: { createdAt: "asc" },
         }),
       ]);
       contacts = [
@@ -458,6 +464,15 @@ export const listDmThreads = async (
           isActive: a.isActive,
           prefix: institution?.adminPrefix ?? null,
           title: institution?.adminTitle ?? null,
+        })),
+        ...subAdmins.map((s) => ({
+          teacherId: s.id,
+          contactUserId: s.userId,
+          name: s.user.name ?? "Sub Admin",
+          avatarUrl: s.avatarUrl,
+          isActive: s.user.isActive,
+          prefix: s.prefix,
+          title: s.designation,
         })),
         ...teachers.map((t) => ({
           teacherId: t.id,

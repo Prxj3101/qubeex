@@ -227,6 +227,39 @@ export const getDivisionFeePayments = async (req: AuthRequest, res: Response, ne
   }
 };
 
+const updateDetailFieldSchema = z.object({
+  fieldId: z.string().min(1),
+  value: z.string().max(500),
+});
+
+// PATCH /admin/campus/divisions/:divisionId/students/:studentId/detail-fields
+export const updateStudentDetailField = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const studentId = req.params.studentId as string;
+    const { fieldId, value } = updateDetailFieldSchema.parse(req.body);
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, divisionId, institutionId },
+      select: { id: true, extraDetailFields: true },
+    });
+    if (!student) throw new NotFoundError("Student not found in this division");
+
+    const nextFields = { ...((student.extraDetailFields as Record<string, string> | null) ?? {}), [fieldId]: value };
+
+    const updated = await prisma.student.update({
+      where: { id: studentId },
+      data: { extraDetailFields: nextFields },
+      select: { extraDetailFields: true },
+    });
+
+    res.json({ success: true, data: { extraDetailFields: updated.extraDetailFields } });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // PATCH /admin/campus/divisions/:divisionId/fee-payments
 export const updateFeePayment = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -242,6 +275,9 @@ export const updateFeePayment = async (req: AuthRequest, res: Response, next: Ne
       feeMonthId: body.feeMonthId,
       status: body.status,
       paidDate: body.paidDate ?? null,
+      remark: body.remark ?? null,
+      extraFields: body.extraFields ?? null,
+      extraStructureIds: body.extraStructureIds ?? null,
     });
     res.json({ success: true, data });
   } catch (err) {

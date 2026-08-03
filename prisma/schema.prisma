@@ -665,6 +665,7 @@ model Student {
   nationality      String?
   admissionYear    String?
   guardians        Json?
+  extraDetailFields Json? // { [studentDetailField.id]: value } — per-student values for the fee card's custom Student Details fields
   tempPassword     String?
   hasLoggedIn      Boolean       @default(false)
   status           StudentStatus @default(ACTIVE)
@@ -983,6 +984,9 @@ model StudentFeePayment {
   feeMonthId String // matches the `id` embedded in DivisionFeeStructure.feeMonths JSON entries
   status     String  @default("PENDING") // PAID | PENDING
   paidDate   String?
+  remark     String? // free-text note per student per month (e.g. "paid in cash")
+  extraFields Json? // { [extraColumn.label]: value } — per-student values for the fee card's custom columns
+  extraStructureIds Json? // string[] — extra fee structure IDs (e.g. Penalty) added just for this student in this month, on top of the division's shared assignedStructureIds
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

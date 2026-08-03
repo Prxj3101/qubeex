@@ -52,6 +52,7 @@ import {
   getStudentAttendanceTrend,
   getDivisionFeePayments,
   updateFeePayment,
+  updateStudentDetailField,
 } from "./campus.students.controller";
 
 const router = Router();
@@ -112,6 +113,7 @@ router.get("/divisions/:divisionId/fee-structure", ...CAMPUS_FEES_PERM, getFeeSt
 router.put("/divisions/:divisionId/fee-structure", ...CAMPUS_FEES_PERM, saveFeeStructure);
 router.get("/divisions/:divisionId/fee-payments", ...CAMPUS_FEES_PERM, getDivisionFeePayments);
 router.patch("/divisions/:divisionId/fee-payments", ...CAMPUS_FEES_PERM, updateFeePayment);
+router.patch("/divisions/:divisionId/students/:studentId/detail-fields", ...CAMPUS_FEES_PERM, updateStudentDetailField);
 
 // Feed upload — campus feed OR class overview (VIEW)
 const FEED_WRITE = [...A, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW")];

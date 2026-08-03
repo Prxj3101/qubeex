@@ -1032,6 +1032,67 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
   }
 });
 
+// ── GET /student/fees — own fee structure + own payment status only ──────────
+// Read-only, own-data-only: the fee structure (amounts/bank details/rules) is
+// division-wide and shared with every student in the division, but payment
+// records are filtered to this student's own — a student must never see a
+// classmate's payment status.
+router.get("/fees", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+
+    const student = await prisma.student.findFirst({
+      where: { userId, institutionId },
+      select: { id: true, divisionId: true, extraDetailFields: true },
+    });
+    if (!student || !student.divisionId) {
+      res.json({ success: true, data: { structure: null, payments: [], extraDetailFields: null } });
+      return;
+    }
+
+    const structure = await (prisma.divisionFeeStructure as any).findFirst({
+      where: { divisionId: student.divisionId, institutionId },
+    });
+
+    const payments = await prisma.studentFeePayment.findMany({
+      where: { institutionId, studentId: student.id },
+      select: { feeMonthId: true, status: true, paidDate: true, remark: true, extraFields: true, extraStructureIds: true },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        structure: structure
+          ? {
+              feeStructures: structure.feeStructures,
+              feeMonths: structure.feeMonths,
+              bankDetails: structure.bankDetails,
+              qrImageUrl: structure.qrImageUrl,
+              extraColumns: structure.extraColumns,
+              studentFields: structure.extraStudentFields,
+              generalRemark: structure.generalRemark,
+              feeCardTheme: structure.feeCardTheme ?? null,
+              schoolLogoUrl: structure.schoolLogoUrl ?? null,
+              schoolName: structure.schoolName ?? null,
+              rulesAndRegs: structure.rulesAndRegs ?? [],
+            }
+          : null,
+        payments: payments.map((p) => ({
+          feeMonthId: p.feeMonthId,
+          status: p.status === "PAID" ? "PAID" : "PENDING",
+          paidDate: p.paidDate,
+          remark: p.remark,
+          extraFields: (p.extraFields as Record<string, string> | null) ?? null,
+          extraStructureIds: (p.extraStructureIds as string[] | null) ?? null,
+        })),
+        extraDetailFields: (student.extraDetailFields as Record<string, string> | null) ?? null,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ── GET /student/feed/debug — temp: verify student division & class post counts ─
 router.get("/feed/debug", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

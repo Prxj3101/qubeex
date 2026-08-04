@@ -127,7 +127,7 @@ router.delete("/feed/posts/:id", ...FEED_WRITE, deletePost);
 
 // Attendance — strict: CAMPUS_ATTENDANCE only
 const ATTENDANCE_PERM = [...A, requirePermission("CAMPUS_ATTENDANCE")];
-router.get("/divisions/:divisionId/students", ...A, requirePermission("CAMPUS_ATTENDANCE", "CAMPUS_MANAGE"), getDivisionStudents);
+router.get("/divisions/:divisionId/students", ...A, requirePermission("CAMPUS_ATTENDANCE", "CAMPUS_MANAGE", "CAMPUS_FEES"), getDivisionStudents);
 router.get("/divisions/:divisionId/students/:studentId/stats", ...CAMPUS_MANAGE_PERM, getStudentStats);
 router.patch("/divisions/:divisionId/students/:studentId", ...CAMPUS_MANAGE_PERM, updateStudentStatus);
 router.post("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANAGE_PERM, reportStudent);

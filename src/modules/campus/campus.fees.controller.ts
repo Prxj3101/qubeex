@@ -24,9 +24,15 @@ const feeStructureSchema = z.object({
   name: z.string().min(1).max(100),
   // "EVENT" kept for backward compatibility with any structures saved before
   // the frontend renamed this type to "PENALTY" (Penalty / Fine).
-  type: z.enum(["REGULAR", "ADDON", "EVENT", "PENALTY", "ONE_TIME"]),
+  type: z.enum(["REGULAR", "ADDON", "EVENT", "PENALTY", "ONE_TIME", "BUS", "LATE_FEE"]),
   color: z.string(),
   items: z.array(feeItemSchema),
+  // Tracks whether this structure was created from Fee Setup's general "Add
+  // Structure" button, or from a student's fee card "+" (per-student extra).
+  // Lets the admin filter the Fee Structures list by source. Optional/absent
+  // for structures saved before this field existed — the frontend treats a
+  // missing origin as "setup" so nothing old disappears from either list.
+  origin: z.enum(["setup", "student"]).optional(),
 });
 
 const feeMonthSchema = z.object({
@@ -55,7 +61,7 @@ const bankDetailsSchema = z.object({
 const studentFieldSchema = z.object({
   id: z.string(),
   kind: z.enum(["default", "custom"]),
-  defaultKey: z.enum(["name", "rollNo", "studentId", "class", "division"]).optional(),
+  defaultKey: z.enum(["name", "rollNo", "studentId", "class", "division", "bus"]).optional(),
   label: z.string(),
   value: z.string().optional(),
 });

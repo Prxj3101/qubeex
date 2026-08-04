@@ -496,7 +496,7 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
     let marksPct: number | null = null;
     let classRank: number | null = null;
     let totalStudents = 0;
-    let leaderboard: { rank: number; name: string; rollNo: string; pct: number; isMe: boolean }[] = [];
+    let leaderboard: { rank: number; name: string; rollNo: string; pct: number; isMe: boolean; avatarUrl: string | null }[] = [];
 
     if (divisionId) {
       const marksheet = await prisma.marksheet.findFirst({
@@ -513,7 +513,7 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
           }),
           prisma.student.findMany({
             where: { divisionId, institutionId, status: "ACTIVE" },
-            select: { id: true, rollNo: true, user: { select: { name: true } } },
+            select: { id: true, rollNo: true, avatarUrl: true, user: { select: { name: true } } },
           }),
         ]);
 
@@ -544,6 +544,7 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
             id: s.id,
             name: s.user.name ?? "Unknown",
             rollNo: s.rollNo ?? "",
+            avatarUrl: s.avatarUrl ?? null,
             total: totals.get(s.id) ?? 0,
             pct: grandMax > 0 ? Math.round(((totals.get(s.id) ?? 0) / grandMax) * 100) : 0,
           }))
@@ -555,6 +556,7 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
           rollNo: s.rollNo,
           pct: s.pct,
           isMe: s.id === student.id,
+          avatarUrl: s.avatarUrl,
         }));
       }
     }

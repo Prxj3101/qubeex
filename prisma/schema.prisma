@@ -742,9 +742,8 @@ model StudentRemark {
   actionTaken   String?
   status        RemarkStatus   @default(ACTIVE)
 
-  attachmentUrl    String?
-  attachmentType   String?
-  attachmentName   String?
+  // Array of { url, name, type } — supports multiple attachments per report.
+  attachments Json @default("[]")
 
   reportedByUserId String
   reportedByUser   User        @relation("StudentRemarkReporter", fields: [reportedByUserId], references: [id])

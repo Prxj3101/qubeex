@@ -1,6 +1,6 @@
 // src/services/remark.service.ts
 import { prisma } from "../utils/prisma";
-import { CreateRemarkInput, ReviewRemarkInput } from "./remark.schema";
+import { CreateRemarkInput, ReviewRemarkInput, RemarkAttachment } from "./remark.schema";
 
 export interface StudentRemarkDTO {
   id: string;
@@ -20,9 +20,7 @@ export interface StudentRemarkDTO {
   role: string;
   status: "open" | "under_review" | "resolved" | "rejected" | "appealed";
   actionTaken?: string;
-  attachmentUrl?: string;
-  attachmentType?: string;
-  attachmentName?: string;
+  attachments: RemarkAttachment[];
   assignedToName?: string;
   reviewRemark?: string;
   reviewedBy?: string;
@@ -44,9 +42,7 @@ type RemarkRow = {
   subject: string | null;
   status: "ACTIVE" | "UNDER_REVIEW" | "RESOLVED" | "REJECTED" | "APPEALED";
   actionTaken: string | null;
-  attachmentUrl: string | null;
-  attachmentType: string | null;
-  attachmentName: string | null;
+  attachments: unknown;
   reportedByRole: string;
   reportedByUser: { name: string | null };
   assignedToUserId: string | null;
@@ -55,6 +51,17 @@ type RemarkRow = {
   reviewedAt: Date | null;
   reviewedBy: { name: string | null } | null;
 };
+
+// `attachments` is a Json column — parse defensively rather than trust the
+// shape, since old rows or bad writes could leave it as null/malformed.
+function parseAttachments(value: unknown): RemarkAttachment[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (a): a is RemarkAttachment =>
+      !!a && typeof a === "object" && typeof (a as RemarkAttachment).url === "string" &&
+      typeof (a as RemarkAttachment).name === "string" && typeof (a as RemarkAttachment).type === "string"
+  );
+}
 
 function formatRemarkDate(d: Date): string {
   const day = d.getDate();
@@ -95,9 +102,7 @@ function toDTO(row: RemarkRow, viewer: { userId: string; role: string }): Studen
     role: row.reportedByRole,
     status: STATUS_MAP[row.status],
     actionTaken: row.actionTaken ?? undefined,
-    attachmentUrl: row.attachmentUrl ?? undefined,
-    attachmentType: row.attachmentType ?? undefined,
-    attachmentName: row.attachmentName ?? undefined,
+    attachments: parseAttachments(row.attachments),
     assignedToName: row.assignedTo?.name ?? undefined,
     reviewRemark: row.reviewRemark ?? undefined,
     reviewedBy: row.reviewedBy?.name ?? undefined,
@@ -133,7 +138,7 @@ export async function createStudentRemark(params: {
   });
   const assignedToUserId = classTeacherAssignment?.teacher.userId ?? null;
 
-  const type = data.severity === "HIGH" ? "RED" : "YELLOW";
+  const type = data.type;
 
   const row = await prisma.studentRemark.create({
     data: {
@@ -149,9 +154,7 @@ export async function createStudentRemark(params: {
       detail: data.detail,
       subject: data.subject,
       actionTaken: data.actionTaken,
-      attachmentUrl: data.attachmentUrl,
-      attachmentType: data.attachmentType,
-      attachmentName: data.attachmentName,
+      attachments: data.attachments ?? [],
     },
     include: REMARK_INCLUDE,
   });
@@ -203,6 +206,24 @@ export async function listSubmittedRemarks(
   });
 
   return rows.map((r) => toDTO(r, viewer));
+}
+
+/** Admin-only: permanently deletes a report/remark card. Removes it from every
+ * view that reads it (admin reports inbox, teacher's assigned reports, and the
+ * student's own Flags & Warnings board) since they all read from the same row. */
+export async function deleteStudentRemark(params: {
+  remarkId: string;
+  institutionId: string;
+}): Promise<void> {
+  const { remarkId, institutionId } = params;
+
+  const existing = await prisma.studentRemark.findFirst({
+    where: { id: remarkId, institutionId },
+    select: { id: true },
+  });
+  if (!existing) throw { status: 404, message: "Report not found" };
+
+  await prisma.studentRemark.delete({ where: { id: remarkId } });
 }
 
 export async function reviewStudentRemark(params: {

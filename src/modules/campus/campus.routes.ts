@@ -48,8 +48,10 @@ import {
   getStudentRemarks,
   getReportsInbox,
   reviewReport,
+  deleteReport,
   getStudentMarksheet,
   getStudentAttendanceTrend,
+  getStudentAttendanceDetail,
   getDivisionFeePayments,
   updateFeePayment,
   updateStudentDetailField,
@@ -134,8 +136,10 @@ router.post("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANA
 router.get("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANAGE_PERM, getStudentRemarks);
 router.get("/reports/inbox", ...CAMPUS_MANAGE_PERM, getReportsInbox);
 router.patch("/reports/:remarkId", ...CAMPUS_MANAGE_PERM, reviewReport);
+router.delete("/reports/:remarkId", ...CAMPUS_MANAGE_PERM, deleteReport);
 router.get("/divisions/:divisionId/students/:studentId/marksheet", ...CAMPUS_MANAGE_PERM, getStudentMarksheet);
 router.get("/divisions/:divisionId/students/:studentId/attendance-trend", ...CAMPUS_MANAGE_PERM, getStudentAttendanceTrend);
+router.get("/divisions/:divisionId/students/:studentId/attendance", ...CAMPUS_MANAGE_PERM, getStudentAttendanceDetail);
 router.get("/divisions/:divisionId/leaderboard", ...A, requirePermission("CAMPUS_VIEW", "CAMPUS_MANAGE"), getDivisionLeaderboard);
 router.get("/divisions/:divisionId/attendance/holidays", ...ATTENDANCE_PERM, getAttendanceHolidays);
 router.get("/divisions/:divisionId/attendance/daily", ...ATTENDANCE_PERM, getDailyAttendance);

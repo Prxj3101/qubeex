@@ -15,6 +15,7 @@ import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
 import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
 import { getStudentAttendanceTrendData } from "../../services/studentAttendanceTrend.service";
+import { getStudentAttendanceDetailData } from "../../services/studentAttendanceDetail.service";
 
 const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -1877,6 +1878,35 @@ router.get(
       await assertDivisionAccess(userId, institutionId, divisionId);
 
       const data = await getStudentAttendanceTrendData(studentId, institutionId);
+      res.json({ success: true, data });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+// ── GET /classes/:divisionId/students/:studentId/attendance ──────────────────
+router.get(
+  "/classes/:divisionId/students/:studentId/attendance",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const data = await getStudentAttendanceDetailData(studentId, institutionId);
       res.json({ success: true, data });
     } catch (err: unknown) {
       const e = err as { status?: number; message?: string };

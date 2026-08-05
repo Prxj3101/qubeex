@@ -5,11 +5,12 @@ import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 import { createRemarkSchema, reviewRemarkSchema } from "../../services/remark.schema";
-import { createStudentRemark, listStudentRemarks, listAssignedRemarks, reviewStudentRemark } from "../../services/remark.service";
+import { createStudentRemark, listStudentRemarks, listAssignedRemarks, reviewStudentRemark, deleteStudentRemark } from "../../services/remark.service";
 import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
 import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
 import { getStudentAttendanceTrendData } from "../../services/studentAttendanceTrend.service";
+import { getStudentAttendanceDetailData } from "../../services/studentAttendanceDetail.service";
 import { getDivisionFeePaymentsData, upsertFeePaymentData } from "../../services/feePayment.service";
 import { upsertFeePaymentSchema } from "../../services/feePayment.schema";
 
@@ -165,6 +166,35 @@ export const reviewReport = async (req: AuthRequest, res: Response, next: NextFu
   }
 };
 
+// DELETE /admin/campus/reports/:remarkId — admin deletes a card entirely.
+// It disappears from the admin inbox, the teacher's assigned reports, and the
+// student's own Flags & Warnings board in one shot, since they all read the
+// same StudentRemark row.
+export const deleteReport = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const remarkId = req.params.remarkId as string;
+
+    await deleteStudentRemark({ remarkId, institutionId });
+
+    logAudit("STUDENT_REPORT_DELETED", {
+      userId: req.user!.userId,
+      actorRole: req.user!.role,
+      institutionId,
+      details: `Deleted student report card ${remarkId}`,
+    });
+
+    res.json({ success: true, data: { id: remarkId } });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) {
+      res.status(e.status).json({ success: false, error: e.message });
+      return;
+    }
+    next(err);
+  }
+};
+
 // GET /admin/campus/divisions/:divisionId/students/:studentId/marksheet
 export const getStudentMarksheet = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -195,6 +225,22 @@ export const getStudentAttendanceTrend = async (req: AuthRequest, res: Response,
     await findStudentInDivision(studentId, divisionId, institutionId);
 
     const data = await getStudentAttendanceTrendData(studentId, institutionId);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET /admin/campus/divisions/:divisionId/students/:studentId/attendance
+export const getStudentAttendanceDetail = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const divisionId = req.params.divisionId as string;
+    const studentId = req.params.studentId as string;
+
+    await findStudentInDivision(studentId, divisionId, institutionId);
+
+    const data = await getStudentAttendanceDetailData(studentId, institutionId);
     res.json({ success: true, data });
   } catch (err) {
     next(err);

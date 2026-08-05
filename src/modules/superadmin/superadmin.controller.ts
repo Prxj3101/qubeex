@@ -349,6 +349,25 @@ export const getPlans = async (
   }
 };
 
+export const getInstitutionUsers = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const now = new Date();
+    const year = req.query.year ? parseInt(req.query.year as string, 10) : now.getFullYear();
+    const month = req.query.month ? parseInt(req.query.month as string, 10) : now.getMonth() + 1;
+    if (Number.isNaN(year) || Number.isNaN(month) || month < 1 || month > 12) {
+      throw new BadRequestError("Invalid year/month");
+    }
+    const data = await service.getInstitutionUsers(req.params.id as string, year, month);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getInstitutionPlan = async (
   req: AuthRequest,
   res: Response,

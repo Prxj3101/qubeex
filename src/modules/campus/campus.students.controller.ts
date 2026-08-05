@@ -65,6 +65,7 @@ export const updateStudentStatus = async (req: AuthRequest, res: Response, next:
     const [updated] = await prisma.$transaction([
       prisma.student.update({ where: { id: studentId }, data: { status } }),
       prisma.user.update({ where: { id: student.userId }, data: { isActive: status === "ACTIVE" } }),
+      prisma.userStatusEvent.create({ data: { userId: student.userId, institutionId, isActive: status === "ACTIVE" } }),
     ]);
 
     logAudit(status === "INACTIVE" ? "STUDENT_DEACTIVATED" : "STUDENT_ACTIVATED", {

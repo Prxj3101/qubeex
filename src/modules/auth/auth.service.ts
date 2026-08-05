@@ -3,6 +3,7 @@ import { redis, isRedisReady } from "../../utils/redis";
 import { hashToken } from "../../utils/token";
 import { logAudit } from "../../services/audit.service";
 import { UnauthorizedError, BadRequestError } from "../../utils/errors";
+import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -95,6 +96,7 @@ export const acceptInvite = async (token: string, password: string, instituteId:
       },
       omit: { password: true },
     });
+    await recordUserStatusEvent(tx, { userId: updatedUser.id, institutionId: updatedUser.institutionId, isActive: true });
 
     await tx.invite.update({
       where: { id: invite.id },

@@ -3,6 +3,30 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
 import { redis } from "../../utils/redis";
+import { getInstitutionUsersForMonth } from "../../services/userDirectory.service";
+
+// ── GET /admin/insights/users?year=YYYY&month=MM — billable users for a given month ──
+// Defaults to the current month. "month" is 1-12. Status reflects whether
+// the user was active on at least one day of that month (see
+// userDirectory.service.ts for the exact reconstruction rule).
+export const getUsersInsights = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+
+    const now = new Date();
+    const year = req.query.year ? parseInt(req.query.year as string, 10) : now.getFullYear();
+    const month = req.query.month ? parseInt(req.query.month as string, 10) : now.getMonth() + 1;
+    if (Number.isNaN(year) || Number.isNaN(month) || month < 1 || month > 12) {
+      throw new BadRequestError("Invalid year/month");
+    }
+
+    const data = await getInstitutionUsersForMonth(institutionId, year, month);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
 
 // ── GET /admin/insights/attendance — overall (session-cumulative) and current-month %, per standard → division ──
 // Mirrors the per-division definitions used on the class Attendance tab

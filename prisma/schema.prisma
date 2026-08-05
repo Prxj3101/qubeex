@@ -200,6 +200,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   auditLogs AuditLog[]
+  statusEvents UserStatusEvent[]
   teacher   Teacher?
   student   Student?
   subAdmin      SubAdmin?
@@ -436,6 +437,26 @@ model AuditLog {
   @@index([createdAt(sort: Desc)])
   @@index([action])
   @@index([actorRole])
+  @@index([institutionId])
+}
+
+// Records every isActive transition for a user (created, activated, deactivated,
+// invite accepted) with a timestamp. Used to reconstruct, for any past month,
+// whether a user was active on at least one day of that month — a plain
+// current-state boolean can't answer that retroactively, and AuditLog's
+// ACTIVATED/DEACTIVATED entries store the target user's identity inconsistently
+// across call sites (business code vs primary key), so this is a clean,
+// purpose-built source of truth instead of parsing AuditLog metadata.
+model UserStatusEvent {
+  id            String   @id @default(uuid())
+  userId        String
+  institutionId String?
+  isActive      Boolean
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
   @@index([institutionId])
 }
 

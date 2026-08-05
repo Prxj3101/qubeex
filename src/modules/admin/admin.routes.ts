@@ -12,7 +12,7 @@ import { listNotifications, markNotificationRead, dismissNotification, markAllNo
 import { getOverview } from "./overview.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, assignClassTeacher } from "./marksheet.controller";
 import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
-import { getAttendanceInsights, getFeeInsights, getAiUsageInsights } from "./insights.controller";
+import { getAttendanceInsights, getFeeInsights, getAiUsageInsights, getUsersInsights } from "./insights.controller";
 import {
   getProfile as sharedGetProfile,
   updateProfile as sharedUpdateProfile,
@@ -195,5 +195,6 @@ router.get("/payment-settings", ...INSIGHTS_SUBSCRIPTION_PERM, getPaymentSetting
 router.get("/insights/attendance", ...INSIGHTS_ANALYTICS_PERM, getAttendanceInsights);
 router.get("/insights/fees", ...INSIGHTS_ANALYTICS_PERM, getFeeInsights);
 router.get("/insights/ai-usage", ...INSIGHTS_ANALYTICS_PERM, getAiUsageInsights);
+router.get("/insights/users", ...A, getUsersInsights);
 
 export default router;

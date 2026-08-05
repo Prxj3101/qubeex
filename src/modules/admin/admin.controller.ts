@@ -9,6 +9,7 @@ import { generateToken, hashToken } from "../../utils/token";
 import { sendTeacherInviteEmail, sendSubAdminInviteEmail } from "../../services/email.service";
 import { cacheSubAdminPermissions } from "../../middlewares/requirePermission.middleware";
 import { generateUserId } from "../../utils/userId";
+import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 import { z } from "zod";
 
 const updateInstitutionSchema = z.object({
@@ -476,6 +477,7 @@ export const addTeacher = async (
           isActive: false,
         },
       });
+      await recordUserStatusEvent(tx, { userId: newUser.id, institutionId: institutionId!, isActive: false });
 
       const newTeacher = await tx.teacher.create({
         data: {
@@ -666,6 +668,9 @@ export const updateTeacher = async (
       if (name !== undefined) userChanges.name = name;
       if (Object.keys(userChanges).length > 0) {
         await tx.user.update({ where: { id: existing.userId }, data: userChanges });
+      }
+      if (userChanges.isActive !== undefined) {
+        await recordUserStatusEvent(tx, { userId: existing.userId, institutionId: institutionId!, isActive: userChanges.isActive });
       }
 
       return tx.teacher.update({
@@ -928,6 +933,7 @@ export const addStudent = async (req: AuthRequest, res: Response, next: NextFunc
           isActive: true,
         },
       });
+      await recordUserStatusEvent(tx, { userId: newUser.id, institutionId, isActive: true });
 
       return tx.student.create({
         data: {
@@ -1026,6 +1032,9 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
       if (name !== undefined) userChanges.name = name;
       if (Object.keys(userChanges).length > 0) {
         await tx.user.update({ where: { id: existing.userId }, data: userChanges });
+      }
+      if (userChanges.isActive !== undefined) {
+        await recordUserStatusEvent(tx, { userId: existing.userId, institutionId, isActive: userChanges.isActive });
       }
 
       return tx.student.update({
@@ -1317,6 +1326,7 @@ export const addSubAdmin = async (
           displayId,
         },
       });
+      await recordUserStatusEvent(tx, { userId: newUser.id, institutionId: institutionId!, isActive: false });
 
       const newSubAdmin = await tx.subAdmin.create({
         data: {
@@ -1619,6 +1629,7 @@ export const deactivateSubAdmin = async (
       where: { id: subAdmin.userId },
       data: { isActive: false },
     });
+    await recordUserStatusEvent(prisma, { userId: subAdmin.userId, institutionId: institutionId!, isActive: false });
 
     logAudit("SUBADMIN_DEACTIVATED", {
       userId: user.userId,
@@ -1658,6 +1669,7 @@ export const activateSubAdmin = async (
       where: { id: subAdmin.userId },
       data: { isActive: true },
     });
+    await recordUserStatusEvent(prisma, { userId: subAdmin.userId, institutionId: institutionId!, isActive: true });
 
     logAudit("SUBADMIN_ACTIVATED", {
       userId: user.userId,

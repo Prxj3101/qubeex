@@ -16,6 +16,7 @@ import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
 import { getStudentAttendanceTrendData } from "../../services/studentAttendanceTrend.service";
 import { getStudentAttendanceDetailData } from "../../services/studentAttendanceDetail.service";
+import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 
 const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -608,6 +609,7 @@ router.post(
             mustChangePassword: true,
           },
         });
+        await recordUserStatusEvent(tx, { userId: newUser.id, institutionId, isActive: true });
 
         return tx.student.create({
           data: {
@@ -957,6 +959,7 @@ router.patch(
           where: { id: student.userId },
           data: { isActive: status === "ACTIVE" },
         });
+        await recordUserStatusEvent(tx, { userId: student.userId, institutionId, isActive: status === "ACTIVE" });
       });
 
       const statusUser = await prisma.user.findUnique({ where: { id: student.userId }, select: { name: true } });

@@ -11,6 +11,8 @@ import {
 import { cancelPaymentLink } from "../../services/razorpay.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
 import { generateUserId } from "../../utils/userId";
+import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
+import { getInstitutionUsersForMonth } from "../../services/userDirectory.service";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooManyRequestsError } from "../../utils/errors";
 import { getCache, setCache, delCache } from "../../utils/cache";
 import bcrypt from "bcrypt";
@@ -393,7 +395,7 @@ export const createInstitutionService = async (data: any) => {
     });
 
     const adminDisplayId = await generateUserId(newInstitution.id, "A", tx);
-    await tx.user.create({
+    const adminUser = await tx.user.create({
       data: {
         name: adminName,
         email: adminEmail,
@@ -403,6 +405,7 @@ export const createInstitutionService = async (data: any) => {
         displayId: adminDisplayId,
       },
     });
+    await recordUserStatusEvent(tx, { userId: adminUser.id, institutionId: newInstitution.id, isActive: false });
 
     await tx.invite.create({
       data: {
@@ -1043,6 +1046,12 @@ function computeUsageMeters(planName: string, addons: unknown, storageGbUsed = 0
 
 export const getPlans = async () => {
   return prisma.plan.findMany({ orderBy: { basePrice: "asc" } });
+};
+
+export const getInstitutionUsers = async (id: string, year: number, month: number) => {
+  const institution = await prisma.institution.findUnique({ where: { id }, select: { id: true } });
+  if (!institution) throw new NotFoundError("Institution not found");
+  return getInstitutionUsersForMonth(id, year, month);
 };
 
 export const getInstitutionPlan = async (id: string) => {

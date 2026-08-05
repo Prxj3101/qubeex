@@ -9,8 +9,8 @@ import { z } from "zod";
 import multer from "multer";
 import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
-import { createRemarkSchema, reviewRemarkSchema } from "../../services/remark.schema";
-import { createStudentRemark, listStudentRemarks, listAssignedRemarks, listSubmittedRemarks, reviewStudentRemark } from "../../services/remark.service";
+import { createRemarkSchema, reviewRemarkSchema, editRemarkSchema } from "../../services/remark.schema";
+import { createStudentRemark, listStudentRemarks, listAssignedRemarks, listSubmittedRemarks, reviewStudentRemark, editStudentRemark } from "../../services/remark.service";
 import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
 import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
@@ -1812,6 +1812,33 @@ router.patch("/reports/:remarkId", ...T, async (req: AuthRequest, res: Response,
     const remarkId = req.params.remarkId as string;
     const data = reviewRemarkSchema.parse(req.body);
     const updated = await reviewStudentRemark({
+      remarkId,
+      institutionId,
+      viewer: { userId, role: "TEACHER" },
+      data,
+    });
+    res.json({ success: true, data: updated });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) {
+      res.status(e.status).json({ success: false, error: e.message });
+      return;
+    }
+    next(err);
+  }
+});
+
+// ── PATCH /reports/:remarkId/edit — reporter edits their own card's content ──
+router.patch("/reports/:remarkId/edit", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution" });
+      return;
+    }
+    const remarkId = req.params.remarkId as string;
+    const data = editRemarkSchema.parse(req.body);
+    const updated = await editStudentRemark({
       remarkId,
       institutionId,
       viewer: { userId, role: "TEACHER" },

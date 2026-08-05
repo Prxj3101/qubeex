@@ -1,6 +1,6 @@
 // src/services/remark.service.ts
 import { prisma } from "../utils/prisma";
-import { CreateRemarkInput, ReviewRemarkInput, RemarkAttachment } from "./remark.schema";
+import { CreateRemarkInput, ReviewRemarkInput, EditRemarkInput, RemarkAttachment } from "./remark.schema";
 
 export interface StudentRemarkDTO {
   id: string;
@@ -27,6 +27,8 @@ export interface StudentRemarkDTO {
   reviewedAt?: string;
   /** True if the current viewer (passed in at read time) may action this report. */
   canReview: boolean;
+  /** True only for the person who originally filed this report — edit is not admin-wide. */
+  canEdit: boolean;
 }
 
 type RemarkRow = {
@@ -43,6 +45,7 @@ type RemarkRow = {
   status: "ACTIVE" | "UNDER_REVIEW" | "RESOLVED" | "REJECTED" | "APPEALED";
   actionTaken: string | null;
   attachments: unknown;
+  reportedByUserId: string;
   reportedByRole: string;
   reportedByUser: { name: string | null };
   assignedToUserId: string | null;
@@ -108,6 +111,7 @@ function toDTO(row: RemarkRow, viewer: { userId: string; role: string }): Studen
     reviewedBy: row.reviewedBy?.name ?? undefined,
     reviewedAt: row.reviewedAt ? formatRemarkDate(row.reviewedAt) : undefined,
     canReview: isActionable && (isAdmin || isAssignee),
+    canEdit: row.reportedByUserId === viewer.userId,
   };
 }
 
@@ -224,6 +228,43 @@ export async function deleteStudentRemark(params: {
   if (!existing) throw { status: 404, message: "Report not found" };
 
   await prisma.studentRemark.delete({ where: { id: remarkId } });
+}
+
+/** Only the original reporter can edit their own card's content — this is
+ * intentionally NOT admin-wide, unlike delete. Editing what someone else
+ * personally reported would misattribute their account of events. */
+export async function editStudentRemark(params: {
+  remarkId: string;
+  institutionId: string;
+  viewer: { userId: string; role: string };
+  data: EditRemarkInput;
+}): Promise<StudentRemarkDTO> {
+  const { remarkId, institutionId, viewer, data } = params;
+
+  const existing = await prisma.studentRemark.findFirst({
+    where: { id: remarkId, institutionId },
+    select: { reportedByUserId: true },
+  });
+  if (!existing) throw { status: 404, message: "Report not found" };
+  if (existing.reportedByUserId !== viewer.userId) {
+    throw { status: 403, message: "Only the person who filed this report can edit it" };
+  }
+
+  const row = await prisma.studentRemark.update({
+    where: { id: remarkId },
+    data: {
+      ...(data.type !== undefined && { type: data.type }),
+      ...(data.category !== undefined && { category: data.category }),
+      ...(data.title !== undefined && { title: data.title }),
+      ...(data.detail !== undefined && { detail: data.detail }),
+      ...(data.subject !== undefined && { subject: data.subject || null }),
+      ...(data.actionTaken !== undefined && { actionTaken: data.actionTaken || null }),
+      ...(data.attachments !== undefined && { attachments: data.attachments }),
+    },
+    include: REMARK_INCLUDE,
+  });
+
+  return toDTO(row, viewer);
 }
 
 export async function reviewStudentRemark(params: {

@@ -4,8 +4,8 @@ import { prisma } from "../../utils/prisma";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
-import { createRemarkSchema, reviewRemarkSchema } from "../../services/remark.schema";
-import { createStudentRemark, listStudentRemarks, listAssignedRemarks, reviewStudentRemark, deleteStudentRemark } from "../../services/remark.service";
+import { createRemarkSchema, reviewRemarkSchema, editRemarkSchema } from "../../services/remark.schema";
+import { createStudentRemark, listStudentRemarks, listAssignedRemarks, reviewStudentRemark, deleteStudentRemark, editStudentRemark } from "../../services/remark.service";
 import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
 import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
@@ -150,6 +150,29 @@ export const reviewReport = async (req: AuthRequest, res: Response, next: NextFu
     const remarkId = req.params.remarkId as string;
     const data = reviewRemarkSchema.parse(req.body);
     const updated = await reviewStudentRemark({
+      remarkId,
+      institutionId,
+      viewer: { userId: req.user!.userId, role: req.user!.role },
+      data,
+    });
+    res.json({ success: true, data: updated });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) {
+      res.status(e.status).json({ success: false, error: e.message });
+      return;
+    }
+    next(err);
+  }
+};
+
+// PATCH /admin/campus/reports/:remarkId/edit — reporter edits their own card's content
+export const editReport = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const remarkId = req.params.remarkId as string;
+    const data = editRemarkSchema.parse(req.body);
+    const updated = await editStudentRemark({
       remarkId,
       institutionId,
       viewer: { userId: req.user!.userId, role: req.user!.role },

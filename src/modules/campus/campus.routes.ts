@@ -52,6 +52,7 @@ import {
   getStudentMarksheet,
   getStudentAttendanceTrend,
   getStudentAttendanceDetail,
+  editReport,
   getDivisionFeePayments,
   updateFeePayment,
   updateStudentDetailField,
@@ -136,6 +137,7 @@ router.post("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANA
 router.get("/divisions/:divisionId/students/:studentId/remarks", ...CAMPUS_MANAGE_PERM, getStudentRemarks);
 router.get("/reports/inbox", ...CAMPUS_MANAGE_PERM, getReportsInbox);
 router.patch("/reports/:remarkId", ...CAMPUS_MANAGE_PERM, reviewReport);
+router.patch("/reports/:remarkId/edit", ...CAMPUS_MANAGE_PERM, editReport);
 router.delete("/reports/:remarkId", ...CAMPUS_MANAGE_PERM, deleteReport);
 router.get("/divisions/:divisionId/students/:studentId/marksheet", ...CAMPUS_MANAGE_PERM, getStudentMarksheet);
 router.get("/divisions/:divisionId/students/:studentId/attendance-trend", ...CAMPUS_MANAGE_PERM, getStudentAttendanceTrend);

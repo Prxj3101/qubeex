@@ -53,6 +53,8 @@ import {
   // Billing
   getBills,
   updateBillStatus,
+  getPaymentSettings,
+  updatePaymentSettings,
   // Addons
   updateAddons,
   resendBill,
@@ -100,6 +102,8 @@ router.post("/institutions/:id/trial/churn",           SA, markTrialChurned);
 // ─── Billing ──────────────────────────────────────────────────────────────────
 router.get("/institutions/:id/bills",                       SA, getBills);
 router.patch("/institutions/:id/bills/:billId/status",      SA, updateBillStatus);
+router.get("/payment-settings",                              SA, getPaymentSettings);
+router.patch("/payment-settings",                            SA, updatePaymentSettings);
 router.post("/institutions/:id/bills/:billId/resend",       SA, resendBill);
 
 // ─── Addons ───────────────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
 import { redis, isRedisReady } from "../../utils/redis";
-import { getRate } from "../../services/billing.service";
+import { getRate, PLAN_AI_TOKENS } from "../../services/billing.service";
 import { getInstitutionStorageBytes } from "../../services/storage.service";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -99,24 +99,6 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
         }),
       ]);
 
-    let aiUsage = { used: 0, limit: 0 };
-    if (redis && isRedisReady) {
-      try {
-        const usageKey = `ai:usage:institution:${institutionId}`;
-        const limitKey = `ai:limit:institution:${institutionId}`;
-        const [usedRaw, limitRaw] = await Promise.all([
-          redis.get(usageKey),
-          redis.get(limitKey),
-        ]);
-        aiUsage = {
-          used: Number(usedRaw ?? 0) || 0,
-          limit: Number(limitRaw ?? 0) || 0,
-        };
-      } catch {
-        aiUsage = { used: 0, limit: 0 };
-      }
-    }
-
     if (!institution) throw new BadRequestError("Institution not found");
 
     const daysSinceCreation = Math.floor(
@@ -146,6 +128,28 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
     const billedUsers = Math.max(200, userCount);
     const perUserRate = isTrial ? 0 : getRate(planName as "BASIC" | "PRO", billedUsers);
     const estMonthlyBill = perUserRate * billedUsers;
+
+    // ── AI token limit ──
+    // Derived from the plan (+ any active extraAiTokens addon) — Redis only
+    // tracks the running "used" counter, the limit itself is never stored there.
+    const tokenPlanName: "BASIC" | "PRO" | "TRIAL" = isTrial ? "TRIAL" : ((planName as "BASIC" | "PRO") ?? "BASIC");
+    const addons = (subscription?.addons && typeof subscription.addons === "object" && !Array.isArray(subscription.addons))
+      ? subscription.addons as Record<string, unknown>
+      : {};
+    const extraAiTokens = (addons.extraAiTokens as Array<{ active?: boolean; tokensPerMonth?: number }> ?? [])
+      .filter((t) => t.active)
+      .reduce((sum, t) => sum + (t.tokensPerMonth ?? 0), 0);
+    const aiTokenLimit = PLAN_AI_TOKENS[tokenPlanName] + extraAiTokens;
+
+    let aiUsage = { used: 0, limit: aiTokenLimit };
+    if (redis && isRedisReady) {
+      try {
+        const usedRaw = await redis.get(`ai:usage:institution:${institutionId}`);
+        aiUsage = { used: Number(usedRaw ?? 0) || 0, limit: aiTokenLimit };
+      } catch {
+        aiUsage = { used: 0, limit: aiTokenLimit };
+      }
+    }
 
     // ── Audit logs ──
     const auditLogs = recentLogs.map(log => ({
@@ -192,6 +196,8 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
           name: planName,
           isTrial,
           activationDate: subscription?.activationDate ?? null,
+          trialStartDate: subscription?.startDate ?? null,
+          trialDaysTotal: subscription?.trialDays ?? null,
           perUserRate,
           billedUsers,
           estMonthlyBill,
@@ -199,7 +205,11 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
             users: { used: userCount, limit: userLimit },
             storage: { used: storageUsedMb, limit: storageLimit },
             tests: { used: 0, limit: testLimit },
-            aiTokens: aiUsage,
+            aiTokens: {
+              ...aiUsage,
+              // Token pool is a calendar-month allowance — resets the 1st of next month.
+              resetsAt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString(),
+            },
           },
         },
         auditLogs,

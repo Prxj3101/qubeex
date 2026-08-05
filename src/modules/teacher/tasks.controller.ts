@@ -25,6 +25,7 @@ import {
   updateAssignmentSchema,
 } from "./tasks.schema";
 import { redis, isRedisReady } from "../../utils/redis";
+import { getAiTokenLimit } from "../../services/billing.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -63,12 +64,11 @@ async function checkTokenPool(institutionId: string): Promise<void> {
     if (redis) console.warn("[tasks] Redis configured but not ready — token pool check skipped");
     return;
   }
-  const [used, limit] = await Promise.all([
+  const [used, limitN] = await Promise.all([
     redis.get(`ai:usage:institution:${institutionId}`),
-    redis.get(`ai:limit:institution:${institutionId}`),
+    getAiTokenLimit(institutionId),
   ]);
   const usedN = Number(used ?? 0);
-  const limitN = Number(limit ?? 0);
   if (limitN > 0 && usedN >= limitN) {
     throw Object.assign(new Error("Token limit reached"), { statusCode: 429 });
   }

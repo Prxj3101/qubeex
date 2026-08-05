@@ -7,6 +7,7 @@ import { createFolderSchema, aiScanSchema, aiChatSchema, aiQuizSchema } from "./
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 import { redis, isRedisReady } from "../../utils/redis";
+import { getAiTokenLimit } from "../../services/billing.service";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const OpenAIModule = (process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY) ? require("openai") : null;
@@ -26,10 +27,8 @@ async function checkTokenPool(institutionId: string): Promise<void> {
     return;
   }
   const usageKey = `ai:usage:institution:${institutionId}`;
-  const limitKey = `ai:limit:institution:${institutionId}`;
-  const [used, limit] = await Promise.all([redis.get(usageKey), redis.get(limitKey)]);
+  const [used, limitN] = await Promise.all([redis.get(usageKey), getAiTokenLimit(institutionId)]);
   const usedN = Number(used ?? 0);
-  const limitN = Number(limit ?? 0);
   if (limitN > 0 && usedN >= limitN) {
     throw Object.assign(new Error("Token limit reached"), { statusCode: 429 });
   }

@@ -142,6 +142,17 @@ export const reviewReplySchema = z.object({
 
 export const updateBillStatusSchema = z.object({
   status: z.enum(["PAID", "PENDING"]),
+  paymentMethod: z.enum(["cash", "bank_transfer", "manual"]).optional(),
+});
+
+// ─── Platform Payment Settings ─────────────────────────────────────────────────
+
+export const updatePaymentSettingsSchema = z.object({
+  bankAccountName: z.string().trim().max(200).optional().or(z.literal("")),
+  bankAccountNumber: z.string().trim().max(50).optional().or(z.literal("")),
+  bankIfsc: z.string().trim().max(20).optional().or(z.literal("")),
+  bankName: z.string().trim().max(200).optional().or(z.literal("")),
+  upiId: z.string().trim().max(100).optional().or(z.literal("")),
 });
 
 const addonBillingCycleSchema = z.enum(["MONTHLY", "YEARLY"]);

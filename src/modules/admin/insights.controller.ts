@@ -4,14 +4,6 @@ import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
 import { redis } from "../../utils/redis";
 
-// Attendance dates are stored using the marking browser's local (IST) calendar
-// date, not UTC — en-CA formats as YYYY-MM-DD, which combined with the
-// Asia/Kolkata timezone gives the correct "today" regardless of what
-// timezone the server process itself runs in.
-function todayStr(): string {
-  return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-}
-
 // ── GET /admin/insights/attendance — overall (session-cumulative) and current-month %, per standard → division ──
 // Mirrors the per-division definitions used on the class Attendance tab
 // (campus.attendance.controller.ts#getAttendanceSummary): "Overall" is the
@@ -124,7 +116,10 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
   }
 };
 
-// ── GET /admin/insights/fees — most recent due month's paid/pending, per standard → division ──
+// ── GET /admin/insights/fees — overall (all past-due months) and current-month paid/pending, per standard → division ──
+// "Monthly" = the most recent due month's paid/pending split. "Overall" =
+// cumulative paid/pending across every fee month whose due date has already
+// passed this session, mirroring the Overall/Monthly split used for attendance.
 export const getFeeInsights = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId } = req.user!;
@@ -148,35 +143,69 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
       },
     });
 
-    const today = todayStr();
-    type FeeMonth = { id: string; dueDate: string };
+    const todayMs = Date.now();
+    const currentCalendarMonth = new Date().toLocaleDateString("en-US", { timeZone: "Asia/Kolkata", month: "long" });
+    type FeeMonth = { id: string; month: string; dueDate: string };
 
-    // Resolve "current" fee month per division: latest due month that has
-    // already reached its due date, falling back to the earliest upcoming one.
+    // dueDate is stored as a free-text string like "10 Aug 26" or "10 July 26"
+    // (see fees.tsx), not an ISO date — it must be parsed into a real Date
+    // before comparing, never compared as a string (lexicographic order bears
+    // no relation to chronological order for this format).
+    function dueDateMs(dueDate: string): number {
+      const t = new Date(dueDate).getTime();
+      return Number.isNaN(t) ? Infinity : t;
+    }
+
+    // Every past-due month per division (for "overall"), and the "current"
+    // one for "monthly" — matched by calendar month name (e.g. "August"
+    // while today is in August) rather than due-date, since a month's due
+    // date (e.g. the 10th) can still be ahead even though it's already that
+    // month and some students have already paid. Falls back to the closest
+    // due date if the schedule has no entry for the current calendar month.
+    const pastMonthsByDivision = new Map<string, string[]>();
     const currentMonthIdByDivision = new Map<string, string>();
     for (const s of standards) {
       for (const d of s.divisions) {
         const months = (d.feeStructure?.feeMonths as FeeMonth[] | null) ?? [];
         if (months.length === 0) continue;
-        const past = months.filter((m) => m.dueDate <= today).sort((a, b) => b.dueDate.localeCompare(a.dueDate));
-        const chosen = past[0] ?? [...months].sort((a, b) => a.dueDate.localeCompare(b.dueDate))[0];
-        if (chosen) currentMonthIdByDivision.set(d.id, chosen.id);
+        const past = months.filter((m) => dueDateMs(m.dueDate) <= todayMs).sort((a, b) => dueDateMs(a.dueDate) - dueDateMs(b.dueDate));
+        if (past.length > 0) pastMonthsByDivision.set(d.id, past.map((m) => m.id));
+
+        const thisMonth = months.find((m) => m.month === currentCalendarMonth);
+        if (thisMonth) {
+          currentMonthIdByDivision.set(d.id, thisMonth.id);
+        } else if (past.length > 0) {
+          currentMonthIdByDivision.set(d.id, past[past.length - 1].id);
+        } else {
+          const earliest = [...months].sort((a, b) => dueDateMs(a.dueDate) - dueDateMs(b.dueDate))[0];
+          if (earliest) currentMonthIdByDivision.set(d.id, earliest.id);
+        }
       }
     }
 
-    const feeMonthIds = Array.from(new Set(currentMonthIdByDivision.values()));
-    const payments = feeMonthIds.length
+    // Must include every division's "current" month id too, not just past-due
+    // ones — a division with no month past due yet still has a "current"
+    // (the earliest upcoming month), and students can be marked paid ahead
+    // of the due date, so that month's payments still need to be fetched.
+    const allFeeMonthIds = Array.from(new Set([
+      ...Array.from(pastMonthsByDivision.values()).flat(),
+      ...Array.from(currentMonthIdByDivision.values()),
+    ]));
+    const payments = allFeeMonthIds.length
       ? await prisma.studentFeePayment.findMany({
-          where: { institutionId, feeMonthId: { in: feeMonthIds }, status: "PAID" },
+          where: { institutionId, feeMonthId: { in: allFeeMonthIds }, status: "PAID" },
           select: { studentId: true, feeMonthId: true, student: { select: { divisionId: true } } },
         })
       : [];
 
-    const paidCountByDivision = new Map<string, number>();
+    const paidByDivision = new Map<string, { monthly: number; overallMonthIds: Set<string> }>();
     for (const p of payments) {
-      if (!p.student.divisionId) continue;
-      if (currentMonthIdByDivision.get(p.student.divisionId) !== p.feeMonthId) continue;
-      paidCountByDivision.set(p.student.divisionId, (paidCountByDivision.get(p.student.divisionId) ?? 0) + 1);
+      const divisionId = p.student.divisionId;
+      if (!divisionId) continue;
+      const entry = paidByDivision.get(divisionId) ?? { monthly: 0, overallMonthIds: new Set<string>() };
+      if (currentMonthIdByDivision.get(divisionId) === p.feeMonthId) entry.monthly++;
+      if (pastMonthsByDivision.get(divisionId)?.includes(p.feeMonthId)) entry.overallMonthIds.add(`${p.studentId}:${p.feeMonthId}`);
+      paidByDivision.set(divisionId, entry);
     }
 
     const data = standards
@@ -188,8 +217,20 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
           .filter((d) => currentMonthIdByDivision.has(d.id))
           .map((d) => {
             const total = d._count.students;
-            const paid = paidCountByDivision.get(d.id) ?? 0;
-            return { id: d.id, name: d.name, paid, pending: Math.max(0, total - paid), total };
+            const paidEntry = paidByDivision.get(d.id);
+            const monthPaid = paidEntry?.monthly ?? 0;
+            const pastMonthCount = pastMonthsByDivision.get(d.id)?.length ?? 0;
+            const overallTotal = total * pastMonthCount;
+            const overallPaid = paidEntry?.overallMonthIds.size ?? 0;
+            return {
+              id: d.id,
+              name: d.name,
+              monthPaid,
+              monthPending: Math.max(0, total - monthPaid),
+              overallPaid: pastMonthCount > 0 ? overallPaid : null,
+              overallPending: pastMonthCount > 0 ? Math.max(0, overallTotal - overallPaid) : null,
+              total,
+            };
           }),
       }));
 

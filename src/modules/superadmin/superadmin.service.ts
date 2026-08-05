@@ -1667,7 +1667,8 @@ export const getBills = async (id: string, page: number, limit: number) => {
 export const updateBillStatus = async (
   billId: string,
   status: "PAID" | "PENDING",
-  actorId?: string
+  actorId?: string,
+  paymentMethod?: string
 ) => {
   const bill = await prisma.bill.findUnique({
     where: { id: billId },
@@ -1676,7 +1677,7 @@ export const updateBillStatus = async (
   if (!bill) throw new NotFoundError("Bill not found");
 
   if (status === "PAID") {
-    const { reactivated } = await markBillPaid(billId);
+    const { reactivated } = await markBillPaid(billId, undefined, paymentMethod);
 
     // Cancel the Razorpay link so it can't be double-paid
     if (bill.razorpayLinkId) {
@@ -1716,6 +1717,41 @@ export const updateBillStatus = async (
   });
 
   return { bill: updated, reactivated: false };
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLATFORM PAYMENT SETTINGS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getPaymentSettings = async () => {
+  return prisma.platformSettings.findUnique({ where: { id: "platform" } });
+};
+
+export const updatePaymentSettings = async (
+  data: {
+    bankAccountName?: string;
+    bankAccountNumber?: string;
+    bankIfsc?: string;
+    bankName?: string;
+    upiId?: string;
+  },
+  actorId?: string
+) => {
+  const settings = await prisma.platformSettings.upsert({
+    where: { id: "platform" },
+    create: { id: "platform", ...data, updatedBy: actorId },
+    update: { ...data, updatedBy: actorId },
+  });
+
+  logAudit("PLATFORM_PAYMENT_SETTINGS_UPDATED", {
+    userId: actorId,
+    actorRole: "SUPER_ADMIN",
+    category: "BILLING",
+    severity: "INFO",
+    details: "Platform payment settings updated by superadmin",
+  });
+
+  return settings;
 };
 
 export const generateLicenceBill = async (data: {

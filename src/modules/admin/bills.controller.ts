@@ -9,7 +9,7 @@ export const listBills = async (req: AuthRequest, res: Response, next: NextFunct
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 10));
 
-    const [bills, total] = await Promise.all([
+    const [bills, total, pendingCount] = await Promise.all([
       prisma.bill.findMany({
         where: { institutionId },
         orderBy: { generatedAt: "desc" },
@@ -29,11 +29,22 @@ export const listBills = async (req: AuthRequest, res: Response, next: NextFunct
         },
       }),
       prisma.bill.count({ where: { institutionId } }),
+      prisma.bill.count({ where: { institutionId, status: "PENDING" } }),
     ]);
+
+    // No pending bill right now — the next MONTHLY bill won't be generated
+    // until the last day of the current month (see generateMonthlyBills in
+    // billing.service.ts), with a due date on the 7th of the following
+    // month. Surface that anticipated date so the UI isn't just blank.
+    let nextAnticipatedDueDate: string | null = null;
+    if (pendingCount === 0) {
+      const now = new Date();
+      nextAnticipatedDueDate = new Date(now.getFullYear(), now.getMonth() + 1, 7).toISOString();
+    }
 
     res.json({
       success: true,
-      data: { bills, total, page, limit, pages: Math.ceil(total / limit) },
+      data: { bills, total, page, limit, pages: Math.ceil(total / limit), nextAnticipatedDueDate },
     });
   } catch (err) {
     next(err);
@@ -54,6 +65,24 @@ export const getPlanHistory = async (req: AuthRequest, res: Response, next: Next
     res.json({
       success: true,
       data: logs.map((log) => ({ id: log.id, details: log.details, date: log.createdAt })),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getPaymentSettings = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const settings = await prisma.platformSettings.findUnique({ where: { id: "platform" } });
+    res.json({
+      success: true,
+      data: {
+        bankAccountName: settings?.bankAccountName ?? null,
+        bankAccountNumber: settings?.bankAccountNumber ?? null,
+        bankIfsc: settings?.bankIfsc ?? null,
+        bankName: settings?.bankName ?? null,
+        upiId: settings?.upiId ?? null,
+      },
     });
   } catch (err) {
     next(err);

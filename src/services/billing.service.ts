@@ -10,8 +10,30 @@ type BillingCycle = "MONTHLY" | "YEARLY";
 
 export const PLAN_AI_TOKENS: Record<PlanName, number> = {
   BASIC:  10_000_000,
-  PRO:    10_000_000,
+  PRO:    15_000_000,
   TRIAL:   2_000_000,
+};
+
+// The institution's monthly AI token allowance, derived from its plan plus
+// any active extraAiTokens addon. This is the single source of truth for
+// the token pool ceiling — Redis only tracks the running "used" counter,
+// never the limit itself.
+export const getAiTokenLimit = async (institutionId: string): Promise<number> => {
+  const subscription = await prisma.subscription.findUnique({
+    where: { institutionId },
+    include: { plan: { select: { name: true } } },
+  });
+  const isTrial = !subscription || subscription.status === "TRIAL";
+  const planName: PlanName = isTrial ? "TRIAL" : ((subscription?.plan?.name as PlanName) ?? "BASIC");
+
+  const addons = (subscription?.addons && typeof subscription.addons === "object" && !Array.isArray(subscription.addons))
+    ? subscription.addons as Record<string, unknown>
+    : {};
+  const extraAiTokens = (addons.extraAiTokens as Array<{ active?: boolean; tokensPerMonth?: number }> ?? [])
+    .filter((t) => t.active)
+    .reduce((sum, t) => sum + (t.tokensPerMonth ?? 0), 0);
+
+  return PLAN_AI_TOKENS[planName] + extraAiTokens;
 };
 
 

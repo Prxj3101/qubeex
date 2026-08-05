@@ -24,6 +24,7 @@ import {
   ticketReplySchema,
   reviewReplySchema,
   updateBillStatusSchema,
+  updatePaymentSettingsSchema,
   updateAddonsSchema,
 } from "./superadmin.schema";
 
@@ -670,9 +671,24 @@ export const getBills = async (req: AuthRequest, res: Response, next: NextFuncti
 
 export const updateBillStatus = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { status } = updateBillStatusSchema.parse(req.body);
-    const result = await service.updateBillStatus(req.params.billId as string, status, req.user?.userId);
+    const { status, paymentMethod } = updateBillStatusSchema.parse(req.body);
+    const result = await service.updateBillStatus(req.params.billId as string, status, req.user?.userId, paymentMethod);
     res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+export const getPaymentSettings = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const settings = await service.getPaymentSettings();
+    res.json({ success: true, data: settings });
+  } catch (error) { next(error); }
+};
+
+export const updatePaymentSettings = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const data = updatePaymentSettingsSchema.parse(req.body);
+    const settings = await service.updatePaymentSettings(data, req.user?.userId);
+    res.json({ success: true, data: settings });
   } catch (error) { next(error); }
 };
 

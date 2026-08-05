@@ -1475,3 +1475,17 @@ model MarksheetGradedScore {
   @@unique([gradedSubjectId, studentId])
   @@index([marksheetId])
 }
+
+// Singleton row (fixed id "platform") holding the platform's own payment
+// details — shown to institution admins on the Subscription/Billing page
+// for manual bank transfer / UPI payments. Editable only by SuperAdmin.
+model PlatformSettings {
+  id                String   @id @default("platform")
+  bankAccountName   String?
+  bankAccountNumber String?
+  bankIfsc          String?
+  bankName          String?
+  upiId             String?
+  updatedAt         DateTime @updatedAt
+  updatedBy         String?
+}

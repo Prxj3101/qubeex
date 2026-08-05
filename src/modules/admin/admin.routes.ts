@@ -11,7 +11,7 @@ import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
 import { getOverview } from "./overview.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, assignClassTeacher } from "./marksheet.controller";
-import { listBills, getPaymentLink, getPlanHistory } from "./bills.controller";
+import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
 import { getAttendanceInsights, getFeeInsights, getAiUsageInsights } from "./insights.controller";
 import {
   getProfile as sharedGetProfile,
@@ -189,6 +189,7 @@ router.patch("/campus/divisions/:divisionId/class-teacher", ...ADMIN_ONLY, assig
 router.get("/bills", ...INSIGHTS_SUBSCRIPTION_PERM, listBills);
 router.get("/bills/:id/payment-link", ...INSIGHTS_SUBSCRIPTION_PERM, getPaymentLink);
 router.get("/plan-history", ...INSIGHTS_SUBSCRIPTION_PERM, getPlanHistory);
+router.get("/payment-settings", ...INSIGHTS_SUBSCRIPTION_PERM, getPaymentSettings);
 
 // ── Insights (Analytics tab) ──────────────────────────────────────────────────
 router.get("/insights/attendance", ...INSIGHTS_ANALYTICS_PERM, getAttendanceInsights);

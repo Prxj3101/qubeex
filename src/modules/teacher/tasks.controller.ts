@@ -74,9 +74,10 @@ async function checkTokenPool(institutionId: string): Promise<void> {
   }
 }
 
-async function deductTokens(institutionId: string, tokens: number): Promise<void> {
+async function deductTokens(institutionId: string, tokens: number, teacherId?: string): Promise<void> {
   if (!redis || !isRedisReady || tokens <= 0) return;
   await redis.incrby(`ai:usage:institution:${institutionId}`, tokens).catch(() => {});
+  if (teacherId) await redis.incrby(`ai:usage:teacher:${teacherId}`, tokens).catch(() => {});
 }
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
@@ -458,7 +459,7 @@ async function processPdfInBackground(
       }
     }
 
-    await deductTokens(institutionId, totalTokens);
+    await deductTokens(institutionId, totalTokens, teacherId);
 
     await prisma.taskPdfUpload.update({
       where: { id: uploadId },

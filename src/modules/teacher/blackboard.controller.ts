@@ -35,9 +35,10 @@ async function checkTokenPool(institutionId: string): Promise<void> {
   }
 }
 
-async function deductTokens(institutionId: string, tokens: number): Promise<void> {
+async function deductTokens(institutionId: string, tokens: number, teacherId?: string): Promise<void> {
   if (!redis || !isRedisReady || tokens <= 0) return;
   await redis.incrby(`ai:usage:institution:${institutionId}`, tokens).catch(() => {});
+  if (teacherId) await redis.incrby(`ai:usage:teacher:${teacherId}`, tokens).catch(() => {});
 }
 
 export const upload = multer({
@@ -300,7 +301,7 @@ const MOCK_SCAN = {
 
 export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = requireTeacher(req);
+    const { institutionId, userId } = requireTeacher(req);
     const data = aiScanSchema.parse(req.body);
 
     if (!openai) {
@@ -308,6 +309,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     }
 
     await checkTokenPool(institutionId);
+    const teacherId = await getTeacherId(userId, institutionId);
 
     const systemPrompt = "You are a knowledgeable teacher's assistant. Given a topic, return a JSON object with: topic (string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings). Return ONLY valid JSON, no markdown.";
     const userContent = data.pageText
@@ -324,7 +326,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       max_tokens: 600,
     });
 
-    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0);
+    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
 
     let parsed: Record<string, unknown>;
     try {
@@ -342,7 +344,7 @@ const MOCK_CHAT_REPLY = "I'm your AI teaching assistant. Once connected to OpenA
 
 export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = requireTeacher(req);
+    const { institutionId, userId } = requireTeacher(req);
     const data = aiChatSchema.parse(req.body);
 
     if (!openai) {
@@ -350,6 +352,7 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
     }
 
     await checkTokenPool(institutionId);
+    const teacherId = await getTeacherId(userId, institutionId);
 
     const systemContent = data.context
       ? `You are a classroom teaching assistant helping a teacher explain concepts clearly. Current lesson context: ${data.context}. Keep answers concise and classroom-appropriate.`
@@ -364,7 +367,7 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
       max_tokens: 500,
     });
 
-    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0);
+    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
 
     res.json({ success: true, data: { reply: completion.choices[0].message.content ?? "" } });
   } catch (err) { next(err); }
@@ -380,7 +383,7 @@ const MOCK_QUIZ = [
 
 export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = requireTeacher(req);
+    const { institutionId, userId } = requireTeacher(req);
     const data = aiQuizSchema.parse(req.body);
 
     if (!openai) {
@@ -388,6 +391,7 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
     }
 
     await checkTokenPool(institutionId);
+    const teacherId = await getTeacherId(userId, institutionId);
 
     const systemPrompt = `You are a quiz generator for classroom teachers. Generate exactly ${data.count} multiple-choice questions at ${data.difficulty} difficulty. Return a JSON object with a "questions" array. Each question: { "id": "q1", "question": "...", "options": ["A", "B", "C", "D"], "answer": <0-indexed correct option number> }. Return ONLY valid JSON, no markdown.`;
     const userContent = data.pageText
@@ -404,7 +408,7 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
       max_tokens: 1200,
     });
 
-    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0);
+    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
 
     let parsed: { questions?: { id?: string; question: string; options: string[]; answer: number }[] };
     try {

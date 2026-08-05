@@ -12,6 +12,7 @@ import { listNotifications, markNotificationRead, dismissNotification, markAllNo
 import { getOverview } from "./overview.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, assignClassTeacher } from "./marksheet.controller";
 import { listBills, getPaymentLink, getPlanHistory } from "./bills.controller";
+import { getAttendanceInsights, getFeeInsights, getAiUsageInsights } from "./insights.controller";
 import {
   getProfile as sharedGetProfile,
   updateProfile as sharedUpdateProfile,
@@ -44,6 +45,9 @@ const INSIGHTS_SUBSCRIPTION_PERM = [...A, requirePermission("INSIGHTS_SUBSCRIPTI
 
 // SUB_ADMIN needs CAMPUS_MARKSHEET to view class marksheets
 const MARKSHEET_PERM = [...A, requirePermission("CAMPUS_MARKSHEET")];
+
+// SUB_ADMIN needs INSIGHTS_ANALYTICS to view the analytics breakdowns
+const INSIGHTS_ANALYTICS_PERM = [...A, requirePermission("INSIGHTS_ANALYTICS")];
 
 router.post("/presence", ...A, async (req: AuthRequest, res: Response) => {
   await setPresence(req.user!.userId);
@@ -185,5 +189,10 @@ router.patch("/campus/divisions/:divisionId/class-teacher", ...ADMIN_ONLY, assig
 router.get("/bills", ...INSIGHTS_SUBSCRIPTION_PERM, listBills);
 router.get("/bills/:id/payment-link", ...INSIGHTS_SUBSCRIPTION_PERM, getPaymentLink);
 router.get("/plan-history", ...INSIGHTS_SUBSCRIPTION_PERM, getPlanHistory);
+
+// ── Insights (Analytics tab) ──────────────────────────────────────────────────
+router.get("/insights/attendance", ...INSIGHTS_ANALYTICS_PERM, getAttendanceInsights);
+router.get("/insights/fees", ...INSIGHTS_ANALYTICS_PERM, getFeeInsights);
+router.get("/insights/ai-usage", ...INSIGHTS_ANALYTICS_PERM, getAiUsageInsights);
 
 export default router;

@@ -310,10 +310,18 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const systemPrompt = "You are a knowledgeable teacher's assistant. Given a topic, return a JSON object with: topic (string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings). Return ONLY valid JSON, no markdown.";
+    // When real page content is available, it is the source of truth: the
+    // model reads every selected page as one combined context (never page by
+    // page) and determines the actual topic from that content, then applies
+    // the teacher's instructions (if any) to shape the output. Without page
+    // content (non-PDF docs, or extraction failed client-side) we fall back
+    // to treating the label the teacher typed/selected as the topic directly.
+    const systemPrompt = data.pageText
+      ? "You are a knowledgeable teacher's assistant analyzing classroom material. You will be given the combined text of one or more selected pages from a document — treat all of it as a single unified context, not as separate pages. Read and understand the material first, then identify its actual subject matter yourself; do not just repeat any page numbers or labels back as the topic. The teacher's instructions are REQUIRED reading, not optional flavor text — if given, they must visibly shape what you emphasize, how you format the output, or what you focus on (e.g. \"focus on the diagrams\" or \"summarize for a 5th grader\"); instructions guide the output, they are not the topic. Return a JSON object with: topic (the real subject you identified, short string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings grounded in the given content). Return ONLY valid JSON, no markdown."
+      : "You are a knowledgeable teacher's assistant. You'll be given a topic/document label and, optionally, the teacher's instructions. The instructions are REQUIRED reading, not optional flavor text — if given, they must visibly shape what you emphasize or how you format the output. Return a JSON object with: topic (string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings). Return ONLY valid JSON, no markdown.";
     const userContent = data.pageText
-      ? `Topic: ${data.topic}\n\nPage content for context:\n${data.pageText}`
-      : `Topic: ${data.topic}`;
+      ? `Combined content from the selected page(s):\n${data.pageText}\n\nTeacher's instructions (optional): ${data.instructions || "None"}`
+      : `Topic: ${data.topic}\n\nTeacher's instructions (optional): ${data.instructions || "None"}`;
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
@@ -333,7 +341,11 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     } catch {
       throw new BadRequestError("AI returned malformed JSON — please retry");
     }
-    const images = await fetchWikimediaImages(data.topic, 3);
+    // Search images against the topic the AI actually identified from the
+    // content (when available) rather than the raw page-label/instructions
+    // string, so the images match what the material is really about.
+    const derivedTopic = typeof parsed.topic === "string" && parsed.topic.trim() ? parsed.topic : data.topic;
+    const images = await fetchWikimediaImages(derivedTopic, 3);
 
     res.json({ success: true, data: { ...parsed, images } });
   } catch (err) { next(err); }

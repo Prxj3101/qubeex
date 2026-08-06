@@ -12,6 +12,10 @@ export const uploadFileSchema = z.object({
 export const aiScanSchema = z.object({
   topic: z.string().min(1).max(200).trim(),
   pageText: z.string().max(8000).trim().optional(),
+  // Teacher's free-text guidance, kept separate from `pageText` so the prompt
+  // can treat the page content as the primary source of truth and this as
+  // secondary instructions shaping the output (e.g. "focus on the diagrams").
+  instructions: z.string().max(500).trim().optional(),
 });
 
 export const aiChatSchema = z.object({

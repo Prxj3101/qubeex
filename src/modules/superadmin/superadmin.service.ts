@@ -2,7 +2,7 @@ import { prisma } from "../../utils/prisma";
 import { generateToken, hashToken } from "../../utils/token";
 import { sendInviteEmail, sendActivationEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
-import { uploadImageToSupabase, uploadAttachmentToR2, generateSignedAvatarUrl, getInstitutionStorageBytes, bytesToGb } from "../../services/storage.service";
+import { uploadImageToR2, uploadAttachmentToR2, generateSignedAvatarUrl, getInstitutionStorageBytes, bytesToGb } from "../../services/storage.service";
 import {
   generateUpgradeProrationBill,
   markBillPaid,
@@ -593,7 +593,7 @@ export const uploadInstitutionLogo = async (
   contentType: string,
   actorId?: string
 ) => {
-  const uploaded = await uploadImageToSupabase(file, {
+  const uploaded = await uploadImageToR2(file, {
     contentType,
     folder: "institutions/logos",
     ownerId: actorId ?? "superadmin",

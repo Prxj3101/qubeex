@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 import PDFDocument from "pdfkit";
 import { z } from "zod";
 import multer from "multer";
-import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { createRemarkSchema, reviewRemarkSchema, editRemarkSchema } from "../../services/remark.schema";
 import { createStudentRemark, listStudentRemarks, listAssignedRemarks, listSubmittedRemarks, reviewStudentRemark, editStudentRemark } from "../../services/remark.service";
@@ -295,7 +295,7 @@ router.post("/photo", ...T, photoUpload.single("photo"), async (req: AuthRequest
       return;
     }
 
-    const { publicUrl } = await uploadImageToSupabase(req.file.buffer, {
+    const { publicUrl } = await uploadImageToR2(req.file.buffer, {
       contentType: req.file.mimetype,
       folder: "teacher-photos",
       ownerId: teacher.id,
@@ -1601,7 +1601,7 @@ router.post(
       });
       if (!student) { res.status(404).json({ success: false, error: "Student not found" }); return; }
 
-      const { publicUrl } = await uploadImageToSupabase(req.file.buffer, {
+      const { publicUrl } = await uploadImageToR2(req.file.buffer, {
         contentType: req.file.mimetype,
         folder: "student-photos",
         ownerId: student.id,

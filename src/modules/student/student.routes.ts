@@ -5,7 +5,7 @@ import { prisma } from "../../utils/prisma";
 import { z } from "zod";
 import multer from "multer";
 import { listTests, startTest, submitTest, getAttempt, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload } from "./tasks.controller";
-import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
@@ -190,7 +190,7 @@ router.post("/photo", ...S, upload.single("photo"), async (req: AuthRequest, res
       return;
     }
 
-    const { publicUrl } = await uploadImageToSupabase(req.file.buffer, {
+    const { publicUrl } = await uploadImageToR2(req.file.buffer, {
       contentType: req.file.mimetype,
       folder: "student-photos",
       ownerId: student.id,

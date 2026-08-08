@@ -2,7 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { checkInstitutionAccess } from "../../utils/authorization";
-import { uploadImageToSupabase, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { NotFoundError, BadRequestError } from "../../utils/errors";
 import { generateToken, hashToken } from "../../utils/token";
@@ -279,7 +279,7 @@ export const uploadAdminPhoto = async (
     const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
     if (!file.length) throw new BadRequestError("No photo file provided");
 
-    const { publicUrl } = await uploadImageToSupabase(file, {
+    const { publicUrl } = await uploadImageToR2(file, {
       contentType: req.headers["content-type"] ?? "",
       folder: "admin-photos",
       ownerId: user.institutionId,
@@ -312,7 +312,7 @@ export const uploadMyInstitutionLogo = async (
     checkInstitutionAccess(user, user.institutionId);
 
     const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
-    const uploaded = await uploadImageToSupabase(file, {
+    const uploaded = await uploadImageToR2(file, {
       contentType: req.headers["content-type"] ?? "",
       folder: "institutions/logos",
       ownerId: user.institutionId,
@@ -836,7 +836,7 @@ export const uploadTeacherAvatar = async (
     if (!teacher) throw new NotFoundError("Teacher not found");
 
     const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
-    const uploaded = await uploadImageToSupabase(file, {
+    const uploaded = await uploadImageToR2(file, {
       contentType: req.headers["content-type"] ?? "",
       folder: "teachers/avatars",
       ownerId: id,
@@ -1547,7 +1547,7 @@ export const uploadSubAdminPhoto = async (
     const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
     if (!file.length) throw new BadRequestError("No photo file provided");
 
-    const { publicUrl } = await uploadImageToSupabase(file, {
+    const { publicUrl } = await uploadImageToR2(file, {
       contentType: req.headers["content-type"] ?? "",
       folder: "subadmin-photos",
       ownerId: user.institutionId,

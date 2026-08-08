@@ -16,6 +16,10 @@ export const aiScanSchema = z.object({
   // can treat the page content as the primary source of truth and this as
   // secondary instructions shaping the output (e.g. "focus on the diagrams").
   instructions: z.string().max(500).trim().optional(),
+  // "summary" (default): topic/overview/keyPoints, unchanged. "notes": also
+  // generates a longer, free-form `detailedNotes` field for teachers who
+  // explicitly want a fuller written explanation rather than a bullet recap.
+  mode: z.enum(["summary", "notes"]).optional().default("summary"),
 });
 
 export const aiChatSchema = z.object({

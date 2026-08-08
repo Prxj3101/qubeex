@@ -109,7 +109,7 @@ function toAttachmentType(category: "image" | "pdf" | "video" | "file"): Attachm
  * e.g. "https://xyz.supabase.co/storage/v1/object/public/bucket/student-photos/id/file.jpg"
  * → "student-photos/id/file.jpg"
  */
-function extractSupabasePath(storedUrl: string): string | null {
+export function extractSupabasePath(storedUrl: string): string | null {
   if (!SUPABASE_URL || !SUPABASE_BUCKET) return null;
   const base = SUPABASE_URL.replace(/\/$/, "");
   for (const prefix of ["public", "authenticated"]) {
@@ -242,6 +242,54 @@ export async function uploadImageToSupabase(
   return {
     path:      objectPath,
     publicUrl: `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/${SUPABASE_BUCKET}/${objectPath}`,
+  };
+}
+
+/**
+ * Uploads a profile image / logo to R2 instead of Supabase Storage.
+ *
+ * Mirrors `uploadImageToSupabase`'s signature and return shape so call sites
+ * only swap the function name. Lives under an `avatars/` prefix rather than
+ * `institutions/{id}/` deliberately: that prefix is what `getInstitutionStorageBytes`
+ * meters and what institution-deletion sweeps, and avatars have never counted
+ * toward either (they were in Supabase). Keeping them outside preserves today's
+ * behavior exactly — see the note in the migration discussion about wiring
+ * avatars into institution-scoped cleanup as a separate change.
+ *
+ * R2 serves these over the public `R2_PUBLIC_URL` domain, so the returned URL
+ * is stable and CDN-cacheable — unlike Supabase signed URLs, which rotate
+ * hourly and defeat browser/CDN caching. The signing helpers above return
+ * null for non-Supabase URLs and every call site falls back to the raw URL,
+ * so these pass through untouched while legacy Supabase avatars keep signing.
+ */
+export async function uploadImageToR2(
+  file: Buffer,
+  options: { contentType: string; folder: string; ownerId: string }
+): Promise<{ path: string; publicUrl: string }> {
+  if (!R2_BUCKET || !R2_PUBLIC_URL) {
+    throw new BadRequestError("Cloudflare R2 is not configured");
+  }
+
+  assertImageUpload(file, options.contentType);
+
+  const ext       = IMAGE_EXTENSIONS[options.contentType];
+  const objectKey = `avatars/${options.folder}/${options.ownerId}/${crypto.randomUUID()}.${ext}`;
+
+  const client = getR2Client();
+  await client.send(new PutObjectCommand({
+    Bucket:      R2_BUCKET,
+    Key:         objectKey,
+    Body:        file,
+    ContentType: options.contentType,
+    // Immutable by construction — the key embeds a fresh UUID per upload, so a
+    // given URL's bytes never change. Long-lived caching is what makes this
+    // migration actually cut egress rather than just relocate it.
+    CacheControl: "public, max-age=31536000, immutable",
+  }));
+
+  return {
+    path:      objectKey,
+    publicUrl: `${R2_PUBLIC_URL.replace(/\/$/, "")}/${objectKey}`,
   };
 }
 

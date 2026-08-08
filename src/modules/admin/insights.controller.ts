@@ -3,7 +3,16 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError } from "../../utils/errors";
 import { redis } from "../../utils/redis";
+import { getCache, setCache } from "../../utils/cache";
 import { getInstitutionUsersForMonth } from "../../services/userDirectory.service";
+
+// Both endpoints below scan full-institution history on every request (all
+// attendance rows for the academic year; all status/audit events ever, with
+// no lower date bound) and get hit on every Insights page view/navigation —
+// a meaningful, uncached contributor to Supabase egress. Dashboard data
+// doesn't need to be second-fresh, so a short TTL cache cuts repeat DB reads
+// without users noticing any staleness in practice.
+const INSIGHTS_CACHE_TTL_SECONDS = 300;
 
 // ── GET /admin/insights/users?year=YYYY&month=MM — billable users for a given month ──
 // Defaults to the current month. "month" is 1-12. Status reflects whether
@@ -21,7 +30,15 @@ export const getUsersInsights = async (req: AuthRequest, res: Response, next: Ne
       throw new BadRequestError("Invalid year/month");
     }
 
+    const cacheKey = `insights:users:${institutionId}:${year}-${month}`;
+    const cached = await getCache<unknown>(cacheKey);
+    if (cached) {
+      res.json({ success: true, data: cached });
+      return;
+    }
+
     const data = await getInstitutionUsersForMonth(institutionId, year, month);
+    await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
     res.json({ success: true, data });
   } catch (err) {
     next(err);
@@ -40,10 +57,17 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
     const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const cacheKey = `insights:attendance:${institutionId}:${currentMonthKey}`;
+    const cached = await getCache<unknown>(cacheKey);
+    if (cached) {
+      res.json({ success: true, data: cached });
+      return;
+    }
+
     const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear() - 1;
     const sessionStart = `${startYear}-06-01`;
     const sessionEnd = `${startYear + 1}-05-31`;
-    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
     const [standards, allRecords, holidays] = await Promise.all([
       prisma.standard.findMany({
@@ -134,6 +158,7 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
         }),
       }));
 
+    await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
     res.json({ success: true, data });
   } catch (err) {
     next(err);

@@ -1162,6 +1162,7 @@ model TaskModule {
 
   name          String
   description   String?
+  order         Int                  @default(0)
 
   questions     TaskModuleQuestion[]
 
@@ -1179,6 +1180,7 @@ model TaskModuleQuestion {
   questionId String       @unique
   question   TaskQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
+  order      Int          @default(0)
   assignedAt DateTime     @default(now())
 
   @@index([moduleId])

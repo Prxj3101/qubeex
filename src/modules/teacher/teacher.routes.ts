@@ -130,9 +130,11 @@ import {
   listModules,
   createModule,
   editModule,
+  reorderModules,
   deleteModule,
   assignQuestionToModule,
   unassignQuestionFromModule,
+  reorderModuleQuestions,
   createModuleQuestion,
   listAssignments,
   createAssignment,
@@ -1102,12 +1104,14 @@ router.patch("/tasks/assignments/:id/submissions/:studentId/offline", ...T, mark
 // ── Tasks — Modules ───────────────────────────────────────────────────────────
 router.get("/tasks/modules", ...T, listModules);
 router.post("/tasks/modules", ...T, createModule);
+router.patch("/tasks/modules/reorder", ...T, reorderModules);
 router.patch("/tasks/modules/:id", ...T, editModule);
 router.delete("/tasks/modules/:id", ...T, deleteModule);
 
 // ── Tasks — Module-Question Assignment ────────────────────────────────────────
 router.post("/tasks/modules/:id/questions", ...T, assignQuestionToModule);
 router.post("/tasks/modules/:id/questions/manual", ...T, createModuleQuestion);
+router.patch("/tasks/modules/:id/questions/reorder", ...T, reorderModuleQuestions);
 router.delete("/tasks/modules/:id/questions/:qid", ...T, unassignQuestionFromModule);
 
 // ─────────────────────────────────────────────────────────────────────────────

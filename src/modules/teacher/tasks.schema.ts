@@ -67,6 +67,20 @@ export const editModuleSchema = z.object({
   message: "At least one field required",
 });
 
+export const reorderModulesSchema = z.object({
+  modules: z.array(z.object({
+    id: z.string().uuid(),
+    order: z.number().int().min(0),
+  })).min(1),
+});
+
+export const reorderModuleQuestionsSchema = z.object({
+  questions: z.array(z.object({
+    questionId: z.string().uuid(),
+    order: z.number().int().min(0),
+  })).min(1),
+});
+
 export const createContainerSchema = z.object({
   divisionId: z.string().min(1),
   subjectId: z.string().uuid().optional(),

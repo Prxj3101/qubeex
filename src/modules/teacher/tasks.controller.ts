@@ -10,6 +10,8 @@ import {
   editQuestionSchema,
   createModuleSchema,
   editModuleSchema,
+  reorderModulesSchema,
+  reorderModuleQuestionsSchema,
   assignQuestionSchema,
   createTestSchema,
   updateTestSchema,
@@ -1404,10 +1406,10 @@ export const listModules = async (req: AuthRequest, res: Response, next: NextFun
               select: { id: true, type: true, status: true, question: true, options: true, answer: true, createdAt: true, details: true, category: true },
             },
           },
-          orderBy: { assignedAt: "asc" },
+          orderBy: { order: "asc" },
         },
       },
-      orderBy: { createdAt: "asc" },
+      orderBy: { order: "asc" },
     });
 
     res.json({ success: true, data: modules });
@@ -1422,8 +1424,10 @@ export const createModule = async (req: AuthRequest, res: Response, next: NextFu
 
     const { subjectId } = await resolveSubjectAssignment(teacherId, data.divisionId, institutionId, data.subjectId);
 
+    const existingCount = await prisma.taskModule.count({ where: { teacherId, subjectId, institutionId } });
+
     const taskModule = await prisma.taskModule.create({
-      data: { institutionId, teacherId, subjectId, name: data.name, description: data.description ?? null },
+      data: { institutionId, teacherId, subjectId, name: data.name, description: data.description ?? null, order: existingCount },
       include: { questions: true },
     });
 
@@ -1450,6 +1454,22 @@ export const editModule = async (req: AuthRequest, res: Response, next: NextFunc
     });
 
     res.json({ success: true, data: updated });
+  } catch (err) { next(err); }
+};
+
+export const reorderModules = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const { modules: items } = reorderModulesSchema.parse(req.body);
+
+    const ids = items.map(i => i.id);
+    const owned = await prisma.taskModule.findMany({ where: { id: { in: ids }, teacherId, institutionId }, select: { id: true } });
+    if (owned.length !== ids.length) throw new NotFoundError("One or more modules not found");
+
+    await prisma.$transaction(items.map(i => prisma.taskModule.update({ where: { id: i.id }, data: { order: i.order } })));
+
+    res.json({ success: true });
   } catch (err) { next(err); }
 };
 
@@ -1490,7 +1510,8 @@ export const assignQuestionToModule = async (req: AuthRequest, res: Response, ne
       throw new BadRequestError("Question is already assigned to another module. Unassign it first.");
     }
 
-    const assignment = await prisma.taskModuleQuestion.create({ data: { moduleId, questionId } });
+    const existingCount = await prisma.taskModuleQuestion.count({ where: { moduleId } });
+    const assignment = await prisma.taskModuleQuestion.create({ data: { moduleId, questionId, order: existingCount } });
 
     res.status(201).json({ success: true, data: assignment });
   } catch (err) { next(err); }
@@ -1511,6 +1532,26 @@ export const unassignQuestionFromModule = async (req: AuthRequest, res: Response
       throw new NotFoundError("Question is not assigned to this module");
 
     await prisma.taskModuleQuestion.delete({ where: { questionId } });
+
+    res.json({ success: true });
+  } catch (err) { next(err); }
+};
+
+export const reorderModuleQuestions = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const moduleId = req.params.id as string;
+    const { questions: items } = reorderModuleQuestionsSchema.parse(req.body);
+
+    const taskModule = await prisma.taskModule.findFirst({ where: { id: moduleId, teacherId, institutionId } });
+    if (!taskModule) throw new NotFoundError("Module not found");
+
+    const questionIds = items.map(i => i.questionId);
+    const owned = await prisma.taskModuleQuestion.findMany({ where: { questionId: { in: questionIds }, moduleId }, select: { questionId: true } });
+    if (owned.length !== questionIds.length) throw new NotFoundError("One or more questions not found in this module");
+
+    await prisma.$transaction(items.map(i => prisma.taskModuleQuestion.update({ where: { questionId: i.questionId }, data: { order: i.order } })));
 
     res.json({ success: true });
   } catch (err) { next(err); }
@@ -1592,8 +1633,9 @@ export const createModuleQuestion = async (req: AuthRequest, res: Response, next
     const existing = await prisma.taskModuleQuestion.findUnique({ where: { questionId: question.id } });
     if (existing) throw new BadRequestError("Question already assigned to a module");
 
+    const existingCount = await prisma.taskModuleQuestion.count({ where: { moduleId } });
     const assignment = await prisma.taskModuleQuestion.create({
-      data: { moduleId, questionId: question.id },
+      data: { moduleId, questionId: question.id, order: existingCount },
     });
 
     res.status(201).json({

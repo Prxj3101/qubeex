@@ -97,12 +97,17 @@ export const listTickets = async (req: AuthRequest, res: Response, next: NextFun
     const { institutionId } = requireInstitution(req);
     const status = req.query.status as string | undefined;
 
+    // Unlike most lists in this app, tickets aren't scoped to a division/date
+    // range — they accumulate for the institution's whole lifetime, each
+    // with a full reply thread included. Cap to the most recent 200 so this
+    // doesn't grow into an ever-larger unbounded fetch as usage builds up.
     const tickets = await prisma.supportTicket.findMany({
       where: {
         institutionId,
         ...(status && status !== "ALL" ? { status } : {}),
       },
       orderBy: { createdAt: "desc" },
+      take: 200,
       include: {
         replies: { orderBy: { createdAt: "asc" } },
       },

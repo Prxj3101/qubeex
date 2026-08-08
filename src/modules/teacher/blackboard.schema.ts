@@ -30,6 +30,11 @@ export const aiChatSchema = z.object({
     })
   ).min(1).max(20),
   context: z.string().max(500).trim().optional(),
+  // Text of the pages currently open on the blackboard. Lets the assistant
+  // answer against what's actually being taught rather than just a filename —
+  // it's run through the same cached context extraction aiScan uses, so when
+  // the teacher has already scanned these pages it costs nothing extra.
+  pageText: z.string().max(8000).trim().optional(),
 });
 
 export const aiQuizSchema = z.object({
@@ -37,4 +42,7 @@ export const aiQuizSchema = z.object({
   count: z.number().int().min(1).max(10).optional().default(5),
   difficulty: z.enum(["easy", "medium", "hard"]).optional().default("medium"),
   pageText: z.string().max(8000).trim().optional(),
+  // Kept separate from `topic` for the same reason as aiScan: merged into one
+  // string, guidance competes with the subject instead of shaping the output.
+  instructions: z.string().max(500).trim().optional(),
 });

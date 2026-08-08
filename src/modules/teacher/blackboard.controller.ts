@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
@@ -7,6 +8,7 @@ import { createFolderSchema, aiScanSchema, aiChatSchema, aiQuizSchema } from "./
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 import { redis, isRedisReady } from "../../utils/redis";
+import { getCache, setCache } from "../../utils/cache";
 import { getAiTokenLimit } from "../../services/billing.service";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -352,6 +354,68 @@ async function fetchWikimediaImages(
 
 const WIKI_USER_AGENT = "QubeEx-Blackboard/1.0 (https://qubeex.app; contact@qubeex.app) node-fetch";
 
+// ── Classroom-appropriate imagery ─────────────────────────────────────────────
+//
+// Some legitimate curriculum topics — human reproduction, anatomy — have
+// encyclopedia articles that mix teaching diagrams with clinical photographs
+// of real bodies. Those photographs are medically legitimate and pass ordinary
+// SafeSearch (they aren't "explicit" in the sense filters look for), but they
+// are not what a teacher should get when projecting onto a classroom board.
+//
+// For these subjects we restrict results to diagrams/illustrations only. The
+// filter is deliberately strict: it will sometimes drop a legitimate diagram,
+// which is the right trade in a product used with children — showing nothing
+// is recoverable, showing a photograph of genitalia to a classroom is not.
+const SENSITIVE_SUBJECT_PATTERN =
+  /\b(reproduct\w*|genital\w*|penis|penile|vulva|vagin\w*|testis|testes|testicl\w*|scrotum|uterus|uterine|ovar\w*|cervix|cervical|breast\w*|mammary|sperm\w*|semen|menstrua\w*|puberty|sexual\w*|intercourse|pregnan\w*|fetus|foetus|embryo\w*|anatomy|nude|naked)\b/i;
+
+// SVG is a vector format — a photograph cannot be one — so it's a reliable
+// "this is a drawn diagram" signal. Beyond that, recognise well-established
+// illustration markers: scheme/diagram naming, the Blausen medical
+// illustration library, and Gray's/Sobotta anatomy plates (19th-c. engravings).
+const ILLUSTRATION_HINT =
+  /(diagram|illustration|schematic|scheme|illu[_ ]|blausen|gray\d{3,4}|sobo[_ ]|labell?ed|cross[_ -]?section|drawing|sketch|chart)/i;
+
+// Applied to EVERY image, regardless of whether the topic was flagged
+// sensitive. Topic detection gates on the AI's word choices, so a single
+// unanticipated phrasing would let a photograph through — this is the
+// backstop that doesn't depend on that inference being right. A file named
+// for explicit anatomy is only ever allowed through if it is also clearly a
+// drawn diagram (e.g. "Vaginal_opening_description-en.svg", a labelled
+// biology illustration, passes; "Front_and_back_womans_genitalia.jpg" does not).
+const EXPLICIT_ANATOMY_FILENAME_PATTERN =
+  /(genital\w*|penis|penile|vulva|vagina|scrotum|testicle\w*|breast\w*|nipple\w*|nude|naked|erect\w*|flaccid|labia|clitoris|anus|anal|buttock\w*|pubic|topless|semen|ejaculat\w*|masturbat\w*|coitus|copulat\w*)/i;
+
+/** Final gate every image passes through before it can be returned to a classroom. */
+function isClassroomSafe(title: string, url: string): boolean {
+  const haystack = `${title} ${url}`;
+  if (!EXPLICIT_ANATOMY_FILENAME_PATTERN.test(haystack)) return true;
+  return isIllustration(title, url);
+}
+
+function isSensitiveSubject(context: DocumentContext): boolean {
+  const haystack = [
+    context.topic,
+    context.conceptType,
+    ...context.subtopics,
+    ...context.keywords,
+    ...context.suggestedVisuals,
+  ].join(" ");
+  return SENSITIVE_SUBJECT_PATTERN.test(haystack);
+}
+
+/**
+ * True when an image looks like a drawn diagram rather than a photograph.
+ * Checks the original filename (via title or URL) rather than the delivered
+ * URL's extension — Wikimedia serves PNG-rendered thumbnails of SVG sources,
+ * so the delivered file is often .png even when the original is a vector.
+ */
+function isIllustration(title: string, url: string): boolean {
+  const haystack = `${title} ${url}`;
+  if (/\.svg/i.test(haystack)) return true;
+  return ILLUSTRATION_HINT.test(haystack);
+}
+
 // Look up the actual Wikipedia article for a topic and return its curated
 // lead image, instead of full-text searching Commons for files that merely
 // mention matching words somewhere in their metadata. Wikipedia's REST
@@ -360,7 +424,10 @@ const WIKI_USER_AGENT = "QubeEx-Blackboard/1.0 (https://qubeex.app; contact@qube
 // and the lead image is manually chosen by editors to represent that exact
 // article's subject — precise by construction, not by keyword filtering.
 // Free, same WMF infrastructure, no API key.
-async function fetchWikipediaSummary(title: string): Promise<{ url: string; caption: string } | null> {
+async function fetchWikipediaSummary(
+  title: string,
+  illustrationsOnly = false
+): Promise<{ url: string; caption: string } | null> {
   try {
     const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, {
       headers: { "User-Agent": WIKI_USER_AGENT },
@@ -378,6 +445,10 @@ async function fetchWikipediaSummary(title: string): Promise<{ url: string; capt
     if (json.type === "disambiguation") return null;
     const url = json.thumbnail?.source ?? json.originalimage?.source;
     if (!url) return null;
+    // An article's lead image is editor-chosen to represent the subject, which
+    // for anatomy topics is frequently a clinical photograph.
+    if (illustrationsOnly && !isIllustration(json.title ?? title, url)) return null;
+    if (!isClassroomSafe(json.title ?? title, url)) return null;
     return { url, caption: json.title ?? title };
   } catch (err) {
     console.error(`[blackboard] Wikipedia summary lookup failed for "${title}":`, err);
@@ -420,7 +491,8 @@ const WIKI_CHROME_FILENAME_PATTERN = /(protection-shackle|padlock|edit-icon|ques
 async function fetchArticleEmbeddedImages(
   title: string,
   limit: number,
-  exclude: Set<string>
+  exclude: Set<string>,
+  illustrationsOnly = false
 ): Promise<{ url: string; caption: string }[]> {
   if (limit <= 0) return [];
   try {
@@ -454,6 +526,11 @@ async function fetchArticleEmbeddedImages(
       if (!src || !IMAGE_EXT.test(src)) continue;
       const url = src.startsWith("//") ? `https:${src}` : src;
       if (exclude.has(url)) continue;
+      // Match on item.title (the original filename) — srcset serves PNG
+      // renderings of SVG sources, so the delivered URL alone would misjudge
+      // vector diagrams as raster photos.
+      if (illustrationsOnly && !isIllustration(item.title, url)) continue;
+      if (!isClassroomSafe(item.title, url)) continue;
       const cleanTitle = item.title.replace(/^File:/i, "").replace(/_/g, " ").replace(/\.[^.]+$/, "");
       const caption = item.caption?.text?.trim() || cleanTitle;
       results.push({ url, caption });
@@ -466,33 +543,273 @@ async function fetchArticleEmbeddedImages(
   }
 }
 
-async function fetchTopicImages(topics: string[], limit = 5): Promise<{ url: string; caption: string }[]> {
+async function fetchTopicImages(
+  topics: string[],
+  limit = 5,
+  seenUrls: Set<string> = new Set(),
+  illustrationsOnly = false
+): Promise<{ url: string; caption: string }[]> {
   const results: { url: string; caption: string }[] = [];
-  const seenUrls = new Set<string>();
   for (const topic of topics) {
     if (results.length >= limit) break;
 
-    let hit = await fetchWikipediaSummary(topic);
+    // Resolve the article even when its lead image is rejected by the
+    // illustration filter — the article body often still holds usable
+    // diagrams, which is exactly the case for anatomy topics.
+    let hit = await fetchWikipediaSummary(topic, illustrationsOnly);
     let resolvedTitle = hit?.caption ?? topic;
     if (!hit) {
       const alt = await resolveWikipediaTitle(topic);
       if (alt && alt.toLowerCase() !== topic.toLowerCase()) {
-        hit = await fetchWikipediaSummary(alt);
+        hit = await fetchWikipediaSummary(alt, illustrationsOnly);
         resolvedTitle = hit?.caption ?? alt;
+      } else if (alt) {
+        resolvedTitle = alt;
       }
     }
-    if (!hit) continue;
 
-    if (!seenUrls.has(hit.url)) {
+    if (hit && !seenUrls.has(hit.url)) {
       seenUrls.add(hit.url);
       results.push(hit);
     }
     if (results.length >= limit) break;
 
-    const more = await fetchArticleEmbeddedImages(resolvedTitle, limit - results.length, seenUrls);
+    const more = await fetchArticleEmbeddedImages(
+      resolvedTitle,
+      limit - results.length,
+      seenUrls,
+      illustrationsOnly
+    );
     results.push(...more);
   }
   return results;
+}
+
+// ── Google Programmable Search (optional, paid) ───────────────────────────────
+//
+// Wikipedia is precise but has real coverage gaps: well-documented topics
+// ("Chloroplast") have plenty of curated diagrams, while niche technical ones
+// often have none at all. Google CSE fills those gaps by reaching the wider
+// educational web. Enabled only when both env vars are set, so the whole
+// feature degrades cleanly to Wikipedia-only when unconfigured.
+//
+//   GOOGLE_SEARCH_API_KEY = Google Cloud API key with Custom Search API enabled
+//   GOOGLE_SEARCH_CX      = Programmable Search Engine ID, configured with
+//                           "Image search" ON and "Search the entire web" ON
+//
+// `rights` restricts results to openly-licensed images. That matters for a
+// commercial product: unrestricted web image results carry real copyright
+// exposure, and this filter is the difference between "reusable" and "risky".
+const GOOGLE_SEARCH_API_KEY = process.env.GOOGLE_SEARCH_API_KEY;
+const GOOGLE_SEARCH_CX = process.env.GOOGLE_SEARCH_CX;
+const GOOGLE_IMAGE_LICENSE_FILTER = "cc_publicdomain|cc_attribute|cc_sharealike";
+
+async function fetchGoogleImages(
+  query: string,
+  limit: number,
+  seenUrls: Set<string>,
+  illustrationsOnly = false
+): Promise<{ url: string; caption: string }[]> {
+  if (!GOOGLE_SEARCH_API_KEY || !GOOGLE_SEARCH_CX || limit <= 0) return [];
+  try {
+    const params = new URLSearchParams({
+      key: GOOGLE_SEARCH_API_KEY,
+      cx: GOOGLE_SEARCH_CX,
+      q: query,
+      searchType: "image",
+      // Drop "photo" for sensitive subjects so the API itself excludes
+      // photographic results, rather than relying only on our own filtering.
+      imgType: illustrationsOnly ? "clipart|lineart" : "clipart|lineart|photo",
+      safe: "active",
+      rights: GOOGLE_IMAGE_LICENSE_FILTER,
+      num: String(Math.min(limit * 2, 10)),
+    });
+    const res = await fetch(`https://www.googleapis.com/customsearch/v1?${params.toString()}`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) {
+      console.error(`[blackboard] Google image search returned ${res.status} for "${query}"`);
+      return [];
+    }
+    const json = (await res.json()) as {
+      items?: Array<{ title?: string; link?: string; mime?: string }>;
+    };
+    const IMAGE_EXT = /\.(jpg|jpeg|png|svg|gif|webp)(?:\?.*)?$/i;
+    const out: { url: string; caption: string }[] = [];
+    for (const item of json.items ?? []) {
+      if (out.length >= limit) break;
+      const url = item.link;
+      if (!url || seenUrls.has(url)) continue;
+      // Guard against results whose link isn't actually a directly-renderable
+      // image (CSE occasionally returns page URLs for embedded media).
+      if (!IMAGE_EXT.test(url) && !(item.mime ?? "").startsWith("image/")) continue;
+      // Belt-and-braces: imgType above should already exclude photos, but the
+      // filter is advisory and the stakes here don't justify trusting it alone.
+      if (illustrationsOnly && !isIllustration(item.title ?? "", url)) continue;
+      if (!isClassroomSafe(item.title ?? "", url)) continue;
+      seenUrls.add(url);
+      out.push({ url, caption: item.title?.trim() || query });
+    }
+    return out;
+  } catch (err) {
+    console.error(`[blackboard] Google image search failed for "${query}":`, err);
+    return [];
+  }
+}
+
+// ── Stage 4: concept-driven image retrieval ───────────────────────────────────
+//
+// Searches the *concepts extracted from the document* rather than the teacher's
+// raw prompt. A prompt like "give me images" carries no searchable signal;
+// "Chloroplast", "Calvin cycle" do. Issuing one query per suggested visual also
+// raises hit rate substantially over the previous single-query approach — if
+// one concept has no good imagery, the others still return something relevant.
+//
+// Source order encodes the cost policy: Wikipedia first (free, curated,
+// precisely matched), Google CSE only to fill the shortfall (paid per query,
+// so it runs on the smallest number of queries that can close the gap).
+async function retrieveConceptImages(
+  context: DocumentContext,
+  limit: number
+): Promise<{ url: string; caption: string }[]> {
+  // Most specific first: explicit visual suggestions, then subtopics, then the
+  // broad topic as a backstop. Deduped so a concept repeated across fields
+  // doesn't consume two search slots.
+  const queries = [...new Set(
+    [...context.suggestedVisuals, ...context.subtopics, context.topic]
+      .map(q => q.trim())
+      .filter(Boolean)
+  )];
+  if (queries.length === 0) return [];
+
+  // Anatomy/reproduction and similar subjects: diagrams only, no photographs.
+  // Deliberately fails closed — if filtering leaves nothing, the scan returns
+  // no images rather than falling back to unfiltered results.
+  const illustrationsOnly = isSensitiveSubject(context);
+  console.log(
+    `[blackboard] Image retrieval — topic="${context.topic}" sensitive=${illustrationsOnly} queries=${JSON.stringify(queries.slice(0, 6))}`
+  );
+
+  const seenUrls = new Set<string>();
+  const results = await fetchTopicImages(queries, limit, seenUrls, illustrationsOnly);
+  if (results.length >= limit) return results.slice(0, limit);
+
+  for (const query of queries) {
+    if (results.length >= limit) break;
+    // "diagram" biases toward instructional illustrations over incidental
+    // photos — the useful shape for classroom material.
+    const fromGoogle = await fetchGoogleImages(
+      `${query} diagram`,
+      limit - results.length,
+      seenUrls,
+      illustrationsOnly
+    );
+    results.push(...fromGoogle);
+  }
+
+  return results.slice(0, limit);
+}
+
+// ── Stage 2: document context ─────────────────────────────────────────────────
+//
+// A structured understanding of the selected pages, derived once and reused.
+// Deliberately kept INSTRUCTION-INDEPENDENT: the same pages produce the same
+// context no matter what the teacher asks, which is what makes it cacheable.
+// Instruction-specific output (Stage 3) is generated separately on top of it.
+//
+// Cost shape: a cache miss costs two model calls (context + generation), a hit
+// costs one. Since teachers re-scan the same pages repeatedly — tweaking
+// instructions, switching between summary and notes — this amortises quickly,
+// and the expensive part (reading the full page text) is paid at most once.
+
+export interface DocumentContext {
+  topic: string;
+  subtopics: string[];
+  keywords: string[];
+  definitions: { term: string; meaning: string }[];
+  conceptType: string;
+  /** Concrete things worth picturing, phrased as real encyclopedia subjects — drives image search. */
+  suggestedVisuals: string[];
+  learningObjectives: string[];
+}
+
+// Content-addressed: keyed by the page text itself, not the document URL, so it
+// survives re-uploads, works for locally-opened files (blob: URLs have no
+// stable identity), and naturally varies with the page selection.
+function contextCacheKey(pageText: string): string {
+  return `blackboard:ctx:${crypto.createHash("sha256").update(pageText).digest("hex").slice(0, 32)}`;
+}
+
+const CONTEXT_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60; // documents don't change
+
+const CONTEXT_SYSTEM_PROMPT =
+  "You are analyzing classroom teaching material. You will be given the combined text of one or more selected pages from a document — treat it as a single unified context, not as separate pages. " +
+  "Read it fully, then produce a structured understanding of what it teaches. Do not summarize for a reader; extract structure. " +
+  'Return ONLY valid JSON, no markdown, with exactly these keys: ' +
+  '"topic" (short string — the real subject, never a page number or file name), ' +
+  '"subtopics" (array of 3-6 strings), ' +
+  '"keywords" (array of 5-12 important terms, scientific names, or symbols appearing in the material), ' +
+  '"definitions" (array of up to 5 objects {"term","meaning"} for terms the material actually defines), ' +
+  '"conceptType" (short label such as "Biological Process", "Algorithm", "Historical Event", "Mathematical Theorem"), ' +
+  '"suggestedVisuals" (array of 3-6 concrete, picturable subjects that would genuinely help teach this — each phrased as a real encyclopedia subject someone could look up, e.g. "Chloroplast", "Calvin cycle", "Water cycle diagram"; ALWAYS spell terms out in full rather than as acronyms, since acronyms are ambiguous — write "Distributed file system", never "DFS"), ' +
+  '"learningObjectives" (array of 2-4 strings describing what a student should be able to do after this material).';
+
+async function buildDocumentContext(
+  pageText: string,
+  institutionId: string,
+  teacherId: string
+): Promise<DocumentContext | null> {
+  if (!openai) return null;
+
+  const cacheKey = contextCacheKey(pageText);
+  const cached = await getCache<DocumentContext>(cacheKey);
+  if (cached) return cached;
+
+  const completion = await openai.chat.completions.create({
+    model: AI_MODEL,
+    messages: [
+      { role: "system", content: CONTEXT_SYSTEM_PROMPT },
+      { role: "user", content: `Combined content from the selected page(s):\n${pageText}` },
+    ],
+    response_format: { type: "json_object" },
+    max_tokens: 900,
+  });
+
+  await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
+
+  let parsed: Partial<DocumentContext>;
+  try {
+    parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
+  } catch {
+    // A malformed context shouldn't fail the whole scan — the caller falls
+    // back to generating directly from the raw page text.
+    console.error("[blackboard] Context extraction returned malformed JSON");
+    return null;
+  }
+
+  const asStrings = (v: unknown): string[] =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.trim().length > 0) : [];
+
+  const context: DocumentContext = {
+    topic: typeof parsed.topic === "string" ? parsed.topic : "",
+    subtopics: asStrings(parsed.subtopics),
+    keywords: asStrings(parsed.keywords),
+    definitions: Array.isArray(parsed.definitions)
+      ? parsed.definitions.filter(
+          (d): d is { term: string; meaning: string } =>
+            !!d && typeof d === "object" && typeof (d as { term?: unknown }).term === "string" &&
+            typeof (d as { meaning?: unknown }).meaning === "string"
+        ).slice(0, 5)
+      : [],
+    conceptType: typeof parsed.conceptType === "string" ? parsed.conceptType : "",
+    suggestedVisuals: asStrings(parsed.suggestedVisuals),
+    learningObjectives: asStrings(parsed.learningObjectives),
+  };
+
+  if (!context.topic) return null;
+
+  await setCache(cacheKey, context, CONTEXT_CACHE_TTL_SECONDS);
+  return context;
 }
 
 // ── AI ────────────────────────────────────────────────────────────────────────
@@ -525,23 +842,39 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
 
-    // When real page content is available, it is the source of truth: the
-    // model reads every selected page as one combined context (never page by
-    // page) and determines the actual topic from that content, then applies
-    // the teacher's instructions (if any) to shape the output. Without page
-    // content (non-PDF/PPTX docs, or extraction failed client-side) we fall
-    // back to treating the label the teacher typed/selected as the topic.
-    const imageQueryInstruction = "imageQuery (the exact title of the real Wikipedia article about the single most central concept in the material — e.g. \"Chloroplast\", \"Water cycle\", \"Distributed file system\" — this will be used to directly look up that Wikipedia article, so it MUST be a real, existing encyclopedia topic, not a made-up descriptive phrase like \"process of energy conversion in plants\"; ALWAYS spell out the full term instead of a short acronym/abbreviation, even if the material itself uses the abbreviation — e.g. \"Distributed file system\" not \"DFS\", since short acronyms are frequently ambiguous (\"DFS\" is far more commonly Depth-first search) and would look up the wrong article entirely; if genuinely nothing in the material corresponds to a real, well-known encyclopedia topic, use an empty string), imageCount (integer: if the teacher's instructions explicitly ask for a specific number of images, use that exact number; otherwise default to 5)";
+    // ── Stage 1+2: understand the document, once ─────────────────────────────
+    // Cached by content hash, so repeat scans of the same pages (different
+    // instructions, switching summary/notes) skip this entirely.
+    const context = data.pageText
+      ? await buildDocumentContext(data.pageText, institutionId, teacherId)
+      : null;
+
+    // ── Stage 3: interpret the instructions against that understanding ───────
     const groundingRule = "Base your answer primarily on the given material. You may draw on your own knowledge to add helpful context or clarify a concept the material only mentions briefly, but anything you add must stay consistent with the material and must never contradict it.";
+    const instructionRule = "The teacher's instructions are REQUIRED reading, not optional flavor text — if given, they must visibly shape what you emphasize, how you format the output, or what you focus on (e.g. \"focus on the diagrams\" or \"summarize for a 5th grader\"). Instructions guide the output; they are never the topic.";
     const notesField = data.mode === "notes"
       ? ", detailedNotes (a thorough, well-organized written explanation of the material in multiple short paragraphs — not just a rephrasing of the bullet points, this should read like real study notes a student could learn from, covering definitions, how things work, and why they matter)"
       : "";
-    const systemPrompt = data.pageText
-      ? `You are a knowledgeable teacher's assistant analyzing classroom material. You will be given the combined text of one or more selected pages/slides from a document — treat all of it as a single unified context, not as separate pages. Read and understand the material first, then identify its actual subject matter yourself; do not just repeat any page numbers or labels back as the topic. The teacher's instructions are REQUIRED reading, not optional flavor text — if given, they must visibly shape what you emphasize, how you format the output, or what you focus on (e.g. "focus on the diagrams" or "summarize for a 5th grader"); instructions guide the output, they are not the topic. ${groundingRule} Return a JSON object with: topic (the real subject you identified, short string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings grounded in the given content)${notesField}, ${imageQueryInstruction}. Return ONLY valid JSON, no markdown.`
-      : `You are a knowledgeable teacher's assistant. You'll be given a topic/document label and, optionally, the teacher's instructions. The instructions are REQUIRED reading, not optional flavor text — if given, they must visibly shape what you emphasize or how you format the output. ${groundingRule} Return a JSON object with: topic (string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings)${notesField}, ${imageQueryInstruction}. Return ONLY valid JSON, no markdown.`;
-    const userContent = data.pageText
-      ? `Combined content from the selected page(s):\n${data.pageText}\n\nTeacher's instructions (optional): ${data.instructions || "None"}`
-      : `Topic: ${data.topic}\n\nTeacher's instructions (optional): ${data.instructions || "None"}`;
+    const outputShape = `Return a JSON object with: topic (short string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings)${notesField}, imageCount (integer: if the teacher's instructions explicitly ask for a specific number of images use that exact number, otherwise 5). Return ONLY valid JSON, no markdown.`;
+
+    let systemPrompt: string;
+    let userContent: string;
+
+    if (context) {
+      // Generate from the structured understanding rather than re-reading the
+      // raw page text: it's already been distilled, so this call stays small
+      // and focused on applying the instructions.
+      systemPrompt = `You are a knowledgeable teacher's assistant. You will be given a structured analysis of classroom material that has already been read and understood, plus the teacher's instructions. ${instructionRule} ${groundingRule} ${outputShape}`;
+      userContent =
+        `Document analysis:\n${JSON.stringify(context, null, 2)}\n\n` +
+        `Teacher's instructions (optional): ${data.instructions || "None"}`;
+    } else {
+      // No page content (non-PDF/PPTX doc, extraction failed client-side, or
+      // context extraction errored) — fall back to the previous behavior of
+      // working from whatever label/instructions we have.
+      systemPrompt = `You are a knowledgeable teacher's assistant. You'll be given a topic/document label and, optionally, the teacher's instructions. ${instructionRule} ${groundingRule} ${outputShape}`;
+      userContent = `Topic: ${data.topic}\n\nTeacher's instructions (optional): ${data.instructions || "None"}`;
+    }
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
@@ -563,27 +896,71 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     } catch {
       throw new BadRequestError("AI returned malformed JSON — please retry");
     }
-    // Look up the actual Wikipedia article(s) for the concept the AI
-    // identified — never the raw page-label/instructions string
-    // (`data.topic` in the fallback path), which is meta-information
-    // ("Pages 3, 4 — ...") and not a real encyclopedia topic. This replaces
-    // full-text keyword search against Commons (which repeatedly surfaced
-    // unrelated results matching only incidental words) with a precise,
-    // curated per-article image — a query that doesn't resolve to a real
-    // Wikipedia article returns no image rather than a wrong one.
-    const derivedTopic = typeof parsed.topic === "string" && parsed.topic.trim() ? parsed.topic : undefined;
-    const imageQuery = typeof parsed.imageQuery === "string" && parsed.imageQuery.trim() ? parsed.imageQuery : undefined;
-    const candidateTopics = [...new Set([imageQuery, derivedTopic].filter((q): q is string => !!q))];
-    // Default to 5 images; honor an explicit count from the teacher's
-    // instructions if the AI picked one up, within a sane [1, 10] range so a
-    // single request can't trigger an excessive number of Wikipedia calls.
+
+    // Clamp to [1, 10] so one request can't fan out into an excessive number
+    // of (potentially paid) image searches.
     const requestedImageCount = typeof parsed.imageCount === "number" && Number.isFinite(parsed.imageCount)
       ? Math.min(Math.max(Math.round(parsed.imageCount), 1), 10)
       : 5;
-    const images = await fetchTopicImages(candidateTopics, requestedImageCount);
 
-    const { imageQuery: _omit, imageCount: _omitCount, ...result } = parsed;
-    res.json({ success: true, data: { ...result, images } });
+    // ── Stage 4: retrieve images from the document's own concepts ────────────
+    const derivedTopic = typeof parsed.topic === "string" && parsed.topic.trim() ? parsed.topic : undefined;
+    const searchContext: DocumentContext = context ?? {
+      topic: derivedTopic ?? "",
+      subtopics: [], keywords: [], definitions: [],
+      conceptType: "", suggestedVisuals: [], learningObjectives: [],
+    };
+    const images = await retrieveConceptImages(searchContext, requestedImageCount);
+
+    // The model is asked for a specific JSON shape but isn't bound to it — it
+    // will happily return detailedNotes as an array of paragraphs, or
+    // keyPoints as a newline-joined string. Normalize here so the API contract
+    // actually holds and clients can render the response without type-guarding
+    // every field (an array reaching a `.split()` call is a hard crash).
+    const asText = (v: unknown): string | undefined => {
+      if (typeof v === "string") return v.trim() || undefined;
+      if (Array.isArray(v)) {
+        const parts = v
+          .map(item => {
+            if (typeof item === "string") return item;
+            // Sectioned notes sometimes arrive as [{ heading, body }, ...].
+            if (item && typeof item === "object") {
+              return Object.values(item).filter((s): s is string => typeof s === "string").join("\n");
+            }
+            return "";
+          })
+          .map(s => s.trim())
+          .filter(Boolean);
+        return parts.length > 0 ? parts.join("\n\n") : undefined;
+      }
+      return undefined;
+    };
+
+    const asBullets = (v: unknown): string[] => {
+      if (Array.isArray(v)) {
+        return v
+          .map(item => (typeof item === "string" ? item : asText(item) ?? ""))
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
+      const text = asText(v);
+      return text ? text.split(/\n+/).map(s => s.trim()).filter(Boolean) : [];
+    };
+
+    res.json({
+      success: true,
+      data: {
+        topic: (typeof parsed.topic === "string" && parsed.topic.trim()) || searchContext.topic || "",
+        overview: asText(parsed.overview) ?? "",
+        keyPoints: asBullets(parsed.keyPoints),
+        ...(asText(parsed.detailedNotes) ? { detailedNotes: asText(parsed.detailedNotes) } : {}),
+        images,
+        // Surfaced so the client can show what the AI actually understood, and
+        // so a future "regenerate with different instructions" flow can reuse
+        // it without re-deriving.
+        context,
+      },
+    });
   } catch (err) { next(err); }
 };
 
@@ -601,9 +978,49 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
     await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const systemContent = data.context
-      ? `You are a classroom teaching assistant helping a teacher explain concepts clearly. Current lesson context: ${data.context}. Keep answers concise and classroom-appropriate.`
-      : "You are a classroom teaching assistant. Answer clearly and concisely. Focus on educational accuracy.";
+    // Ground the conversation in the pages actually open on the board. Reuses
+    // aiScan's cached context, so this is free when those pages were already
+    // scanned.
+    const docContext = data.pageText
+      ? await buildDocumentContext(data.pageText, institutionId, teacherId)
+      : null;
+
+    // The assistant must not police scope. A teacher asking about surrogacy
+    // while teaching human reproduction is exploring the subject, not going
+    // off-topic — refusing or deflecting there is a failure, not caution.
+    // Lesson context exists to make answers *better targeted*, never to
+    // narrow what may be asked.
+    const scopeRule =
+      "The lesson context tells you who you're helping and at what level — use it to pitch your answer appropriately. It is NOT a restriction on what may be discussed. " +
+      "Answer every question the teacher asks, including ones that extend beyond the exact page content: related concepts, wider applications, ethical or social dimensions, and background the pages assume. " +
+      "Never tell the teacher a question is off-topic, never deflect, and never suggest returning to the lesson — they decide what's relevant to their own class. " +
+      "Where a natural connection to the material exists, draw it; where none exists, simply answer the question well. " +
+      "These are professional educators discussing curriculum subjects: handle sensitive topics such as reproduction, health, or social issues factually and matter-of-factly, at a level appropriate for the classroom. " +
+      "Format replies in simple markdown so they're easy to scan: short paragraphs, **bold** for key terms, and numbered or bulleted lists when enumerating parts, steps, or examples. " +
+      "Skip headings and tables — the chat panel is narrow. Lead with the answer rather than restating the question.";
+
+    let systemContent: string;
+    if (docContext) {
+      // Include the page text verbatim alongside the distilled context: the
+      // structured summary is good for "what is this lesson about", but
+      // questions like "who are the people mentioned here" need the actual
+      // words on the page.
+      systemContent =
+        `You are a classroom teaching assistant helping a teacher. Below is the material currently open on their board — this IS the page content, so never ask the teacher to provide it, and never say it wasn't supplied.\n\n` +
+        `Topic: ${docContext.topic}\n` +
+        (docContext.subtopics.length ? `Subtopics: ${docContext.subtopics.join(", ")}\n` : "") +
+        (docContext.keywords.length ? `Key terms: ${docContext.keywords.join(", ")}\n` : "") +
+        `\nPage content:\n"""\n${(data.pageText ?? "").slice(0, 6000)}\n"""\n\n` +
+        `${scopeRule} Keep answers concise and clear.`;
+    } else if (data.context) {
+      // Only a filename is known — say so plainly rather than pretending to
+      // see content, but still answer the question on general knowledge.
+      systemContent =
+        `You are a classroom teaching assistant helping a teacher. They are working from a document named "${data.context}", but its contents are not available to you. ` +
+        `Answer from your own knowledge of the subject; do not claim to see the page, and do not refuse simply because the page text is missing. ${scopeRule} Keep answers concise and clear.`;
+    } else {
+      systemContent = `You are a classroom teaching assistant. Answer clearly and concisely, with educational accuracy. ${scopeRule}`;
+    }
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
@@ -640,10 +1057,33 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
     await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const systemPrompt = `You are a quiz generator for classroom teachers. Generate exactly ${data.count} multiple-choice questions at ${data.difficulty} difficulty. Return a JSON object with a "questions" array. Each question: { "id": "q1", "question": "...", "options": ["A", "B", "C", "D"], "answer": <0-indexed correct option number> }. Return ONLY valid JSON, no markdown.`;
+    // Same cached extraction aiScan uses — free when these pages were already
+    // scanned, and gives the generator a real understanding of the material
+    // rather than only the raw text.
+    const quizContext = data.pageText
+      ? await buildDocumentContext(data.pageText, institutionId, teacherId)
+      : null;
+
+    const systemPrompt =
+      `You are a quiz generator for classroom teachers. Generate exactly ${data.count} multiple-choice questions at ${data.difficulty} difficulty. ` +
+      (data.pageText
+        // Without this the model drifts to its own general knowledge of the
+        // subject, producing questions that are "about the topic" but test
+        // things the students were never taught from these pages.
+        ? `Every question MUST be answerable purely from the supplied material — test what these specific pages actually teach, not general knowledge about the subject. Do not introduce facts, terms, or examples that do not appear in the material. `
+        : "") +
+      `Return a JSON object with a "questions" array. Each question: ` +
+      `{ "id": "q1", "question": "...", "options": ["A", "B", "C", "D"], "answer": <0-indexed correct option number>, ` +
+      `"explanation": "1-2 sentences stating why the correct option is right${data.pageText ? ", grounded in what the material actually says" : ""}, and briefly why the tempting wrong option is wrong" }. ` +
+      `Return ONLY valid JSON, no markdown.`;
+
     const userContent = data.pageText
-      ? `Topic: ${data.topic}\n\nBase the questions on this content:\n${data.pageText}`
-      : `Topic: ${data.topic}`;
+      ? [
+          quizContext ? `Document analysis:\n${JSON.stringify(quizContext, null, 2)}\n` : "",
+          `Material to base the questions on:\n${data.pageText}`,
+          `\nTeacher's instructions (optional): ${data.instructions || "None"}`,
+        ].filter(Boolean).join("\n")
+      : `Topic: ${data.topic}\n\nTeacher's instructions (optional): ${data.instructions || "None"}`;
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
@@ -652,23 +1092,93 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
         { role: "user", content: userContent },
       ],
       response_format: { type: "json_object" },
-      max_tokens: 1200,
+      // Each question now carries an explanation on top of its options, so the
+      // budget scales with question count rather than sitting at a flat cap
+      // that would truncate the JSON mid-array for larger quizzes.
+      max_tokens: Math.min(600 + data.count * 220, 3000),
     });
 
     await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
 
-    let parsed: { questions?: { id?: string; question: string; options: string[]; answer: number }[] };
+    let parsed: { questions?: unknown };
     try {
       parsed = JSON.parse(completion.choices[0].message.content ?? '{"questions":[]}');
     } catch {
       throw new BadRequestError("AI returned malformed JSON — please retry");
     }
-    const questions = (parsed.questions ?? []).map((q: { id?: string; question: string; options: string[]; answer: number }, i: number) => ({
-      id: q.id ?? `q${i + 1}`,
-      question: q.question,
-      options: q.options,
-      answer: q.answer,
-    }));
+
+    // As with aiScan, the model isn't bound to the requested JSON shape.
+    // Quiz has more ways to go wrong than a summary does, and one of them
+    // fails silently rather than loudly: if `answer` comes back as a letter
+    // ("B") or as the answer text instead of an index, the client's
+    // `selected === answer` check simply never matches, so every answer reads
+    // as wrong. Normalize all three shapes to a real 0-based index here.
+    const toOptions = (v: unknown): string[] => {
+      if (Array.isArray(v)) {
+        return v.map(o => (typeof o === "string" ? o : String(o ?? ""))).map(s => s.trim()).filter(Boolean);
+      }
+      // Sometimes returned as { "A": "...", "B": "..." } — preserve label order.
+      if (v && typeof v === "object") {
+        return Object.entries(v as Record<string, unknown>)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([, val]) => (typeof val === "string" ? val : String(val ?? "")).trim())
+          .filter(Boolean);
+      }
+      return [];
+    };
+
+    const toAnswerIndex = (v: unknown, options: string[]): number | null => {
+      if (typeof v === "number" && Number.isInteger(v) && v >= 0 && v < options.length) return v;
+      if (typeof v === "string") {
+        const trimmed = v.trim();
+        // Numeric string — accept 0-based, and tolerate 1-based ("1".."4").
+        if (/^\d+$/.test(trimmed)) {
+          const n = parseInt(trimmed, 10);
+          if (n >= 0 && n < options.length) return n;
+          if (n >= 1 && n <= options.length) return n - 1;
+        }
+        // Single letter — "A"/"a" → 0, "B" → 1, ...
+        if (/^[A-Za-z]$/.test(trimmed)) {
+          const idx = trimmed.toUpperCase().charCodeAt(0) - 65;
+          if (idx >= 0 && idx < options.length) return idx;
+        }
+        // The answer text itself rather than a position.
+        const match = options.findIndex(o => o.toLowerCase() === trimmed.toLowerCase());
+        if (match !== -1) return match;
+      }
+      return null;
+    };
+
+    const rawQuestions = Array.isArray(parsed.questions) ? parsed.questions : [];
+    const questions = rawQuestions
+      .map((raw, i) => {
+        if (!raw || typeof raw !== "object") return null;
+        const q = raw as Record<string, unknown>;
+        const question = typeof q.question === "string" ? q.question.trim() : "";
+        const options = toOptions(q.options);
+        // A question with no text or fewer than two choices isn't answerable —
+        // drop it rather than rendering a broken card.
+        if (!question || options.length < 2) return null;
+        const answer = toAnswerIndex(q.answer, options);
+        if (answer === null) return null;
+        // Explanation is best-effort: a question is still usable without one,
+        // so a missing or malformed value shouldn't discard the question.
+        const explanation = typeof q.explanation === "string" && q.explanation.trim()
+          ? q.explanation.trim()
+          : undefined;
+        return {
+          id: typeof q.id === "string" && q.id.trim() ? q.id : `q${i + 1}`,
+          question,
+          options,
+          answer,
+          ...(explanation ? { explanation } : {}),
+        };
+      })
+      .filter((q): q is { id: string; question: string; options: string[]; answer: number; explanation?: string } => q !== null);
+
+    if (questions.length === 0) {
+      throw new BadRequestError("AI returned no usable questions — please retry");
+    }
 
     res.json({ success: true, data: { questions } });
   } catch (err) { next(err); }

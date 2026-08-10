@@ -931,7 +931,24 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
       orderBy: { createdAt: "desc" },
     });
 
-    res.json({ success: true, data: tests });
+    // "attempts" above counts every attempt row (including ones still in
+    // progress). "Submitted" should only reflect attempts the student has
+    // actually finished, so tally completed attempts separately and merge
+    // them in — same status filter the Results tab uses ("completed").
+    const completedCounts = tests.length
+      ? await prisma.taskTestAttempt.groupBy({
+          by: ["testId"],
+          where: { testId: { in: tests.map(t => t.id) }, status: "completed" },
+          _count: { _all: true },
+        })
+      : [];
+    const completedMap = new Map(completedCounts.map(c => [c.testId, c._count._all]));
+    const testsWithSubmitted = tests.map(t => ({
+      ...t,
+      _count: { ...t._count, submitted: completedMap.get(t.id) ?? 0 },
+    }));
+
+    res.json({ success: true, data: testsWithSubmitted });
   } catch (err) { next(err); }
 };
 
@@ -965,7 +982,7 @@ export const createTest = async (req: AuthRequest, res: Response, next: NextFunc
       },
     });
 
-    res.status(201).json({ success: true, data: test });
+    res.status(201).json({ success: true, data: { ...test, _count: { ...test._count, submitted: 0 } } });
   } catch (err) { next(err); }
 };
 
@@ -992,7 +1009,9 @@ export const getTest = async (req: AuthRequest, res: Response, next: NextFunctio
 
     if (!test) throw new NotFoundError("Test not found");
 
-    res.json({ success: true, data: test });
+    const submittedCount = await prisma.taskTestAttempt.count({ where: { testId: test.id, status: "completed" } });
+
+    res.json({ success: true, data: { ...test, _count: { ...test._count, submitted: submittedCount } } });
   } catch (err) { next(err); }
 };
 
@@ -1032,7 +1051,7 @@ export const savePaper = async (req: AuthRequest, res: Response, next: NextFunct
     const teacherId = await getTeacherId(userId, institutionId);
     const id = req.params.id as string;
 
-    const { title, description, paperType, durationMinutes, maxAttempts, startDate, validUntil, isRandomized, answerSpace, sections, questions } =
+    const { title, description, paperType, durationMinutes, maxAttempts, startDate, validUntil, isRandomized, answerSpace, sections, questions, totalMarks } =
       z.object({
         title: z.string().min(1).max(200),
         description: z.string().max(2000).optional().nullable(),
@@ -1043,6 +1062,7 @@ export const savePaper = async (req: AuthRequest, res: Response, next: NextFunct
         validUntil: z.string().optional().nullable(),
         isRandomized: z.boolean().default(false),
         answerSpace: z.boolean().default(true),
+        totalMarks: z.number().int().min(0).max(1000).optional(),
         sections: z.array(z.object({
           id: z.string(),
           title: z.string(),
@@ -1089,6 +1109,7 @@ export const savePaper = async (req: AuthRequest, res: Response, next: NextFunct
           numberOfQuestions: questions.length,
           startDate: startDate ? new Date(startDate) : null,
           validUntil: validUntil ? new Date(validUntil) : null,
+          ...(totalMarks !== undefined && { totalMarks }),
         },
       });
 
@@ -1124,7 +1145,9 @@ export const savePaper = async (req: AuthRequest, res: Response, next: NextFunct
       },
     });
 
-    res.json({ success: true, data: updated });
+    const submittedCount = updated ? await prisma.taskTestAttempt.count({ where: { testId: updated.id, status: "completed" } }) : 0;
+
+    res.json({ success: true, data: updated ? { ...updated, _count: { ...updated._count, submitted: submittedCount } } : updated });
   } catch (err) { next(err); }
 };
 
@@ -1918,11 +1941,12 @@ export const saveAssignmentPaper = async (req: AuthRequest, res: Response, next:
     const teacherId = await getTeacherId(userId, institutionId);
     const id = req.params.id as string;
 
-    const { title, description, isRandomized, answerSpace, sections, questions } = z.object({
+    const { title, description, isRandomized, answerSpace, sections, questions, totalMarks } = z.object({
       title: z.string().min(1).max(200),
       description: z.string().max(1000).optional().nullable(),
       isRandomized: z.boolean().default(false),
       answerSpace: z.boolean().default(true),
+      totalMarks: z.number().int().min(0).max(1000).optional(),
       sections: z.array(z.object({
         id: z.string(),
         title: z.string(),
@@ -1962,6 +1986,7 @@ export const saveAssignmentPaper = async (req: AuthRequest, res: Response, next:
         sections: sections.length > 0 ? JSON.parse(JSON.stringify(sections)) : null,
         questions: JSON.parse(JSON.stringify(questions)),
         numberOfQuestions: questions.length,
+        ...(totalMarks !== undefined && { totalMarks }),
       },
     });
 
@@ -1987,13 +2012,18 @@ export const getQuizInfo = async (req: import("express").Request, res: Response,
       select: {
         id: true, title: true, description: true, status: true,
         durationMinutes: true, totalMarks: true, numberOfQuestions: true,
-        maxAttempts: true, validUntil: true, testLink: true, divisionId: true,
+        maxAttempts: true, startDate: true, validUntil: true, testLink: true, divisionId: true,
         institutionId: true,
       },
     });
 
     if (!test) throw new NotFoundError("Test not found");
     if (test.status === "DRAFT") throw new BadRequestError("This test is not yet active");
+    // A test activated with "Start at <scheduled time>" is ACTIVE in status but must stay
+    // inaccessible until that moment — this closes the gap where a student with the direct
+    // link could start early even though the list correctly shows it as "Upcoming".
+    if (test.startDate && new Date(test.startDate) > new Date())
+      throw new BadRequestError("This test hasn't started yet");
     if (test.validUntil && new Date(test.validUntil) < new Date())
       throw new BadRequestError("This test has expired");
 
@@ -2066,6 +2096,8 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
 
     if (!test) throw new NotFoundError("Test not found");
     if (test.status !== "ACTIVE") throw new BadRequestError("This test is not active");
+    if (test.startDate && new Date(test.startDate) > new Date())
+      throw new BadRequestError("This test hasn't started yet");
     if (test.validUntil && new Date(test.validUntil) < new Date())
       throw new BadRequestError("This test has expired");
 

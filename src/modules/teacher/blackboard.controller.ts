@@ -29,7 +29,19 @@ async function checkTokenPool(institutionId: string): Promise<void> {
     return;
   }
   const usageKey = `ai:usage:institution:${institutionId}`;
-  const [used, limitN] = await Promise.all([redis.get(usageKey), getAiTokenLimit(institutionId)]);
+  // A Redis hiccup must not fail the whole request. ioredis rejects commands
+  // after `commandTimeout` (5s), and an uncaught rejection here propagates to
+  // the central error handler and returns a 500 — turning a transient cache
+  // blip into a broken feature. Treat an unreadable counter as "no usage
+  // recorded" and let the request proceed; the deduct below still runs, so
+  // usage keeps accruing once Redis recovers.
+  const [used, limitN] = await Promise.all([
+    redis.get(usageKey).catch((err) => {
+      console.warn("[blackboard] Token-pool read failed, allowing request:", err?.message ?? err);
+      return null;
+    }),
+    getAiTokenLimit(institutionId),
+  ]);
   const usedN = Number(used ?? 0);
   if (limitN > 0 && usedN >= limitN) {
     throw Object.assign(new Error("Token limit reached"), { statusCode: 429 });
@@ -366,8 +378,13 @@ const WIKI_USER_AGENT = "QubeEx-Blackboard/1.0 (https://qubeex.app; contact@qube
 // filter is deliberately strict: it will sometimes drop a legitimate diagram,
 // which is the right trade in a product used with children — showing nothing
 // is recoverable, showing a photograph of genitalia to a classroom is not.
+// Deliberately broad. A false positive costs almost nothing — "diagrams only"
+// is good pedagogy for any biology topic anyway — while a false negative puts
+// a clinical photograph on a classroom projector. Note `reproduc\w*` not
+// `reproduct\w*`: the earlier form missed "Reproduce", and "How do Organisms
+// Reproduce?" is the standard chapter title for precisely this material.
 const SENSITIVE_SUBJECT_PATTERN =
-  /\b(reproduct\w*|genital\w*|penis|penile|vulva|vagin\w*|testis|testes|testicl\w*|scrotum|uterus|uterine|ovar\w*|cervix|cervical|breast\w*|mammary|sperm\w*|semen|menstrua\w*|puberty|sexual\w*|intercourse|pregnan\w*|fetus|foetus|embryo\w*|anatomy|nude|naked)\b/i;
+  /\b(reproduc\w*|genital\w*|penis|penile|vulva|vagin\w*|testis|testes|testicl\w*|scrotum|uterus|uterine|ovar\w*|ovum|ova|oocyte\w*|cervix|cervical|breast\w*|mammary|sperm\w*|semen|seminal|prostate|urethra\w*|menstrua\w*|menopause|puberty|pubert\w*|sexual\w*|intercourse|coitus|copulat\w*|pregnan\w*|gestation|fetus|foetus|fetal|foetal|embryo\w*|zygote|gamete\w*|fertilis\w*|fertiliz\w*|insemination|surrogac\w*|contracept\w*|condom|abortion|placenta\w*|umbilical|lactation|anatomy|anatomical|nude|naked|erotic)\b/i;
 
 // SVG is a vector format — a photograph cannot be one — so it's a reliable
 // "this is a drawn diagram" signal. Beyond that, recognise well-established
@@ -375,6 +392,11 @@ const SENSITIVE_SUBJECT_PATTERN =
 // illustration library, and Gray's/Sobotta anatomy plates (19th-c. engravings).
 const ILLUSTRATION_HINT =
   /(diagram|illustration|schematic|scheme|illu[_ ]|blausen|gray\d{3,4}|sobo[_ ]|labell?ed|cross[_ -]?section|drawing|sketch|chart)/i;
+
+// Names that mark an animated GIF as a teaching animation of a process rather
+// than incidental footage. Used only to admit GIFs on sensitive topics.
+const PROCESS_ANIMATION_HINT =
+  /(anim|cycle|process|mitosis|meiosis|division|stages?|phases?|sequence|motion|flow|rotat|orbit|pump|wave|reaction|formation|development|growth|how[_ ]it[_ ]works)/i;
 
 // Applied to EVERY image, regardless of whether the topic was flagged
 // sensitive. Topic detection gates on the AI's word choices, so a single
@@ -393,13 +415,21 @@ function isClassroomSafe(title: string, url: string): boolean {
   return isIllustration(title, url);
 }
 
-function isSensitiveSubject(context: DocumentContext): boolean {
+/**
+ * `rawText` matters as much as the context here: sensitivity is decided from
+ * what the document actually says, not only from how the model chose to
+ * summarise it. A chapter can be titled "Life Processes" or "Chapter 8" and
+ * still be entirely about reproduction — the page text gives that away even
+ * when the derived topic doesn't.
+ */
+function isSensitiveSubject(context: DocumentContext, rawText?: string): boolean {
   const haystack = [
     context.topic,
     context.conceptType,
     ...context.subtopics,
     ...context.keywords,
     ...context.suggestedVisuals,
+    rawText ?? "",
   ].join(" ");
   return SENSITIVE_SUBJECT_PATTERN.test(haystack);
 }
@@ -413,7 +443,15 @@ function isSensitiveSubject(context: DocumentContext): boolean {
 function isIllustration(title: string, url: string): boolean {
   const haystack = `${title} ${url}`;
   if (/\.svg/i.test(haystack)) return true;
-  return ILLUSTRATION_HINT.test(haystack);
+  if (ILLUSTRATION_HINT.test(haystack)) return true;
+  // Animated GIFs are among the best classroom assets for anything that
+  // changes over time (mitosis, engine cycles, wave motion), and Wikipedia
+  // serves them unthumbnailed so the animation survives. Allow them on
+  // sensitive topics only when the name reads as a process/animation rather
+  // than arbitrary footage — an animated diagram of cell division is exactly
+  // what a biology teacher wants; an unlabelled clip is not.
+  if (/\.gif/i.test(haystack) && PROCESS_ANIMATION_HINT.test(haystack)) return true;
+  return false;
 }
 
 // Look up the actual Wikipedia article for a topic and return its curated
@@ -585,13 +623,162 @@ async function fetchTopicImages(
   return results;
 }
 
-// ── Google Programmable Search (optional, paid) ───────────────────────────────
+// ── Serper (optional, paid) ───────────────────────────────────────────────────
 //
 // Wikipedia is precise but has real coverage gaps: well-documented topics
 // ("Chloroplast") have plenty of curated diagrams, while niche technical ones
-// often have none at all. Google CSE fills those gaps by reaching the wider
-// educational web. Enabled only when both env vars are set, so the whole
-// feature degrades cleanly to Wikipedia-only when unconfigured.
+// ("Distributed file system") have none. Serper reaches the wider educational
+// web to fill those gaps, at a lower per-query price than Google CSE.
+//
+//   SERPER_API_KEY = key from serper.dev (2,500 free queries to start)
+//
+// Licensing note: unlike Google CSE, Serper exposes no usage-rights filter and
+// returns no license field. Rather than a hard licence gate (which no source
+// can satisfy for many technical subjects — CS diagrams essentially do not
+// exist under open licences), this uses an educational-use posture:
+//
+//   1. Hard-block source categories that are never usable in a classroom —
+//      watermarked stock, pinboards, AI-generated art, video thumbnails.
+//   2. Prefer known educational publishers, but don't require them, so
+//      subjects like computer science still return results.
+//
+// PREFERRED_IMAGE_DOMAINS is therefore a ranking signal, not a gate. Note the
+// tiering: the first group is openly licensed (CC or public domain) and safe
+// to reuse outright; the rest are reputable but copyrighted, included under
+// the educational-use posture above.
+const SERPER_API_KEY = process.env.SERPER_API_KEY;
+
+const PREFERRED_IMAGE_DOMAINS = [
+  // — Openly licensed (CC / public domain) —
+  "wikipedia.org", "wikimedia.org", "wikibooks.org", "wikiversity.org",
+  "openstax.org", "libretexts.org", "ck12.org", "siyavula.com",
+  "nih.gov", "nasa.gov", "noaa.gov", "usgs.gov", "cdc.gov", "ed.gov", "nist.gov",
+  // — Reputable reference & school publishers (copyrighted) —
+  "britannica.com", "nationalgeographic.org", "khanacademy.org",
+  "ncert.nic.in", "nios.ac.in", "byjus.com", "vedantu.com", "toppr.com",
+  "biologydictionary.net", "sciencefacts.net", "physicsclassroom.com",
+  "energyeducation.ca",
+  // — Technical / CS teaching sources (copyrighted) —
+  "geeksforgeeks.org", "tutorialspoint.com", "javatpoint.com", "programiz.com",
+  "baeldung.com", "opengenus.org", "scaler.com", "interviewbit.com",
+  "digitalocean.com", "techtarget.com", "kubernetes.io", "redhat.com",
+  "ibm.com", "microsoft.com", "oracle.com", "cloudflare.com",
+  // — Academic —
+  "researchgate.net", "sciencedirect.com", "springer.com", "arxiv.org",
+  "ieee.org", "acm.org", "nature.com",
+];
+
+// Never usable in a classroom, whatever the subject: watermarked commercial
+// stock, pinboards/social re-hosts with no provenance, AI-generated art (which
+// invents plausible-looking but wrong diagrams), and video thumbnails.
+const BLOCKED_IMAGE_DOMAINS = [
+  "shutterstock.com", "gettyimages.com", "istockphoto.com", "alamy.com",
+  "dreamstime.com", "depositphotos.com", "123rf.com", "vectorstock.com",
+  "freepik.com", "stock.adobe.com", "canstockphoto.com",
+  "pinterest.com", "pinimg.com", "facebook.com", "fbcdn.net", "instagram.com",
+  "twitter.com", "x.com", "twimg.com", "tiktok.com", "licdn.com", "redd.it",
+  "ytimg.com", "youtube.com", "vimeocdn.com",
+  "easy-peasy.ai", "midjourney.com", "openai.com", "leonardo.ai", "civitai.com",
+];
+
+function hostOf(rawUrl: string): string | null {
+  try {
+    return new URL(rawUrl).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+/** Host must equal a listed domain or be a subdomain of it — never a mere substring. */
+function hostMatches(host: string, domains: string[]): boolean {
+  return domains.some(d => host === d || host.endsWith(`.${d}`));
+}
+
+function isBlockedImageSource(rawUrl: string): boolean {
+  const host = hostOf(rawUrl);
+  if (!host) return true; // unparseable — reject
+  return hostMatches(host, BLOCKED_IMAGE_DOMAINS);
+}
+
+/** Ranking signal: known-good educational publisher, or any academic institution. */
+function isPreferredImageSource(rawUrl: string): boolean {
+  const host = hostOf(rawUrl);
+  if (!host) return false;
+  // Universities worldwide publish course diagrams: .edu, plus academic
+  // second-level domains like ac.uk / ac.in / edu.au.
+  if (/\.edu$/.test(host) || /\.(ac|edu)\.[a-z]{2}$/.test(host)) return true;
+  return hostMatches(host, PREFERRED_IMAGE_DOMAINS);
+}
+
+async function fetchSerperImages(
+  query: string,
+  limit: number,
+  seenUrls: Set<string>,
+  illustrationsOnly = false
+): Promise<{ url: string; caption: string }[]> {
+  if (!SERPER_API_KEY || limit <= 0) return [];
+  try {
+    const res = await fetch("https://google.serper.dev/images", {
+      method: "POST",
+      headers: {
+        "X-API-KEY": SERPER_API_KEY,
+        "Content-Type": "application/json",
+      },
+      // Ask for more than needed — the domain allowlist rejects most results,
+      // so a tight `num` would usually come back empty.
+      body: JSON.stringify({ q: query, num: 40, safe: "active" }),
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) {
+      console.error(`[blackboard] Serper image search returned ${res.status} for "${query}"`);
+      return [];
+    }
+    const json = (await res.json()) as {
+      images?: Array<{ title?: string; imageUrl?: string; link?: string; domain?: string }>;
+    };
+    const IMAGE_EXT = /\.(jpg|jpeg|png|svg|gif|webp)(?:\?.*)?$/i;
+
+    // Two passes: collect everything acceptable, tagging whether it came from a
+    // preferred educational source, then emit preferred first. Ranking rather
+    // than filtering means a Britannica or Wikimedia diagram outranks a random
+    // blog, without excluding subjects (CS especially) that only the wider web
+    // covers.
+    const preferred: { url: string; caption: string }[] = [];
+    const other: { url: string; caption: string }[] = [];
+
+    for (const item of json.images ?? []) {
+      if (preferred.length + other.length >= limit * 3) break;
+      const url = item.imageUrl;
+      if (!url || seenUrls.has(url)) continue;
+      if (!IMAGE_EXT.test(url)) continue;
+      // Judge the image's own host, not the `domain` field — that describes the
+      // page the image was found on, and an untrusted site can hot-link a
+      // trusted image (or the reverse).
+      if (isBlockedImageSource(url)) continue;
+      const title = item.title ?? "";
+      if (illustrationsOnly && !isIllustration(title, url)) continue;
+      if (!isClassroomSafe(title, url)) continue;
+      (isPreferredImageSource(url) ? preferred : other).push({
+        url,
+        caption: title.trim() || query,
+      });
+    }
+
+    const out = [...preferred, ...other].slice(0, limit);
+    for (const img of out) seenUrls.add(img.url);
+    return out;
+  } catch (err) {
+    console.error(`[blackboard] Serper image search failed for "${query}":`, err);
+    return [];
+  }
+}
+
+// ── Google Programmable Search (optional, paid, alternative to Serper) ────────
+//
+// Kept as a switchable alternative: it does support a usage-rights filter,
+// which Serper lacks. Whichever is configured gets used; Serper wins if both.
+// Enabled only when both env vars are set, so the feature degrades cleanly to
+// Wikipedia-only when unconfigured.
 //
 //   GOOGLE_SEARCH_API_KEY = Google Cloud API key with Custom Search API enabled
 //   GOOGLE_SEARCH_CX      = Programmable Search Engine ID, configured with
@@ -670,7 +857,8 @@ async function fetchGoogleImages(
 // so it runs on the smallest number of queries that can close the gap).
 async function retrieveConceptImages(
   context: DocumentContext,
-  limit: number
+  limit: number,
+  rawText?: string
 ): Promise<{ url: string; caption: string }[]> {
   // Most specific first: explicit visual suggestions, then subtopics, then the
   // broad topic as a backstop. Deduped so a concept repeated across fields
@@ -685,7 +873,7 @@ async function retrieveConceptImages(
   // Anatomy/reproduction and similar subjects: diagrams only, no photographs.
   // Deliberately fails closed — if filtering leaves nothing, the scan returns
   // no images rather than falling back to unfiltered results.
-  const illustrationsOnly = isSensitiveSubject(context);
+  const illustrationsOnly = isSensitiveSubject(context, rawText);
   console.log(
     `[blackboard] Image retrieval — topic="${context.topic}" sensitive=${illustrationsOnly} queries=${JSON.stringify(queries.slice(0, 6))}`
   );
@@ -694,17 +882,26 @@ async function retrieveConceptImages(
   const results = await fetchTopicImages(queries, limit, seenUrls, illustrationsOnly);
   if (results.length >= limit) return results.slice(0, limit);
 
+  // Paid web search only fills what Wikipedia couldn't, and only for as many
+  // queries as it takes to close the gap. Serper is preferred when configured
+  // (cheaper per query); Google CSE is the fallback provider.
+  const webSearch = SERPER_API_KEY ? fetchSerperImages : fetchGoogleImages;
+  const webSearchName = SERPER_API_KEY ? "serper" : (GOOGLE_SEARCH_API_KEY ? "google-cse" : "none");
+  if (results.length < limit && webSearchName !== "none") {
+    console.log(`[blackboard] Wikipedia returned ${results.length}/${limit} — filling via ${webSearchName}`);
+  }
+
   for (const query of queries) {
     if (results.length >= limit) break;
     // "diagram" biases toward instructional illustrations over incidental
     // photos — the useful shape for classroom material.
-    const fromGoogle = await fetchGoogleImages(
+    const fromWeb = await webSearch(
       `${query} diagram`,
       limit - results.length,
       seenUrls,
       illustrationsOnly
     );
-    results.push(...fromGoogle);
+    results.push(...fromWeb);
   }
 
   return results.slice(0, limit);
@@ -751,7 +948,7 @@ const CONTEXT_SYSTEM_PROMPT =
   '"keywords" (array of 5-12 important terms, scientific names, or symbols appearing in the material), ' +
   '"definitions" (array of up to 5 objects {"term","meaning"} for terms the material actually defines), ' +
   '"conceptType" (short label such as "Biological Process", "Algorithm", "Historical Event", "Mathematical Theorem"), ' +
-  '"suggestedVisuals" (array of 3-6 concrete, picturable subjects that would genuinely help teach this — each phrased as a real encyclopedia subject someone could look up, e.g. "Chloroplast", "Calvin cycle", "Water cycle diagram"; ALWAYS spell terms out in full rather than as acronyms, since acronyms are ambiguous — write "Distributed file system", never "DFS"), ' +
+  '"suggestedVisuals" (array of 3-6 concrete, picturable subjects — imagine you are the teacher standing in front of the class deciding what to put on the board. Prefer: labelled diagrams that show structure, processes or cycles that show change over time and work well as an animation, and real-world examples students can connect to their own experience. Favour a visual that makes a student ask "why does that happen?" over a merely decorative one. Each must be phrased as a real encyclopedia subject someone could look up, e.g. "Chloroplast", "Calvin cycle", "Water cycle"; ALWAYS spell terms out in full rather than as acronyms, since acronyms are ambiguous — write "Distributed file system", never "DFS"), ' +
   '"learningObjectives" (array of 2-4 strings describing what a student should be able to do after this material).';
 
 async function buildDocumentContext(
@@ -855,7 +1052,20 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     const notesField = data.mode === "notes"
       ? ", detailedNotes (a thorough, well-organized written explanation of the material in multiple short paragraphs — not just a rephrasing of the bullet points, this should read like real study notes a student could learn from, covering definitions, how things work, and why they matter)"
       : "";
-    const outputShape = `Return a JSON object with: topic (short string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings)${notesField}, imageCount (integer: if the teacher's instructions explicitly ask for a specific number of images use that exact number, otherwise 5). Return ONLY valid JSON, no markdown.`;
+    // imageQueries is what finally lets the teacher's instructions steer the
+    // visuals. The document context is built without ever seeing instructions
+    // (that's what makes it cacheable), so if image search ran off the context
+    // alone — as it did before — writing "show me the female reproductive
+    // system" changed the text but not a single image. This call does see the
+    // instructions, so it's the right place to derive search subjects.
+    const visualSelectionRule =
+      "Choose the visuals the way an experienced teacher would when deciding what to put on the board for a mixed-ability class: prefer labelled diagrams that show structure, processes or cycles that show change over time (these work well as animations), and real-world examples students can connect to their own lives. Favour visuals that spark a question over decorative ones. " +
+      "If the teacher's instructions name a particular aspect, focus, or sub-topic, the visuals MUST reflect that — their instruction outranks the document's general topic when deciding what to picture.";
+    const outputShape =
+      `Return a JSON object with: topic (short string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings)${notesField}, ` +
+      `imageQueries (array of 3-6 subjects to search for images of. ${visualSelectionRule} Each must be a real, lookup-able encyclopedia subject — e.g. "Chloroplast", "Water cycle" — never a descriptive phrase, and never an acronym: write "Distributed file system", not "DFS"), ` +
+      `imageCount (integer: if the teacher's instructions explicitly ask for a specific number of images use that exact number, otherwise 5). ` +
+      `Return ONLY valid JSON, no markdown.`;
 
     let systemPrompt: string;
     let userContent: string;
@@ -905,12 +1115,29 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
 
     // ── Stage 4: retrieve images from the document's own concepts ────────────
     const derivedTopic = typeof parsed.topic === "string" && parsed.topic.trim() ? parsed.topic : undefined;
-    const searchContext: DocumentContext = context ?? {
+
+    // Instruction-aware queries lead; the document's own suggested visuals
+    // follow as backup so a vague or empty instruction still yields images.
+    const instructionQueries = Array.isArray(parsed.imageQueries)
+      ? parsed.imageQueries
+          .map(q => (typeof q === "string" ? q.trim() : ""))
+          .filter(Boolean)
+          .slice(0, 6)
+      : [];
+
+    const baseContext: DocumentContext = context ?? {
       topic: derivedTopic ?? "",
       subtopics: [], keywords: [], definitions: [],
       conceptType: "", suggestedVisuals: [], learningObjectives: [],
     };
-    const images = await retrieveConceptImages(searchContext, requestedImageCount);
+    const searchContext: DocumentContext = {
+      ...baseContext,
+      suggestedVisuals: [...instructionQueries, ...baseContext.suggestedVisuals],
+    };
+    if (instructionQueries.length > 0) {
+      console.log(`[blackboard] Instruction-derived image queries: ${JSON.stringify(instructionQueries)}`);
+    }
+    const images = await retrieveConceptImages(searchContext, requestedImageCount, data.pageText);
 
     // The model is asked for a specific JSON shape but isn't bound to it — it
     // will happily return detailedNotes as an array of paragraphs, or
@@ -997,7 +1224,14 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
       "Where a natural connection to the material exists, draw it; where none exists, simply answer the question well. " +
       "These are professional educators discussing curriculum subjects: handle sensitive topics such as reproduction, health, or social issues factually and matter-of-factly, at a level appropriate for the classroom. " +
       "Format replies in simple markdown so they're easy to scan: short paragraphs, **bold** for key terms, and numbered or bulleted lists when enumerating parts, steps, or examples. " +
-      "Skip headings and tables — the chat panel is narrow. Lead with the answer rather than restating the question.";
+      "Skip headings and tables — the chat panel is narrow. Lead with the answer rather than restating the question. " +
+      // Emojis are a scanning aid here, not decoration: one anchoring a list
+      // item gives the eye something to land on when a teacher is glancing at
+      // the panel mid-lesson. Capped deliberately — a teacher tool that reads
+      // as gimmicky loses credibility faster than a plain one.
+      "Use a few well-chosen emojis to make replies warm and easy to scan — typically one opening the reply and one per list item, matched to the subject (🌱 plants, 🧬 genetics, ⚡ energy, 🔬 experiments, 🌍 geography, 📐 maths, 💡 key insight, ⚠️ common mistake). " +
+      "Keep them purposeful and sparing: never more than one per line, never inside the middle of a sentence, and none at all where they would trivialise a serious topic such as health, reproduction, or social issues. " +
+      "Write in a warm, encouraging, conversational voice — you are talking to a fellow teacher, not writing a textbook entry.";
 
     let systemContent: string;
     if (docContext) {
@@ -1064,8 +1298,31 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
       ? await buildDocumentContext(data.pageText, institutionId, teacherId)
       : null;
 
+    // "at hard difficulty" on its own is a label the model applies weakly and
+    // inconsistently. Spelling out the cognitive demand AND how distractors
+    // should behave is what actually separates the three levels — at easy the
+    // wrong options are obviously wrong, at hard they're real misconceptions.
+    const DIFFICULTY_GUIDANCE: Record<"easy" | "medium" | "hard", string> = {
+      easy:
+        "EASY means direct recall: each answer is a fact stated plainly in the material, and a student who simply read the pages can answer it. " +
+        "Wrong options should be clearly and obviously wrong to anyone who read the material.",
+      medium:
+        "MEDIUM means understanding and application: the student must connect two facts, apply a definition to a fresh example, or explain why something happens rather than just name it. " +
+        "Wrong options should be plausible on a quick read but clearly distinguishable to a student who understood the material.",
+      hard:
+        "HARD means analysis and inference: the student must compare concepts, reason about consequences, spot an exception, or work out something the material implies without stating outright. " +
+        "Wrong options must be genuine misconceptions a real student would hold — never filler. A student who merely memorised the text should find these difficult.",
+    };
+
+    // Nothing else in this prompt changes between runs on the same pages, so
+    // without a varying token the model converges on near-identical question
+    // sets — a teacher regenerating gets the same quiz back.
+    const variationSeed = crypto.randomBytes(4).toString("hex");
+
     const systemPrompt =
-      `You are a quiz generator for classroom teachers. Generate exactly ${data.count} multiple-choice questions at ${data.difficulty} difficulty. ` +
+      `You are a quiz generator for classroom teachers. Generate exactly ${data.count} multiple-choice questions. ` +
+      `${DIFFICULTY_GUIDANCE[data.difficulty]} ` +
+      `Variation token ${variationSeed}: produce a genuinely different set from any previous one for this material — vary which facts and sections you test, vary the phrasing, and vary which option position holds the correct answer (do not favour any one position). ` +
       (data.pageText
         // Without this the model drifts to its own general knowledge of the
         // subject, producing questions that are "about the topic" but test
@@ -1092,6 +1349,11 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
         { role: "user", content: userContent },
       ],
       response_format: { type: "json_object" },
+      // Quizzes are the one place here where we actively want sampling
+      // variance — a teacher regenerating expects a different paper, not the
+      // same one reworded. Set explicitly rather than relying on the
+      // provider default, which differs between OpenAI and Groq.
+      temperature: 1,
       // Each question now carries an explanation on top of its options, so the
       // budget scales with question count rather than sitting at a flat cap
       // that would truncate the JSON mid-array for larger quizzes.
@@ -1159,8 +1421,21 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
         // A question with no text or fewer than two choices isn't answerable —
         // drop it rather than rendering a broken card.
         if (!question || options.length < 2) return null;
-        const answer = toAnswerIndex(q.answer, options);
-        if (answer === null) return null;
+        const answerIdx = toAnswerIndex(q.answer, options);
+        if (answerIdx === null) return null;
+
+        // Models cluster the correct answer at a favoured position no matter
+        // how firmly the prompt asks otherwise — measured 6 of 9 at option C
+        // on this model. A student could pass by always picking the same
+        // letter. Shuffling here makes the distribution uniform by
+        // construction rather than relying on the model to comply.
+        const order = options.map((_, idx) => idx);
+        for (let a = order.length - 1; a > 0; a--) {
+          const b = crypto.randomInt(a + 1);
+          [order[a], order[b]] = [order[b], order[a]];
+        }
+        const shuffledOptions = order.map(idx => options[idx]);
+        const answer = order.indexOf(answerIdx);
         // Explanation is best-effort: a question is still usable without one,
         // so a missing or malformed value shouldn't discard the question.
         const explanation = typeof q.explanation === "string" && q.explanation.trim()
@@ -1169,7 +1444,7 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
         return {
           id: typeof q.id === "string" && q.id.trim() ? q.id : `q${i + 1}`,
           question,
-          options,
+          options: shuffledOptions,
           answer,
           ...(explanation ? { explanation } : {}),
         };

@@ -280,7 +280,9 @@ function haystackContainsWord(haystack: string, word: string): boolean {
 async function fetchWikimediaImages(
   query: string,
   limit = 4,
-  relevanceKeywords?: string[]
+  relevanceKeywords?: string[],
+  illustrationsOnly = false,
+  exclude?: Set<string>
 ): Promise<{ url: string; caption: string }[]> {
   const params = new URLSearchParams({
     action: "query",
@@ -358,6 +360,13 @@ async function fetchWikimediaImages(
       const haystack = `${cleanTitle} ${caption}`.toLowerCase();
       if (!queryKeywords.every(k => haystackContainsWord(haystack, k))) continue;
     }
+    // Same gates every other source passes through — this function is now on
+    // the main scan path, not just the standalone search endpoint.
+    if (WIKI_CHROME_FILENAME_PATTERN.test(page.title)) continue;
+    if (illustrationsOnly && !isIllustration(page.title, info.url)) continue;
+    if (!isClassroomSafe(page.title, info.url)) continue;
+    if (exclude?.has(info.url)) continue;
+    exclude?.add(info.url);
     results.push({ url: info.url, caption });
   }
 
@@ -390,8 +399,15 @@ const SENSITIVE_SUBJECT_PATTERN =
 // "this is a drawn diagram" signal. Beyond that, recognise well-established
 // illustration markers: scheme/diagram naming, the Blausen medical
 // illustration library, and Gray's/Sobotta anatomy plates (19th-c. engravings).
+// Broadened after finding real schematics being misread as photos — the USGS
+// water-cycle poster and "HydrologicalCycle1.png" are both diagrams whose
+// names carry none of the obvious keywords. Cycle/structure/anatomy naming and
+// the "-en"/"-de" language suffix (which only labelled diagrams carry, since
+// only they contain translatable text) are strong additional signals.
+// Word-bounded on the risky terms: an unbounded "graph" matched "Graphite",
+// promoting a photograph of a reactor core to the top of the diagram list.
 const ILLUSTRATION_HINT =
-  /(diagram|illustration|schematic|scheme|illu[_ ]|blausen|gray\d{3,4}|sobo[_ ]|labell?ed|cross[_ -]?section|drawing|sketch|chart)/i;
+  /(diagram|illustration|schematic|scheme\b|illu[_ ]|blausen|gray\d{3,4}|sobo[_ ]|labell?ed|cross[_ -]?section|drawing|sketch|\bchart\b|\bgraph\b|\bcycle\b|pathway|\bstructure\b|anatomy|map-|-en\.(svg|png)|_en\.(svg|png)|infographic|flowchart|\bschema\b)/i;
 
 // Names that mark an animated GIF as a teaching animation of a process rather
 // than incidental footage. Used only to admit GIFs on sensitive topics.
@@ -524,7 +540,7 @@ async function resolveWikipediaTitle(query: string): Promise<string | null> {
 // actually appear in the article, so the lead/intro-section diagrams
 // consistently come first and later, less-central images (e.g. a portrait of
 // a historical figure mentioned in a "History" section) sort accordingly late.
-const WIKI_CHROME_FILENAME_PATTERN = /(protection-shackle|padlock|edit-icon|question_book|commons-logo|wiktionary-logo|wikiquote-logo|wikisource-logo|wikinews-logo|wikispecies-logo|wikiversity-logo|wikivoyage-logo|wikidata-logo|ambox|disambig_gray|red_pog|ooui_)/i;
+const WIKI_CHROME_FILENAME_PATTERN = /(protection-shackle|padlock|edit-icon|question_book|commons-logo|wiktionary-logo|wikiquote-logo|wikisource-logo|wikinews-logo|wikispecies-logo|wikiversity-logo|wikivoyage-logo|wikidata-logo|ambox|disambig_gray|red_pog|ooui_|openclipart|gnome-mime|nuvola|crystal_clear|_icon\.svg|speakerlink|loudspeaker|increase2?\.svg|decrease2?\.svg)/i;
 
 async function fetchArticleEmbeddedImages(
   title: string,
@@ -855,10 +871,42 @@ async function fetchGoogleImages(
 // Source order encodes the cost policy: Wikipedia first (free, curated,
 // precisely matched), Google CSE only to fill the shortfall (paid per query,
 // so it runs on the smallest number of queries that can close the gap).
+// Teaching material benefits from breadth — a teacher wants every usable
+// schematic, not an arbitrary five. Bounded only by what's sane to send in one
+// response and render in a side panel.
+const MAX_IMAGES_PER_SCAN = 24;
+// Hard ceiling on paid queries per scan, independent of the image target.
+const MAX_WEB_QUERIES_PER_SCAN = 3;
+// Once Wikipedia has produced this many diagrams the result is already good
+// enough to teach from, so paid search is skipped. Without this the top-up
+// condition compares against the 24-image ceiling, which Wikipedia never
+// reaches — meaning every single scan would spend credits.
+const ENOUGH_DIAGRAMS_WITHOUT_WEB = 6;
+// Image results are cached against the concept queries, so a teacher
+// re-scanning the same pages (tweaking instructions, switching summary/notes)
+// costs nothing further.
+const IMAGE_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+// When the teacher explicitly asks for a diagram/schematic, Wikipedia is the
+// wrong source to lead with: its articles are photo-heavy (the "Cooling tower"
+// article is all photographs of real towers), and those fill the slots before
+// any diagram search runs. Web search is far better at this specific job, so
+// for a diagram-seeking instruction it goes first rather than acting as top-up.
+const DIAGRAM_REQUEST_PATTERN =
+  /\b(diagram|schematic|labell?ed|illustration|figure|drawing|sketch|blueprint|chart|flow ?chart|cross[- ]?section|layout)\b/i;
+
+// The mirror case: plenty of subjects are best taught with the real thing —
+// a photograph of a monument, a satellite view, a microscope image, an actual
+// specimen. Diagram-first ranking would actively work against those, so an
+// explicit request for photos inverts it.
+const PHOTO_REQUEST_PATTERN =
+  /\b(photo|photos|photograph\w*|real|actual|realistic|picture[sd]? of|satellite|aerial|microscope|micrograph|specimen|looks? like|live)\b/i;
+
 async function retrieveConceptImages(
   context: DocumentContext,
   limit: number,
-  rawText?: string
+  rawText?: string,
+  instructions?: string
 ): Promise<{ url: string; caption: string }[]> {
   // Most specific first: explicit visual suggestions, then subtopics, then the
   // broad topic as a backstop. Deduped so a concept repeated across fields
@@ -878,33 +926,144 @@ async function retrieveConceptImages(
     `[blackboard] Image retrieval — topic="${context.topic}" sensitive=${illustrationsOnly} queries=${JSON.stringify(queries.slice(0, 6))}`
   );
 
+  // Keyed by the concepts searched plus the intent, so re-scanning the same
+  // pages — or flipping between summary and notes — reuses the result instead
+  // of re-spending search credits. Different instructions that produce
+  // different queries or a different intent naturally miss and re-search.
+  const imageCacheKey = `blackboard:imgs:${crypto
+    .createHash("sha256")
+    .update(`${queries.join("|")}::${illustrationsOnly}::${instructions ?? ""}::${limit}`)
+    .digest("hex")
+    .slice(0, 32)}`;
+  const cachedImages = await getCache<{ url: string; caption: string }[]>(imageCacheKey);
+  if (cachedImages) {
+    console.log(`[blackboard] Image cache hit — ${cachedImages.length} image(s), no search performed`);
+    return cachedImages;
+  }
+
   const seenUrls = new Set<string>();
-  const results = await fetchTopicImages(queries, limit, seenUrls, illustrationsOnly);
-  if (results.length >= limit) return results.slice(0, limit);
-
-  // Paid web search only fills what Wikipedia couldn't, and only for as many
-  // queries as it takes to close the gap. Serper is preferred when configured
-  // (cheaper per query); Google CSE is the fallback provider.
   const webSearch = SERPER_API_KEY ? fetchSerperImages : fetchGoogleImages;
-  const webSearchName = SERPER_API_KEY ? "serper" : (GOOGLE_SEARCH_API_KEY ? "google-cse" : "none");
-  if (results.length < limit && webSearchName !== "none") {
-    console.log(`[blackboard] Wikipedia returned ${results.length}/${limit} — filling via ${webSearchName}`);
+  const webSearchAvailable = !!SERPER_API_KEY || !!GOOGLE_SEARCH_API_KEY;
+  const webProvider = SERPER_API_KEY ? "serper" : (GOOGLE_SEARCH_API_KEY ? "google-cse" : "none");
+  // An explicit photo request wins over the diagram-first default — but only
+  // when diagrams weren't also asked for ("labelled photo of a real leaf").
+  const wantsDiagrams = !!instructions && DIAGRAM_REQUEST_PATTERN.test(instructions);
+  const wantsPhotos = !!instructions && !wantsDiagrams && PHOTO_REQUEST_PATTERN.test(instructions);
+
+  const diagrams: { url: string; caption: string }[] = [];
+  const photos: { url: string; caption: string }[] = [];
+  const sortInto = (imgs: { url: string; caption: string }[]) => {
+    for (const img of imgs) {
+      // Belt-and-braces: each source already applies isClassroomSafe, but this
+      // is the single point every image funnels through before reaching a
+      // classroom, so re-check rather than assume no future source skips it.
+      if (!isClassroomSafe(img.caption, img.url)) continue;
+      const isDiagram = isIllustration(img.caption, img.url);
+      // On a sensitive subject anything not identifiable as a diagram is
+      // dropped outright rather than kept as a lower-ranked photo — the
+      // photos array is what later fills spare slots, so keeping it would
+      // reintroduce exactly what the illustrations-only mode exists to prevent.
+      if (illustrationsOnly && !isDiagram) continue;
+      (isDiagram ? diagrams : photos).push(img);
+    }
+  };
+
+  // Reuse the teacher's own wording for the search when they asked for a
+  // specific kind of visual — "schematic diagram of a nuclear power plant"
+  // finds far better results than a generic "<topic> labelled diagram".
+  const diagramQualifier = wantsDiagrams || wantsPhotos ? instructions!.trim() : "labelled diagram";
+  const runWebSearch = async () => {
+    if (!webSearchAvailable) return;
+    let spent = 0;
+    for (const query of queries) {
+      if (diagrams.length >= limit || spent >= MAX_WEB_QUERIES_PER_SCAN) break;
+      spent++;
+      sortInto(await webSearch(`${query} ${diagramQualifier}`, limit - diagrams.length, seenUrls, illustrationsOnly));
+    }
+  };
+
+  // Free tier between article images and paid search. Wikipedia *articles*
+  // only surface the handful of images an editor chose to embed; Commons is
+  // the full media repository behind them and holds far more diagrams —
+  // "nuclear power plant diagram" returns 15 schematics there while the
+  // article itself has almost none. Relevance is enforced by requiring every
+  // meaningful query keyword in the title/caption, since Commons full-text
+  // search otherwise matches words independently ("system" + "diagram"
+  // surfacing an unrelated Cromemco block diagram).
+  const runCommonsSearch = async () => {
+    for (const query of queries) {
+      if (diagrams.length >= limit) break;
+      sortInto(await fetchWikimediaImages(
+        `${query} diagram`,
+        limit - diagrams.length,
+        keywordsOf(query), // qualifier excluded, or "diagram" would be required in every title
+        illustrationsOnly,
+        seenUrls,
+      ));
+    }
+  };
+
+  // Sensitive subjects never touch general web search. On Wikimedia we can
+  // judge an image structurally — SVG is necessarily a drawing, and the
+  // illustration libraries are known — but a web result offers only a title,
+  // and a clinical photograph called "Female reproductive organs anatomy"
+  // satisfies both the illustration hint ("anatomy") and the explicit-word
+  // backstop (no explicit term present). There is no reliable title-based
+  // test, so the source itself is restricted instead.
+  const allowWebSearch = webSearchAvailable && !illustrationsOnly;
+  if (illustrationsOnly && webSearchAvailable) {
+    console.log("[blackboard] Sensitive subject — restricted to Wikimedia diagrams, web image search disabled");
   }
 
-  for (const query of queries) {
-    if (results.length >= limit) break;
-    // "diagram" biases toward instructional illustrations over incidental
-    // photos — the useful shape for classroom material.
-    const fromWeb = await webSearch(
-      `${query} diagram`,
-      limit - results.length,
-      seenUrls,
-      illustrationsOnly
+  // Free sources are always exhausted before any paid query, even when the
+  // teacher explicitly asked for diagrams — Commons turns out to cover most
+  // school topics well, so paid search becomes the exception rather than the
+  // rule.
+  if (wantsPhotos && !illustrationsOnly) {
+    // Photos requested: article images are the better free source (Commons
+    // search is qualified toward diagrams), so go straight there.
+    sortInto(await fetchTopicImages(queries, MAX_IMAGES_PER_SCAN, seenUrls, illustrationsOnly));
+  } else {
+    sortInto(await fetchTopicImages(queries, MAX_IMAGES_PER_SCAN, seenUrls, illustrationsOnly));
+    if (diagrams.length < ENOUGH_DIAGRAMS_WITHOUT_WEB) {
+      const beforeCommons = diagrams.length;
+      await runCommonsSearch();
+      console.log(`[blackboard] Commons search (free): ${beforeCommons} -> ${diagrams.length} diagram(s)`);
+    }
+  }
+
+  if (diagrams.length < ENOUGH_DIAGRAMS_WITHOUT_WEB && allowWebSearch) {
+    console.log(
+      `[blackboard] Free sources gave ${diagrams.length} diagram(s), ${photos.length} photo(s) — ` +
+      `topping up via ${webProvider} (max ${MAX_WEB_QUERIES_PER_SCAN} queries)`
     );
-    results.push(...fromWeb);
+    await runWebSearch();
+  } else if (diagrams.length >= ENOUGH_DIAGRAMS_WITHOUT_WEB) {
+    console.log(`[blackboard] ${diagrams.length} diagram(s) from free sources — skipping paid search`);
   }
 
-  return results.slice(0, limit);
+  if (!webSearchAvailable) {
+    // Surfaced explicitly because the symptom (only Wikipedia photos) looks
+    // identical to a relevance bug, but the cause is a missing key — usually a
+    // process started before SERPER_API_KEY was added to .env.
+    console.warn("[blackboard] No web image provider configured (SERPER_API_KEY / GOOGLE_SEARCH_API_KEY) — Wikipedia only.");
+  }
+
+  // Diagrams lead by default because that's what teaching material usually
+  // needs — but photos still fill the remaining slots rather than being capped,
+  // otherwise subjects that legitimately have no diagrams (a monument, a
+  // historical figure, a landscape) would come back nearly empty.
+  const [first, second] = wantsPhotos ? [photos, diagrams] : [diagrams, photos];
+  const result = [...first, ...second].slice(0, limit);
+  console.log(
+    `[blackboard] Returning ${result.length} image(s) — ${diagrams.length} diagram(s), ${photos.length} photo(s)` +
+    `${wantsPhotos ? " (photos first, per instruction)" : ""}`
+  );
+  // Only cache a non-empty result: an empty one usually means a transient
+  // failure (timeout, rate limit) and caching it would pin the emptiness for
+  // a week.
+  if (result.length > 0) await setCache(imageCacheKey, result, IMAGE_CACHE_TTL_SECONDS);
+  return result;
 }
 
 // ── Stage 2: document context ─────────────────────────────────────────────────
@@ -1064,26 +1223,31 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     const outputShape =
       `Return a JSON object with: topic (short string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings)${notesField}, ` +
       `imageQueries (array of 3-6 subjects to search for images of. ${visualSelectionRule} Each must be a real, lookup-able encyclopedia subject — e.g. "Chloroplast", "Water cycle" — never a descriptive phrase, and never an acronym: write "Distributed file system", not "DFS"), ` +
-      `imageCount (integer: if the teacher's instructions explicitly ask for a specific number of images use that exact number, otherwise 5). ` +
+      `imageCount (integer — ONLY include this key if the teacher's instructions explicitly ask for a specific number of images, e.g. "show me 3 diagrams"; otherwise omit it entirely so every available diagram is returned). ` +
       `Return ONLY valid JSON, no markdown.`;
 
     let systemPrompt: string;
     let userContent: string;
+
+    // Emphasised and labelled binding rather than trailing as "(optional)" —
+    // buried at the end of the message the model treated instructions as
+    // background colour instead of a constraint on the output.
+    const scanInstructionBlock = data.instructions
+      ? `\nTEACHER'S INSTRUCTIONS — binding. They must visibly shape what you emphasise, how you word the output, and which visuals you choose:\n"${data.instructions}"\n`
+      : "";
 
     if (context) {
       // Generate from the structured understanding rather than re-reading the
       // raw page text: it's already been distilled, so this call stays small
       // and focused on applying the instructions.
       systemPrompt = `You are a knowledgeable teacher's assistant. You will be given a structured analysis of classroom material that has already been read and understood, plus the teacher's instructions. ${instructionRule} ${groundingRule} ${outputShape}`;
-      userContent =
-        `Document analysis:\n${JSON.stringify(context, null, 2)}\n\n` +
-        `Teacher's instructions (optional): ${data.instructions || "None"}`;
+      userContent = `Document analysis:\n${JSON.stringify(context, null, 2)}\n${scanInstructionBlock}`;
     } else {
       // No page content (non-PDF/PPTX doc, extraction failed client-side, or
       // context extraction errored) — fall back to the previous behavior of
       // working from whatever label/instructions we have.
       systemPrompt = `You are a knowledgeable teacher's assistant. You'll be given a topic/document label and, optionally, the teacher's instructions. ${instructionRule} ${groundingRule} ${outputShape}`;
-      userContent = `Topic: ${data.topic}\n\nTeacher's instructions (optional): ${data.instructions || "None"}`;
+      userContent = `Topic: ${data.topic}\n${scanInstructionBlock}`;
     }
 
     const completion = await openai.chat.completions.create({
@@ -1107,11 +1271,12 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       throw new BadRequestError("AI returned malformed JSON — please retry");
     }
 
-    // Clamp to [1, 10] so one request can't fan out into an excessive number
-    // of (potentially paid) image searches.
+    // Default to "as many diagrams as exist" rather than a fixed count — a
+    // teacher wants the full set of usable schematics for a topic. An explicit
+    // request in the instructions still wins, clamped to the ceiling.
     const requestedImageCount = typeof parsed.imageCount === "number" && Number.isFinite(parsed.imageCount)
-      ? Math.min(Math.max(Math.round(parsed.imageCount), 1), 10)
-      : 5;
+      ? Math.min(Math.max(Math.round(parsed.imageCount), 1), MAX_IMAGES_PER_SCAN)
+      : MAX_IMAGES_PER_SCAN;
 
     // ── Stage 4: retrieve images from the document's own concepts ────────────
     const derivedTopic = typeof parsed.topic === "string" && parsed.topic.trim() ? parsed.topic : undefined;
@@ -1137,7 +1302,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     if (instructionQueries.length > 0) {
       console.log(`[blackboard] Instruction-derived image queries: ${JSON.stringify(instructionQueries)}`);
     }
-    const images = await retrieveConceptImages(searchContext, requestedImageCount, data.pageText);
+    const images = await retrieveConceptImages(searchContext, requestedImageCount, data.pageText, data.instructions);
 
     // The model is asked for a specific JSON shape but isn't bound to it — it
     // will happily return detailedNotes as an array of paragraphs, or
@@ -1279,6 +1444,33 @@ const MOCK_QUIZ = [
   { id: "q5", question: "What is the direct energy product of photosynthesis?", options: ["Protein", "Glucose", "Starch", "Fat"], answer: 1 },
 ];
 
+// Quiz generation is stateless, so every run sees the same material and
+// gravitates to the same "obvious" questions — which is why easy/medium/hard
+// on one page kept producing overlapping sets. Remembering what's already been
+// asked for a given page and telling the model to avoid it is the only thing
+// that reliably breaks that: a variation token nudges sampling, it doesn't
+// stop the model rediscovering the same facts.
+const QUIZ_HISTORY_TTL_SECONDS = 24 * 60 * 60;
+const QUIZ_HISTORY_MAX = 40;
+
+function quizHistoryKey(pageText: string | undefined, topic: string): string {
+  // Keyed by content, deliberately NOT by difficulty — the point is that
+  // switching easy → hard on the same page yields different questions too.
+  const basis = pageText?.trim() ? pageText : topic;
+  return `blackboard:quizasked:${crypto.createHash("sha256").update(basis).digest("hex").slice(0, 32)}`;
+}
+
+async function getAskedQuestions(key: string): Promise<string[]> {
+  return (await getCache<string[]>(key)) ?? [];
+}
+
+async function recordAskedQuestions(key: string, previous: string[], added: string[]): Promise<void> {
+  // Newest first, capped — an unbounded list would eventually crowd the prompt
+  // and start costing more than the repetition it prevents.
+  const merged = [...added, ...previous].slice(0, QUIZ_HISTORY_MAX);
+  await setCache(key, merged, QUIZ_HISTORY_TTL_SECONDS);
+}
+
 export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId, userId } = requireTeacher(req);
@@ -1334,13 +1526,28 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
       `"explanation": "1-2 sentences stating why the correct option is right${data.pageText ? ", grounded in what the material actually says" : ""}, and briefly why the tempting wrong option is wrong" }. ` +
       `Return ONLY valid JSON, no markdown.`;
 
+    const historyKey = quizHistoryKey(data.pageText, data.topic);
+    const askedBefore = await getAskedQuestions(historyKey);
+    const avoidBlock = askedBefore.length > 0
+      ? `\nALREADY ASKED — do not repeat or reword any of these, and avoid testing the same specific fact they test. Pick different facts, different sections, and different angles:\n` +
+        askedBefore.map(q => `- ${q}`).join("\n") + "\n"
+      : "";
+
+    // Instructions get their own emphasised line rather than a trailing
+    // "(optional)" note — buried at the end they were being treated as
+    // background rather than a constraint on what to ask.
+    const instructionBlock = data.instructions
+      ? `\nTEACHER'S INSTRUCTIONS — these are binding, and must shape which parts of the material you test and how you word the questions:\n"${data.instructions}"\n`
+      : "";
+
     const userContent = data.pageText
       ? [
           quizContext ? `Document analysis:\n${JSON.stringify(quizContext, null, 2)}\n` : "",
           `Material to base the questions on:\n${data.pageText}`,
-          `\nTeacher's instructions (optional): ${data.instructions || "None"}`,
+          instructionBlock,
+          avoidBlock,
         ].filter(Boolean).join("\n")
-      : `Topic: ${data.topic}\n\nTeacher's instructions (optional): ${data.instructions || "None"}`;
+      : [`Topic: ${data.topic}`, instructionBlock, avoidBlock].filter(Boolean).join("\n");
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
@@ -1451,11 +1658,37 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
       })
       .filter((q): q is { id: string; question: string; options: string[]; answer: number; explanation?: string } => q !== null);
 
-    if (questions.length === 0) {
+    // The prompt asks the model to avoid the history, but compliance isn't
+    // guaranteed — enforce it here so a repeat can't reach the teacher.
+    // Normalised comparison so a reworded duplicate ("What is X?" vs "What
+    // is X ?") is still caught.
+    const normalise = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim();
+    const seenQuestions = new Set(askedBefore.map(normalise));
+    const fresh = questions.filter(q => {
+      const n = normalise(q.question);
+      if (seenQuestions.has(n)) return false;
+      seenQuestions.add(n);
+      return true;
+    });
+
+    // Only fall back to the unfiltered set if dedup emptied it entirely —
+    // better a repeated question than an empty quiz, but log it, since it
+    // means the material is exhausted for this page.
+    const finalQuestions = fresh.length > 0 ? fresh : questions;
+    if (fresh.length < questions.length) {
+      console.log(
+        `[blackboard] Quiz: dropped ${questions.length - fresh.length} repeat(s) of previously asked questions` +
+        `${fresh.length === 0 ? " — none left, returning originals (material may be exhausted)" : ""}`
+      );
+    }
+
+    if (finalQuestions.length === 0) {
       throw new BadRequestError("AI returned no usable questions — please retry");
     }
 
-    res.json({ success: true, data: { questions } });
+    await recordAskedQuestions(historyKey, askedBefore, finalQuestions.map(q => q.question));
+
+    res.json({ success: true, data: { questions: finalQuestions } });
   } catch (err) { next(err); }
 };
 

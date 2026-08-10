@@ -303,7 +303,12 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     let usageByTeacher: Record<string, number> = {};
     if (redis && teachers.length) {
       const keys = teachers.map((t) => `ai:usage:teacher:${t.id}`);
-      const values = await redis.mget(...keys);
+      // Per-teacher AI usage is a nice-to-have panel — a Redis timeout should
+      // render it empty, not 500 the whole analytics dashboard.
+      const values = await redis.mget(...keys).catch((err) => {
+        console.warn("[insights] AI-usage read failed, omitting panel:", err?.message ?? err);
+        return keys.map(() => null);
+      });
       usageByTeacher = Object.fromEntries(
         teachers.map((t, i) => [t.id, parseInt(values[i] ?? "0", 10) || 0])
       );

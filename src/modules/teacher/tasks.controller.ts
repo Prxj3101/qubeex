@@ -66,8 +66,13 @@ async function checkTokenPool(institutionId: string): Promise<void> {
     if (redis) console.warn("[tasks] Redis configured but not ready — token pool check skipped");
     return;
   }
+  // See blackboard.controller.ts#checkTokenPool — a Redis timeout here would
+  // otherwise surface as a 500 rather than degrading gracefully.
   const [used, limitN] = await Promise.all([
-    redis.get(`ai:usage:institution:${institutionId}`),
+    redis.get(`ai:usage:institution:${institutionId}`).catch((err) => {
+      console.warn("[tasks] Token-pool read failed, allowing request:", err?.message ?? err);
+      return null;
+    }),
     getAiTokenLimit(institutionId),
   ]);
   const usedN = Number(used ?? 0);

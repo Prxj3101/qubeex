@@ -141,6 +141,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     const test = await prisma.taskTest.findFirst({
       where: { id: testId, divisionId: student.divisionId, institutionId: student.institutionId },
       include: {
+        subject: { select: { name: true } },
         questions: {
           include: {
             question: {
@@ -157,24 +158,56 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     if (test.startDate && test.startDate > now) throw new BadRequestError("This test has not started yet");
     if (test.validUntil && test.validUntil < now) throw new BadRequestError("This test has expired");
 
+    // Resume an already-running attempt instead of closing it out and starting a
+    // fresh one. A second /start call for the same student+test (double click,
+    // refreshed page, a slow network making the app retry) used to be treated as
+    // "the first attempt was abandoned" and silently marked it "completed" with
+    // whatever score could be computed from it (usually 0, since the student
+    // hadn't answered anything yet) - that's what caused tests to show up as
+    // already "submitted, 0 score" without the student actually taking them.
+    // Resuming hands back the same attempt, same questions, same original timer,
+    // so calling /start again is safe.
+    const existing = await prisma.taskTestAttempt.findFirst({
+      where: { testId: test.id, studentId: student.id, status: "in_progress" },
+    });
+    if (existing) {
+      const existingAnswers = await prisma.taskStudentAnswer.findMany({
+        where: { attemptId: existing.id },
+        include: { question: { select: { type: true } } },
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      });
+      if (existingAnswers.length > 0) {
+        res.json({
+          success: true,
+          data: {
+            attemptId: existing.id,
+            attemptNumber: existing.attemptNumber,
+            testTitle: test.title,
+            subjectName: test.subject.name,
+            durationMinutes: test.durationMinutes,
+            totalMarks: test.totalMarks,
+            startTime: existing.startTime,
+            questions: existingAnswers.map((a) => ({
+              questionId: a.questionId,
+              questionText: a.generatedQuestion,
+              options: (a.generatedOptions as string[] | null) ?? [],
+              type: a.question.type,
+            })),
+          },
+        });
+        return;
+      }
+      // Extremely rare: an in-progress attempt exists but its question rows never
+      // finished writing (e.g. the server crashed mid-request right after creating
+      // the attempt row). Nothing to resume - discard it and fall through to start
+      // a clean new attempt below.
+      await prisma.taskTestAttempt.delete({ where: { id: existing.id } });
+    }
+
     const completedAttempts = await prisma.taskTestAttempt.count({
       where: { testId: test.id, studentId: student.id, status: "completed" },
     });
     if (completedAttempts >= test.maxAttempts) throw new BadRequestError("Maximum attempts reached for this test");
-
-    // Auto-close any stale in-progress attempt
-    const stale = await prisma.taskTestAttempt.findFirst({
-      where: { testId: test.id, studentId: student.id, status: "in_progress" },
-    });
-    if (stale) {
-      const staleAnswers = await prisma.taskStudentAnswer.findMany({ where: { attemptId: stale.id } });
-      const scorePerQ = staleAnswers.length > 0 ? test.totalMarks / staleAnswers.length : 0;
-      const staleScore = staleAnswers.reduce((sum, a) => sum + (a.isCorrect ? scorePerQ : 0), 0);
-      await prisma.taskTestAttempt.update({
-        where: { id: stale.id },
-        data: { status: "completed", endTime: now, totalScore: Math.round(staleScore) },
-      });
-    }
 
     const compulsory = test.questions.filter((tq) => tq.isCompulsory);
     const pool = test.questions.filter((tq) => !tq.isCompulsory);
@@ -209,12 +242,27 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     });
     const orderedQ = shuffleArray(personalised, seededRng(student.rollNo + test.id));
 
+    // Created (and awaited) before responding, not deferred, so the resume check
+    // above never finds an in-progress attempt with zero question rows attached.
+    await prisma.taskStudentAnswer.createMany({
+      data: orderedQ.map((q) => ({
+        attemptId: attempt.id,
+        questionId: q.questionId,
+        generatedQuestion: q.questionText,
+        ...(q.options.length > 0 ? { generatedOptions: JSON.parse(JSON.stringify(q.options)) } : {}),
+        correctAnswer: q.correctAnswer,
+        isCorrect: false,
+      })),
+      skipDuplicates: true,
+    });
+
     res.json({
       success: true,
       data: {
         attemptId: attempt.id,
         attemptNumber: attempt.attemptNumber,
         testTitle: test.title,
+        subjectName: test.subject.name,
         durationMinutes: test.durationMinutes,
         totalMarks: test.totalMarks,
         startTime: attempt.startTime,
@@ -225,20 +273,6 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
           type: q.type,
         })),
       },
-    });
-
-    setImmediate(async () => {
-      await prisma.taskStudentAnswer.createMany({
-        data: orderedQ.map((q) => ({
-          attemptId: attempt.id,
-          questionId: q.questionId,
-          generatedQuestion: q.questionText,
-          ...(q.options.length > 0 ? { generatedOptions: JSON.parse(JSON.stringify(q.options)) } : {}),
-          correctAnswer: q.correctAnswer,
-          isCorrect: false,
-        })),
-        skipDuplicates: true,
-      });
     });
   } catch (err) { next(err); }
 };

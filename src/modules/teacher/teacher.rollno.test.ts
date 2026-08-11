@@ -54,6 +54,10 @@ describe("Teacher — roll number uniqueness within a division", () => {
     await prisma.teacher.deleteMany({ where: { institutionId } });
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
+    // UserStatusEvent FK-restricts on userId, so it must go before the users
+    // it references — otherwise institution.delete below fails and leaves
+    // this test's institution orphaned in the shared dev DB on every run.
+    await prisma.userStatusEvent.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();

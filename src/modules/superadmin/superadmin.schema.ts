@@ -46,6 +46,9 @@ export const createInstitutionSchema = z.object({
   // Subscription
   plan: z.enum(["BASIC", "PRO", "TRIAL"]).default("BASIC"),
   trialDays: z.coerce.number().int().min(1).max(365).default(14),
+
+  // Demo institute — gets code ending in 0000, excluded from dashboard totals
+  isDemo: z.boolean().default(false),
 });
 
 // ─── Institution Update ───────────────────────────────────────────────────────

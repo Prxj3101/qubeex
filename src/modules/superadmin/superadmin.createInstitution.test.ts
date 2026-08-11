@@ -25,7 +25,7 @@ describe("POST /superadmin/institutions — abbreviation-driven codes", () => {
     // colleges and coaching each number independently from 0001). Both
     // institutions this test creates are SCHOOL, so we record the current SCHOOL
     // count to compute the expected sequence rather than assuming a clean slate.
-    institutionCountBefore = await prisma.institution.count({ where: { type: "SCHOOL" } });
+    institutionCountBefore = await prisma.institution.count({ where: { type: "SCHOOL", isDemo: false } });
   });
 
   afterAll(async () => {
@@ -33,6 +33,11 @@ describe("POST /superadmin/institutions — abbreviation-driven codes", () => {
       if (!id) continue;
       await prisma.invite.deleteMany({ where: { institutionId: id } });
       await prisma.subscription.deleteMany({ where: { institutionId: id } });
+      // UserStatusEvent FK-restricts on userId, so it must go before the
+      // users it references — otherwise institution.delete below fails
+      // silently (caught below) and leaves this test's institution orphaned
+      // in the shared dev DB on every run.
+      await prisma.userStatusEvent.deleteMany({ where: { institutionId: id } });
       await prisma.user.deleteMany({ where: { institutionId: id } });
       await prisma.institution.delete({ where: { id } }).catch(() => {});
     }
@@ -61,9 +66,9 @@ describe("POST /superadmin/institutions — abbreviation-driven codes", () => {
     createdInstitutionId = res.body.data.id;
 
     const institution = await prisma.institution.findUniqueOrThrow({ where: { id: createdInstitutionId } });
-    const year = new Date().getFullYear();
+    const yy = String(new Date().getFullYear()).slice(-2);
     const expectedSeq = String(institutionCountBefore + 1).padStart(4, "0");
-    expect(institution.institutionCode).toBe(`QX-${abbreviation}-${year}-${expectedSeq}`);
+    expect(institution.institutionCode).toBe(`QX-${abbreviation}-SC${yy}-${expectedSeq}`);
     expect(institution.userIdPrefix).toBe(abbreviation);
     expect(institution.userIdDisambiguator).toBe("01");
 
@@ -110,9 +115,9 @@ describe("POST /superadmin/institutions — abbreviation-driven codes", () => {
     createdInstitutionIdB = res.body.data.id;
 
     const institution = await prisma.institution.findUniqueOrThrow({ where: { id: createdInstitutionIdB } });
-    const year = new Date().getFullYear();
+    const yy = String(new Date().getFullYear()).slice(-2);
     const expectedSeq = String(institutionCountBefore + 2).padStart(4, "0");
-    expect(institution.institutionCode).toBe(`QX-${abbreviation}-${year}-${expectedSeq}`);
+    expect(institution.institutionCode).toBe(`QX-${abbreviation}-SC${yy}-${expectedSeq}`);
     expect(institution.userIdPrefix).toBe(abbreviation);
     expect(institution.userIdDisambiguator).toBe("02");
   });

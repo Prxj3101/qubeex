@@ -104,10 +104,11 @@ enum RemarkSeverity {
 
 model Institution {
   id              String            @id @default(uuid())
-  institutionCode String            @unique // e.g. QX-SCH-2026-0001
+  institutionCode String            @unique // e.g. QX-DEHS-SC26-0001
   name            String
   email           String            @unique
   type            InstitutionType
+  isDemo          Boolean           @default(false) // excluded from institute-code sequence and dashboard totals
 
   // ── User ID scheme (XXXX-XXXXX-XXXX) ──────────────────────────────────────
   userIdPrefix         String? // 4-letter code from school initials, e.g. "SXHS"

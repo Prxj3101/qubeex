@@ -280,8 +280,10 @@ export const getOverviewStats = async () => {
     recentAuditLogs,
     subscriptions,
   ] = await Promise.all([
-    prisma.institution.count(),
-    prisma.institution.count({ where: { createdAt: { gte: startOfMonth } } }),
+    // Demo institute is excluded from every institution count/stat so the
+    // dashboard reflects only real (onboarded) institutions.
+    prisma.institution.count({ where: { isDemo: false } }),
+    prisma.institution.count({ where: { isDemo: false, createdAt: { gte: startOfMonth } } }),
     prisma.invite.count({ where: { isUsed: false, expiresAt: { gt: now } } }),
     prisma.institution.findMany({
       take: 5,
@@ -320,7 +322,7 @@ export const getOverviewStats = async () => {
   const institutionGrowth = await Promise.all(
     months.map(async ({ month, start, end }) => {
       const active = await prisma.institution.count({
-        where: { createdAt: { gte: start, lte: end }, status: "ACTIVE" },
+        where: { createdAt: { gte: start, lte: end }, status: "ACTIVE", isDemo: false },
       });
       const trial = await prisma.subscription.count({
         where: { createdAt: { gte: start, lte: end }, status: "TRIAL" },
@@ -360,6 +362,7 @@ export const createInstitutionService = async (data: any) => {
     board, medium, logoUrl, establishedOn,
     plan: selectedPlan = "BASIC",
     trialDays = 14,
+    isDemo = false,
   } = data;
 
   // When creating a TRIAL institution: the subscription uses the TRIAL plan.
@@ -377,13 +380,16 @@ export const createInstitutionService = async (data: any) => {
   const tokenHash = hashToken(rawToken);
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-  // Generate human-readable code before the transaction (numbered per institution type)
-  const institutionCode = await generateInstitutionCode(abbreviation, type);
+  // Generate human-readable code before the transaction (numbered per institution type).
+  // The demo institute always gets 0000 and is excluded from the sequence
+  // counted for every other institute of the same type.
+  const institutionCode = await generateInstitutionCode(abbreviation, type, isDemo);
 
   const institution = await prisma.$transaction(async (tx) => {
     const newInstitution = await tx.institution.create({
       data: {
         institutionCode,
+        isDemo,
         // Trial institutions are activated by default — no manual activation step.
         name, email, type, status: isTrial ? "ACTIVE" : "PENDING",
         phone, city, state, address, pincode,
@@ -926,6 +932,11 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
       : []),
 
     // ── Users last (Teacher/Student/SubAdmin no longer reference them) ──────
+    // UserStatusEvent rows must go first — they FK-reference the user being
+    // deleted below (RESTRICT), otherwise the user delete fails.
+    ...(userIds.length > 0
+      ? [prisma.userStatusEvent.deleteMany({ where: { userId: { in: userIds } } })]
+      : []),
     prisma.user.deleteMany({ where: { institutionId: id } }),
 
     prisma.institution.delete({ where: { id } }),

@@ -161,6 +161,92 @@ export function shuffleArray<T>(arr: T[], rng: () => number): T[] {
   return a;
 }
 
+// ── Section-aware question selection ──────────────────────────────────────────
+// A test built with the Paper Builder can group questions into sections, each
+// with its own "attempt N of M" setting (test.sections JSON, matched by id).
+// Questions with no sectionId (simple tests created without the builder) keep
+// the original flat behaviour: all compulsory + random pool up to the test's
+// top-level numberOfQuestions.
+export interface TaskSectionMeta {
+  id: string;
+  title?: string;
+  instruction?: string;
+  attemptCount?: number;
+  marksPerQuestion?: number;
+}
+
+export function parseSections(sectionsJson: unknown): TaskSectionMeta[] {
+  return Array.isArray(sectionsJson) ? (sectionsJson as TaskSectionMeta[]) : [];
+}
+
+export function selectSectionAwareQuestions<T extends { sectionId: string | null; isCompulsory: boolean }>(
+  questions: T[],
+  sectionsJson: unknown,
+  numberOfQuestions: number,
+  rng: () => number
+): T[] {
+  const sectionsMeta = parseSections(sectionsJson);
+  const grouped = new Map<string, T[]>();
+  const ungrouped: T[] = [];
+  for (const q of questions) {
+    if (q.sectionId) {
+      if (!grouped.has(q.sectionId)) grouped.set(q.sectionId, []);
+      grouped.get(q.sectionId)!.push(q);
+    } else {
+      ungrouped.push(q);
+    }
+  }
+
+  const selected: T[] = [];
+
+  for (const [sectionId, qs] of grouped) {
+    const meta = sectionsMeta.find((s) => s.id === sectionId);
+    const attemptCount = meta?.attemptCount ?? 0;
+    if (attemptCount > 0 && attemptCount < qs.length) {
+      const compulsory = qs.filter((q) => q.isCompulsory);
+      const pool = qs.filter((q) => !q.isCompulsory);
+      const shuffled = shuffleArray(pool, rng);
+      const needed = Math.max(0, attemptCount - compulsory.length);
+      selected.push(...compulsory, ...shuffled.slice(0, needed));
+    } else {
+      selected.push(...qs);
+    }
+  }
+
+  if (ungrouped.length > 0) {
+    const compulsory = ungrouped.filter((q) => q.isCompulsory);
+    const pool = ungrouped.filter((q) => !q.isCompulsory);
+    const shuffled = shuffleArray(pool, rng);
+    const needed = Math.max(0, numberOfQuestions - compulsory.length);
+    selected.push(...compulsory, ...shuffled.slice(0, needed));
+  }
+
+  return selected;
+}
+
+// Effective question count for a test given its sections' attempt-N-of-M
+// settings — used so numberOfQuestions/totalMarks reflect what a student will
+// actually see, not the raw count of every question added in the builder.
+export function effectiveQuestionCount(
+  questions: { sectionId?: string | null }[],
+  sectionsJson: unknown
+): number {
+  const sectionsMeta = parseSections(sectionsJson);
+  const grouped = new Map<string, number>();
+  let ungrouped = 0;
+  for (const q of questions) {
+    if (q.sectionId) grouped.set(q.sectionId, (grouped.get(q.sectionId) ?? 0) + 1);
+    else ungrouped += 1;
+  }
+  let total = ungrouped;
+  for (const [sectionId, count] of grouped) {
+    const meta = sectionsMeta.find((s) => s.id === sectionId);
+    const attemptCount = meta?.attemptCount ?? 0;
+    total += attemptCount > 0 ? Math.min(attemptCount, count) : count;
+  }
+  return total;
+}
+
 // ── Formula evaluation ────────────────────────────────────────────────────────
 function evalFormula(formula: string, variables: Record<string, number>): number {
   try {
@@ -1111,7 +1197,9 @@ export const savePaper = async (req: AuthRequest, res: Response, next: NextFunct
           isRandomized,
           answerSpace,
           sections: sections.length > 0 ? JSON.parse(JSON.stringify(sections)) : null,
-          numberOfQuestions: questions.length,
+          // Reflects what a student actually sees — sectioned questions apply
+          // their own "attempt N of M" instead of counting every added question.
+          numberOfQuestions: effectiveQuestionCount(questions, sections),
           startDate: startDate ? new Date(startDate) : null,
           validUntil: validUntil ? new Date(validUntil) : null,
           ...(totalMarks !== undefined && { totalMarks }),
@@ -2138,14 +2226,11 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
       throw new BadRequestError("The name and roll number combination is not registered for this test.");
     }
 
-    // Select questions: all compulsory + random pool to fill numberOfQuestions
-    const compulsory = test.questions.filter(tq => tq.isCompulsory);
-    const pool = test.questions.filter(tq => !tq.isCompulsory);
-
+    // Select questions: section-aware "attempt N of M" per section, plus the
+    // original flat compulsory + random pool for any ungrouped questions.
     const rng = seededRng(rollNo + test.id + Date.now().toString());
-    const shuffledPool = shuffleArray(pool, rng);
-    const needed = Math.max(0, test.numberOfQuestions - compulsory.length);
-    const selected = [...compulsory, ...shuffledPool.slice(0, needed)];
+    const selected = selectSectionAwareQuestions(test.questions, test.sections, test.numberOfQuestions, rng);
+    const sectionsMeta = parseSections(test.sections);
 
     // Create attempt
     const attempt = await prisma.taskTestAttempt.create({
@@ -2164,17 +2249,42 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
     const personalised = selected.map(tq => {
       const q = tq.question;
       const gen = personaliseQuestion(q, rollNo);
+      const section = tq.sectionId ? sectionsMeta.find(s => s.id === tq.sectionId) : undefined;
       return {
         questionId: q.id,
         questionText: gen.questionText,
         options: gen.options,
         correctAnswer: gen.correctAnswer,
         type: q.type,
+        sectionId: tq.sectionId,
+        sectionTitle: section?.title ?? null,
+        sectionInstruction: section?.instruction ?? null,
       };
     });
 
-    // Shuffle question order per student
-    const orderedQ = shuffleArray(personalised, seededRng(rollNo + test.id));
+    // Shuffle within each section (keeps sections grouped together in the
+    // order the teacher defined them); ungrouped questions shuffle and
+    // append at the end.
+    const orderSeed = seededRng(rollNo + test.id);
+    const sectionOrder = sectionsMeta.map(s => s.id);
+    const bySection = new Map<string, typeof personalised>();
+    const ungroupedQ: typeof personalised = [];
+    for (const q of personalised) {
+      if (q.sectionId) {
+        if (!bySection.has(q.sectionId)) bySection.set(q.sectionId, []);
+        bySection.get(q.sectionId)!.push(q);
+      } else {
+        ungroupedQ.push(q);
+      }
+    }
+    const orderedSectionIds = [
+      ...sectionOrder.filter(id => bySection.has(id)),
+      ...[...bySection.keys()].filter(id => !sectionOrder.includes(id)),
+    ];
+    const orderedQ = [
+      ...orderedSectionIds.flatMap(id => shuffleArray(bySection.get(id)!, orderSeed)),
+      ...shuffleArray(ungroupedQ, orderSeed),
+    ];
 
     res.json({
       success: true,
@@ -2189,6 +2299,9 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
           questionText: q.questionText,
           options: q.options,
           type: q.type,
+          sectionId: q.sectionId,
+          sectionTitle: q.sectionTitle,
+          sectionInstruction: q.sectionInstruction,
         })),
         // Store correctAnswers separately — never sent to client
         _meta: { totalQuestions: orderedQ.length },
@@ -2210,13 +2323,14 @@ export const startQuiz = async (req: import("express").Request, res: Response, n
     // Save generated questions to answers table (for scoring later)
     setImmediate(async () => {
       await prisma.taskStudentAnswer.createMany({
-        data: orderedQ.map(q => ({
+        data: orderedQ.map((q, i) => ({
           attemptId: attempt.id,
           questionId: q.questionId,
           generatedQuestion: q.questionText,
           ...(q.options.length > 0 ? { generatedOptions: JSON.parse(JSON.stringify(q.options)) } : {}),
           correctAnswer: q.correctAnswer,
           isCorrect: false,
+          order: i,
         })),
         skipDuplicates: true,
       });

@@ -8,6 +8,8 @@ import {
   seededRng,
   shuffleArray,
   personaliseQuestion,
+  selectSectionAwareQuestions,
+  parseSections,
 } from "../teacher/tasks.controller";
 import { uploadAttachmentToR2 } from "../../services/storage.service";
 
@@ -69,7 +71,7 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
     const attempts = testIds.length > 0
       ? await prisma.taskTestAttempt.findMany({
           where: { testId: { in: testIds }, studentId: student.id },
-          select: { id: true, testId: true, status: true, totalScore: true, attemptNumber: true },
+          select: { id: true, testId: true, status: true, totalScore: true, attemptNumber: true, endTime: true },
           orderBy: { attemptNumber: "desc" },
         })
       : [];
@@ -126,6 +128,7 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
         bestScore,
         bestPercentage,
         lastAttemptId: lastCompletedAttempt?.id ?? null,
+        lastAttemptEndTime: lastCompletedAttempt?.endTime ?? null,
       };
     });
 
@@ -174,9 +177,13 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
       const existingAnswers = await prisma.taskStudentAnswer.findMany({
         where: { attemptId: existing.id },
         include: { question: { select: { type: true } } },
-        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
       });
       if (existingAnswers.length > 0) {
+        // Section info isn't stored on TaskStudentAnswer, so it's looked up
+        // from the test's own question list + sections JSON at resume time.
+        const sectionsMeta = parseSections(test.sections);
+        const sectionByQuestionId = new Map(test.questions.map((tq) => [tq.questionId, tq.sectionId]));
         res.json({
           success: true,
           data: {
@@ -187,12 +194,19 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
             durationMinutes: test.durationMinutes,
             totalMarks: test.totalMarks,
             startTime: existing.startTime,
-            questions: existingAnswers.map((a) => ({
-              questionId: a.questionId,
-              questionText: a.generatedQuestion,
-              options: (a.generatedOptions as string[] | null) ?? [],
-              type: a.question.type,
-            })),
+            questions: existingAnswers.map((a) => {
+              const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
+              const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
+              return {
+                questionId: a.questionId,
+                questionText: a.generatedQuestion,
+                options: (a.generatedOptions as string[] | null) ?? [],
+                type: a.question.type,
+                sectionId,
+                sectionTitle: section?.title ?? null,
+                sectionInstruction: section?.instruction ?? null,
+              };
+            }),
           },
         });
         return;
@@ -209,12 +223,9 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     });
     if (completedAttempts >= test.maxAttempts) throw new BadRequestError("Maximum attempts reached for this test");
 
-    const compulsory = test.questions.filter((tq) => tq.isCompulsory);
-    const pool = test.questions.filter((tq) => !tq.isCompulsory);
     const rng = seededRng(student.rollNo + test.id + Date.now().toString());
-    const shuffledPool = shuffleArray(pool, rng);
-    const needed = Math.max(0, test.numberOfQuestions - compulsory.length);
-    const selected = [...compulsory, ...shuffledPool.slice(0, needed)];
+    const selected = selectSectionAwareQuestions(test.questions, test.sections, test.numberOfQuestions, rng);
+    const sectionsMeta = parseSections(test.sections);
 
     const attemptNumber = completedAttempts + 1;
     const attempt = await prisma.taskTestAttempt.create({
@@ -232,26 +243,56 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     const personalised = selected.map((tq) => {
       const q = tq.question;
       const gen = personaliseQuestion(q, student.rollNo);
+      const section = tq.sectionId ? sectionsMeta.find((s) => s.id === tq.sectionId) : undefined;
       return {
         questionId: q.id,
         questionText: gen.questionText,
         options: gen.options,
         correctAnswer: gen.correctAnswer,
         type: q.type,
+        sectionId: tq.sectionId,
+        sectionTitle: section?.title ?? null,
+        sectionInstruction: section?.instruction ?? null,
       };
     });
-    const orderedQ = shuffleArray(personalised, seededRng(student.rollNo + test.id));
+    // Shuffle within each section (keeps the anti-cheat per-student
+    // randomization) but keep sections themselves in the order the teacher
+    // defined them, so the student sees "Section A" fully before "Section B"
+    // instead of questions from different sections interleaved randomly.
+    // Ungrouped questions (simple tests with no sections) are shuffled and
+    // appended at the end.
+    const orderSeed = seededRng(student.rollNo + test.id);
+    const sectionOrder = sectionsMeta.map((s) => s.id);
+    const bySection = new Map<string, typeof personalised>();
+    const ungroupedQ: typeof personalised = [];
+    for (const q of personalised) {
+      if (q.sectionId) {
+        if (!bySection.has(q.sectionId)) bySection.set(q.sectionId, []);
+        bySection.get(q.sectionId)!.push(q);
+      } else {
+        ungroupedQ.push(q);
+      }
+    }
+    const orderedSectionIds = [
+      ...sectionOrder.filter((id) => bySection.has(id)),
+      ...[...bySection.keys()].filter((id) => !sectionOrder.includes(id)),
+    ];
+    const orderedQ = [
+      ...orderedSectionIds.flatMap((id) => shuffleArray(bySection.get(id)!, orderSeed)),
+      ...shuffleArray(ungroupedQ, orderSeed),
+    ];
 
     // Created (and awaited) before responding, not deferred, so the resume check
     // above never finds an in-progress attempt with zero question rows attached.
     await prisma.taskStudentAnswer.createMany({
-      data: orderedQ.map((q) => ({
+      data: orderedQ.map((q, i) => ({
         attemptId: attempt.id,
         questionId: q.questionId,
         generatedQuestion: q.questionText,
         ...(q.options.length > 0 ? { generatedOptions: JSON.parse(JSON.stringify(q.options)) } : {}),
         correctAnswer: q.correctAnswer,
         isCorrect: false,
+        order: i,
       })),
       skipDuplicates: true,
     });
@@ -271,6 +312,9 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
           questionText: q.questionText,
           options: q.options,
           type: q.type,
+          sectionId: q.sectionId,
+          sectionTitle: q.sectionTitle,
+          sectionInstruction: q.sectionInstruction,
         })),
       },
     });
@@ -349,13 +393,18 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
     const attempt = await prisma.taskTestAttempt.findUnique({
       where: { id },
       include: {
-        test: { select: { title: true, totalMarks: true } },
+        test: {
+          select: {
+            title: true, totalMarks: true, sections: true, durationMinutes: true, maxAttempts: true,
+            questions: { select: { questionId: true, sectionId: true } },
+          },
+        },
         answers: {
           select: {
             questionId: true, generatedQuestion: true, generatedOptions: true,
             studentAnswer: true, correctAnswer: true, isCorrect: true,
           },
-          orderBy: { createdAt: "asc" },
+          orderBy: { order: "asc" },
         },
       },
     });
@@ -363,6 +412,21 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
     if (attempt.status !== "completed") throw new BadRequestError("Attempt is not yet submitted");
 
     const percentage = attempt.maxScore > 0 ? Math.round((attempt.totalScore / attempt.maxScore) * 100) : 0;
+
+    // Section info isn't stored on TaskStudentAnswer - looked up from the
+    // test's own question list + sections JSON, same as on resume.
+    const sectionsMeta = parseSections(attempt.test.sections);
+    const sectionByQuestionId = new Map(attempt.test.questions.map((tq) => [tq.questionId, tq.sectionId]));
+    const answersWithSections = attempt.answers.map((a) => {
+      const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
+      const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
+      return {
+        ...a,
+        sectionId,
+        sectionTitle: section?.title ?? null,
+        sectionInstruction: section?.instruction ?? null,
+      };
+    });
 
     res.json({
       success: true,
@@ -374,8 +438,11 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
         percentage,
         malpracticeFlag: attempt.malpracticeFlag,
         tabChangeCount: attempt.tabChangeCount,
-        test: attempt.test,
-        answers: attempt.answers,
+        attemptNumber: attempt.attemptNumber,
+        startTime: attempt.startTime,
+        endTime: attempt.endTime,
+        test: { title: attempt.test.title, totalMarks: attempt.test.totalMarks, durationMinutes: attempt.test.durationMinutes, maxAttempts: attempt.test.maxAttempts },
+        answers: answersWithSections,
       },
     });
   } catch (err) { next(err); }

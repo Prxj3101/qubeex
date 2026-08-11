@@ -1277,6 +1277,12 @@ model TaskStudentAnswer {
   studentAnswer     String?
   correctAnswer     String
   isCorrect         Boolean
+  // Position in the student's personalised question sequence (section order,
+  // then shuffled-within-section). createdAt/id can't be trusted to preserve
+  // this on resume - createMany often gives identical createdAt timestamps
+  // and id is a random uuid, so re-fetching without this column could show
+  // sections out of the teacher's defined order.
+  order Int @default(0)
 
   createdAt DateTime @default(now())
 

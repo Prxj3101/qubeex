@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { BadRequestError } from "../../utils/errors";
 import * as service from "./superadmin.service";
+import * as dbConfigService from "../../services/dbConfig.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 
@@ -26,6 +27,7 @@ import {
   updateBillStatusSchema,
   updatePaymentSettingsSchema,
   updateAddonsSchema,
+  dbConfigSchema,
 } from "./superadmin.schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -757,6 +759,37 @@ import { generateMonthlyBills } from "../../services/billing.service";
 export const runMonthlyBilling = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const result = await generateMonthlyBills();
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BYOD — Data Storage Configuration
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getInstitutionDbConfig = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const data = await dbConfigService.getDbConfig(req.params.id as string);
+    res.json({ success: true, data });
+  } catch (error) { next(error); }
+};
+
+export const saveInstitutionDbConfig = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const input = dbConfigSchema.parse(req.body);
+    const data = await dbConfigService.saveDbConfig(req.params.id as string, input, req.user?.userId);
+    res.json({ success: true, data });
+  } catch (error) { next(error); }
+};
+
+export const testInstitutionDbConnection = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const input = dbConfigSchema.parse(req.body);
+    // If the draft carries connection details, validate those (pre-save);
+    // otherwise re-test the currently stored config.
+    const result = input.mode === "BYOD" && input.host
+      ? await dbConfigService.testDraftConnection(input)
+      : await dbConfigService.testStoredConnection(req.params.id as string);
     res.json({ success: true, data: result });
   } catch (error) { next(error); }
 };

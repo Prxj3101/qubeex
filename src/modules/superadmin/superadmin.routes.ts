@@ -18,6 +18,9 @@ import {
   toggleStatus,
   getTrialUsage,
   activateTrial,
+  getInstitutionDbConfig,
+  saveInstitutionDbConfig,
+  testInstitutionDbConnection,
   deleteInstitution,
   resendInvite,
   // Audit Logs
@@ -87,6 +90,11 @@ router.patch("/institutions/:id/admin",                 SA, updateInstitutionAdm
 router.patch("/institutions/:id/status",               SA, toggleStatus);
 router.delete("/institutions/:id",                     SA, deleteInstitution);
 router.post("/institutions/:id/resend-invite",         SA, resendInvite);
+
+// ─── BYOD: Data Storage Configuration ──────────────────────────────────────────
+router.get("/institutions/:id/db-config",              SA, getInstitutionDbConfig);
+router.put("/institutions/:id/db-config",              SA, saveInstitutionDbConfig);
+router.post("/institutions/:id/db-config/test",        SA, testInstitutionDbConnection);
 
 // ─── Plan Management ──────────────────────────────────────────────────────────
 router.get("/plans",                                   SA, getPlans);

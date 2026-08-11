@@ -13,6 +13,20 @@ export const changePasswordSchema = z.object({
   newPassword: passwordSchema,
 });
 
+// ─── BYOD: institution data-storage configuration ─────────────────────────────
+
+export const dbConfigSchema = z.object({
+  mode: z.enum(["MANAGED", "BYOD"]),
+  engine: z.enum(["POSTGRES", "MYSQL", "SQLSERVER"]).optional(),
+  host: z.string().trim().max(255).optional(),
+  port: z.number().int().positive().max(65535).optional(),
+  databaseName: z.string().trim().max(255).optional(),
+  username: z.string().trim().max(255).optional(),
+  password: z.string().max(500).optional(),
+  sslMode: z.enum(["disable", "require", "verify-full"]).optional(),
+  sslCaCert: z.string().max(20000).optional().nullable(),
+});
+
 // ─── Institution Create ───────────────────────────────────────────────────────
 
 export const createInstitutionSchema = z.object({

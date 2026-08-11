@@ -145,6 +145,7 @@ model Institution {
 
   users              User[]
   subscription       Subscription?
+  dbConfig           InstitutionDbConfig?
   bills              Bill[]
   invites            Invite[]
   auditLogs          AuditLog[]
@@ -1518,4 +1519,36 @@ model PlatformSettings {
   upiId             String?
   updatedAt         DateTime @updatedAt
   updatedBy         String?
+}
+
+// ─── BYOD: Institution-owned database configuration ──────────────────────────
+// Central-only. Holds per-institution data-storage mode + (for BYOD) the
+// encrypted connection details for the institution's own database.
+model InstitutionDbConfig {
+  id            String      @id @default(uuid())
+  institutionId String      @unique
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  mode          String      @default("MANAGED") // MANAGED | BYOD
+  engine        String? // POSTGRES | MYSQL | SQLSERVER
+  host          String?
+  port          Int?
+  databaseName  String?
+  username      String?
+
+  // AES-256-GCM at rest — never returned to the frontend.
+  passwordCipher String?
+  passwordIv     String?
+  passwordTag    String?
+
+  sslMode   String? @default("require") // disable | require | verify-full
+  sslCaCert String?
+
+  status        String    @default("PENDING") // PENDING | CONNECTED | FAILED
+  lastTestedAt  DateTime?
+  lastError     String?
+  provisionedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

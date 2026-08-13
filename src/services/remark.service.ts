@@ -1,5 +1,6 @@
 // src/services/remark.service.ts
-import { prisma } from "../utils/prisma";
+import { academicDb } from "../utils/academicContext";
+import { resolveUsers } from "./userLookup.service";
 import { CreateRemarkInput, ReviewRemarkInput, EditRemarkInput, RemarkAttachment } from "./remark.schema";
 
 export interface StudentRemarkDTO {
@@ -34,7 +35,7 @@ export interface StudentRemarkDTO {
 type RemarkRow = {
   id: string;
   studentId: string;
-  student: { studentId: string; divisionId: string | null; standardId: string | null; user: { name: string | null }; division: { name: string } | null };
+  student: { studentId: string; userId: string; divisionId: string | null; standardId: string | null; division: { name: string } | null };
   type: "YELLOW" | "RED";
   severity: "LOW" | "MEDIUM" | "HIGH";
   category: string;
@@ -47,13 +48,19 @@ type RemarkRow = {
   attachments: unknown;
   reportedByUserId: string;
   reportedByRole: string;
-  reportedByUser: { name: string | null };
   assignedToUserId: string | null;
-  assignedTo: { name: string | null } | null;
   reviewRemark: string | null;
   reviewedAt: Date | null;
-  reviewedBy: { name: string | null } | null;
+  reviewedByUserId: string | null;
 };
+
+// User names live in the central DB (Student/StudentRemark may be in a tenant
+// DB under BYOD), so they are stitched in via resolveUsers rather than joined.
+type UserNames = Map<string, { name: string | null }>;
+
+function remarkUserIds(row: RemarkRow): (string | null | undefined)[] {
+  return [row.student.userId, row.reportedByUserId, row.assignedToUserId, row.reviewedByUserId];
+}
 
 // `attachments` is a Json column — parse defensively rather than trust the
 // shape, since old rows or bad writes could leave it as null/malformed.
@@ -82,7 +89,7 @@ const STATUS_MAP: Record<RemarkRow["status"], StudentRemarkDTO["status"]> = {
   APPEALED: "appealed",
 };
 
-function toDTO(row: RemarkRow, viewer: { userId: string; role: string }): StudentRemarkDTO {
+function toDTO(row: RemarkRow, viewer: { userId: string; role: string }, users: UserNames): StudentRemarkDTO {
   const isAdmin = viewer.role === "ADMIN" || viewer.role === "SUB_ADMIN";
   const isAssignee = row.assignedToUserId === viewer.userId;
   const isActionable = row.status === "ACTIVE" || row.status === "UNDER_REVIEW";
@@ -90,7 +97,7 @@ function toDTO(row: RemarkRow, viewer: { userId: string; role: string }): Studen
   return {
     id: row.id,
     studentId: row.studentId,
-    studentName: row.student.user.name ?? "Unknown",
+    studentName: users.get(row.student.userId)?.name ?? "Unknown",
     divisionId: row.student.divisionId,
     standardId: row.student.standardId,
     className: row.student.division?.name,
@@ -101,25 +108,24 @@ function toDTO(row: RemarkRow, viewer: { userId: string; role: string }): Studen
     detail: row.detail,
     date: formatRemarkDate(row.createdAt),
     subject: row.subject ?? undefined,
-    reportedBy: row.reportedByUser.name ?? "Unknown",
+    reportedBy: users.get(row.reportedByUserId)?.name ?? "Unknown",
     role: row.reportedByRole,
     status: STATUS_MAP[row.status],
     actionTaken: row.actionTaken ?? undefined,
     attachments: parseAttachments(row.attachments),
-    assignedToName: row.assignedTo?.name ?? undefined,
+    assignedToName: (row.assignedToUserId ? users.get(row.assignedToUserId)?.name : undefined) ?? undefined,
     reviewRemark: row.reviewRemark ?? undefined,
-    reviewedBy: row.reviewedBy?.name ?? undefined,
+    reviewedBy: (row.reviewedByUserId ? users.get(row.reviewedByUserId)?.name : undefined) ?? undefined,
     reviewedAt: row.reviewedAt ? formatRemarkDate(row.reviewedAt) : undefined,
     canReview: isActionable && (isAdmin || isAssignee),
     canEdit: row.reportedByUserId === viewer.userId,
   };
 }
 
+// No `user` relations — Student/StudentRemark may live in a tenant DB with no
+// User table. userId scalars are selected and resolved via resolveUsers.
 const REMARK_INCLUDE = {
-  student: { select: { studentId: true, divisionId: true, standardId: true, user: { select: { name: true } }, division: { select: { name: true } } } },
-  reportedByUser: { select: { name: true } },
-  assignedTo: { select: { name: true } },
-  reviewedBy: { select: { name: true } },
+  student: { select: { studentId: true, userId: true, divisionId: true, standardId: true, division: { select: { name: true } } } },
 } as const;
 
 export async function createStudentRemark(params: {
@@ -136,7 +142,7 @@ export async function createStudentRemark(params: {
   // Fixed routing rule: every report is auto-assigned to the student's class
   // teacher (the DivisionAssignment with subjectId = null) at creation time.
   // Admin can review any report regardless of assignment.
-  const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
+  const classTeacherAssignment = await academicDb().divisionAssignment.findFirst({
     where: { divisionId, institutionId, subjectId: null },
     select: { teacher: { select: { userId: true } } },
   });
@@ -144,7 +150,7 @@ export async function createStudentRemark(params: {
 
   const type = data.type;
 
-  const row = await prisma.studentRemark.create({
+  const row = await academicDb().studentRemark.create({
     data: {
       institutionId,
       studentId,
@@ -163,7 +169,8 @@ export async function createStudentRemark(params: {
     include: REMARK_INCLUDE,
   });
 
-  return toDTO(row, viewer);
+  const users = await resolveUsers(remarkUserIds(row), { id: true, name: true });
+  return toDTO(row, viewer, users);
 }
 
 export async function listStudentRemarks(
@@ -171,13 +178,14 @@ export async function listStudentRemarks(
   institutionId: string,
   viewer: { userId: string; role: string }
 ): Promise<StudentRemarkDTO[]> {
-  const rows = await prisma.studentRemark.findMany({
+  const rows = await academicDb().studentRemark.findMany({
     where: { studentId, institutionId },
     orderBy: { createdAt: "desc" },
     include: REMARK_INCLUDE,
   });
 
-  return rows.map((r) => toDTO(r, viewer));
+  const users = await resolveUsers(rows.flatMap(remarkUserIds), { id: true, name: true });
+  return rows.map((r) => toDTO(r, viewer, users));
 }
 
 /** Reports assigned to (or, for admins, all reports for) the given institution, for a reviewer inbox. */
@@ -186,7 +194,7 @@ export async function listAssignedRemarks(
   viewer: { userId: string; role: string }
 ): Promise<StudentRemarkDTO[]> {
   const isAdmin = viewer.role === "ADMIN" || viewer.role === "SUB_ADMIN";
-  const rows = await prisma.studentRemark.findMany({
+  const rows = await academicDb().studentRemark.findMany({
     where: {
       institutionId,
       ...(isAdmin ? {} : { assignedToUserId: viewer.userId }),
@@ -195,7 +203,8 @@ export async function listAssignedRemarks(
     include: REMARK_INCLUDE,
   });
 
-  return rows.map((r) => toDTO(r, viewer));
+  const users = await resolveUsers(rows.flatMap(remarkUserIds), { id: true, name: true });
+  return rows.map((r) => toDTO(r, viewer, users));
 }
 
 /** Reports a given user has personally submitted, for a "my reports" history view. */
@@ -203,13 +212,14 @@ export async function listSubmittedRemarks(
   institutionId: string,
   viewer: { userId: string; role: string }
 ): Promise<StudentRemarkDTO[]> {
-  const rows = await prisma.studentRemark.findMany({
+  const rows = await academicDb().studentRemark.findMany({
     where: { institutionId, reportedByUserId: viewer.userId },
     orderBy: { createdAt: "desc" },
     include: REMARK_INCLUDE,
   });
 
-  return rows.map((r) => toDTO(r, viewer));
+  const users = await resolveUsers(rows.flatMap(remarkUserIds), { id: true, name: true });
+  return rows.map((r) => toDTO(r, viewer, users));
 }
 
 /** Admin-only: permanently deletes a report/remark card. Removes it from every
@@ -221,13 +231,13 @@ export async function deleteStudentRemark(params: {
 }): Promise<void> {
   const { remarkId, institutionId } = params;
 
-  const existing = await prisma.studentRemark.findFirst({
+  const existing = await academicDb().studentRemark.findFirst({
     where: { id: remarkId, institutionId },
     select: { id: true },
   });
   if (!existing) throw { status: 404, message: "Report not found" };
 
-  await prisma.studentRemark.delete({ where: { id: remarkId } });
+  await academicDb().studentRemark.delete({ where: { id: remarkId } });
 }
 
 /** Only the original reporter can edit their own card's content — this is
@@ -241,7 +251,7 @@ export async function editStudentRemark(params: {
 }): Promise<StudentRemarkDTO> {
   const { remarkId, institutionId, viewer, data } = params;
 
-  const existing = await prisma.studentRemark.findFirst({
+  const existing = await academicDb().studentRemark.findFirst({
     where: { id: remarkId, institutionId },
     select: { reportedByUserId: true },
   });
@@ -250,7 +260,7 @@ export async function editStudentRemark(params: {
     throw { status: 403, message: "Only the person who filed this report can edit it" };
   }
 
-  const row = await prisma.studentRemark.update({
+  const row = await academicDb().studentRemark.update({
     where: { id: remarkId },
     data: {
       ...(data.type !== undefined && { type: data.type }),
@@ -264,7 +274,8 @@ export async function editStudentRemark(params: {
     include: REMARK_INCLUDE,
   });
 
-  return toDTO(row, viewer);
+  const users = await resolveUsers(remarkUserIds(row), { id: true, name: true });
+  return toDTO(row, viewer, users);
 }
 
 export async function reviewStudentRemark(params: {
@@ -275,7 +286,7 @@ export async function reviewStudentRemark(params: {
 }): Promise<StudentRemarkDTO> {
   const { remarkId, institutionId, viewer, data } = params;
 
-  const existing = await prisma.studentRemark.findFirst({
+  const existing = await academicDb().studentRemark.findFirst({
     where: { id: remarkId, institutionId },
     select: { assignedToUserId: true, status: true },
   });
@@ -290,7 +301,7 @@ export async function reviewStudentRemark(params: {
     throw { status: 409, message: "This report has already been closed" };
   }
 
-  const row = await prisma.studentRemark.update({
+  const row = await academicDb().studentRemark.update({
     where: { id: remarkId },
     data: {
       status: data.status,
@@ -301,5 +312,6 @@ export async function reviewStudentRemark(params: {
     include: REMARK_INCLUDE,
   });
 
-  return toDTO(row, viewer);
+  const users = await resolveUsers(remarkUserIds(row), { id: true, name: true });
+  return toDTO(row, viewer, users);
 }

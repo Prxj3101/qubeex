@@ -1,4 +1,4 @@
-import { prisma } from "../utils/prisma";
+import { academicDb } from "../utils/academicContext";
 
 export interface SubjectPerf {
   name: string;
@@ -21,7 +21,7 @@ export async function getStudentStatsData(
   divisionId: string,
   institutionId: string
 ): Promise<StudentStatsData> {
-  const attendanceRecords = await prisma.attendance.findMany({
+  const attendanceRecords = await academicDb().attendance.findMany({
     where: { studentId, divisionId, institutionId },
     select: { status: true },
   });
@@ -32,7 +32,7 @@ export async function getStudentStatsData(
     : null;
 
   const [marksheet, division] = await Promise.all([
-    prisma.marksheet.findFirst({
+    academicDb().marksheet.findFirst({
       where: { divisionId, institutionId, status: "PUBLISHED" },
       orderBy: { updatedAt: "desc" },
       select: {
@@ -40,7 +40,7 @@ export async function getStudentStatsData(
         examColumns: { select: { id: true, subjectId: true, maxMarks: true } },
       },
     }),
-    prisma.division.findFirst({
+    academicDb().division.findFirst({
       where: { id: divisionId, institutionId },
       select: { standardId: true },
     }),
@@ -56,11 +56,11 @@ export async function getStudentStatsData(
 
     if (columnIds.length > 0 && maxTotal > 0) {
       const [allScores, studentScores] = await Promise.all([
-        prisma.marksheetScore.findMany({
+        academicDb().marksheetScore.findMany({
           where: { marksheetId: marksheet.id, institutionId },
           select: { studentId: true, score: true, isAbsent: true },
         }),
-        prisma.marksheetScore.findMany({
+        academicDb().marksheetScore.findMany({
           where: { marksheetId: marksheet.id, institutionId, studentId },
           select: { examColumnId: true, score: true, isAbsent: true },
         }),
@@ -81,7 +81,7 @@ export async function getStudentStatsData(
       }
 
       if (division) {
-        const subjectRows = await prisma.subject.findMany({
+        const subjectRows = await academicDb().subject.findMany({
           where: { standardId: division.standardId, institutionId },
           orderBy: { order: "asc" },
           select: { id: true, name: true, code: true, color: true },

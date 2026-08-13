@@ -3,6 +3,8 @@ import crypto from "crypto";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { logAudit } from "../../services/audit.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -347,7 +349,7 @@ async function generateMarksheetPdf(params: {
 // ── Internal helpers ──────────────────────────────────────────────────────────
 
 async function getTeacherId(userId: string, institutionId: string): Promise<string> {
-  const teacher = await prisma.teacher.findFirst({
+  const teacher = await academicDb().teacher.findFirst({
     where: { userId, institutionId },
     select: { id: true },
   });
@@ -361,12 +363,12 @@ async function assertClassTeacher(
   institutionId: string
 ): Promise<void> {
   // App-wide convention: the class teacher is the DivisionAssignment with subjectId = null.
-  const division = await prisma.division.findFirst({
+  const division = await academicDb().division.findFirst({
     where: { id: divisionId, institutionId },
     select: { id: true },
   });
   if (!division) throw { status: 404, message: "Division not found" };
-  const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
+  const classTeacherAssignment = await academicDb().divisionAssignment.findFirst({
     where: { divisionId, teacherId, institutionId, subjectId: null },
     select: { id: true },
   });
@@ -381,7 +383,7 @@ async function assertSubjectTeacher(
   subjectId: string,
   institutionId: string
 ): Promise<void> {
-  const assignment = await prisma.divisionAssignment.findFirst({
+  const assignment = await academicDb().divisionAssignment.findFirst({
     where: { teacherId, divisionId, subjectId, institutionId },
     select: { id: true },
   });
@@ -407,7 +409,7 @@ async function fetchMarksheetFull(
 ) {
   const [marksheet, examColumns, scores, gradedSubjects, gradedScores, students] =
     await Promise.all([
-      prisma.marksheet.findUnique({
+      academicDb().marksheet.findUnique({
         where: { id: marksheetId },
         select: {
           id: true,
@@ -422,27 +424,26 @@ async function fetchMarksheetFull(
           },
         },
       }),
-      prisma.marksheetExamColumn.findMany({
+      academicDb().marksheetExamColumn.findMany({
         where: { marksheetId, institutionId },
         orderBy: [{ subjectId: "asc" }, { order: "asc" }],
         select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
       }),
-      prisma.marksheetScore.findMany({
+      academicDb().marksheetScore.findMany({
         where: { marksheetId, institutionId },
         select: { examColumnId: true, studentId: true, score: true, isAbsent: true },
       }),
-      prisma.marksheetGradedSubject.findMany({
+      academicDb().marksheetGradedSubject.findMany({
         where: { marksheetId, institutionId },
         orderBy: { order: "asc" },
         select: { id: true, name: true, order: true },
       }),
-      prisma.marksheetGradedScore.findMany({
+      academicDb().marksheetGradedScore.findMany({
         where: { marksheetId, institutionId },
         select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
       }),
-      prisma.student.findMany({
+      academicDb().student.findMany({
         where: { institutionId, division: { marksheets: { some: { id: marksheetId } } } },
-        include: { user: { select: { name: true } } },
         orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
       }),
     ]);
@@ -484,6 +485,8 @@ async function fetchMarksheetFull(
     }
   }
 
+  const studentUsers = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
+
   return {
     marksheet: {
       id: marksheet.id,
@@ -502,7 +505,7 @@ async function fetchMarksheetFull(
     gradedScores: gradedScoreMap,
     students: students.map((s) => ({
       id: s.id,
-      name: s.user.name,
+      name: studentUsers.get(s.userId)?.name ?? null,
       rollNo: s.rollNo ?? "",
     })),
   };
@@ -526,7 +529,7 @@ export async function initMarksheet(
     const { academicYear } = initMarksheetSchema.parse(req.body);
 
     // Single division fetch with subjects — guard handled via DivisionAssignment below
-    const division = await prisma.division.findFirst({
+    const division = await academicDb().division.findFirst({
       where: { id: divisionId, institutionId },
       include: {
         standard: {
@@ -539,7 +542,7 @@ export async function initMarksheet(
       return;
     }
     // App-wide convention: the class teacher is the DivisionAssignment with subjectId = null.
-    const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
+    const classTeacherAssignment = await academicDb().divisionAssignment.findFirst({
       where: { divisionId, teacherId, institutionId, subjectId: null },
       select: { id: true },
     });
@@ -549,7 +552,7 @@ export async function initMarksheet(
     }
 
     // Check not already initialized
-    const existing = await prisma.marksheet.findUnique({
+    const existing = await academicDb().marksheet.findUnique({
       where: { divisionId_academicYear: { divisionId, academicYear } },
       select: { id: true },
     });
@@ -607,7 +610,7 @@ export async function addColumn(
     const marksheetId = req.params.id as string;
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { id: true, divisionId: true },
     });
@@ -619,13 +622,13 @@ export async function addColumn(
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
     // Determine next order value
-    const maxOrder = await prisma.marksheetExamColumn.aggregate({
+    const maxOrder = await academicDb().marksheetExamColumn.aggregate({
       where: { marksheetId, subjectId },
       _max: { order: true },
     });
     const nextOrder = (maxOrder._max.order ?? -1) + 1;
 
-    const column = await prisma.marksheetExamColumn.create({
+    const column = await academicDb().marksheetExamColumn.create({
       data: {
         marksheetId,
         subjectId,
@@ -660,7 +663,7 @@ export async function editColumn(
     const { id: marksheetId, colId } = req.params as { id: string; colId: string };
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const column = await prisma.marksheetExamColumn.findFirst({
+    const column = await academicDb().marksheetExamColumn.findFirst({
       where: { id: colId, marksheetId, institutionId },
       select: { id: true, subjectId: true, marksheet: { select: { divisionId: true } } },
     });
@@ -670,7 +673,7 @@ export async function editColumn(
     await assertClassTeacher(teacherId, column.marksheet.divisionId, institutionId);
 
     const data = editColumnSchema.parse(req.body);
-    const updated = await prisma.marksheetExamColumn.update({
+    const updated = await academicDb().marksheetExamColumn.update({
       where: { id: colId },
       data: {
         ...(data.name !== undefined && { name: data.name }),
@@ -701,7 +704,7 @@ export async function deleteColumn(
     const { id: marksheetId, colId } = req.params as { id: string; colId: string };
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const column = await prisma.marksheetExamColumn.findFirst({
+    const column = await academicDb().marksheetExamColumn.findFirst({
       where: { id: colId, marksheetId, institutionId },
       select: { id: true, subjectId: true, marksheet: { select: { divisionId: true } } },
     });
@@ -711,7 +714,7 @@ export async function deleteColumn(
     await assertClassTeacher(teacherId, column.marksheet.divisionId, institutionId);
 
     // Cascade deletes scores via onDelete: Cascade on MarksheetScore
-    await prisma.marksheetExamColumn.delete({ where: { id: colId } });
+    await academicDb().marksheetExamColumn.delete({ where: { id: colId } });
 
     res.json({ success: true });
   } catch (err: unknown) {
@@ -734,7 +737,7 @@ export async function reorderColumns(
     const { id: marksheetId, subjectId } = req.params as { id: string; subjectId: string };
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true },
     });
@@ -747,7 +750,7 @@ export async function reorderColumns(
 
     await prisma.$transaction(
       orderedIds.map((colId, idx) =>
-        prisma.marksheetExamColumn.updateMany({
+        academicDb().marksheetExamColumn.updateMany({
           where: { id: colId, marksheetId, subjectId, institutionId },
           data: { order: idx },
         })
@@ -775,7 +778,7 @@ export async function setSubjectConfig(
     const { id: marksheetId, subjectId } = req.params as { id: string; subjectId: string };
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true },
     });
@@ -785,7 +788,7 @@ export async function setSubjectConfig(
 
     const { passingMarks, gradeScale } = subjectConfigSchema.parse(req.body);
 
-    const config = await prisma.marksheetSubjectConfig.upsert({
+    const config = await academicDb().marksheetSubjectConfig.upsert({
       where: { marksheetId_subjectId: { marksheetId, subjectId } },
       create: { marksheetId, subjectId, institutionId, passingMarks, gradeScale },
       update: { passingMarks, gradeScale },
@@ -813,7 +816,7 @@ export async function bulkUpsertScores(
     const { id: marksheetId, subjectId } = req.params as { id: string; subjectId: string };
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true },
     });
@@ -826,7 +829,7 @@ export async function bulkUpsertScores(
 
     // Validate all provided examColumnIds belong to this marksheet + subjectId
     const columnIds = [...new Set(scores.map((s) => s.examColumnId))];
-    const validColumns = await prisma.marksheetExamColumn.findMany({
+    const validColumns = await academicDb().marksheetExamColumn.findMany({
       where: { id: { in: columnIds }, marksheetId, subjectId, institutionId },
       select: { id: true },
     });
@@ -839,7 +842,7 @@ export async function bulkUpsertScores(
 
     await prisma.$transaction(
       scores.map((sc) =>
-        prisma.marksheetScore.upsert({
+        academicDb().marksheetScore.upsert({
           where: { examColumnId_studentId: { examColumnId: sc.examColumnId, studentId: sc.studentId } },
           create: {
             marksheetId,
@@ -880,7 +883,7 @@ export async function addGradedSubject(
     const marksheetId = req.params.id as string;
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true },
     });
@@ -888,11 +891,11 @@ export async function addGradedSubject(
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
     const { name } = addGradedSubjectSchema.parse(req.body);
-    const maxOrder = await prisma.marksheetGradedSubject.aggregate({
+    const maxOrder = await academicDb().marksheetGradedSubject.aggregate({
       where: { marksheetId },
       _max: { order: true },
     });
-    const subject = await prisma.marksheetGradedSubject.create({
+    const subject = await academicDb().marksheetGradedSubject.create({
       data: { marksheetId, institutionId, name, order: (maxOrder._max.order ?? -1) + 1 },
       select: { id: true, name: true, order: true },
     });
@@ -918,7 +921,7 @@ export async function editGradedSubject(
     const { id: marksheetId, gsId } = req.params as { id: string; gsId: string };
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const gs = await prisma.marksheetGradedSubject.findFirst({
+    const gs = await academicDb().marksheetGradedSubject.findFirst({
       where: { id: gsId, marksheetId, institutionId },
       select: { id: true, marksheet: { select: { divisionId: true } } },
     });
@@ -926,7 +929,7 @@ export async function editGradedSubject(
     await assertClassTeacher(teacherId, gs.marksheet.divisionId, institutionId);
 
     const { name } = editGradedSubjectSchema.parse(req.body);
-    const updated = await prisma.marksheetGradedSubject.update({
+    const updated = await academicDb().marksheetGradedSubject.update({
       where: { id: gsId },
       data: { name },
       select: { id: true, name: true, order: true },
@@ -953,7 +956,7 @@ export async function deleteGradedSubject(
     const { id: marksheetId, gsId } = req.params as { id: string; gsId: string };
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const gs = await prisma.marksheetGradedSubject.findFirst({
+    const gs = await academicDb().marksheetGradedSubject.findFirst({
       where: { id: gsId, marksheetId, institutionId },
       select: { id: true, marksheet: { select: { divisionId: true } } },
     });
@@ -961,7 +964,7 @@ export async function deleteGradedSubject(
     await assertClassTeacher(teacherId, gs.marksheet.divisionId, institutionId);
 
     // Cascade deletes graded scores via onDelete: Cascade on MarksheetGradedScore
-    await prisma.marksheetGradedSubject.delete({ where: { id: gsId } });
+    await academicDb().marksheetGradedSubject.delete({ where: { id: gsId } });
     res.json({ success: true });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };
@@ -983,7 +986,7 @@ export async function reorderGradedSubjects(
     const marksheetId = req.params.id as string;
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true },
     });
@@ -994,7 +997,7 @@ export async function reorderGradedSubjects(
 
     await prisma.$transaction(
       orderedIds.map((gsId, idx) =>
-        prisma.marksheetGradedSubject.updateMany({
+        academicDb().marksheetGradedSubject.updateMany({
           where: { id: gsId, marksheetId, institutionId },
           data: { order: idx },
         })
@@ -1022,7 +1025,7 @@ export async function updateGradedSectionTitle(
     const marksheetId = req.params.id as string;
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true },
     });
@@ -1030,7 +1033,7 @@ export async function updateGradedSectionTitle(
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
     const { title } = gradedSectionTitleSchema.parse(req.body);
-    await prisma.marksheet.update({
+    await academicDb().marksheet.update({
       where: { id: marksheetId },
       data: { gradedSectionTitle: title },
     });
@@ -1056,7 +1059,7 @@ export async function updateMarksheetGradeScale(
     const marksheetId = req.params.id as string;
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true },
     });
@@ -1066,7 +1069,7 @@ export async function updateMarksheetGradeScale(
     const { gradeScale } = updateMarksheetGradeScaleSchema.parse(req.body);
     const sorted = [...gradeScale].sort((a, b) => b.minPct - a.minPct);
 
-    await prisma.marksheet.update({
+    await academicDb().marksheet.update({
       where: { id: marksheetId },
       data: { gradeScale: sorted },
     });
@@ -1092,7 +1095,7 @@ export async function bulkUpsertGradedScores(
     const marksheetId = req.params.id as string;
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true, gradeScale: true },
     });
@@ -1122,7 +1125,7 @@ export async function bulkUpsertGradedScores(
 
     await prisma.$transaction(
       scores.map((sc) =>
-        prisma.marksheetGradedScore.upsert({
+        academicDb().marksheetGradedScore.upsert({
           where: { gradedSubjectId_studentId: { gradedSubjectId: sc.gradedSubjectId, studentId: sc.studentId } },
           create: {
             marksheetId,
@@ -1167,7 +1170,7 @@ export async function getDivisionMarksheet(
     const teacherId = await getTeacherId(userId, institutionId);
 
     // App-wide convention: class teacher = DivisionAssignment with subjectId = null.
-    const assignments = await prisma.divisionAssignment.findMany({
+    const assignments = await academicDb().divisionAssignment.findMany({
       where: { divisionId, teacherId, institutionId },
       select: { subjectId: true },
     });
@@ -1178,7 +1181,7 @@ export async function getDivisionMarksheet(
     }
     const mySubjectIds = assignments.map(a => a.subjectId).filter((id): id is string => id !== null);
 
-    const marksheet = await prisma.marksheet.findUnique({
+    const marksheet = await academicDb().marksheet.findUnique({
       where: { divisionId_academicYear: { divisionId, academicYear } },
       select: { id: true },
     });
@@ -1204,7 +1207,7 @@ async function buildMarksheetPdfData(
   marksheetId: string,
   institutionId: string
 ): Promise<{ params: MarksheetPdfParams; columnCount: number }> {
-  const marksheet = await prisma.marksheet.findFirst({
+  const marksheet = await academicDb().marksheet.findFirst({
     where: { id: marksheetId, institutionId },
     include: { division: { include: { standard: true } } },
   });
@@ -1216,35 +1219,35 @@ async function buildMarksheetPdfData(
   });
 
   const [subjects, examColumns, scores, gradedSubjects, gradedScores, students] = await Promise.all([
-    prisma.subject.findMany({
+    academicDb().subject.findMany({
       where: { standardId: marksheet.division.standardId, institutionId },
       orderBy: { order: "asc" },
       select: { id: true, name: true, code: true },
     }),
-    prisma.marksheetExamColumn.findMany({
+    academicDb().marksheetExamColumn.findMany({
       where: { marksheetId, institutionId },
       orderBy: [{ subjectId: "asc" }, { order: "asc" }],
       select: { id: true, subjectId: true, name: true, maxMarks: true },
     }),
-    prisma.marksheetScore.findMany({
+    academicDb().marksheetScore.findMany({
       where: { marksheetId, institutionId },
       select: { examColumnId: true, studentId: true, score: true, isAbsent: true },
     }),
-    prisma.marksheetGradedSubject.findMany({
+    academicDb().marksheetGradedSubject.findMany({
       where: { marksheetId, institutionId },
       orderBy: { order: "asc" },
       select: { id: true, name: true },
     }),
-    prisma.marksheetGradedScore.findMany({
+    academicDb().marksheetGradedScore.findMany({
       where: { marksheetId, institutionId },
       select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
     }),
-    prisma.student.findMany({
+    academicDb().student.findMany({
       where: { divisionId: marksheet.divisionId, institutionId },
-      include: { user: { select: { name: true } } },
       orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
     }),
   ]);
+  const pdfStudentUsers = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
 
   const columnsBySubject: Record<string, { id: string; name: string; maxMarks: number }[]> = {};
   for (const col of examColumns) {
@@ -1273,7 +1276,7 @@ async function buildMarksheetPdfData(
         .filter((s) => (columnsBySubject[s.id]?.length ?? 0) > 0)
         .map((s) => ({ id: s.id, name: s.name, code: s.code ?? s.name.slice(0, 4) })),
       examColumnsBySubject: columnsBySubject,
-      students: students.map((s) => ({ id: s.id, name: s.user.name ?? "", rollNo: s.rollNo ?? "" })),
+      students: students.map((s) => ({ id: s.id, name: pdfStudentUsers.get(s.userId)?.name ?? "", rollNo: s.rollNo ?? "" })),
       scoreMap,
       gradedSubjects,
       gradedScoreMap,
@@ -1436,7 +1439,7 @@ export async function downloadMarksheet(
     const subjectIdParam = req.query.subjectId as string | undefined;
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true },
     });
@@ -1451,7 +1454,7 @@ export async function downloadMarksheet(
     if (scope === "subject") {
       if (!subjectIdParam) { res.status(400).json({ success: false, error: "subjectId required for subject scope" }); return; }
       // Subject teacher of this subject, or the class teacher, may download it.
-      const classTeacher = await prisma.divisionAssignment.findFirst({
+      const classTeacher = await academicDb().divisionAssignment.findFirst({
         where: { divisionId: marksheet.divisionId, teacherId, institutionId, subjectId: null },
         select: { id: true },
       });
@@ -1496,14 +1499,14 @@ export async function publishMarksheet(
     const marksheetId = req.params.id as string;
     const teacherId = await getTeacherId(userId, institutionId);
 
-    const marksheet = await prisma.marksheet.findFirst({
+    const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
       select: { divisionId: true, pdfR2Key: true, shareToken: true },
     });
     if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
-    const columnCount = await prisma.marksheetExamColumn.count({
+    const columnCount = await academicDb().marksheetExamColumn.count({
       where: { marksheetId, institutionId },
     });
     if (columnCount === 0) {
@@ -1511,12 +1514,12 @@ export async function publishMarksheet(
       return;
     }
 
-    await prisma.marksheet.update({
+    await academicDb().marksheet.update({
       where: { id: marksheetId },
       data: { status: "PUBLISHED" },
     });
 
-    const pubDivision = await prisma.division.findFirst({
+    const pubDivision = await academicDb().division.findFirst({
       where: { id: marksheet.divisionId, institutionId },
       select: { name: true, standard: { select: { name: true } } },
     });

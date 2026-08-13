@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
 import { BadRequestError } from "../../utils/errors";
 import { redis, isRedisReady } from "../../utils/redis";
 import { getRate, PLAN_AI_TOKENS } from "../../services/billing.service";
@@ -67,10 +68,10 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
           select: { id: true, name: true, type: true, status: true, logoUrl: true, createdAt: true, adminPrefix: true },
         }),
         prisma.user.count({ where: { institutionId } }),
-        prisma.teacher.count({ where: { institutionId } }),
-        prisma.student.count({ where: { institutionId } }),
+        academicDb().teacher.count({ where: { institutionId } }),
+        academicDb().student.count({ where: { institutionId } }),
         prisma.user.count({ where: { institutionId, role: { in: ["ADMIN", "SUB_ADMIN"] } } }),
-        prisma.standard.count({ where: { institutionId } }),
+        academicDb().standard.count({ where: { institutionId } }),
         prisma.subscription.findUnique({
           where: { institutionId },
           include: { plan: { select: { name: true } } },

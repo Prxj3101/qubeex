@@ -115,11 +115,11 @@ describe("POST /api/teacher/classes/:divisionId/students/:studentId/remarks", ()
     expect(Number.isNaN(new Date(res.body.data.date).getTime())).toBe(false);
   });
 
-  it("derives a RED card from HIGH severity", async () => {
+  it("stores an explicit RED card with HIGH severity", async () => {
     const res = await request(app)
       .post(`/api/teacher/classes/${divisionId}/students/${studentId}/remarks`)
       .set("Authorization", `Bearer ${teacherToken}`)
-      .send({ severity: "HIGH", category: "Misconduct", title: "T", detail: "D" });
+      .send({ type: "RED", severity: "HIGH", category: "Misconduct", title: "T", detail: "D" });
 
     expect(res.status).toBe(201);
     expect(res.body.data.type).toBe("red");

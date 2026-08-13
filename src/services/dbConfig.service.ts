@@ -2,6 +2,7 @@ import { Client as PgClient } from "pg";
 import { prisma } from "../utils/prisma";
 import { logAudit } from "./audit.service";
 import { encryptSecret, decryptSecret, isEncryptionConfigured } from "./crypto.service";
+import { provisionTenant, evictTenantClient, invalidateConfigCache } from "./tenantDb.service";
 import { BadRequestError, NotFoundError } from "../utils/errors";
 
 export type DbEngine = "POSTGRES" | "MYSQL" | "SQLSERVER";
@@ -176,6 +177,8 @@ export const saveDbConfig = async (
       details: `${institution.name} set to QubeEx managed database`,
       metadata: { mode: "MANAGED" },
     });
+    await invalidateConfigCache(institutionId);
+    await evictTenantClient(institutionId);
     return toSanitized(saved);
   }
 
@@ -231,11 +234,30 @@ export const saveDbConfig = async (
     ...(passwordFields ?? {}),
   };
 
-  const saved = await prisma.institutionDbConfig.upsert({
+  let saved = await prisma.institutionDbConfig.upsert({
     where: { institutionId },
     create: { institutionId, ...baseData },
     update: baseData,
   });
+
+  // Config changed — drop cached config + tenant client so the next request rebuilds.
+  await invalidateConfigCache(institutionId);
+  await evictTenantClient(institutionId);
+
+  // On a successful connection, provision the academic tables in the tenant DB.
+  let provisionError: string | undefined;
+  if (test.ok) {
+    const provision = await provisionTenant(institutionId);
+    if (!provision.ok) {
+      provisionError = provision.error;
+      saved = await prisma.institutionDbConfig.update({
+        where: { institutionId },
+        data: { status: "FAILED", lastError: `Provisioning failed: ${provision.error}` },
+      });
+    } else {
+      saved = await prisma.institutionDbConfig.findUniqueOrThrow({ where: { institutionId } });
+    }
+  }
 
   logAudit("INSTITUTION_DB_CONFIG_UPDATED", {
     userId: actorId,
@@ -247,7 +269,7 @@ export const saveDbConfig = async (
     metadata: { mode: "BYOD", engine: input.engine, host: input.host, status: baseData.status },
   });
 
-  return { ...toSanitized(saved), test };
+  return { ...toSanitized(saved), test: { ...test, ...(provisionError ? { error: provisionError, ok: false } : {}) } };
 };
 
 // Test the currently-stored config (uses decrypted stored credentials) + persist status.

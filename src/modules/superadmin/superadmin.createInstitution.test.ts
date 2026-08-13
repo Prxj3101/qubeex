@@ -33,10 +33,6 @@ describe("POST /superadmin/institutions — abbreviation-driven codes", () => {
       if (!id) continue;
       await prisma.invite.deleteMany({ where: { institutionId: id } });
       await prisma.subscription.deleteMany({ where: { institutionId: id } });
-      // UserStatusEvent FK-restricts on userId, so it must go before the
-      // users it references — otherwise institution.delete below fails
-      // silently (caught below) and leaves this test's institution orphaned
-      // in the shared dev DB on every run.
       await prisma.userStatusEvent.deleteMany({ where: { institutionId: id } });
       await prisma.user.deleteMany({ where: { institutionId: id } });
       await prisma.institution.delete({ where: { id } }).catch(() => {});
@@ -79,7 +75,7 @@ describe("POST /superadmin/institutions — abbreviation-driven codes", () => {
     expect(institution.establishedOn).toBe("1995-06-01");
 
     const admin = await prisma.user.findFirst({ where: { institutionId: createdInstitutionId, role: "ADMIN" } });
-    expect(admin?.displayId).toBe(`${abbreviation}-01A${String(year).slice(-2)}-0001`);
+    expect(admin?.displayId).toBe(`${abbreviation}-01A${yy}-0001`);
   });
 
   it("rejects an abbreviation that isn't exactly 4 alphanumeric characters", async () => {

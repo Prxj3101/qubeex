@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
@@ -55,7 +56,7 @@ export const listStandards = async (req: AuthRequest, res: Response, next: NextF
   try {
     const institutionId = requireInstitution(req);
 
-    const standards = await prisma.standard.findMany({
+    const standards = await academicDb().standard.findMany({
       where: { institutionId },
       orderBy: { order: "asc" },
       include: {
@@ -66,9 +67,7 @@ export const listStandards = async (req: AuthRequest, res: Response, next: NextF
             divisionSubjects: { select: { subjectId: true } },
             assignments: {
               include: {
-                teacher: {
-                  include: { user: { select: { id: true, name: true } } },
-                },
+                teacher: true,
                 subject: true,
               },
             },
@@ -78,10 +77,20 @@ export const listStandards = async (req: AuthRequest, res: Response, next: NextF
       },
     });
 
+    // Teacher names are central (Teacher may be in a tenant DB under BYOD).
+    const teacherUserIds = standards.flatMap((s) =>
+      s.divisions.flatMap((d) => d.assignments.map((a) => a.teacher.userId))
+    );
+    const users = await resolveUsers(teacherUserIds, { id: true, name: true });
+
     const data = standards.map((standard) => ({
       ...standard,
       divisions: standard.divisions.map((division) => ({
         ...division,
+        assignments: division.assignments.map((a) => {
+          const u = users.get(a.teacher.userId);
+          return { ...a, teacher: { ...a.teacher, user: u ? { id: u.id, name: u.name } : null } };
+        }),
         studentCount: division._count.students,
       })),
     }));
@@ -97,16 +106,19 @@ export const createStandard = async (req: AuthRequest, res: Response, next: Next
     const institutionId = requireInstitution(req);
     const data = createStandardSchema.parse(req.body);
 
-    const existing = await prisma.standard.findUnique({
+    const existing = await academicDb().standard.findUnique({
       where: { institutionId_name: { institutionId, name: data.name } },
     });
     if (existing) throw new BadRequestError("A standard with this name already exists");
 
-    const standard = await prisma.standard.create({
+    const standard = await academicDb().standard.create({
       data: { institutionId, ...data, order: data.order ?? 0 },
     });
 
-    res.status(201).json({ success: true, data: standard });
+    // A brand-new standard has no subjects/divisions yet — the frontend appends
+    // this response directly into the same list `listStandards` populates, so
+    // the shape must match (it reads std.subjects / std.divisions unguarded).
+    res.status(201).json({ success: true, data: { ...standard, subjects: [], divisions: [] } });
     logAudit("CLASS_CREATED", {
       userId: req.user!.userId,
       actorRole: req.user!.role,
@@ -126,17 +138,17 @@ export const updateStandard = async (req: AuthRequest, res: Response, next: Next
     const id = req.params.id as string;
     const data = updateStandardSchema.parse(req.body);
 
-    const standard = await prisma.standard.findFirst({ where: { id, institutionId } });
+    const standard = await academicDb().standard.findFirst({ where: { id, institutionId } });
     if (!standard) throw new NotFoundError("Standard not found");
 
     if (data.name && data.name !== standard.name) {
-      const existing = await prisma.standard.findUnique({
+      const existing = await academicDb().standard.findUnique({
         where: { institutionId_name: { institutionId, name: data.name } },
       });
       if (existing) throw new BadRequestError("A standard with this name already exists");
     }
 
-    const updated = await prisma.standard.update({ where: { id }, data });
+    const updated = await academicDb().standard.update({ where: { id }, data });
     res.json({ success: true, data: updated });
     logAudit("CLASS_UPDATED", {
       userId: req.user!.userId,
@@ -156,10 +168,10 @@ export const deleteStandard = async (req: AuthRequest, res: Response, next: Next
     const institutionId = requireInstitution(req);
     const id = req.params.id as string;
 
-    const standard = await prisma.standard.findFirst({ where: { id, institutionId } });
+    const standard = await academicDb().standard.findFirst({ where: { id, institutionId } });
     if (!standard) throw new NotFoundError("Standard not found");
 
-    await prisma.standard.delete({ where: { id } });
+    await academicDb().standard.delete({ where: { id } });
     res.json({ success: true });
     logAudit("CLASS_DELETED", {
       userId: req.user!.userId,
@@ -182,15 +194,15 @@ export const createDivision = async (req: AuthRequest, res: Response, next: Next
     const standardId = req.params.standardId as string;
     const data = createDivisionSchema.parse(req.body);
 
-    const standard = await prisma.standard.findFirst({ where: { id: standardId, institutionId } });
+    const standard = await academicDb().standard.findFirst({ where: { id: standardId, institutionId } });
     if (!standard) throw new NotFoundError("Standard not found");
 
-    const existing = await prisma.division.findUnique({
+    const existing = await academicDb().division.findUnique({
       where: { standardId_name: { standardId, name: data.name } },
     });
     if (existing) throw new BadRequestError("A division with this name already exists in this standard");
 
-    const division = await prisma.division.create({
+    const division = await academicDb().division.create({
       data: { standardId, institutionId, ...data },
       include: { assignments: true },
     });
@@ -215,17 +227,17 @@ export const updateDivision = async (req: AuthRequest, res: Response, next: Next
     const id = req.params.divisionId as string;
     const data = updateDivisionSchema.parse(req.body);
 
-    const division = await prisma.division.findFirst({ where: { id, institutionId } });
+    const division = await academicDb().division.findFirst({ where: { id, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
     if (data.name && data.name !== division.name) {
-      const existing = await prisma.division.findUnique({
+      const existing = await academicDb().division.findUnique({
         where: { standardId_name: { standardId: division.standardId, name: data.name } },
       });
       if (existing) throw new BadRequestError("A division with this name already exists in this standard");
     }
 
-    const updated = await prisma.division.update({ where: { id }, data });
+    const updated = await academicDb().division.update({ where: { id }, data });
     res.json({ success: true, data: updated });
     logAudit("CLASS_UPDATED", {
       userId: req.user!.userId,
@@ -245,10 +257,10 @@ export const deleteDivision = async (req: AuthRequest, res: Response, next: Next
     const institutionId = requireInstitution(req);
     const id = req.params.divisionId as string;
 
-    const division = await prisma.division.findFirst({ where: { id, institutionId } });
+    const division = await academicDb().division.findFirst({ where: { id, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
-    await prisma.division.delete({ where: { id } });
+    await academicDb().division.delete({ where: { id } });
     res.json({ success: true });
     logAudit("CLASS_DELETED", {
       userId: req.user!.userId,
@@ -271,17 +283,17 @@ export const createSubject = async (req: AuthRequest, res: Response, next: NextF
     const standardId = req.params.standardId as string;
     const data = createSubjectSchema.parse(req.body);
 
-    const standard = await prisma.standard.findFirst({ where: { id: standardId, institutionId } });
+    const standard = await academicDb().standard.findFirst({ where: { id: standardId, institutionId } });
     if (!standard) throw new NotFoundError("Standard not found");
 
-    const existing = await prisma.subject.findUnique({
+    const existing = await academicDb().subject.findUnique({
       where: { standardId_name: { standardId, name: data.name } },
     });
     if (existing) throw new BadRequestError("A subject with this name already exists in this standard");
 
-    const siblingCount = await prisma.subject.count({ where: { standardId } });
+    const siblingCount = await academicDb().subject.count({ where: { standardId } });
 
-    const subject = await prisma.subject.create({
+    const subject = await academicDb().subject.create({
       data: {
         standardId,
         institutionId,
@@ -311,17 +323,17 @@ export const updateSubject = async (req: AuthRequest, res: Response, next: NextF
     const id = req.params.subjectId as string;
     const data = updateSubjectSchema.parse(req.body);
 
-    const subject = await prisma.subject.findFirst({ where: { id, institutionId } });
+    const subject = await academicDb().subject.findFirst({ where: { id, institutionId } });
     if (!subject) throw new NotFoundError("Subject not found");
 
     if (data.name && data.name !== subject.name) {
-      const existing = await prisma.subject.findUnique({
+      const existing = await academicDb().subject.findUnique({
         where: { standardId_name: { standardId: subject.standardId, name: data.name } },
       });
       if (existing) throw new BadRequestError("A subject with this name already exists in this standard");
     }
 
-    const updated = await prisma.subject.update({ where: { id }, data });
+    const updated = await academicDb().subject.update({ where: { id }, data });
     res.json({ success: true, data: updated });
     logAudit("SUBJECT_UPDATED", {
       userId: req.user!.userId,
@@ -342,10 +354,10 @@ export const reorderSubjects = async (req: AuthRequest, res: Response, next: Nex
     const standardId = req.params.standardId as string;
     const { orderedIds } = reorderSubjectsSchema.parse(req.body);
 
-    const standard = await prisma.standard.findFirst({ where: { id: standardId, institutionId } });
+    const standard = await academicDb().standard.findFirst({ where: { id: standardId, institutionId } });
     if (!standard) throw new NotFoundError("Standard not found");
 
-    const subjects = await prisma.subject.findMany({ where: { standardId, institutionId } });
+    const subjects = await academicDb().subject.findMany({ where: { standardId, institutionId } });
     const subjectIds = new Set(subjects.map((s) => s.id));
     if (orderedIds.length !== subjects.length || !orderedIds.every((id) => subjectIds.has(id))) {
       throw new BadRequestError("orderedIds must include every subject in this standard exactly once");
@@ -355,13 +367,13 @@ export const reorderSubjects = async (req: AuthRequest, res: Response, next: Nex
     // position — position 1 is always the first palette color, etc. Deleting
     // a subject never renumbers its surviving siblings (see deleteSubject),
     // so this only ever runs on an explicit, user-initiated reorder.
-    await prisma.$transaction(
+    await academicDb().$transaction(
       orderedIds.map((id, index) =>
-        prisma.subject.update({ where: { id }, data: { order: index, color: assignSubjectColor(index) } })
+        academicDb().subject.update({ where: { id }, data: { order: index, color: assignSubjectColor(index) } })
       )
     );
 
-    const updated = await prisma.subject.findMany({ where: { standardId }, orderBy: { order: "asc" } });
+    const updated = await academicDb().subject.findMany({ where: { standardId }, orderBy: { order: "asc" } });
     res.json({ success: true, data: updated });
     logAudit("SUBJECT_UPDATED", {
       userId: req.user!.userId,
@@ -381,13 +393,13 @@ export const deleteSubject = async (req: AuthRequest, res: Response, next: NextF
     const institutionId = requireInstitution(req);
     const id = req.params.subjectId as string;
 
-    const subject = await prisma.subject.findFirst({ where: { id, institutionId } });
+    const subject = await academicDb().subject.findFirst({ where: { id, institutionId } });
     if (!subject) throw new NotFoundError("Subject not found");
 
-    await prisma.$transaction([
-      prisma.divisionAssignment.deleteMany({ where: { subjectId: id } }),
-      prisma.divisionSubject.deleteMany({ where: { subjectId: id } }),
-      prisma.subject.delete({ where: { id } }),
+    await academicDb().$transaction([
+      academicDb().divisionAssignment.deleteMany({ where: { subjectId: id } }),
+      academicDb().divisionSubject.deleteMany({ where: { subjectId: id } }),
+      academicDb().subject.delete({ where: { id } }),
     ]);
     res.json({ success: true });
     logAudit("SUBJECT_DELETED", {
@@ -411,14 +423,14 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
     const divisionId = req.params.divisionId as string;
     const data = assignTeacherSchema.parse(req.body);
 
-    const division = await prisma.division.findFirst({ where: { id: divisionId, institutionId } });
+    const division = await academicDb().division.findFirst({ where: { id: divisionId, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
-    const teacher = await prisma.teacher.findFirst({ where: { id: data.teacherId, institutionId } });
+    const teacher = await academicDb().teacher.findFirst({ where: { id: data.teacherId, institutionId } });
     if (!teacher) throw new NotFoundError("Teacher not found");
 
     if (data.subjectId) {
-      const selected = await prisma.divisionSubject.findUnique({
+      const selected = await academicDb().divisionSubject.findUnique({
         where: { divisionId_subjectId: { divisionId, subjectId: data.subjectId } },
       });
       if (!selected) throw new NotFoundError("Subject is not selected for this division");
@@ -427,7 +439,7 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
     // A teacher can be class teacher (null subjectId) of at most one division —
     // reject if they're already the class teacher elsewhere.
     if (data.subjectId == null) {
-      const existingClassTeacherDivision = await prisma.division.findFirst({
+      const existingClassTeacherDivision = await academicDb().division.findFirst({
         where: { institutionId, classTeacherId: data.teacherId, id: { not: divisionId } },
         select: { name: true, standard: { select: { name: true } } },
       });
@@ -441,34 +453,30 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
     // Upsert: replace existing assignment for this slot
     // findUnique can't handle null in compound unique, so use findFirst
     const subjectId = data.subjectId ?? null;
-    const existing = await prisma.divisionAssignment.findFirst({
+    const existing = await academicDb().divisionAssignment.findFirst({
       where: { divisionId, subjectId },
     });
 
     let assignment;
     if (existing) {
-      assignment = await prisma.divisionAssignment.update({
+      assignment = await academicDb().divisionAssignment.update({
         where: { id: existing.id },
         data: { teacherId: data.teacherId },
-        include: {
-          teacher: { include: { user: { select: { id: true, name: true } } } },
-          subject: true,
-        },
+        include: { teacher: true, subject: true },
       });
     } else {
-      assignment = await prisma.divisionAssignment.create({
+      assignment = await academicDb().divisionAssignment.create({
         data: { divisionId, institutionId, teacherId: data.teacherId, subjectId },
-        include: {
-          teacher: { include: { user: { select: { id: true, name: true } } } },
-          subject: true,
-        },
+        include: { teacher: true, subject: true },
       });
     }
+    const assignTeacherUser = (await resolveUsers([assignment.teacher.userId], { id: true, name: true })).get(assignment.teacher.userId);
+    assignment = { ...assignment, teacher: { ...assignment.teacher, user: assignTeacherUser ?? null } };
 
     // A null subjectId means this is the class-teacher slot — keep the
     // denormalized Division.classTeacherId field in sync with the assignment.
     if (subjectId === null) {
-      await prisma.division.update({
+      await academicDb().division.update({
         where: { id: divisionId },
         data: { classTeacherId: data.teacherId },
       });
@@ -480,7 +488,7 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
       userId: req.user!.userId,
       actorRole: req.user!.role,
       institutionId,
-      details: `Teacher "${assignment.teacher.user.name}" assigned as ${slot} in division "${division.name}"`,
+      details: `Teacher "${assignment.teacher.user?.name}" assigned as ${slot} in division "${division.name}"`,
       category: "ADMIN_ACTION",
       severity: "INFO",
     });
@@ -494,15 +502,15 @@ export const removeAssignment = async (req: AuthRequest, res: Response, next: Ne
     const institutionId = requireInstitution(req);
     const id = req.params.assignmentId as string;
 
-    const assignment = await prisma.divisionAssignment.findFirst({ where: { id, institutionId } });
+    const assignment = await academicDb().divisionAssignment.findFirst({ where: { id, institutionId } });
     if (!assignment) throw new NotFoundError("Assignment not found");
 
-    await prisma.divisionAssignment.delete({ where: { id } });
+    await academicDb().divisionAssignment.delete({ where: { id } });
 
     // Removing the class-teacher slot (null subjectId) must also clear the
     // denormalized Division.classTeacherId, but only if it pointed at this teacher.
     if (assignment.subjectId === null) {
-      await prisma.division.updateMany({
+      await academicDb().division.updateMany({
         where: { id: assignment.divisionId, institutionId, classTeacherId: assignment.teacherId },
         data: { classTeacherId: null },
       });
@@ -530,15 +538,15 @@ export const selectSubject = async (req: AuthRequest, res: Response, next: NextF
     const divisionId = req.params.divisionId as string;
     const subjectId = req.params.subjectId as string;
 
-    const division = await prisma.division.findFirst({ where: { id: divisionId, institutionId } });
+    const division = await academicDb().division.findFirst({ where: { id: divisionId, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
-    const subject = await prisma.subject.findFirst({
+    const subject = await academicDb().subject.findFirst({
       where: { id: subjectId, standardId: division.standardId, institutionId },
     });
     if (!subject) throw new NotFoundError("Subject not found in this standard");
 
-    await prisma.divisionSubject.upsert({
+    await academicDb().divisionSubject.upsert({
       where: { divisionId_subjectId: { divisionId, subjectId } },
       create: { divisionId, subjectId, institutionId },
       update: {},
@@ -556,12 +564,12 @@ export const deselectSubject = async (req: AuthRequest, res: Response, next: Nex
     const divisionId = req.params.divisionId as string;
     const subjectId = req.params.subjectId as string;
 
-    const division = await prisma.division.findFirst({ where: { id: divisionId, institutionId } });
+    const division = await academicDb().division.findFirst({ where: { id: divisionId, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
-    await prisma.divisionSubject.deleteMany({ where: { divisionId, subjectId } });
+    await academicDb().divisionSubject.deleteMany({ where: { divisionId, subjectId } });
     // Also remove any teacher assignment for this subject in this division
-    await prisma.divisionAssignment.deleteMany({ where: { divisionId, subjectId } });
+    await academicDb().divisionAssignment.deleteMany({ where: { divisionId, subjectId } });
 
     res.json({ success: true });
   } catch (err) {
@@ -574,7 +582,7 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
     const institutionId = requireInstitution(req);
     const id = req.params.divisionId as string;
 
-    const division = await prisma.division.findFirst({
+    const division = await academicDb().division.findFirst({
       where: { id, institutionId },
       include: {
         standard: {
@@ -583,9 +591,7 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
         divisionSubjects: { select: { subjectId: true } },
         assignments: {
           include: {
-            teacher: {
-              include: { user: { select: { id: true, name: true } } },
-            },
+            teacher: true,
             subject: true,
           },
         },
@@ -593,12 +599,14 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
     });
     if (!division) throw new NotFoundError("Division not found");
 
+    const divisionTeacherUserMap = await resolveUsers(division.assignments.map((a) => a.teacher.userId), { id: true, name: true });
     const rawUrls = division.assignments.map((a) => a.teacher.avatarUrl);
     const signedMap = await generateSignedAvatarUrlsBatch(rawUrls);
     const assignments = division.assignments.map((a) => ({
       ...a,
       teacher: {
         ...a.teacher,
+        user: divisionTeacherUserMap.get(a.teacher.userId) ?? null,
         avatarUrl: a.teacher.avatarUrl ? (signedMap[a.teacher.avatarUrl] ?? a.teacher.avatarUrl) : null,
       },
     }));

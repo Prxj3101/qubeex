@@ -1,4 +1,4 @@
-import { prisma } from "../utils/prisma";
+import { academicDb } from "../utils/academicContext";
 import { resolveGrade, GradeScaleEntry } from "./gradeScale";
 
 function gradeFor(pct: number | null, scale: GradeScaleEntry[]): string {
@@ -31,13 +31,13 @@ export async function getStudentMarksheetData(
   studentId: string,
   institutionId: string
 ): Promise<StudentMarksheetData | null> {
-  const division = await prisma.division.findFirst({
+  const division = await academicDb().division.findFirst({
     where: { id: divisionId, institutionId },
     select: { standardId: true },
   });
   if (!division) return null;
 
-  const marksheet = await prisma.marksheet.findFirst({
+  const marksheet = await academicDb().marksheet.findFirst({
     where: { divisionId, institutionId, status: "PUBLISHED" },
     orderBy: { academicYear: "desc" },
     select: { id: true, academicYear: true, gradeScale: true },
@@ -47,17 +47,17 @@ export async function getStudentMarksheetData(
   const gradeScale = (marksheet.gradeScale ?? []) as GradeScaleEntry[];
 
   const [subjects, examColumns, scores] = await Promise.all([
-    prisma.subject.findMany({
+    academicDb().subject.findMany({
       where: { standardId: division.standardId, institutionId },
       orderBy: { order: "asc" },
       select: { id: true, name: true, code: true, color: true },
     }),
-    prisma.marksheetExamColumn.findMany({
+    academicDb().marksheetExamColumn.findMany({
       where: { marksheetId: marksheet.id, institutionId },
       orderBy: [{ subjectId: "asc" }, { order: "asc" }],
       select: { id: true, subjectId: true, name: true, maxMarks: true },
     }),
-    prisma.marksheetScore.findMany({
+    academicDb().marksheetScore.findMany({
       where: { marksheetId: marksheet.id, institutionId, studentId },
       select: { examColumnId: true, score: true, isAbsent: true },
     }),
@@ -88,11 +88,11 @@ export async function getStudentMarksheetData(
   const grandPct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
 
   const [allMarksheetScores, classSize] = await Promise.all([
-    prisma.marksheetScore.findMany({
+    academicDb().marksheetScore.findMany({
       where: { marksheetId: marksheet.id, institutionId },
       select: { studentId: true, score: true, isAbsent: true },
     }),
-    prisma.student.count({
+    academicDb().student.count({
       where: { divisionId, institutionId, status: "ACTIVE" },
     }),
   ]);

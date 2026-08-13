@@ -1,6 +1,8 @@
 import { Response, NextFunction, Request } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { getPresenceBatch } from "../../services/presence.service";
@@ -148,40 +150,41 @@ export const listPosts = async (
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(50, parseInt(req.query.limit as string) || 20);
 
-    const [posts, total] = await prisma.$transaction([
-      prisma.staffPost.findMany({
+    const [postsRaw, total] = await prisma.$transaction([
+      academicDb().staffPost.findMany({
         where: { institutionId },
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
         include: {
-          author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } },
           reactions: { select: { userId: true } },
-          comments: {
-            orderBy: { createdAt: "asc" },
-            include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
-          },
+          comments: { orderBy: { createdAt: "asc" } },
         },
       }),
-      prisma.staffPost.count({ where: { institutionId } }),
+      academicDb().staffPost.count({ where: { institutionId } }),
     ]);
 
-    type PostWithTeacher = typeof posts[0];
-    type AuthorWithTeacher = PostWithTeacher['author'];
+    const allAuthorIds = [
+      ...postsRaw.map(p => p.authorId),
+      ...postsRaw.flatMap(p => p.comments.map(c => c.authorId)),
+    ];
+    const authorUserMap = await resolveUsers(allAuthorIds, { id: true, name: true, role: true });
+    const authorOf = (authorId: string) => authorUserMap.get(authorId) ?? { id: authorId, name: null, role: "ADMIN" };
 
+    const posts = postsRaw.map(p => ({
+      ...p,
+      author: authorOf(p.authorId),
+      comments: p.comments.map(c => ({ ...c, author: authorOf(c.authorId) })),
+    }));
+
+    // resolveAuthorDisplay already resolves Teacher avatarUrl (via academicDb().teacher)
+    // for TEACHER authors, and Institution/SubAdmin avatarUrl for the others.
     const allAuthors = [
       ...posts.map(p => p.author),
       ...posts.flatMap(p => p.comments.map(c => c.author)),
     ];
     const displayMap = await resolveAuthorDisplay(allAuthors, institutionId);
-
-    // Admin and Sub-admin avatars are resolved via displayMap (Institution.
-    // adminAvatarUrl / SubAdmin.avatarUrl respectively); Teacher avatars live
-    // on the Teacher row directly (included above).
-    const getRawAvatarUrl = (author: AuthorWithTeacher) =>
-      author.role === "TEACHER"
-        ? (author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null
-        : displayMap.get(author.id)?.avatarUrl ?? null;
+    const getRawAvatarUrl = (author: { id: string }) => displayMap.get(author.id)?.avatarUrl ?? null;
 
     const allRawUrls = [
       ...posts.map(p => getRawAvatarUrl(p.author)),
@@ -215,7 +218,7 @@ export const createPost = async (
     const { institutionId, userId } = requireInstitution(req);
     const data = createPostSchema.parse(req.body);
 
-    const post = await prisma.staffPost.create({
+    const postRaw = await academicDb().staffPost.create({
       data: {
         institutionId,
         authorId: userId,
@@ -225,19 +228,15 @@ export const createPost = async (
         attachmentName: data.attachmentName,
       },
       include: {
-        author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } },
         reactions: { select: { userId: true } },
-        comments: {
-          orderBy: { createdAt: "asc" },
-          include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
-        },
+        comments: { orderBy: { createdAt: "asc" } },
       },
     });
+    const createPostAuthorUserMap = await resolveUsers([postRaw.authorId], { id: true, name: true, role: true });
+    const post = { ...postRaw, author: createPostAuthorUserMap.get(postRaw.authorId) ?? { id: postRaw.authorId, name: null, role: "ADMIN" }, comments: [] as never[] };
 
     const displayMap = await resolveAuthorDisplay([post.author], institutionId);
-    const rawUrl = post.author.role === "TEACHER"
-      ? (post.author as { teacher?: { avatarUrl?: string | null } | null }).teacher?.avatarUrl ?? null
-      : displayMap.get(post.author.id)?.avatarUrl ?? null;
+    const rawUrl = displayMap.get(post.author.id)?.avatarUrl ?? null;
     const signedMap2 = await generateSignedAvatarUrlsBatch([rawUrl]);
     const authorAvatarUrl = rawUrl ? (signedMap2[rawUrl] ?? rawUrl) : null;
 
@@ -256,13 +255,13 @@ export const deletePost = async (
     const { institutionId, userId, role } = requireInstitution(req);
     const id = req.params.id as string;
 
-    const post = await prisma.staffPost.findFirst({ where: { id, institutionId } });
+    const post = await academicDb().staffPost.findFirst({ where: { id, institutionId } });
     if (!post) throw new NotFoundError("Post not found");
     if (post.authorId !== userId && role !== "ADMIN") {
       throw new BadRequestError("You can only delete your own posts");
     }
 
-    await prisma.staffPost.delete({ where: { id } });
+    await academicDb().staffPost.delete({ where: { id } });
 
     // Schedule R2 attachment deletion after grace period
     if (post.attachmentUrl) {
@@ -285,22 +284,22 @@ export const toggleLike = async (
     const { institutionId, userId } = requireInstitution(req);
     const id = req.params.id as string;
 
-    const post = await prisma.staffPost.findFirst({ where: { id, institutionId } });
+    const post = await academicDb().staffPost.findFirst({ where: { id, institutionId } });
     if (!post) throw new NotFoundError("Post not found");
 
-    const existing = await prisma.staffPostReaction.findUnique({
+    const existing = await academicDb().staffPostReaction.findUnique({
       where: { postId_userId: { postId: id, userId } },
     });
 
     if (existing) {
-      await prisma.staffPostReaction.delete({ where: { id: existing.id } });
+      await academicDb().staffPostReaction.delete({ where: { id: existing.id } });
     } else {
-      await prisma.staffPostReaction.create({
+      await academicDb().staffPostReaction.create({
         data: { postId: id, userId, institutionId },
       });
     }
 
-    const likeCount = await prisma.staffPostReaction.count({ where: { postId: id } });
+    const likeCount = await academicDb().staffPostReaction.count({ where: { postId: id } });
     res.json({ success: true, data: { liked: !existing, likeCount } });
   } catch (err) {
     next(err);
@@ -317,16 +316,17 @@ export const addComment = async (
     const id = req.params.id as string;
     const data = createCommentSchema.parse(req.body);
 
-    const post = await prisma.staffPost.findFirst({ where: { id, institutionId } });
+    const post = await academicDb().staffPost.findFirst({ where: { id, institutionId } });
     if (!post) throw new NotFoundError("Post not found");
 
-    const comment = await prisma.staffPostComment.create({
+    const comment = await academicDb().staffPostComment.create({
       data: { postId: id, authorId: userId, institutionId, text: data.text },
-      include: { author: { select: { id: true, name: true, role: true } } },
     });
+    const commentAuthorUserMap = await resolveUsers([comment.authorId], { id: true, name: true, role: true });
+    const commentAuthor = commentAuthorUserMap.get(comment.authorId) ?? { id: comment.authorId, name: null, role: "ADMIN" };
 
-    const displayMap = await resolveAuthorDisplay([comment.author], institutionId);
-    const rawUrl = displayMap.get(comment.author.id)?.avatarUrl ?? null;
+    const displayMap = await resolveAuthorDisplay([commentAuthor], institutionId);
+    const rawUrl = displayMap.get(commentAuthor.id)?.avatarUrl ?? null;
     const signedMap = await generateSignedAvatarUrlsBatch([rawUrl]);
     const avatarUrl = rawUrl ? (signedMap[rawUrl] ?? rawUrl) : null;
 
@@ -337,12 +337,12 @@ export const addComment = async (
         text: comment.text,
         createdAt: comment.createdAt.toISOString(),
         author: {
-          id: comment.author.id,
-          name: comment.author.name ?? "Unknown",
-          role: comment.author.role,
+          id: commentAuthor.id,
+          name: commentAuthor.name ?? "Unknown",
+          role: commentAuthor.role,
           avatarUrl,
-          prefix: displayMap.get(comment.author.id)?.prefix ?? null,
-          title: displayMap.get(comment.author.id)?.title ?? null,
+          prefix: displayMap.get(commentAuthor.id)?.prefix ?? null,
+          title: displayMap.get(commentAuthor.id)?.title ?? null,
         },
       },
     });
@@ -360,7 +360,7 @@ export const deleteComment = async (
     const { institutionId, userId, role } = requireInstitution(req);
     const commentId = req.params.commentId as string;
 
-    const comment = await prisma.staffPostComment.findFirst({
+    const comment = await academicDb().staffPostComment.findFirst({
       where: { id: commentId, institutionId },
     });
     if (!comment) throw new NotFoundError("Comment not found");
@@ -368,7 +368,7 @@ export const deleteComment = async (
       throw new BadRequestError("You can only delete your own comments");
     }
 
-    await prisma.staffPostComment.delete({ where: { id: commentId } });
+    await academicDb().staffPostComment.delete({ where: { id: commentId } });
     res.json({ success: true });
   } catch (err) {
     next(err);
@@ -405,9 +405,8 @@ export const listDmThreads = async (
     if (role === "ADMIN") {
       // Admin sees all teachers + sub-admins
       const [teachers, subAdmins] = await Promise.all([
-        prisma.teacher.findMany({
+        academicDb().teacher.findMany({
           where: { institutionId },
-          include: { user: { select: { id: true, name: true, isActive: true } } },
           orderBy: { createdAt: "asc" },
         }),
         prisma.subAdmin.findMany({
@@ -416,13 +415,14 @@ export const listDmThreads = async (
           orderBy: { createdAt: "asc" },
         }),
       ]);
+      const teacherUsers = await resolveUsers(teachers.map((t) => t.userId), { id: true, name: true, isActive: true });
       contacts = [
         ...teachers.map((t) => ({
           teacherId: t.id,
           contactUserId: t.userId,
-          name: t.user.name ?? "Unknown",
+          name: teacherUsers.get(t.userId)?.name ?? "Unknown",
           avatarUrl: t.avatarUrl,
-          isActive: t.user.isActive,
+          isActive: teacherUsers.get(t.userId)?.isActive ?? false,
           prefix: t.prefix,
           title: t.title,
         })),
@@ -439,9 +439,8 @@ export const listDmThreads = async (
     } else {
       // Teacher sees other teachers (not self) + admin + sub-admin users
       const [teachers, admins, subAdmins] = await Promise.all([
-        prisma.teacher.findMany({
+        academicDb().teacher.findMany({
           where: { institutionId, userId: { not: userId } },
-          include: { user: { select: { id: true, name: true, isActive: true } } },
           orderBy: { createdAt: "asc" },
         }),
         prisma.user.findMany({
@@ -455,6 +454,7 @@ export const listDmThreads = async (
           orderBy: { createdAt: "asc" },
         }),
       ]);
+      const teacherUsers = await resolveUsers(teachers.map((t) => t.userId), { id: true, name: true, isActive: true });
       contacts = [
         ...admins.map((a) => ({
           teacherId: a.id,
@@ -477,9 +477,9 @@ export const listDmThreads = async (
         ...teachers.map((t) => ({
           teacherId: t.id,
           contactUserId: t.userId,
-          name: t.user.name ?? "Unknown",
+          name: teacherUsers.get(t.userId)?.name ?? "Unknown",
           avatarUrl: t.avatarUrl,
-          isActive: t.user.isActive,
+          isActive: teacherUsers.get(t.userId)?.isActive ?? false,
           prefix: t.prefix,
           title: t.title,
         })),
@@ -495,7 +495,7 @@ export const listDmThreads = async (
 
     const threads = await Promise.all(
       contacts.map(async (c) => {
-        const lastMessage = await prisma.staffMessage.findFirst({
+        const lastMessage = await academicDb().staffMessage.findFirst({
           where: {
             institutionId,
             OR: [
@@ -507,7 +507,7 @@ export const listDmThreads = async (
           select: { text: true, attachmentName: true, createdAt: true, senderId: true },
         });
 
-        const unread = await prisma.staffMessage.count({
+        const unread = await academicDb().staffMessage.count({
           where: {
             institutionId,
             senderId: c.contactUserId,
@@ -564,7 +564,7 @@ export const getMessages = async (
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, parseInt(req.query.limit as string) || 50);
 
-    const messages = await prisma.staffMessage.findMany({
+    const messages = await academicDb().staffMessage.findMany({
       where: {
         institutionId,
         OR: [
@@ -588,7 +588,7 @@ export const getMessages = async (
     });
 
     // Mark unread messages from teacher as read
-    await prisma.staffMessage.updateMany({
+    await academicDb().staffMessage.updateMany({
       where: {
         institutionId,
         senderId: teacherUserId,
@@ -637,7 +637,7 @@ export const sendMessage = async (
     });
     if (!contact) throw new NotFoundError("User not found");
 
-    const message = await prisma.staffMessage.create({
+    const message = await academicDb().staffMessage.create({
       data: {
         institutionId,
         senderId: userId,
@@ -684,7 +684,7 @@ export const unsendMessage = async (
     const { institutionId, userId } = requireInstitution(req);
     const messageId = req.params.messageId as string;
 
-    const message = await prisma.staffMessage.findFirst({ where: { id: messageId, institutionId } });
+    const message = await academicDb().staffMessage.findFirst({ where: { id: messageId, institutionId } });
     if (!message) throw new NotFoundError("Message not found");
     if (message.senderId !== userId) {
       throw new BadRequestError("You can only unsend your own messages");
@@ -693,7 +693,7 @@ export const unsendMessage = async (
       throw new BadRequestError("Messages can only be unsent within 1 hour of sending");
     }
 
-    await prisma.staffMessage.delete({ where: { id: messageId } });
+    await academicDb().staffMessage.delete({ where: { id: messageId } });
 
     if (message.attachmentUrl) {
       const key = r2KeyFromUrl(message.attachmentUrl);
@@ -715,7 +715,7 @@ export const markRead = async (
     const { institutionId, userId } = requireInstitution(req);
     const teacherUserId = req.params.teacherUserId as string;
 
-    await prisma.staffMessage.updateMany({
+    await academicDb().staffMessage.updateMany({
       where: {
         institutionId,
         senderId: teacherUserId,

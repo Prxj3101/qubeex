@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
+import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
 import {
   upload,
   uploadAttachment,
@@ -19,7 +20,7 @@ import {
 
 const router = Router();
 
-const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware];
+const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // Upload
 router.post("/upload", ...T, upload.single("file"), uploadAttachment);

@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 
@@ -125,10 +125,10 @@ export const getFeeStructure = async (req: AuthRequest, res: Response, next: Nex
     const { institutionId } = requireInstitution(req);
     const divisionId = req.params.divisionId as string;
 
-    const division = await prisma.division.findFirst({ where: { id: divisionId, institutionId } });
+    const division = await academicDb().division.findFirst({ where: { id: divisionId, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
-    const structure = await (prisma.divisionFeeStructure as any).findFirst({
+    const structure = await (academicDb().divisionFeeStructure as any).findFirst({
       where: { divisionId, institutionId },
     });
 
@@ -140,7 +140,7 @@ export const getFeeStructure = async (req: AuthRequest, res: Response, next: Nex
     }
 
     // No structure — try most recently created as template
-    const template = await (prisma.divisionFeeStructure as any).findFirst({
+    const template = await (academicDb().divisionFeeStructure as any).findFirst({
       where: { institutionId, divisionId: { not: divisionId } },
       orderBy: { createdAt: "desc" },
       include: {
@@ -192,12 +192,12 @@ export const saveFeeStructure = async (req: AuthRequest, res: Response, next: Ne
     const { institutionId } = requireInstitution(req);
     const divisionId = req.params.divisionId as string;
 
-    const division = await prisma.division.findFirst({ where: { id: divisionId, institutionId } });
+    const division = await academicDb().division.findFirst({ where: { id: divisionId, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
     const data = saveFeeStructureSchema.parse(req.body);
 
-    const structure = await (prisma.divisionFeeStructure as any).upsert({
+    const structure = await (academicDb().divisionFeeStructure as any).upsert({
       where: { divisionId },
       create: {
         divisionId,

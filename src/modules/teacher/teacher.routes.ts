@@ -1,7 +1,10 @@
 import { Router, Response, NextFunction } from "express";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
+import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
 import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { generateUserId } from "../../utils/userId";
 import bcrypt from "bcrypt";
 import PDFDocument from "pdfkit";
@@ -172,7 +175,7 @@ import { getProfile, updateProfile, changePassword, getLoginActivity } from "../
 
 const router = Router();
 
-const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware];
+const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // ── Account settings (profile / password / login activity) ────────────────────
 router.get("/profile", ...T, getProfile);
@@ -198,10 +201,9 @@ router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFuncti
   try {
     const { userId, institutionId } = req.user!;
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { userId, institutionId },
       include: {
-        user: { select: { id: true, name: true, email: true } },
         assignments: {
           include: {
             division: { include: { standard: true } },
@@ -216,13 +218,15 @@ router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFuncti
       return;
     }
 
+    const meUserMap = await resolveUsers([teacher.userId], { id: true, name: true, email: true });
+
     let avatarUrl: string | null = teacher.avatarUrl;
     if (avatarUrl) {
       const signed = await generateSignedAvatarUrl(avatarUrl);
       if (signed) avatarUrl = signed;
     }
 
-    res.json({ success: true, data: { ...teacher, avatarUrl } });
+    res.json({ success: true, data: { ...teacher, user: meUserMap.get(teacher.userId) ?? null, avatarUrl } });
   } catch (err) {
     next(err);
   }
@@ -250,7 +254,7 @@ router.patch("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunc
     const { userId, institutionId } = req.user!;
     const data = updateProfileSchema.parse(req.body);
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { userId, institutionId },
       select: { id: true },
     });
@@ -265,11 +269,19 @@ router.patch("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunc
       if (v !== undefined) teacherUpdate[k] = v;
     }
 
-    await prisma.$transaction(async (tx) => {
-      if (name) await tx.user.update({ where: { id: userId }, data: { name } });
+    // User (central) and Teacher (may be tenant, for BYOD) can live in two
+    // different databases, so a single transaction can't span both.
+    const acad = academicDb();
+    if (acad === prisma) {
+      await prisma.$transaction([
+        ...(name ? [prisma.user.update({ where: { id: userId }, data: { name } })] : []),
+        ...(Object.keys(teacherUpdate).length > 0 ? [acad.teacher.update({ where: { id: teacher.id }, data: teacherUpdate })] : []),
+      ]);
+    } else {
+      if (name) await prisma.user.update({ where: { id: userId }, data: { name } });
       if (Object.keys(teacherUpdate).length > 0)
-        await tx.teacher.update({ where: { id: teacher.id }, data: teacherUpdate });
-    });
+        await acad.teacher.update({ where: { id: teacher.id }, data: teacherUpdate });
+    }
 
     res.json({ success: true });
   } catch (err) {
@@ -286,7 +298,7 @@ router.post("/photo", ...T, photoUpload.single("photo"), async (req: AuthRequest
       return;
     }
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { userId, institutionId },
       select: { id: true },
     });
@@ -301,7 +313,7 @@ router.post("/photo", ...T, photoUpload.single("photo"), async (req: AuthRequest
       ownerId: teacher.id,
     });
 
-    await prisma.teacher.update({
+    await academicDb().teacher.update({
       where: { id: teacher.id },
       data: { avatarUrl: publicUrl },
     });
@@ -322,7 +334,7 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
       return;
     }
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { userId, institutionId },
       select: { id: true },
     });
@@ -331,7 +343,7 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
       return;
     }
 
-    const assignments = await prisma.divisionAssignment.findMany({
+    const assignments = await academicDb().divisionAssignment.findMany({
       where: { teacherId: teacher.id, institutionId },
       include: {
         division: {
@@ -340,7 +352,7 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
             _count: { select: { students: { where: { status: "ACTIVE" } } } },
             assignments: {
               include: {
-                teacher: { include: { user: { select: { id: true, name: true } } } },
+                teacher: true,
                 subject: true,
               },
               orderBy: { subject: { order: "asc" } },
@@ -351,6 +363,11 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
       },
       orderBy: { subject: { order: "asc" } },
     });
+
+    const classListTeacherUserMap = await resolveUsers(
+      assignments.flatMap((a) => a.division.assignments.map((da) => da.teacher.userId)),
+      { id: true, name: true }
+    );
 
     const classTeacher = assignments
       .filter((a) => a.subjectId === null)
@@ -366,7 +383,7 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
             id: da.subject!.id,
             name: da.subject!.name,
             color: da.subject!.color,
-            teacherName: da.teacher.user.name,
+            teacherName: classListTeacherUserMap.get(da.teacher.userId)?.name ?? "Unknown",
           })),
       }));
 
@@ -399,7 +416,7 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
     }
     const divisionId = req.params.divisionId as string;
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { userId, institutionId },
       select: { id: true },
     });
@@ -409,7 +426,7 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
     }
 
     // Security gate — teacher must be assigned to this division
-    const hasAssignment = await prisma.divisionAssignment.findFirst({
+    const hasAssignment = await academicDb().divisionAssignment.findFirst({
       where: { divisionId, teacherId: teacher.id, institutionId },
       select: { id: true },
     });
@@ -418,7 +435,7 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
       return;
     }
 
-    const division = await prisma.division.findFirst({
+    const division = await academicDb().division.findFirst({
       where: { id: divisionId, institutionId },
       include: {
         standard: {
@@ -427,7 +444,7 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
         divisionSubjects: { select: { subjectId: true } },
         assignments: {
           include: {
-            teacher: { include: { user: { select: { id: true, name: true } } } },
+            teacher: true,
             subject: true,
           },
         },
@@ -439,12 +456,14 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
       return;
     }
 
+    const detailTeacherUserMap = await resolveUsers(division.assignments.map((a) => a.teacher.userId), { id: true, name: true });
     const rawTeacherAvatarUrls = division.assignments.map((a) => a.teacher.avatarUrl);
     const signedTeacherAvatarMap = await generateSignedAvatarUrlsBatch(rawTeacherAvatarUrls);
     const assignmentsWithAvatars = division.assignments.map((a) => ({
       ...a,
       teacher: {
         ...a.teacher,
+        user: detailTeacherUserMap.get(a.teacher.userId) ?? null,
         avatarUrl: a.teacher.avatarUrl ? (signedTeacherAvatarMap[a.teacher.avatarUrl] ?? a.teacher.avatarUrl) : null,
       },
     }));
@@ -468,7 +487,7 @@ router.get(
       }
       const divisionId = req.params.divisionId as string;
 
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { userId, institutionId },
         select: { id: true },
       });
@@ -478,11 +497,11 @@ router.get(
       }
 
       const [assignment, division] = await Promise.all([
-        prisma.divisionAssignment.findFirst({
+        academicDb().divisionAssignment.findFirst({
           where: { divisionId, teacherId: teacher.id, institutionId },
           select: { id: true },
         }),
-        prisma.division.findFirst({
+        academicDb().division.findFirst({
           where: { id: divisionId, institutionId },
           select: { classTeacherId: true },
         }),
@@ -493,25 +512,22 @@ router.get(
         return;
       }
 
-      const students = await prisma.student.findMany({
+      const students = await academicDb().student.findMany({
         where: { divisionId, institutionId },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              mustChangePassword: true,
-            },
-          },
-        },
         orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+      });
+      const listStudentUserMap = await resolveUsers(students.map((s) => s.userId), {
+        id: true,
+        name: true,
+        email: true,
+        mustChangePassword: true,
       });
 
       // Sign all avatar URLs in one batch call
       const signedMap = await generateSignedAvatarUrlsBatch(students.map(s => s.avatarUrl));
       const data = students.map(s => ({
         ...s,
+        user: listStudentUserMap.get(s.userId) ?? null,
         avatarUrl: s.avatarUrl ? (signedMap[s.avatarUrl] ?? s.avatarUrl) : null,
       }));
 
@@ -535,7 +551,7 @@ router.post(
       }
       const divisionId = req.params.divisionId as string;
 
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { userId, institutionId },
         select: { id: true },
       });
@@ -545,7 +561,7 @@ router.post(
       }
 
       // Only class teacher (subjectId = null) can add students
-      const classAssignment = await prisma.divisionAssignment.findFirst({
+      const classAssignment = await academicDb().divisionAssignment.findFirst({
         where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
         select: { id: true },
       });
@@ -554,7 +570,7 @@ router.post(
         return;
       }
 
-      const division = await prisma.division.findFirst({
+      const division = await academicDb().division.findFirst({
         where: { id: divisionId, institutionId },
         select: { id: true, standardId: true, name: true, standard: { select: { name: true } } },
       });
@@ -566,7 +582,7 @@ router.post(
       const data = addStudentSchema.parse(req.body);
 
       if (data.rollNo && data.rollNo.trim()) {
-        const rollNoConflict = await prisma.student.findFirst({
+        const rollNoConflict = await academicDb().student.findFirst({
           where: {
             divisionId,
             institutionId,
@@ -599,56 +615,56 @@ router.post(
         return;
       }
 
-      const student = await prisma.$transaction(async (tx) => {
-        const newUser = await tx.user.create({
-          data: {
-            name: data.name,
-            email,
-            password: hashedPassword,
-            role: "STUDENT",
-            institutionId,
-            isActive: true,
-            mustChangePassword: true,
-          },
-        });
-        await recordUserStatusEvent(tx, { userId: newUser.id, institutionId, isActive: true });
-
-        return tx.student.create({
-          data: {
-            studentId,
-            userId: newUser.id,
-            institutionId,
-            standardId: division.standardId,
-            divisionId,
-            phone: data.phone,
-            dob: data.dob,
-            gender: data.gender,
-            rollNo: data.rollNo,
-            houseColor: data.houseColor,
-            bloodGroup: data.bloodGroup,
-            religion: data.religion,
-            category: data.category,
-            address: data.address,
-            city: data.city,
-            state: data.state,
-            pincode: data.pincode,
-            country: data.country ?? "India",
-            guardians: data.guardians ?? undefined,
-            tempPassword: plainPassword,
-            joinedAt: data.admissionDate ? new Date(data.admissionDate) : new Date(),
-          },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                mustChangePassword: true,
-              },
-            },
-          },
-        });
+      // User (central) is always required before Student can reference its userId;
+      // Student itself may live in the tenant DB (BYOD), so the two creates can't
+      // share one transaction across databases. Managed institutions still get a
+      // single atomic transaction since academicDb() === prisma there.
+      const studentCreateData = (newUserId: string) => ({
+        studentId,
+        userId: newUserId,
+        institutionId,
+        standardId: division.standardId,
+        divisionId,
+        phone: data.phone,
+        dob: data.dob,
+        gender: data.gender,
+        rollNo: data.rollNo,
+        houseColor: data.houseColor,
+        bloodGroup: data.bloodGroup,
+        religion: data.religion,
+        category: data.category,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        pincode: data.pincode,
+        country: data.country ?? "India",
+        guardians: data.guardians ?? undefined,
+        tempPassword: plainPassword,
+        joinedAt: data.admissionDate ? new Date(data.admissionDate) : new Date(),
       });
+
+      const acad = academicDb();
+      let student;
+      if (acad === prisma) {
+        student = await prisma.$transaction(async (tx) => {
+          const newUser = await tx.user.create({
+            data: { name: data.name, email, password: hashedPassword, role: "STUDENT", institutionId, isActive: true, mustChangePassword: true },
+          });
+          await recordUserStatusEvent(tx, { userId: newUser.id, institutionId, isActive: true });
+          return tx.student.create({ data: studentCreateData(newUser.id) });
+        });
+      } else {
+        const newUser = await prisma.$transaction(async (tx) => {
+          const u = await tx.user.create({
+            data: { name: data.name, email, password: hashedPassword, role: "STUDENT", institutionId, isActive: true, mustChangePassword: true },
+          });
+          await recordUserStatusEvent(tx, { userId: u.id, institutionId, isActive: true });
+          return u;
+        });
+        student = await acad.student.create({ data: studentCreateData(newUser.id) });
+      }
+      const createdStudentUserMap = await resolveUsers([student.userId], { id: true, name: true, email: true, mustChangePassword: true });
+      student = { ...student, user: createdStudentUserMap.get(student.userId) ?? null };
 
       logAudit("STUDENT_ADDED", {
         userId,
@@ -678,7 +694,7 @@ router.get(
       const divisionId = req.params.divisionId as string;
       const format = (req.query.format as string) ?? "pdf";
 
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { userId, institutionId },
         select: { id: true },
       });
@@ -687,7 +703,7 @@ router.get(
         return;
       }
 
-      const hasAssignment = await prisma.divisionAssignment.findFirst({
+      const hasAssignment = await academicDb().divisionAssignment.findFirst({
         where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
         select: { id: true },
       });
@@ -696,18 +712,25 @@ router.get(
         return;
       }
 
-      const division = await prisma.division.findFirst({
+      const division = await academicDb().division.findFirst({
         where: { id: divisionId, institutionId },
         include: { standard: true },
       });
 
-      const students = await prisma.student.findMany({
+      const exportStudentsRaw = await academicDb().student.findMany({
         where: { divisionId, institutionId },
-        include: {
-          user: { select: { name: true, email: true, mustChangePassword: true } },
-        },
         orderBy: { joinedAt: "asc" },
       });
+      const exportUserMap = await resolveUsers(exportStudentsRaw.map((s) => s.userId), {
+        id: true,
+        name: true,
+        email: true,
+        mustChangePassword: true,
+      });
+      const students = exportStudentsRaw.map((s) => ({
+        ...s,
+        user: exportUserMap.get(s.userId) ?? { id: s.userId, name: null, email: "", mustChangePassword: false },
+      }));
 
       const divisionLabel = division
         ? `${division.standard.name} - ${division.name}`
@@ -811,7 +834,7 @@ router.patch(
       const divisionId = req.params.divisionId as string;
       const studentId = req.params.studentId as string;
 
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { userId, institutionId },
         select: { id: true },
       });
@@ -820,7 +843,7 @@ router.patch(
         return;
       }
 
-      const classAssignment = await prisma.divisionAssignment.findFirst({
+      const classAssignment = await academicDb().divisionAssignment.findFirst({
         where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
         select: { id: true },
       });
@@ -829,7 +852,7 @@ router.patch(
         return;
       }
 
-      const student = await prisma.student.findFirst({
+      const student = await academicDb().student.findFirst({
         where: { id: studentId, divisionId, institutionId },
         select: { id: true, userId: true },
       });
@@ -842,7 +865,7 @@ router.patch(
       const { name, email, guardians, ...studentFields } = data;
 
       if (data.rollNo && data.rollNo.trim()) {
-        const rollNoConflict = await prisma.student.findFirst({
+        const rollNoConflict = await academicDb().student.findFirst({
           where: {
             divisionId,
             institutionId,
@@ -869,36 +892,35 @@ router.patch(
         }
       }
 
-      await prisma.$transaction(async (tx) => {
+      const studentUpdateData = {
+        ...studentFields,
+        ...(guardians !== undefined
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ? { guardians: guardians === null ? null : (guardians as any) }
+          : {}),
+      };
+      const acadUpd = academicDb();
+      if (acadUpd === prisma) {
+        await prisma.$transaction([
+          ...(name || email ? [prisma.user.update({ where: { id: student.userId }, data: { ...(name && { name }), ...(email && { email }) } })] : []),
+          acadUpd.student.update({ where: { id: student.id }, data: studentUpdateData }),
+        ]);
+      } else {
         if (name || email) {
-          await tx.user.update({ where: { id: student.userId }, data: { ...(name && { name }), ...(email && { email }) } });
+          await prisma.user.update({ where: { id: student.userId }, data: { ...(name && { name }), ...(email && { email }) } });
         }
-        await tx.student.update({
-          where: { id: student.id },
-          data: {
-            ...studentFields,
-            ...(guardians !== undefined
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ? { guardians: guardians === null ? null : (guardians as any) }
-              : {}),
-          },
-        });
-      });
+        await acadUpd.student.update({ where: { id: student.id }, data: studentUpdateData });
+      }
 
-      const updated = await prisma.student.findFirst({
-        where: { id: studentId as string },
-        include: {
-          user: {
-            select: { id: true, name: true, email: true, mustChangePassword: true },
-          },
-        },
-      });
+      const updatedRow = await academicDb().student.findFirst({ where: { id: studentId as string } });
+      const updatedUserMap = updatedRow ? await resolveUsers([updatedRow.userId], { id: true, name: true, email: true, mustChangePassword: true }) : new Map();
+      const updated = updatedRow ? { ...updatedRow, user: updatedUserMap.get(updatedRow.userId) ?? null } : null;
 
       logAudit("STUDENT_UPDATED", {
         userId,
         actorRole: "TEACHER",
         institutionId,
-        details: `Updated student ${updated?.user.name ?? studentId}`,
+        details: `Updated student ${updated?.user?.name ?? studentId}`,
       });
 
       res.json({ success: true, data: updated });
@@ -928,7 +950,7 @@ router.patch(
         return;
       }
 
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { userId, institutionId },
         select: { id: true },
       });
@@ -937,7 +959,7 @@ router.patch(
         return;
       }
 
-      const classAssignment = await prisma.divisionAssignment.findFirst({
+      const classAssignment = await academicDb().divisionAssignment.findFirst({
         where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
         select: { id: true },
       });
@@ -946,7 +968,7 @@ router.patch(
         return;
       }
 
-      const student = await prisma.student.findFirst({
+      const student = await academicDb().student.findFirst({
         where: { id: studentId, divisionId, institutionId },
         select: { id: true, userId: true },
       });
@@ -955,14 +977,20 @@ router.patch(
         return;
       }
 
-      await prisma.$transaction(async (tx) => {
-        await tx.student.update({ where: { id: student.id }, data: { status } });
-        await tx.user.update({
-          where: { id: student.userId },
-          data: { isActive: status === "ACTIVE" },
+      const acadStatus = academicDb();
+      if (acadStatus === prisma) {
+        await prisma.$transaction(async (tx) => {
+          await tx.student.update({ where: { id: student.id }, data: { status } });
+          await tx.user.update({ where: { id: student.userId }, data: { isActive: status === "ACTIVE" } });
+          await recordUserStatusEvent(tx, { userId: student.userId, institutionId, isActive: status === "ACTIVE" });
         });
-        await recordUserStatusEvent(tx, { userId: student.userId, institutionId, isActive: status === "ACTIVE" });
-      });
+      } else {
+        await acadStatus.student.update({ where: { id: student.id }, data: { status } });
+        await prisma.$transaction(async (tx) => {
+          await tx.user.update({ where: { id: student.userId }, data: { isActive: status === "ACTIVE" } });
+          await recordUserStatusEvent(tx, { userId: student.userId, institutionId, isActive: status === "ACTIVE" });
+        });
+      }
 
       const statusUser = await prisma.user.findUnique({ where: { id: student.userId }, select: { name: true } });
       logAudit(status === "ACTIVE" ? "STUDENT_ACTIVATED" : "STUDENT_DEACTIVATED", {
@@ -993,7 +1021,7 @@ router.post(
       const divisionId = req.params.divisionId as string;
       const studentId = req.params.studentId as string;
 
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { userId, institutionId },
         select: { id: true },
       });
@@ -1002,7 +1030,7 @@ router.post(
         return;
       }
 
-      const classAssignment = await prisma.divisionAssignment.findFirst({
+      const classAssignment = await academicDb().divisionAssignment.findFirst({
         where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
         select: { id: true },
       });
@@ -1011,7 +1039,7 @@ router.post(
         return;
       }
 
-      const student = await prisma.student.findFirst({
+      const student = await academicDb().student.findFirst({
         where: { id: studentId, divisionId, institutionId },
         select: { id: true, userId: true },
       });
@@ -1023,16 +1051,16 @@ router.post(
       const plainPassword = generateStudentPassword();
       const hashedPassword = await bcrypt.hash(plainPassword, BCRYPT_ROUNDS);
 
-      await prisma.$transaction(async (tx) => {
-        await tx.user.update({
-          where: { id: student.userId },
-          data: { password: hashedPassword, mustChangePassword: true },
-        });
-        await tx.student.update({
-          where: { id: student.id },
-          data: { tempPassword: plainPassword },
-        });
-      });
+      const acadReset = academicDb();
+      if (acadReset === prisma) {
+        await prisma.$transaction([
+          prisma.user.update({ where: { id: student.userId }, data: { password: hashedPassword, mustChangePassword: true } }),
+          acadReset.student.update({ where: { id: student.id }, data: { tempPassword: plainPassword } }),
+        ]);
+      } else {
+        await prisma.user.update({ where: { id: student.userId }, data: { password: hashedPassword, mustChangePassword: true } });
+        await acadReset.student.update({ where: { id: student.id }, data: { tempPassword: plainPassword } });
+      }
 
       res.json({ success: true, data: { newTempPassword: plainPassword } });
     } catch (err) {
@@ -1124,13 +1152,13 @@ async function assertDivisionAccess(
   institutionId: string,
   divisionId: string
 ): Promise<string> {
-  const teacher = await prisma.teacher.findFirst({
+  const teacher = await academicDb().teacher.findFirst({
     where: { userId, institutionId },
     select: { id: true },
   });
   if (!teacher) throw { status: 404, message: "Teacher profile not found" };
 
-  const assignment = await prisma.divisionAssignment.findFirst({
+  const assignment = await academicDb().divisionAssignment.findFirst({
     where: { divisionId, teacherId: teacher.id, institutionId },
     select: { id: true },
   });
@@ -1145,13 +1173,13 @@ async function assertClassTeacher(
   institutionId: string,
   divisionId: string
 ): Promise<string> {
-  const teacher = await prisma.teacher.findFirst({
+  const teacher = await academicDb().teacher.findFirst({
     where: { userId, institutionId },
     select: { id: true },
   });
   if (!teacher) throw { status: 404, message: "Teacher profile not found" };
 
-  const assignment = await prisma.divisionAssignment.findFirst({
+  const assignment = await academicDb().divisionAssignment.findFirst({
     where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
     select: { id: true },
   });
@@ -1171,7 +1199,7 @@ router.get(
       const divisionId = req.params.divisionId as string;
       await assertDivisionAccess(userId, institutionId, divisionId);
 
-      const holidays = await prisma.schoolHoliday.findMany({
+      const holidays = await academicDb().schoolHoliday.findMany({
         where: { institutionId },
         select: { date: true, name: true },
         orderBy: { date: "asc" },
@@ -1202,9 +1230,9 @@ router.post(
       }).parse(req.body);
 
       if (name === null) {
-        await prisma.schoolHoliday.deleteMany({ where: { institutionId, date } });
+        await academicDb().schoolHoliday.deleteMany({ where: { institutionId, date } });
       } else {
-        await prisma.schoolHoliday.upsert({
+        await academicDb().schoolHoliday.upsert({
           where: { institutionId_date: { institutionId, date } },
           create: { institutionId, date, name },
           update: { name },
@@ -1233,11 +1261,11 @@ router.get(
       const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).parse(req.query.date as string);
 
       const [records, dayNote] = await Promise.all([
-        prisma.attendance.findMany({
+        academicDb().attendance.findMany({
           where: { divisionId, institutionId, date },
           select: { studentId: true, status: true, remark: true },
         }),
-        prisma.attendanceDayNote.findUnique({
+        academicDb().attendanceDayNote.findUnique({
           where: { divisionId_date: { divisionId, date } },
           select: { note: true },
         }),
@@ -1296,7 +1324,7 @@ router.post(
         }
       });
 
-      const attDivision = await prisma.division.findFirst({
+      const attDivision = await academicDb().division.findFirst({
         where: { id: divisionId, institutionId },
         select: { name: true, standard: { select: { name: true } } },
       });
@@ -1331,7 +1359,7 @@ router.get(
       const dateStart = `${month}-01`;
       const dateEnd = `${month}-31`;
 
-      const records = await prisma.attendance.findMany({
+      const records = await academicDb().attendance.findMany({
         where: { divisionId, institutionId, date: { gte: dateStart, lte: dateEnd } },
         select: { studentId: true, date: true, status: true, remark: true },
       });
@@ -1366,20 +1394,20 @@ router.get(
       const sessionEnd = `${startYear + 1}-05-31`;
 
       const [students, allRecords, holidays] = await Promise.all([
-        prisma.student.findMany({
+        academicDb().student.findMany({
           where: { divisionId, institutionId },
-          include: { user: { select: { name: true } } },
           orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
         }),
-        prisma.attendance.findMany({
+        academicDb().attendance.findMany({
           where: { divisionId, institutionId, date: { gte: sessionStart, lte: sessionEnd } },
           select: { studentId: true, date: true, status: true },
         }),
-        prisma.schoolHoliday.findMany({
+        academicDb().schoolHoliday.findMany({
           where: { institutionId, date: { gte: sessionStart, lte: sessionEnd } },
           select: { date: true },
         }),
       ]);
+      const cumulativeUserMap = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
 
       // A date later declared a holiday must not count toward attendance %,
       // even if a record was marked before the holiday was declared — this
@@ -1441,7 +1469,7 @@ router.get(
 
         return {
           studentId: s.id,
-          name: s.user.name,
+          name: cumulativeUserMap.get(s.userId)?.name ?? null,
           rollNo: s.rollNo ?? "",
           avatarUrl: s.avatarUrl,
           overallPct,
@@ -1521,7 +1549,7 @@ router.get(
         dateFilter = { gte: `${year}-01-01`, lte: `${year}-12-31` };
       }
 
-      const records = await prisma.attendance.findMany({
+      const records = await academicDb().attendance.findMany({
         where: {
           divisionId,
           institutionId,
@@ -1583,19 +1611,19 @@ router.post(
 
       if (!req.file) { res.status(400).json({ success: false, error: "No photo file provided" }); return; }
 
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { userId, institutionId },
         select: { id: true },
       });
       if (!teacher) { res.status(404).json({ success: false, error: "Teacher profile not found" }); return; }
 
-      const classAssignment = await prisma.divisionAssignment.findFirst({
+      const classAssignment = await academicDb().divisionAssignment.findFirst({
         where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
         select: { id: true },
       });
       if (!classAssignment) { res.status(403).json({ success: false, error: "Only class teacher can update student photos" }); return; }
 
-      const student = await prisma.student.findFirst({
+      const student = await academicDb().student.findFirst({
         where: { id: studentId, divisionId, institutionId },
         select: { id: true },
       });
@@ -1607,7 +1635,7 @@ router.post(
         ownerId: student.id,
       });
 
-      await prisma.student.update({ where: { id: student.id }, data: { avatarUrl: publicUrl } });
+      await academicDb().student.update({ where: { id: student.id }, data: { avatarUrl: publicUrl } });
 
       const signedUrl = (await generateSignedAvatarUrl(publicUrl)) ?? publicUrl;
       res.json({ success: true, data: { avatarUrl: signedUrl } });
@@ -1631,7 +1659,7 @@ router.get(
       const divisionId = req.params.divisionId as string;
       const studentId = req.params.studentId as string;
 
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { userId, institutionId },
         select: { id: true },
       });
@@ -1640,7 +1668,7 @@ router.get(
         return;
       }
 
-      const assignment = await prisma.divisionAssignment.findFirst({
+      const assignment = await academicDb().divisionAssignment.findFirst({
         where: { divisionId, teacherId: teacher.id, institutionId },
         select: { id: true },
       });
@@ -1673,7 +1701,7 @@ router.post(
 
       await assertDivisionAccess(userId, institutionId, divisionId);
 
-      const student = await prisma.student.findFirst({
+      const student = await academicDb().student.findFirst({
         where: { id: studentId, divisionId, institutionId },
         select: { id: true },
       });
@@ -1756,7 +1784,7 @@ router.get(
 
       await assertDivisionAccess(userId, institutionId, divisionId);
 
-      const student = await prisma.student.findFirst({
+      const student = await academicDb().student.findFirst({
         where: { id: studentId, divisionId, institutionId },
         select: { id: true },
       });

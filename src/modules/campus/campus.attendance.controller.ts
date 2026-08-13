@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 
@@ -11,7 +12,7 @@ function requireInstitution(req: AuthRequest) {
 }
 
 async function assertDivisionInInstitution(divisionId: string, institutionId: string) {
-  const division = await prisma.division.findFirst({
+  const division = await academicDb().division.findFirst({
     where: { id: divisionId, standard: { institutionId } },
     select: { id: true },
   });
@@ -25,17 +26,22 @@ export const getDivisionStudents = async (req: AuthRequest, res: Response, next:
     const divisionId = req.params.divisionId as string;
     await assertDivisionInInstitution(divisionId, institutionId);
 
-    const students = await prisma.student.findMany({
+    const students = await academicDb().student.findMany({
       where: { divisionId, institutionId },
-      include: { user: { select: { name: true, email: true, mustChangePassword: true } } },
       orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
     });
 
+    // User names live centrally (Student may be in a tenant DB under BYOD).
+    const users = await resolveUsers(students.map(s => s.userId), { id: true, name: true, email: true, mustChangePassword: true });
     const signedMap = await generateSignedAvatarUrlsBatch(students.map(s => s.avatarUrl));
-    const data = students.map(s => ({
-      ...s,
-      avatarUrl: s.avatarUrl ? (signedMap[s.avatarUrl] ?? s.avatarUrl) : null,
-    }));
+    const data = students.map(s => {
+      const u = users.get(s.userId);
+      return {
+        ...s,
+        user: { name: u?.name ?? null, email: u?.email ?? null, mustChangePassword: u?.mustChangePassword ?? false },
+        avatarUrl: s.avatarUrl ? (signedMap[s.avatarUrl] ?? s.avatarUrl) : null,
+      };
+    });
 
     res.json({ success: true, data });
   } catch (err) {
@@ -50,7 +56,7 @@ export const getAttendanceHolidays = async (req: AuthRequest, res: Response, nex
     const divisionId = req.params.divisionId as string;
     await assertDivisionInInstitution(divisionId, institutionId);
 
-    const holidays = await prisma.schoolHoliday.findMany({
+    const holidays = await academicDb().schoolHoliday.findMany({
       where: { institutionId },
       select: { date: true, name: true },
       orderBy: { date: "asc" },
@@ -72,11 +78,11 @@ export const getDailyAttendance = async (req: AuthRequest, res: Response, next: 
     await assertDivisionInInstitution(divisionId, institutionId);
 
     const [records, dayNote] = await Promise.all([
-      prisma.attendance.findMany({
+      academicDb().attendance.findMany({
         where: { divisionId, institutionId, date },
         select: { studentId: true, status: true, remark: true },
       }),
-      prisma.attendanceDayNote.findUnique({
+      academicDb().attendanceDayNote.findUnique({
         where: { divisionId_date: { divisionId, date } },
         select: { note: true },
       }),
@@ -97,7 +103,7 @@ export const getMonthlyAttendance = async (req: AuthRequest, res: Response, next
     if (!month || !/^\d{4}-\d{2}$/.test(month)) throw new BadRequestError("month query param required (YYYY-MM)");
     await assertDivisionInInstitution(divisionId, institutionId);
 
-    const records = await prisma.attendance.findMany({
+    const records = await academicDb().attendance.findMany({
       where: {
         divisionId,
         institutionId,
@@ -128,16 +134,15 @@ export const getAttendanceSummary = async (req: AuthRequest, res: Response, next
     const sessionEnd = `${startYear + 1}-05-31`;
 
     const [students, allRecords, holidays] = await Promise.all([
-      prisma.student.findMany({
+      academicDb().student.findMany({
         where: { divisionId, institutionId },
-        include: { user: { select: { name: true } } },
         orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
       }),
-      prisma.attendance.findMany({
+      academicDb().attendance.findMany({
         where: { divisionId, institutionId, date: { gte: sessionStart, lte: sessionEnd } },
         select: { studentId: true, date: true, status: true },
       }),
-      prisma.schoolHoliday.findMany({
+      academicDb().schoolHoliday.findMany({
         where: { institutionId, date: { gte: sessionStart, lte: sessionEnd } },
         select: { date: true },
       }),
@@ -158,6 +163,7 @@ export const getAttendanceSummary = async (req: AuthRequest, res: Response, next
       byStudent[r.studentId].push(r);
     });
 
+    const summaryUsers = await resolveUsers(students.map(s => s.userId), { id: true, name: true });
     const summaryStudents = students.map(st => {
       const recs = byStudent[st.id] ?? [];
 
@@ -204,7 +210,7 @@ export const getAttendanceSummary = async (req: AuthRequest, res: Response, next
 
       return {
         studentId: st.id,
-        name: st.user.name ?? "",
+        name: summaryUsers.get(st.userId)?.name ?? "",
         rollNo: st.rollNo ?? "",
         overallPct,
         currentMonthPct,
@@ -268,7 +274,7 @@ export const getStudentAttendanceRecords = async (req: AuthRequest, res: Respons
     }
     await assertDivisionInInstitution(divisionId, institutionId);
 
-    const records = await prisma.attendance.findMany({
+    const records = await academicDb().attendance.findMany({
       where: {
         divisionId,
         institutionId,

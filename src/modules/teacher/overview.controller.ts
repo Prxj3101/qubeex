@@ -2,6 +2,8 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 
 function calcPct(present: number, absent: number, late: number): number | null {
   const total = present + absent + late;
@@ -16,28 +18,32 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
       return;
     }
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { userId, institutionId },
-      include: {
-        user: { select: { name: true } },
-        institution: { select: { name: true } },
-      },
     });
     if (!teacher) {
       res.status(404).json({ success: false, error: "Teacher profile not found" });
       return;
     }
     const teacherPrefix = teacher.prefix;
+    // Teacher.name (central User) + institution name (central) are stitched in —
+    // Teacher may live in a tenant DB under BYOD with no User/Institution table.
+    const [teacherUserMap, institutionRow] = await Promise.all([
+      resolveUsers([teacher.userId], { id: true, name: true }),
+      prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true } }),
+    ]);
+    const teacherName = teacherUserMap.get(teacher.userId)?.name ?? "";
+    const institutionName = institutionRow?.name ?? "";
 
     const [assignmentRows, testsConducted, classTeacherDivision, auditLogRows] = await Promise.all([
-      prisma.divisionAssignment.findMany({
+      academicDb().divisionAssignment.findMany({
         where: { teacherId: teacher.id, institutionId },
         select: { divisionId: true, subjectId: true },
       }),
-      prisma.taskTest.count({
+      academicDb().taskTest.count({
         where: { teacherId: teacher.id, institutionId, status: { in: ["ACTIVE", "COMPLETED"] } },
       }),
-      prisma.division.findFirst({
+      academicDb().division.findFirst({
         where: { institutionId, classTeacherId: teacher.id },
         select: { id: true, name: true, standard: { select: { name: true } } },
       }),
@@ -62,13 +68,13 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
       const divisionId = classTeacherDivision.id;
 
       const [allRecords, students] = await Promise.all([
-        prisma.attendance.findMany({
+        academicDb().attendance.findMany({
           where: { divisionId, institutionId },
           select: { studentId: true, date: true, status: true },
         }),
-        prisma.student.findMany({
+        academicDb().student.findMany({
           where: { divisionId, institutionId },
-          select: { id: true, rollNo: true, user: { select: { name: true } } },
+          select: { id: true, rollNo: true, userId: true },
         }),
       ]);
 
@@ -116,11 +122,12 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
         else if (r.status === "L") byStudent[r.studentId].l++;
       });
 
+      const studentUsers = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
       shortAttendance = students
         .map((s) => {
           const c = byStudent[s.id] ?? { p: 0, a: 0, l: 0 };
           const pct = calcPct(c.p, c.a, c.l);
-          return { name: s.user.name ?? "Unknown", rollNo: s.rollNo ?? "", pct };
+          return { name: studentUsers.get(s.userId)?.name ?? "Unknown", rollNo: s.rollNo ?? "", pct };
         })
         .filter((s): s is { name: string; rollNo: string; pct: number } => s.pct !== null && s.pct < 75)
         .sort((a, b) => a.pct - b.pct);
@@ -130,9 +137,9 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
       success: true,
       data: {
         teacher: {
-          name: teacher.user.name ?? "",
+          name: teacherName,
           prefix: teacherPrefix,
-          institutionName: teacher.institution.name,
+          institutionName,
           classTeacherDivisionName: classTeacherDivision
             ? `${classTeacherDivision.standard.name} - ${classTeacherDivision.name}`
             : null,

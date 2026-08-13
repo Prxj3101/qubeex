@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
+import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
 import { requirePermission } from "../../middlewares/requirePermission.middleware";
 import {
   upload,
@@ -21,10 +22,10 @@ import {
 const router = Router();
 
 // Base: ADMIN or SUB_ADMIN
-const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware];
+const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // ADMIN only (upload is admin-only; can't allow subadmins to post on behalf of admin)
-const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
+const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // SUB_ADMIN needs STAFF_STAFFROOM
 const STAFFROOM_PERM = [...A, requirePermission("STAFF_STAFFROOM")];

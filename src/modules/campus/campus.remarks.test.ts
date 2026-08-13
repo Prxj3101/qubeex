@@ -51,6 +51,7 @@ describe("POST /api/admin/campus/divisions/:divisionId/students/:studentId/remar
     await prisma.student.deleteMany({ where: { institutionId } });
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
+    await prisma.userStatusEvent.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
@@ -60,7 +61,7 @@ describe("POST /api/admin/campus/divisions/:divisionId/students/:studentId/remar
     const res = await request(app)
       .post(`/api/admin/campus/divisions/${divisionId}/students/${studentId}/remarks`)
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ severity: "HIGH", category: "Academic Dishonesty", title: "Copying in exam", detail: "Caught with notes." });
+      .send({ type: "RED", severity: "HIGH", category: "Academic Dishonesty", title: "Copying in exam", detail: "Caught with notes." });
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);

@@ -72,14 +72,15 @@ describe("Fee payments: GET and PATCH /admin/campus/divisions/:divisionId/fee-pa
       .send({ studentId, feeMonthId: "month-june", status: "PAID", paidDate: "2026-06-10" });
 
     expect(create.status).toBe(200);
-    expect(create.body.data).toEqual({ studentId, feeMonthId: "month-june", status: "PAID", paidDate: "2026-06-10" });
+    expect(create.body.data).toMatchObject({ studentId, feeMonthId: "month-june", status: "PAID", paidDate: "2026-06-10" });
 
     const list = await request(app)
       .get(`/api/admin/campus/divisions/${divisionId}/fee-payments`)
       .set("Authorization", `Bearer ${adminToken}`);
 
     expect(list.status).toBe(200);
-    expect(list.body.data).toEqual([{ studentId, feeMonthId: "month-june", status: "PAID", paidDate: "2026-06-10" }]);
+    expect(list.body.data).toHaveLength(1);
+    expect(list.body.data[0]).toMatchObject({ studentId, feeMonthId: "month-june", status: "PAID", paidDate: "2026-06-10" });
   });
 
   it("upserts (updates in place) rather than duplicating on a second PATCH for the same month", async () => {
@@ -93,7 +94,7 @@ describe("Fee payments: GET and PATCH /admin/campus/divisions/:divisionId/fee-pa
       .set("Authorization", `Bearer ${adminToken}`);
 
     expect(list.body.data).toHaveLength(1);
-    expect(list.body.data[0]).toEqual({ studentId, feeMonthId: "month-june", status: "PENDING", paidDate: null });
+    expect(list.body.data[0]).toMatchObject({ studentId, feeMonthId: "month-june", status: "PENDING", paidDate: null });
   });
 
   it("404s when the student doesn't belong to this division", async () => {

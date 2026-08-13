@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { BadRequestError } from "../../utils/errors";
 import { redis } from "../../utils/redis";
 import { getCache, setCache } from "../../utils/cache";
@@ -70,7 +71,7 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
     const sessionEnd = `${startYear + 1}-05-31`;
 
     const [standards, allRecords, holidays] = await Promise.all([
-      prisma.standard.findMany({
+      academicDb().standard.findMany({
         where: { institutionId },
         orderBy: { order: "asc" },
         select: {
@@ -86,11 +87,11 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
           },
         },
       }),
-      prisma.attendance.findMany({
+      academicDb().attendance.findMany({
         where: { institutionId, date: { gte: sessionStart, lte: sessionEnd } },
         select: { studentId: true, divisionId: true, date: true, status: true },
       }),
-      prisma.schoolHoliday.findMany({
+      academicDb().schoolHoliday.findMany({
         where: { institutionId, date: { gte: sessionStart, lte: sessionEnd } },
         select: { date: true },
       }),
@@ -174,7 +175,7 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
-    const standards = await prisma.standard.findMany({
+    const standards = await academicDb().standard.findMany({
       where: { institutionId },
       orderBy: { order: "asc" },
       select: {
@@ -241,7 +242,7 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
       ...Array.from(currentMonthIdByDivision.values()),
     ]));
     const payments = allFeeMonthIds.length
-      ? await prisma.studentFeePayment.findMany({
+      ? await academicDb().studentFeePayment.findMany({
           where: { institutionId, feeMonthId: { in: allFeeMonthIds }, status: "PAID" },
           select: { studentId: true, feeMonthId: true, student: { select: { divisionId: true } } },
         })
@@ -295,10 +296,11 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
-    const teachers = await prisma.teacher.findMany({
+    const teachers = await academicDb().teacher.findMany({
       where: { institutionId },
-      select: { id: true, user: { select: { name: true } } },
+      select: { id: true, userId: true },
     });
+    const teacherUsers = await resolveUsers(teachers.map((t) => t.userId), { id: true, name: true });
 
     let usageByTeacher: Record<string, number> = {};
     if (redis && teachers.length) {
@@ -315,7 +317,7 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     }
 
     const data = teachers
-      .map((t) => ({ name: t.user.name ?? "Unknown", used: usageByTeacher[t.id] ?? 0 }))
+      .map((t) => ({ name: teacherUsers.get(t.userId)?.name ?? "Unknown", used: usageByTeacher[t.id] ?? 0 }))
       .filter((t) => t.used > 0)
       .sort((a, b) => b.used - a.used);
 

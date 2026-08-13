@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { academicDb } from "./academicContext";
 
 type AuthorLike = { id: string; role: string };
 export type DisplayInfo = { prefix: string | null; title: string | null; avatarUrl: string | null };
@@ -20,7 +21,7 @@ export async function resolveAuthorDisplay(
 
   const [teachers, subAdmins, institution] = await Promise.all([
     teacherIds.length
-      ? prisma.teacher.findMany({
+      ? academicDb().teacher.findMany({
           where: { userId: { in: teacherIds } },
           select: { userId: true, prefix: true, title: true, avatarUrl: true },
         })

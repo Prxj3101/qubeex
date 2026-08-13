@@ -1,4 +1,5 @@
-import { prisma } from "../utils/prisma";
+import { academicDb } from "../utils/academicContext";
+import { resolveUsers } from "./userLookup.service";
 
 export interface LeaderboardEntry {
   id: string;
@@ -17,18 +18,18 @@ export async function getDivisionLeaderboardData(
   institutionId: string
 ): Promise<LeaderboardEntry[]> {
   const [students, marksheet] = await Promise.all([
-    prisma.student.findMany({
+    academicDb().student.findMany({
       where: { divisionId, institutionId, status: "ACTIVE" },
-      select: { id: true, rollNo: true, avatarUrl: true, user: { select: { name: true } } },
+      select: { id: true, rollNo: true, avatarUrl: true, userId: true },
     }),
-    prisma.marksheet.findFirst({
+    academicDb().marksheet.findFirst({
       where: { divisionId, institutionId, status: "PUBLISHED" },
       orderBy: { updatedAt: "desc" },
       select: { id: true },
     }),
   ]);
 
-  const attendanceRecords = await prisma.attendance.findMany({
+  const attendanceRecords = await academicDb().attendance.findMany({
     where: { divisionId, institutionId },
     select: { studentId: true, status: true },
   });
@@ -48,7 +49,7 @@ export async function getDivisionLeaderboardData(
   let onlineMax = 0;
 
   if (marksheet) {
-    const columns = await prisma.marksheetExamColumn.findMany({
+    const columns = await academicDb().marksheetExamColumn.findMany({
       where: { marksheetId: marksheet.id, institutionId },
       select: { id: true, name: true, maxMarks: true },
     });
@@ -61,7 +62,7 @@ export async function getDivisionLeaderboardData(
       else offlineMax += c.maxMarks;
     }
 
-    const allScores = await prisma.marksheetScore.findMany({
+    const allScores = await academicDb().marksheetScore.findMany({
       where: { marksheetId: marksheet.id, institutionId },
       select: { studentId: true, examColumnId: true, score: true, isAbsent: true },
     });
@@ -77,6 +78,8 @@ export async function getDivisionLeaderboardData(
     }
   }
 
+  const users = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
+
   const ranked = students
     .map((s) => {
       const att = attMap.get(s.id);
@@ -85,7 +88,7 @@ export async function getDivisionLeaderboardData(
       const onlineScored = onlineMap.get(s.id);
       return {
         id: s.id,
-        name: s.user.name ?? "—",
+        name: users.get(s.userId)?.name ?? "—",
         rollNo: s.rollNo ?? "",
         avatarUrl: s.avatarUrl,
         attendancePct: att && att.total > 0 ? Math.round((att.p / att.total) * 100) : null,

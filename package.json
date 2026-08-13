@@ -7,7 +7,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "seed": "npx tsx prisma/seed.ts",
-    "test": "jest"
+    "test": "jest",
+    "byod:build-tenant-schema": "node prisma/tenant/build-tenant-schema.cjs",
+    "byod:generate-tenant": "prisma generate --schema prisma/tenant/schema.prisma"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1060.0",

@@ -1,6 +1,8 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
@@ -21,7 +23,7 @@ function requireInstitution(req: AuthRequest) {
 }
 
 async function findStudentInDivision(studentId: string, divisionId: string, institutionId: string) {
-  const student = await prisma.student.findFirst({
+  const student = await academicDb().student.findFirst({
     where: { id: studentId, divisionId, institutionId },
     select: { id: true },
   });
@@ -56,23 +58,36 @@ export const updateStudentStatus = async (req: AuthRequest, res: Response, next:
     const studentId = req.params.studentId as string;
     const { status } = updateStatusSchema.parse(req.body);
 
-    const student = await prisma.student.findFirst({
+    const acad = academicDb();
+    const student = await acad.student.findFirst({
       where: { id: studentId, divisionId, institutionId },
-      select: { id: true, userId: true, user: { select: { name: true } } },
+      select: { id: true, userId: true },
     });
     if (!student) throw new NotFoundError("Student not found in this division");
 
-    const [updated] = await prisma.$transaction([
-      prisma.student.update({ where: { id: studentId }, data: { status } }),
+    // The student row may live in a tenant DB (BYOD) while the User + status
+    // event are always central — a transaction can't span both, so for BYOD
+    // the academic write runs separately from the platform writes.
+    const studentUpdate = { where: { id: studentId }, data: { status } } as const;
+    const platformWrites = [
       prisma.user.update({ where: { id: student.userId }, data: { isActive: status === "ACTIVE" } }),
       prisma.userStatusEvent.create({ data: { userId: student.userId, institutionId, isActive: status === "ACTIVE" } }),
-    ]);
+    ];
+    let updated: { id: string; status: string };
+    if (acad === prisma) {
+      const [u] = await prisma.$transaction([acad.student.update(studentUpdate), ...platformWrites]);
+      updated = u;
+    } else {
+      updated = await acad.student.update(studentUpdate);
+      await prisma.$transaction(platformWrites);
+    }
 
+    const studentName = (await resolveUsers([student.userId], { id: true, name: true })).get(student.userId)?.name ?? "";
     logAudit(status === "INACTIVE" ? "STUDENT_DEACTIVATED" : "STUDENT_ACTIVATED", {
       userId: req.user!.userId,
       actorRole: req.user!.role,
       institutionId,
-      details: `Student ${student.user?.name ?? ""} ${status === "INACTIVE" ? "deactivated" : "activated"}`,
+      details: `Student ${studentName} ${status === "INACTIVE" ? "deactivated" : "activated"}`,
       metadata: { studentId },
       category: "ADMIN_ACTION",
       severity: status === "INACTIVE" ? "WARNING" : "INFO",
@@ -310,7 +325,7 @@ export const updateStudentDetailField = async (req: AuthRequest, res: Response, 
     const studentId = req.params.studentId as string;
     const { fieldId, value } = updateDetailFieldSchema.parse(req.body);
 
-    const student = await prisma.student.findFirst({
+    const student = await academicDb().student.findFirst({
       where: { id: studentId, divisionId, institutionId },
       select: { id: true, extraDetailFields: true },
     });
@@ -318,7 +333,7 @@ export const updateStudentDetailField = async (req: AuthRequest, res: Response, 
 
     const nextFields = { ...((student.extraDetailFields as Record<string, string> | null) ?? {}), [fieldId]: value };
 
-    const updated = await prisma.student.update({
+    const updated = await academicDb().student.update({
       where: { id: studentId },
       data: { extraDetailFields: nextFields },
       select: { extraDetailFields: true },

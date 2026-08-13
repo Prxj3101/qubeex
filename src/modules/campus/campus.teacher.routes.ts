@@ -1,7 +1,8 @@
 import { Router, Response, NextFunction } from "express";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
+import { academicDb } from "../../utils/academicContext";
 import { ForbiddenError, NotFoundError } from "../../utils/errors";
 import {
   upload,
@@ -18,7 +19,7 @@ import { getDivisionFeePayments } from "./campus.students.controller";
 
 const router = Router();
 
-const T = [authMiddleware(["TEACHER", "ADMIN"]), institutionAccessMiddleware];
+const T = [authMiddleware(["TEACHER", "ADMIN"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // Fees are only visible to the CLASS teacher of a division (the
 // DivisionAssignment row with subjectId === null) — subject teachers only
@@ -30,10 +31,10 @@ async function requireClassTeacherAccess(req: AuthRequest, res: Response, next: 
     const { userId, institutionId } = req.user!;
     const divisionId = req.params.divisionId as string;
 
-    const teacher = await prisma.teacher.findFirst({ where: { userId, institutionId: institutionId! } });
+    const teacher = await academicDb().teacher.findFirst({ where: { userId, institutionId: institutionId! } });
     if (!teacher) throw new NotFoundError("Teacher profile not found");
 
-    const classTeacherAssignment = await prisma.divisionAssignment.findFirst({
+    const classTeacherAssignment = await academicDb().divisionAssignment.findFirst({
       where: { divisionId, teacherId: teacher.id, institutionId: institutionId!, subjectId: null },
       select: { id: true },
     });

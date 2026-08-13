@@ -1,6 +1,8 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers, USER_SELECT_NO_PASSWORD } from "../../services/userLookup.service";
 import { checkInstitutionAccess } from "../../utils/authorization";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
@@ -346,7 +348,7 @@ export const uploadMyInstitutionLogo = async (
 // to match the frontend's generic level1(Standard)/level2(Division)/level3(Subject)
 // TeacherAssignment type. subjectId === null means a class-teacher assignment.
 async function getTeacherAssignmentsMap(institutionId: string, teacherIds: string[]) {
-  const rows = await prisma.divisionAssignment.findMany({
+  const rows = await academicDb().divisionAssignment.findMany({
     where: { institutionId, teacherId: { in: teacherIds } },
     include: {
       division: { include: { standard: true } },
@@ -392,11 +394,11 @@ export const listTeachers = async (
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
-    const teachers = await prisma.teacher.findMany({
+    const teachers = await academicDb().teacher.findMany({
       where: { institutionId },
-      include: { user: { omit: { password: true } } },
       orderBy: { createdAt: "asc" },
     });
+    const listTeacherUserMap = await resolveUsers(teachers.map((t) => t.userId), USER_SELECT_NO_PASSWORD);
 
     const assignmentsMap = await getTeacherAssignmentsMap(institutionId, teachers.map((t) => t.id));
 
@@ -414,15 +416,17 @@ export const listTeachers = async (
     const rawAvatarUrls = teachers.map(t => t.avatarUrl);
     const signedMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
 
-    const data = teachers.map((t) => ({
+    const data = teachers.map((t) => {
+      const tUser = listTeacherUserMap.get(t.userId);
+      return {
       id: t.id,
       teacherId: t.teacherId,
-      name: t.user.name,
-      email: t.user.email,
+      name: tUser?.name,
+      email: tUser?.email,
       phone: t.phone,
       avatarUrl: t.avatarUrl ? (signedMap[t.avatarUrl] ?? t.avatarUrl) : null,
       status: t.status,
-      invitePending: pendingInviteEmails.has(t.user.email),
+      invitePending: tUser ? pendingInviteEmails.has(tUser.email) : false,
       joinedAt: t.joinedAt.toISOString(),
       assignments: assignmentsMap.get(t.id) ?? [],
       dob: t.dob,
@@ -436,7 +440,8 @@ export const listTeachers = async (
       experience: t.experience,
       prefix: t.prefix,
       title: t.title,
-    }));
+    };
+    });
 
     res.json({ success: true, data });
   } catch (error) {
@@ -465,51 +470,57 @@ export const addTeacher = async (
     const rawToken = generateToken();
     const tokenHash = hashToken(rawToken);
 
-    const teacher = await prisma.$transaction(async (tx) => {
-      const teacherId = await generateUserId(institutionId!, "T", tx);
-
-      const newUser = await tx.user.create({
-        data: {
-          name: data.name,
-          email: data.email,
-          role: "TEACHER",
-          institutionId: institutionId!,
-          isActive: false,
-        },
-      });
-      await recordUserStatusEvent(tx, { userId: newUser.id, institutionId: institutionId!, isActive: false });
-
-      const newTeacher = await tx.teacher.create({
-        data: {
-          teacherId,
-          userId: newUser.id,
-          institutionId: institutionId!,
-          phone: data.phone,
-          dob: data.dob,
-          gender: data.gender,
-          address: data.address,
-          city: data.city,
-          state: data.state,
-          pincode: data.pincode,
-          country: data.country ?? "India",
-          qualification: data.qualification,
-          experience: data.experience,
-        },
-        include: { user: { omit: { password: true } } },
-      });
-
-      await tx.invite.create({
-        data: {
-          email: data.email,
-          tokenHash,
-          role: "TEACHER",
-          institutionId: institutionId!,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        },
-      });
-
-      return newTeacher;
+    // User + Invite (central) must exist before Teacher can reference the
+    // userId; Teacher itself may live in the tenant DB (BYOD), so the creates
+    // can't share one transaction across databases. Managed institutions still
+    // get a single atomic transaction since academicDb() === prisma there.
+    const teacherCreateData = (teacherId: string, newUserId: string) => ({
+      teacherId,
+      userId: newUserId,
+      institutionId: institutionId!,
+      phone: data.phone,
+      dob: data.dob,
+      gender: data.gender,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      pincode: data.pincode,
+      country: data.country ?? "India",
+      qualification: data.qualification,
+      experience: data.experience,
     });
+
+    const acadAdd = academicDb();
+    let teacher;
+    if (acadAdd === prisma) {
+      teacher = await prisma.$transaction(async (tx) => {
+        const teacherId = await generateUserId(institutionId!, "T", tx);
+        const newUser = await tx.user.create({
+          data: { name: data.name, email: data.email, role: "TEACHER", institutionId: institutionId!, isActive: false },
+        });
+        await recordUserStatusEvent(tx, { userId: newUser.id, institutionId: institutionId!, isActive: false });
+        const newTeacher = await tx.teacher.create({ data: teacherCreateData(teacherId, newUser.id) });
+        await tx.invite.create({
+          data: { email: data.email, tokenHash, role: "TEACHER", institutionId: institutionId!, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
+        });
+        return newTeacher;
+      });
+    } else {
+      const { teacherId, newUser } = await prisma.$transaction(async (tx) => {
+        const teacherId = await generateUserId(institutionId!, "T", tx);
+        const newUser = await tx.user.create({
+          data: { name: data.name, email: data.email, role: "TEACHER", institutionId: institutionId!, isActive: false },
+        });
+        await recordUserStatusEvent(tx, { userId: newUser.id, institutionId: institutionId!, isActive: false });
+        await tx.invite.create({
+          data: { email: data.email, tokenHash, role: "TEACHER", institutionId: institutionId!, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
+        });
+        return { teacherId, newUser };
+      });
+      teacher = await acadAdd.teacher.create({ data: teacherCreateData(teacherId, newUser.id) });
+    }
+    const addTeacherUserMap = await resolveUsers([teacher.userId], USER_SELECT_NO_PASSWORD);
+    const teacherUser = addTeacherUserMap.get(teacher.userId);
 
     const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
     sendTeacherInviteEmail({
@@ -534,8 +545,8 @@ export const addTeacher = async (
       data: {
         id: teacher.id,
         teacherId: teacher.teacherId,
-        name: teacher.user.name,
-        email: teacher.user.email,
+        name: teacherUser?.name,
+        email: teacherUser?.email,
         phone: teacher.phone,
         avatarUrl: teacher.avatarUrl,
         status: teacher.status,
@@ -568,35 +579,20 @@ export const getTeacher = async (
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const id = req.params.id as string;
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { id, institutionId: institutionId! },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            isActive: true,
-            institutionId: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-      },
     });
 
     if (!teacher) throw new NotFoundError("Teacher not found");
 
-    const pendingInvite = await prisma.invite.findFirst({
-      where: {
-        email: teacher.user.email,
-        institutionId: institutionId!,
-        role: "TEACHER",
-        isUsed: false,
-      },
-      select: { id: true },
-    });
+    const getTeacherUser = (await resolveUsers([teacher.userId], USER_SELECT_NO_PASSWORD)).get(teacher.userId);
+
+    const pendingInvite = getTeacherUser
+      ? await prisma.invite.findFirst({
+          where: { email: getTeacherUser.email, institutionId: institutionId!, role: "TEACHER", isUsed: false },
+          select: { id: true },
+        })
+      : null;
 
     const assignmentsMap = await getTeacherAssignmentsMap(institutionId!, [teacher.id]);
 
@@ -605,8 +601,8 @@ export const getTeacher = async (
       data: {
         id: teacher.id,
         teacherId: teacher.teacherId,
-        name: teacher.user.name,
-        email: teacher.user.email,
+        name: getTeacherUser?.name,
+        email: getTeacherUser?.email,
         phone: teacher.phone,
         avatarUrl: teacher.avatarUrl,
         status: teacher.status,
@@ -644,7 +640,7 @@ export const updateTeacher = async (
 
     const data = updateTeacherSchema.parse(req.body);
 
-    const existing = await prisma.teacher.findFirst({
+    const existing = await academicDb().teacher.findFirst({
       where: { id, institutionId: institutionId! },
     });
     if (!existing) throw new NotFoundError("Teacher not found");
@@ -662,36 +658,44 @@ export const updateTeacher = async (
       updatedAt: true,
     } as const;
 
-    const teacher = await prisma.$transaction(async (tx) => {
-      const userChanges: { isActive?: boolean; name?: string } = {};
-      if (status !== undefined) userChanges.isActive = status === "ACTIVE";
-      if (name !== undefined) userChanges.name = name;
-      if (Object.keys(userChanges).length > 0) {
-        await tx.user.update({ where: { id: existing.userId }, data: userChanges });
-      }
-      if (userChanges.isActive !== undefined) {
-        await recordUserStatusEvent(tx, { userId: existing.userId, institutionId: institutionId!, isActive: userChanges.isActive });
-      }
+    const userChanges: { isActive?: boolean; name?: string } = {};
+    if (status !== undefined) userChanges.isActive = status === "ACTIVE";
+    if (name !== undefined) userChanges.name = name;
 
-      return tx.teacher.update({
-        where: { id },
-        data: {
-          ...profileFields,
-          ...(status !== undefined ? { status } : {}),
-        },
-        include: { user: { select: userSelect } },
+    const teacherUpdateData = { ...profileFields, ...(status !== undefined ? { status } : {}) };
+    const acadUpdTeacher = academicDb();
+    let teacher;
+    if (acadUpdTeacher === prisma) {
+      teacher = await prisma.$transaction(async (tx) => {
+        if (Object.keys(userChanges).length > 0) {
+          await tx.user.update({ where: { id: existing.userId }, data: userChanges });
+        }
+        if (userChanges.isActive !== undefined) {
+          await recordUserStatusEvent(tx, { userId: existing.userId, institutionId: institutionId!, isActive: userChanges.isActive });
+        }
+        return tx.teacher.update({ where: { id }, data: teacherUpdateData });
       });
-    });
+    } else {
+      if (Object.keys(userChanges).length > 0 || userChanges.isActive !== undefined) {
+        await prisma.$transaction(async (tx) => {
+          if (Object.keys(userChanges).length > 0) {
+            await tx.user.update({ where: { id: existing.userId }, data: userChanges });
+          }
+          if (userChanges.isActive !== undefined) {
+            await recordUserStatusEvent(tx, { userId: existing.userId, institutionId: institutionId!, isActive: userChanges.isActive });
+          }
+        });
+      }
+      teacher = await acadUpdTeacher.teacher.update({ where: { id }, data: teacherUpdateData });
+    }
+    const updateTeacherUser = (await resolveUsers([teacher.userId], USER_SELECT_NO_PASSWORD)).get(teacher.userId);
 
-    const pendingInviteForUpdate = await prisma.invite.findFirst({
-      where: {
-        email: teacher.user.email,
-        institutionId: institutionId!,
-        role: "TEACHER",
-        isUsed: false,
-      },
-      select: { id: true },
-    });
+    const pendingInviteForUpdate = updateTeacherUser
+      ? await prisma.invite.findFirst({
+          where: { email: updateTeacherUser.email, institutionId: institutionId!, role: "TEACHER", isUsed: false },
+          select: { id: true },
+        })
+      : null;
 
     const assignmentsMapForUpdate = await getTeacherAssignmentsMap(institutionId!, [teacher.id]);
 
@@ -703,10 +707,10 @@ export const updateTeacher = async (
         : "TEACHER_UPDATED";
       const severityLevel = data.status === "INACTIVE" ? "WARNING" : "INFO";
       const detailsText = data.status === "INACTIVE"
-        ? `Teacher ${teacher.user.name} deactivated`
+        ? `Teacher ${updateTeacherUser?.name} deactivated`
         : data.status === "ACTIVE"
-        ? `Teacher ${teacher.user.name} activated`
-        : `Teacher ${teacher.user.name} updated`;
+        ? `Teacher ${updateTeacherUser?.name} activated`
+        : `Teacher ${updateTeacherUser?.name} updated`;
       logAudit(actionName, {
         userId: user.userId,
         actorRole: user.role,
@@ -723,8 +727,8 @@ export const updateTeacher = async (
       data: {
         id: teacher.id,
         teacherId: teacher.teacherId,
-        name: teacher.user.name,
-        email: teacher.user.email,
+        name: updateTeacherUser?.name,
+        email: updateTeacherUser?.email,
         phone: teacher.phone,
         avatarUrl: teacher.avatarUrl,
         status: teacher.status,
@@ -766,7 +770,7 @@ export const getInstitutionStructure = async (
       select: { type: true },
     });
 
-    const standards = await prisma.standard.findMany({
+    const standards = await academicDb().standard.findMany({
       where: { institutionId: user.institutionId },
       orderBy: { order: "asc" },
       include: {
@@ -776,7 +780,6 @@ export const getInstitutionStructure = async (
           include: {
             assignments: {
               include: {
-                teacher: { include: { user: { select: { id: true, name: true } } } },
                 subject: true,
               },
             },
@@ -830,7 +833,7 @@ export const uploadTeacherAvatar = async (
     if (!user.institutionId) throw new BadRequestError("No institution associated with this account");
     const id = req.params.id as string;
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { id, institutionId: user.institutionId },
     });
     if (!teacher) throw new NotFoundError("Teacher not found");
@@ -842,7 +845,7 @@ export const uploadTeacherAvatar = async (
       ownerId: id,
     });
 
-    const updated = await prisma.teacher.update({
+    const updated = await academicDb().teacher.update({
       where: { id },
       data: { avatarUrl: uploaded.publicUrl },
     });
@@ -868,23 +871,23 @@ export const listStudents = async (req: AuthRequest, res: Response, next: NextFu
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
-    const students = await prisma.student.findMany({
+    const students = await academicDb().student.findMany({
       where: { institutionId },
       include: {
-        user: { select: { name: true, email: true } },
         standard: { select: { id: true, name: true } },
         division: { select: { id: true, name: true } },
       },
       orderBy: { createdAt: "asc" },
     });
+    const listStudentUserMap = await resolveUsers(students.map((s) => s.userId), { id: true, name: true, email: true });
 
     res.json({
       success: true,
       data: students.map((s) => ({
         id: s.id,
         studentId: s.studentId,
-        name: s.user.name,
-        email: s.user.email,
+        name: listStudentUserMap.get(s.userId)?.name,
+        email: listStudentUserMap.get(s.userId)?.email,
         phone: s.phone,
         avatarUrl: s.avatarUrl,
         status: s.status,
@@ -910,66 +913,74 @@ export const addStudent = async (req: AuthRequest, res: Response, next: NextFunc
     if (existing) throw new BadRequestError("A user with this email already exists");
 
     if (data.divisionId) {
-      const division = await prisma.division.findFirst({ where: { id: data.divisionId, institutionId } });
+      const division = await academicDb().division.findFirst({ where: { id: data.divisionId, institutionId } });
       if (!division) throw new NotFoundError("Division not found");
       if (data.standardId && division.standardId !== data.standardId) {
         throw new BadRequestError("Selected division does not belong to the selected standard");
       }
     }
     if (data.standardId) {
-      const standard = await prisma.standard.findFirst({ where: { id: data.standardId, institutionId } });
+      const standard = await academicDb().standard.findFirst({ where: { id: data.standardId, institutionId } });
       if (!standard) throw new NotFoundError("Standard not found");
     }
 
-    const student = await prisma.$transaction(async (tx) => {
-      const studentId = await generateUserId(institutionId, "S", tx);
-
-      const newUser = await tx.user.create({
-        data: {
-          name: data.name,
-          email: data.email,
-          role: "STUDENT",
-          institutionId,
-          isActive: true,
-        },
-      });
-      await recordUserStatusEvent(tx, { userId: newUser.id, institutionId, isActive: true });
-
-      return tx.student.create({
-        data: {
-          studentId,
-          userId: newUser.id,
-          institutionId,
-          standardId: data.standardId,
-          divisionId: data.divisionId,
-          phone: data.phone,
-          dob: data.dob,
-          gender: data.gender,
-          address: data.address,
-          city: data.city,
-          state: data.state,
-          pincode: data.pincode,
-          country: data.country ?? "India",
-        },
-        include: {
-          user: { select: { name: true, email: true } },
-          standard: { select: { id: true, name: true } },
-          division: { select: { id: true, name: true } },
-        },
-      });
+    // User (central) must exist before Student can reference its userId; Student
+    // itself may live in the tenant DB (BYOD), so the creates can't share one
+    // transaction across databases. Managed institutions still get a single
+    // atomic transaction since academicDb() === prisma there.
+    const studentCreateData2 = (newUserId: string, studentId: string) => ({
+      studentId,
+      userId: newUserId,
+      institutionId,
+      standardId: data.standardId,
+      divisionId: data.divisionId,
+      phone: data.phone,
+      dob: data.dob,
+      gender: data.gender,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      pincode: data.pincode,
+      country: data.country ?? "India",
     });
+    const studentInclude2 = { standard: { select: { id: true, name: true } }, division: { select: { id: true, name: true } } } as const;
+
+    const acadAddStudent = academicDb();
+    let student;
+    if (acadAddStudent === prisma) {
+      student = await prisma.$transaction(async (tx) => {
+        const studentId = await generateUserId(institutionId, "S", tx);
+        const newUser = await tx.user.create({
+          data: { name: data.name, email: data.email, role: "STUDENT", institutionId, isActive: true },
+        });
+        await recordUserStatusEvent(tx, { userId: newUser.id, institutionId, isActive: true });
+        return tx.student.create({ data: studentCreateData2(newUser.id, studentId), include: studentInclude2 });
+      });
+    } else {
+      const newUser = await prisma.$transaction(async (tx) => {
+        const u = await tx.user.create({
+          data: { name: data.name, email: data.email, role: "STUDENT", institutionId, isActive: true },
+        });
+        await recordUserStatusEvent(tx, { userId: u.id, institutionId, isActive: true });
+        return u;
+      });
+      const studentId = await generateUserId(institutionId, "S");
+      student = await acadAddStudent.student.create({ data: studentCreateData2(newUser.id, studentId), include: studentInclude2 });
+    }
+    const addStudentUserMap = await resolveUsers([student.userId], { id: true, name: true, email: true });
+    const addedStudentUser = addStudentUserMap.get(student.userId);
 
     logAudit("STUDENT_ADDED", {
       userId: user.userId,
       actorRole: user.role,
       institutionId,
-      details: `${student.user.name} added as student`,
-      metadata: { studentId: student.studentId, email: student.user.email },
+      details: `${addedStudentUser?.name} added as student`,
+      metadata: { studentId: student.studentId, email: addedStudentUser?.email },
       category: "ADMIN_ACTION",
       severity: "INFO",
     });
 
-    res.status(201).json({ success: true, data: student });
+    res.status(201).json({ success: true, data: { ...student, user: addedStudentUser ?? null } });
   } catch (error) {
     next(error);
   }
@@ -981,17 +992,17 @@ export const getStudent = async (req: AuthRequest, res: Response, next: NextFunc
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const id = req.params.id as string;
 
-    const student = await prisma.student.findFirst({
+    const student = await academicDb().student.findFirst({
       where: { id, institutionId },
       include: {
-        user: { select: { name: true, email: true } },
         standard: { select: { id: true, name: true } },
         division: { select: { id: true, name: true } },
       },
     });
     if (!student) throw new NotFoundError("Student not found");
+    const getStudentUser = (await resolveUsers([student.userId], { id: true, name: true, email: true })).get(student.userId);
 
-    res.json({ success: true, data: student });
+    res.json({ success: true, data: { ...student, user: getStudentUser ?? null } });
   } catch (error) {
     next(error);
   }
@@ -1005,14 +1016,14 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
     const id = req.params.id as string;
     const data = updateStudentSchema.parse(req.body);
 
-    const existing = await prisma.student.findFirst({
+    const existing = await academicDb().student.findFirst({
       where: { id, institutionId },
       include: { division: { select: { standardId: true } } },
     });
     if (!existing) throw new NotFoundError("Student not found");
 
     if (data.divisionId) {
-      const division = await prisma.division.findFirst({ where: { id: data.divisionId, institutionId } });
+      const division = await academicDb().division.findFirst({ where: { id: data.divisionId, institutionId } });
       if (!division) throw new NotFoundError("Division not found");
       const standardId = data.standardId ?? existing.standardId;
       if (standardId && division.standardId !== standardId) {
@@ -1021,35 +1032,44 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
     }
 
     if (data.standardId) {
-      const standard = await prisma.standard.findFirst({ where: { id: data.standardId, institutionId } });
+      const standard = await academicDb().standard.findFirst({ where: { id: data.standardId, institutionId } });
       if (!standard) throw new NotFoundError("Standard not found");
     }
 
     const { name, status, ...profileFields } = data;
-    const student = await prisma.$transaction(async (tx) => {
-      const userChanges: { isActive?: boolean; name?: string } = {};
-      if (status !== undefined) userChanges.isActive = status === "ACTIVE";
-      if (name !== undefined) userChanges.name = name;
-      if (Object.keys(userChanges).length > 0) {
-        await tx.user.update({ where: { id: existing.userId }, data: userChanges });
-      }
-      if (userChanges.isActive !== undefined) {
-        await recordUserStatusEvent(tx, { userId: existing.userId, institutionId, isActive: userChanges.isActive });
-      }
+    const userChanges: { isActive?: boolean; name?: string } = {};
+    if (status !== undefined) userChanges.isActive = status === "ACTIVE";
+    if (name !== undefined) userChanges.name = name;
 
-      return tx.student.update({
-        where: { id },
-        data: {
-          ...profileFields,
-          ...(status !== undefined ? { status } : {}),
-        },
-        include: {
-          user: { select: { name: true, email: true } },
-          standard: { select: { id: true, name: true } },
-          division: { select: { id: true, name: true } },
-        },
+    const studentUpdateData2 = { ...profileFields, ...(status !== undefined ? { status } : {}) };
+    const studentInclude3 = { standard: { select: { id: true, name: true } }, division: { select: { id: true, name: true } } } as const;
+
+    const acadUpdStudent = academicDb();
+    let student;
+    if (acadUpdStudent === prisma) {
+      student = await prisma.$transaction(async (tx) => {
+        if (Object.keys(userChanges).length > 0) {
+          await tx.user.update({ where: { id: existing.userId }, data: userChanges });
+        }
+        if (userChanges.isActive !== undefined) {
+          await recordUserStatusEvent(tx, { userId: existing.userId, institutionId, isActive: userChanges.isActive });
+        }
+        return tx.student.update({ where: { id }, data: studentUpdateData2, include: studentInclude3 });
       });
-    });
+    } else {
+      if (Object.keys(userChanges).length > 0 || userChanges.isActive !== undefined) {
+        await prisma.$transaction(async (tx) => {
+          if (Object.keys(userChanges).length > 0) {
+            await tx.user.update({ where: { id: existing.userId }, data: userChanges });
+          }
+          if (userChanges.isActive !== undefined) {
+            await recordUserStatusEvent(tx, { userId: existing.userId, institutionId, isActive: userChanges.isActive });
+          }
+        });
+      }
+      student = await acadUpdStudent.student.update({ where: { id }, data: studentUpdateData2, include: studentInclude3 });
+    }
+    const updateStudentUser = (await resolveUsers([student.userId], { id: true, name: true, email: true })).get(student.userId);
 
     {
       const studentAction = data.status === "INACTIVE"
@@ -1059,10 +1079,10 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
         : "STUDENT_UPDATED";
       const studentSeverity = data.status === "INACTIVE" ? "WARNING" : "INFO";
       const studentDetails = data.status === "INACTIVE"
-        ? `Student ${student.user.name} deactivated`
+        ? `Student ${updateStudentUser?.name} deactivated`
         : data.status === "ACTIVE"
-        ? `Student ${student.user.name} activated`
-        : `Student ${student.user.name} updated`;
+        ? `Student ${updateStudentUser?.name} activated`
+        : `Student ${updateStudentUser?.name} updated`;
       logAudit(studentAction, {
         userId: user.userId,
         actorRole: user.role,
@@ -1074,7 +1094,7 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
       });
     }
 
-    res.json({ success: true, data: student });
+    res.json({ success: true, data: { ...student, user: updateStudentUser ?? null } });
   } catch (error) {
     next(error);
   }
@@ -1091,13 +1111,14 @@ export const resendTeacherInvite = async (
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const id = req.params.id as string;
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { id, institutionId },
-      include: { user: { select: { id: true, name: true, email: true, isActive: true } } },
     });
     if (!teacher) throw new NotFoundError("Teacher not found");
+    const resendTeacherUser = (await resolveUsers([teacher.userId], { id: true, name: true, email: true, isActive: true })).get(teacher.userId);
+    if (!resendTeacherUser) throw new NotFoundError("Teacher user not found");
 
-    if (teacher.user.isActive) {
+    if (resendTeacherUser.isActive) {
       throw new BadRequestError("Teacher has already accepted the invite");
     }
     if (teacher.status === "INACTIVE") {
@@ -1116,14 +1137,14 @@ export const resendTeacherInvite = async (
     await prisma.$transaction(async (tx) => {
       // Invalidate all existing unused invites for this email
       await tx.invite.updateMany({
-        where: { email: teacher.user.email, institutionId, isUsed: false },
+        where: { email: resendTeacherUser.email, institutionId, isUsed: false },
         data: { isUsed: true },
       });
 
       // Create a fresh invite
       await tx.invite.create({
         data: {
-          email: teacher.user.email,
+          email: resendTeacherUser.email,
           tokenHash,
           role: "TEACHER",
           institutionId,
@@ -1134,8 +1155,8 @@ export const resendTeacherInvite = async (
 
     const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
     await sendTeacherInviteEmail({
-      to: teacher.user.email,
-      name: teacher.user.name ?? undefined,
+      to: resendTeacherUser.email,
+      name: resendTeacherUser.name ?? undefined,
       institutionName: institution.name,
       inviteLink,
     });
@@ -1144,8 +1165,8 @@ export const resendTeacherInvite = async (
       userId: user.userId,
       actorRole: user.role,
       institutionId,
-      details: `Invite resent to ${teacher.user.name}`,
-      metadata: { teacherId: teacher.teacherId, email: teacher.user.email },
+      details: `Invite resent to ${resendTeacherUser.name}`,
+      metadata: { teacherId: teacher.teacherId, email: resendTeacherUser.email },
       category: "ADMIN_ACTION",
       severity: "INFO",
     });
@@ -1167,13 +1188,19 @@ export const deleteTeacher = async (
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const id = req.params.id as string;
 
-    const teacher = await prisma.teacher.findFirst({
+    const teacher = await academicDb().teacher.findFirst({
       where: { id, institutionId },
-      select: { userId: true, user: { select: { email: true, name: true } } },
+      select: { userId: true },
     });
     if (!teacher) throw new NotFoundError("Teacher not found");
+    const deleteTeacherUser = (await resolveUsers([teacher.userId], { id: true, name: true, email: true })).get(teacher.userId);
 
-    await prisma.$transaction(async (tx) => {
+    // Academic rows (may live in the tenant DB for BYOD) and platform rows
+    // (Invite, User — always central) can't share one transaction across
+    // databases. Managed institutions still get one atomic transaction since
+    // academicDb() === prisma there.
+    const acadDel = academicDb();
+    const runAcademicDeletes = async (tx: typeof acadDel) => {
       // Remove class assignments
       await tx.divisionAssignment.deleteMany({ where: { teacherId: id } });
 
@@ -1207,20 +1234,30 @@ export const deleteTeacher = async (
       // PDF uploads
       await tx.taskPdfUpload.deleteMany({ where: { teacherId: id } });
 
-      // Invalidate invites
-      await tx.invite.deleteMany({ where: { email: teacher.user.email } });
-
-      // Delete teacher and user
+      // Delete teacher
       await tx.teacher.delete({ where: { id } });
+    };
+    const runPlatformDeletes = async (tx: typeof prisma) => {
+      if (deleteTeacherUser) await tx.invite.deleteMany({ where: { email: deleteTeacherUser.email } });
       await tx.user.delete({ where: { id: teacher.userId } });
-    });
+    };
+
+    if (acadDel === prisma) {
+      await prisma.$transaction(async (tx) => {
+        await runAcademicDeletes(tx as typeof acadDel);
+        await runPlatformDeletes(tx as typeof prisma);
+      });
+    } else {
+      await acadDel.$transaction((tx) => runAcademicDeletes(tx as typeof acadDel));
+      await prisma.$transaction((tx) => runPlatformDeletes(tx as typeof prisma));
+    }
 
     logAudit("TEACHER_DELETED", {
       userId: user.userId,
       actorRole: user.role,
       institutionId,
-      details: `Teacher ${teacher.user.name} permanently deleted`,
-      metadata: { email: teacher.user.email },
+      details: `Teacher ${deleteTeacherUser?.name} permanently deleted`,
+      metadata: { email: deleteTeacherUser?.email },
       category: "ADMIN_ACTION",
       severity: "WARNING",
     });

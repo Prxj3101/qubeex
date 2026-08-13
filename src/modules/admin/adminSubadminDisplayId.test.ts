@@ -31,6 +31,7 @@ describe("GET /admin/subadmins includes displayId", () => {
     if (!institutionId) { await prisma.$disconnect(); return; }
     await prisma.invite.deleteMany({ where: { institutionId } });
     await prisma.subAdmin.deleteMany({ where: { institutionId } });
+    await prisma.userStatusEvent.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();

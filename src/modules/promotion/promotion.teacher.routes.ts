@@ -1,17 +1,18 @@
 import { Router, Response, NextFunction } from "express";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
+import { academicDb } from "../../utils/academicContext";
 import { submitOutcomesSchema } from "./promotion.schema";
 import { getPromotionPreview, applyPromotionOutcomes, undoPromotionBatch, listPromotionBatches } from "./promotion.service";
 
 const router = Router();
-const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware];
+const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 async function assertClassTeacher(userId: string, institutionId: string, divisionId: string): Promise<string> {
-  const teacher = await prisma.teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
+  const teacher = await academicDb().teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
   if (!teacher) throw { status: 404, message: "Teacher profile not found" };
-  const assignment = await prisma.divisionAssignment.findFirst({
+  const assignment = await academicDb().divisionAssignment.findFirst({
     where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
     select: { id: true },
   });
@@ -20,7 +21,7 @@ async function assertClassTeacher(userId: string, institutionId: string, divisio
 }
 
 async function assertBatchOwnedByClassTeacher(userId: string, institutionId: string, batchId: string): Promise<void> {
-  const batch = await prisma.promotionBatch.findFirst({ where: { id: batchId, institutionId }, select: { fromDivisionId: true } });
+  const batch = await academicDb().promotionBatch.findFirst({ where: { id: batchId, institutionId }, select: { fromDivisionId: true } });
   if (!batch) throw { status: 404, message: "Promotion batch not found" };
   await assertClassTeacher(userId, institutionId, batch.fromDivisionId);
 }
@@ -79,10 +80,10 @@ router.get("/batches", ...T, async (req: AuthRequest, res: Response, next: NextF
     const { userId, institutionId } = req.user!;
     if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
 
-    const teacher = await prisma.teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
+    const teacher = await academicDb().teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
     if (!teacher) { res.status(404).json({ success: false, error: "Teacher profile not found" }); return; }
 
-    const ownedDivisions = await prisma.divisionAssignment.findMany({
+    const ownedDivisions = await academicDb().divisionAssignment.findMany({
       where: { teacherId: teacher.id, institutionId, subjectId: null },
       select: { divisionId: true },
     });

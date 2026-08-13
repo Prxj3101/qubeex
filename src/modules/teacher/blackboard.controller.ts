@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
 import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { createFolderSchema, aiScanSchema, aiChatSchema, aiQuizSchema } from "./blackboard.schema";
@@ -74,7 +74,7 @@ function requireTeacher(req: AuthRequest) {
 }
 
 async function getTeacherId(userId: string, institutionId: string): Promise<string> {
-  const teacher = await prisma.teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
+  const teacher = await academicDb().teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
   if (!teacher) throw new BadRequestError("Teacher profile not found");
   return teacher.id;
 }
@@ -87,12 +87,12 @@ export const listFolders = async (req: AuthRequest, res: Response, next: NextFun
     const teacherId = await getTeacherId(userId, institutionId);
 
     const [folders, files] = await Promise.all([
-      prisma.blackboardFolder.findMany({
+      academicDb().blackboardFolder.findMany({
         where: { teacherId, institutionId },
         orderBy: { createdAt: "asc" },
         select: { id: true, name: true, parentId: true, createdAt: true },
       }),
-      prisma.blackboardMaterial.findMany({
+      academicDb().blackboardMaterial.findMany({
         where: { teacherId, institutionId },
         orderBy: { createdAt: "asc" },
         select: { id: true, name: true, fileUrl: true, mimeType: true, size: true, folderId: true, createdAt: true },
@@ -128,13 +128,13 @@ export const createFolder = async (req: AuthRequest, res: Response, next: NextFu
     const data = createFolderSchema.parse(req.body);
 
     if (data.parentId) {
-      const parent = await prisma.blackboardFolder.findFirst({
+      const parent = await academicDb().blackboardFolder.findFirst({
         where: { id: data.parentId, teacherId, institutionId },
       });
       if (!parent) throw new NotFoundError("Parent folder not found");
     }
 
-    const folder = await prisma.blackboardFolder.create({
+    const folder = await academicDb().blackboardFolder.create({
       data: { institutionId, teacherId, name: data.name, parentId: data.parentId ?? null },
       select: { id: true, name: true, parentId: true, createdAt: true },
     });
@@ -149,7 +149,7 @@ export const deleteFolder = async (req: AuthRequest, res: Response, next: NextFu
     const teacherId = await getTeacherId(userId, institutionId);
     const folderId = req.params.id as string;
 
-    const folder = await prisma.blackboardFolder.findFirst({ where: { id: folderId, teacherId, institutionId } });
+    const folder = await academicDb().blackboardFolder.findFirst({ where: { id: folderId, teacherId, institutionId } });
     if (!folder) throw new NotFoundError("Folder not found");
 
     // Collect all descendant folder IDs (BFS)
@@ -157,7 +157,7 @@ export const deleteFolder = async (req: AuthRequest, res: Response, next: NextFu
     const queue = [folderId];
     while (queue.length > 0) {
       const current = queue.shift()!;
-      const children = await prisma.blackboardFolder.findMany({
+      const children = await academicDb().blackboardFolder.findMany({
         where: { parentId: current, teacherId, institutionId },
         select: { id: true },
       });
@@ -165,14 +165,14 @@ export const deleteFolder = async (req: AuthRequest, res: Response, next: NextFu
     }
 
     // Collect all r2Keys for files in these folders
-    const files = await prisma.blackboardMaterial.findMany({
+    const files = await academicDb().blackboardMaterial.findMany({
       where: { folderId: { in: allFolderIds }, institutionId },
       select: { r2Key: true },
     });
 
     // Delete folders (deepest first to avoid FK issues — children cascade deletes files)
     for (let i = allFolderIds.length - 1; i >= 0; i--) {
-      await prisma.blackboardFolder.delete({ where: { id: allFolderIds[i] } });
+      await academicDb().blackboardFolder.delete({ where: { id: allFolderIds[i] } });
     }
 
     // Schedule R2 deletions
@@ -196,7 +196,7 @@ export const uploadFile = async (
     const teacherId = await getTeacherId(userId, institutionId);
     const folderId = req.params.id as string;
 
-    const folder = await prisma.blackboardFolder.findFirst({ where: { id: folderId, teacherId, institutionId } });
+    const folder = await academicDb().blackboardFolder.findFirst({ where: { id: folderId, teacherId, institutionId } });
     if (!folder) throw new NotFoundError("Folder not found");
 
     const file = req.file;
@@ -215,7 +215,7 @@ export const uploadFile = async (
     const r2Key = r2KeyFromUrl(result.publicUrl);
     if (!r2Key) throw new BadRequestError("R2 key extraction failed — check R2_PUBLIC_URL configuration");
 
-    const material = await prisma.blackboardMaterial.create({
+    const material = await academicDb().blackboardMaterial.create({
       data: {
         institutionId,
         teacherId,
@@ -239,10 +239,10 @@ export const deleteFile = async (req: AuthRequest, res: Response, next: NextFunc
     const teacherId = await getTeacherId(userId, institutionId);
     const fileId = req.params.id as string;
 
-    const file = await prisma.blackboardMaterial.findFirst({ where: { id: fileId, teacherId, institutionId } });
+    const file = await academicDb().blackboardMaterial.findFirst({ where: { id: fileId, teacherId, institutionId } });
     if (!file) throw new NotFoundError("File not found");
 
-    await prisma.blackboardMaterial.delete({ where: { id: fileId } });
+    await academicDb().blackboardMaterial.delete({ where: { id: fileId } });
     await scheduleR2FileDeletion(file.r2Key).catch(() => {});
 
     res.json({ success: true });

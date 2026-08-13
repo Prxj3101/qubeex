@@ -1,7 +1,8 @@
 // src/modules/student/tasks.controller.ts
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { submitTestSchema } from "./tasks.schema";
 import {
@@ -30,21 +31,22 @@ async function getStudentForRequest(
 ): Promise<{ id: string; institutionId: string; divisionId: string; rollNo: string; name: string }> {
   const { userId, institutionId } = req.user!;
   if (!institutionId) throw new BadRequestError("No institution associated with this account");
-  const student = await prisma.student.findFirst({
+  const student = await academicDb().student.findFirst({
     where: { userId, institutionId },
-    select: { id: true, divisionId: true, rollNo: true, user: { select: { name: true } } },
+    select: { id: true, divisionId: true, rollNo: true, userId: true },
   });
   if (!student) throw new NotFoundError("Student profile not found");
   if (!student.divisionId) throw new BadRequestError("You are not assigned to a division yet");
   if (!student.rollNo) throw new BadRequestError("Your roll number is not set — contact your teacher");
-  if (!student.user?.name) throw new BadRequestError("Your name is not set — contact your teacher");
+  const studentName = (await resolveUsers([student.userId], { id: true, name: true })).get(student.userId)?.name;
+  if (!studentName) throw new BadRequestError("Your name is not set — contact your teacher");
 
   return {
     id: student.id,
     institutionId,
     divisionId: student.divisionId,
     rollNo: student.rollNo,
-    name: student.user.name,
+    name: studentName,
   };
 }
 
@@ -52,7 +54,7 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
   try {
     const student = await getStudentForRequest(req);
 
-    const tests = await prisma.taskTest.findMany({
+    const tests = await academicDb().taskTest.findMany({
       where: {
         divisionId: student.divisionId,
         institutionId: student.institutionId,
@@ -69,7 +71,7 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
 
     const testIds = tests.map((t) => t.id);
     const attempts = testIds.length > 0
-      ? await prisma.taskTestAttempt.findMany({
+      ? await academicDb().taskTestAttempt.findMany({
           where: { testId: { in: testIds }, studentId: student.id },
           select: { id: true, testId: true, status: true, totalScore: true, attemptNumber: true, endTime: true },
           orderBy: { attemptNumber: "desc" },
@@ -141,7 +143,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     const student = await getStudentForRequest(req);
     const testId = req.params.id as string;
 
-    const test = await prisma.taskTest.findFirst({
+    const test = await academicDb().taskTest.findFirst({
       where: { id: testId, divisionId: student.divisionId, institutionId: student.institutionId },
       include: {
         subject: { select: { name: true } },
@@ -170,11 +172,11 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     // already "submitted, 0 score" without the student actually taking them.
     // Resuming hands back the same attempt, same questions, same original timer,
     // so calling /start again is safe.
-    const existing = await prisma.taskTestAttempt.findFirst({
+    const existing = await academicDb().taskTestAttempt.findFirst({
       where: { testId: test.id, studentId: student.id, status: "in_progress" },
     });
     if (existing) {
-      const existingAnswers = await prisma.taskStudentAnswer.findMany({
+      const existingAnswers = await academicDb().taskStudentAnswer.findMany({
         where: { attemptId: existing.id },
         include: { question: { select: { type: true } } },
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
@@ -215,10 +217,10 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
       // finished writing (e.g. the server crashed mid-request right after creating
       // the attempt row). Nothing to resume - discard it and fall through to start
       // a clean new attempt below.
-      await prisma.taskTestAttempt.delete({ where: { id: existing.id } });
+      await academicDb().taskTestAttempt.delete({ where: { id: existing.id } });
     }
 
-    const completedAttempts = await prisma.taskTestAttempt.count({
+    const completedAttempts = await academicDb().taskTestAttempt.count({
       where: { testId: test.id, studentId: student.id, status: "completed" },
     });
     if (completedAttempts >= test.maxAttempts) throw new BadRequestError("Maximum attempts reached for this test");
@@ -228,7 +230,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     const sectionsMeta = parseSections(test.sections);
 
     const attemptNumber = completedAttempts + 1;
-    const attempt = await prisma.taskTestAttempt.create({
+    const attempt = await academicDb().taskTestAttempt.create({
       data: {
         testId: test.id,
         studentId: student.id,
@@ -284,7 +286,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
 
     // Created (and awaited) before responding, not deferred, so the resume check
     // above never finds an in-progress attempt with zero question rows attached.
-    await prisma.taskStudentAnswer.createMany({
+    await academicDb().taskStudentAnswer.createMany({
       data: orderedQ.map((q, i) => ({
         attemptId: attempt.id,
         questionId: q.questionId,
@@ -327,17 +329,17 @@ export const submitTest = async (req: AuthRequest, res: Response, next: NextFunc
     const testId = req.params.id as string;
     const { attemptId, answers, tabChangeCount } = submitTestSchema.parse(req.body);
 
-    const test = await prisma.taskTest.findFirst({
+    const test = await academicDb().taskTest.findFirst({
       where: { id: testId, divisionId: student.divisionId, institutionId: student.institutionId },
     });
     if (!test) throw new NotFoundError("Test not found");
 
-    const attempt = await prisma.taskTestAttempt.findFirst({
+    const attempt = await academicDb().taskTestAttempt.findFirst({
       where: { id: attemptId, testId: test.id, studentId: student.id, status: "in_progress" },
     });
     if (!attempt) throw new NotFoundError("Attempt not found or already submitted");
 
-    const storedAnswers = await prisma.taskStudentAnswer.findMany({ where: { attemptId } });
+    const storedAnswers = await academicDb().taskStudentAnswer.findMany({ where: { attemptId } });
     const scorePerQuestion = storedAnswers.length > 0 ? test.totalMarks / storedAnswers.length : 0;
     let totalScore = 0;
     const updates: Array<{ id: string; studentAnswer: string; isCorrect: boolean }> = [];
@@ -354,14 +356,14 @@ export const submitTest = async (req: AuthRequest, res: Response, next: NextFunc
     // Malpractice flag: 2 or more tab changes = flagged
     const malpracticeFlag = (tabChangeCount ?? 0) >= 2;
 
-    await prisma.$transaction([
+    await academicDb().$transaction([
       ...updates.map((u) =>
-        prisma.taskStudentAnswer.update({
+        academicDb().taskStudentAnswer.update({
           where: { id: u.id },
           data: { studentAnswer: u.studentAnswer, isCorrect: u.isCorrect },
         })
       ),
-      prisma.taskTestAttempt.update({
+      academicDb().taskTestAttempt.update({
         where: { id: attemptId },
         data: { status: "completed", endTime: new Date(), totalScore: roundedTotalScore, tabChangeCount: tabChangeCount ?? 0, malpracticeFlag },
       }),
@@ -390,7 +392,7 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
     const student = await getStudentForRequest(req);
     const id = req.params.id as string;
 
-    const attempt = await prisma.taskTestAttempt.findUnique({
+    const attempt = await academicDb().taskTestAttempt.findUnique({
       where: { id },
       include: {
         test: {
@@ -454,7 +456,7 @@ export const listAssignments = async (req: AuthRequest, res: Response, next: Nex
   try {
     const student = await getStudentForRequest(req);
 
-    const assignments = await prisma.taskAssignment.findMany({
+    const assignments = await academicDb().taskAssignment.findMany({
       where: {
         divisionId: student.divisionId,
         institutionId: student.institutionId,
@@ -473,7 +475,7 @@ export const listAssignments = async (req: AuthRequest, res: Response, next: Nex
     }
 
     const assignmentIds = assignments.map((a) => a.id);
-    const submissions = await prisma.taskAssignmentSubmission.findMany({
+    const submissions = await academicDb().taskAssignmentSubmission.findMany({
       where: { assignmentId: { in: assignmentIds }, studentId: student.id },
     });
     const subMap = new Map(submissions.map((s) => [s.assignmentId, s]));
@@ -550,7 +552,7 @@ export const submitAssignment = async (
     const student = await getStudentForRequest(req);
     const assignmentId = req.params.id as string;
 
-    const assignment = await prisma.taskAssignment.findFirst({
+    const assignment = await academicDb().taskAssignment.findFirst({
       where: {
         id: assignmentId,
         divisionId: student.divisionId,
@@ -571,7 +573,7 @@ export const submitAssignment = async (
     if (!req.file) throw new BadRequestError("PDF file is required");
 
     // Check if existing submission is in WRITE_AGAIN state or no submission yet
-    const existing = await prisma.taskAssignmentSubmission.findUnique({
+    const existing = await academicDb().taskAssignmentSubmission.findUnique({
       where: { assignmentId_studentId: { assignmentId, studentId: student.id } },
     });
 
@@ -589,7 +591,7 @@ export const submitAssignment = async (
 
     const resubmitCount = existing ? existing.resubmitCount + (existing.submittedAt ? 1 : 0) : 0;
 
-    const submission = await prisma.taskAssignmentSubmission.upsert({
+    const submission = await academicDb().taskAssignmentSubmission.upsert({
       where: { assignmentId_studentId: { assignmentId, studentId: student.id } },
       create: {
         assignmentId,
@@ -622,13 +624,13 @@ export const getOwnSubmission = async (req: AuthRequest, res: Response, next: Ne
     const student = await getStudentForRequest(req);
     const assignmentId = req.params.id as string;
 
-    const assignment = await prisma.taskAssignment.findFirst({
+    const assignment = await academicDb().taskAssignment.findFirst({
       where: { id: assignmentId, divisionId: student.divisionId, institutionId: student.institutionId },
       select: { id: true, title: true, submissionType: true },
     });
     if (!assignment) throw new NotFoundError("Assignment not found");
 
-    const submission = await prisma.taskAssignmentSubmission.findUnique({
+    const submission = await academicDb().taskAssignmentSubmission.findUnique({
       where: { assignmentId_studentId: { assignmentId, studentId: student.id } },
     });
 

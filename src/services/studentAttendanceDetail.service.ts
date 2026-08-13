@@ -1,4 +1,5 @@
-import { prisma } from "../utils/prisma";
+import { academicDb } from "../utils/academicContext";
+import { resolveUsers } from "./userLookup.service";
 
 export interface AttendanceMonthDetail { month: string; key: number; year: number; present: number; absent: number; leave: number; total: number; pct: number | null }
 export interface AttendanceHoliday { date: string; name: string }
@@ -37,10 +38,13 @@ export async function getStudentAttendanceDetailData(
   studentId: string,
   institutionId: string
 ): Promise<StudentAttendanceDetailData> {
-  const student = await prisma.student.findFirst({
+  const student = await academicDb().student.findFirst({
     where: { id: studentId, institutionId },
-    select: { rollNo: true, user: { select: { name: true } } },
+    select: { rollNo: true, userId: true },
   });
+  const studentName = student
+    ? (await resolveUsers([student.userId], { id: true, name: true })).get(student.userId)?.name ?? null
+    : null;
 
   const now = new Date();
   const curMonth = now.getMonth();
@@ -51,11 +55,11 @@ export async function getStudentAttendanceDetailData(
   const endDate = `${startYear + 1}-05-31`;
 
   const [records, holidays] = await Promise.all([
-    prisma.attendance.findMany({
+    academicDb().attendance.findMany({
       where: { studentId, institutionId, date: { gte: startDate, lte: endDate } },
       select: { date: true, status: true },
     }),
-    prisma.schoolHoliday.findMany({
+    academicDb().schoolHoliday.findMany({
       where: { institutionId, date: { gte: startDate, lte: endDate } },
       select: { date: true, name: true },
     }),
@@ -91,6 +95,6 @@ export async function getStudentAttendanceDetailData(
     monthly,
     daily,
     holidays,
-    student: { name: student?.user.name ?? null, rollNo: student?.rollNo ?? "" },
+    student: { name: studentName, rollNo: student?.rollNo ?? "" },
   };
 }

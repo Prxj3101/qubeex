@@ -1,4 +1,6 @@
 import { prisma } from "../utils/prisma";
+import { getAcademicClient } from "./tenantDb.service";
+import { resolveUsers } from "./userLookup.service";
 
 export type DirectoryRole = "ADMIN" | "SUB_ADMIN" | "TEACHER" | "STUDENT";
 
@@ -57,6 +59,9 @@ export async function getInstitutionUsersForMonth(
   const monthStart = new Date(year, month - 1, 1, 0, 0, 0, 0);
   const monthEnd = new Date(year, month, 0, 23, 59, 59, 999);
 
+  // Teacher/Student are academic — for BYOD they live in the institution's own DB.
+  const acad = await getAcademicClient(institutionId);
+
   const [institution, admins, subAdmins, teachers, students, statusEvents, addedByLogs] = await Promise.all([
     prisma.institution.findUnique({ where: { id: institutionId }, select: { adminPhone: true } }),
     prisma.user.findMany({
@@ -70,20 +75,16 @@ export async function getInstitutionUsersForMonth(
         user: { select: { id: true, name: true, email: true, displayId: true, createdAt: true, isActive: true } },
       },
     }),
-    prisma.teacher.findMany({
+    acad.teacher.findMany({
       where: { institutionId },
-      select: {
-        userId: true, teacherId: true, phone: true, joinedAt: true,
-        user: { select: { id: true, name: true, email: true, createdAt: true, isActive: true } },
-      },
+      select: { userId: true, teacherId: true, phone: true, joinedAt: true },
     }),
-    prisma.student.findMany({
+    acad.student.findMany({
       where: { institutionId },
       select: {
         userId: true, studentId: true, phone: true,
         standard: { select: { name: true } },
         division: { select: { name: true } },
-        user: { select: { id: true, name: true, email: true, createdAt: true, isActive: true } },
       },
     }),
     prisma.userStatusEvent.findMany({
@@ -101,6 +102,13 @@ export async function getInstitutionUsersForMonth(
       select: { userId: true, metadata: true },
     }),
   ]);
+
+  // Teacher/Student rows may live in a tenant DB (BYOD) with no User table, so
+  // the linked User (name/email/createdAt/isActive) is fetched from central.
+  const personUsers = await resolveUsers(
+    [...teachers.map((t) => t.userId), ...students.map((s) => s.userId)],
+    { id: true, name: true, email: true, createdAt: true, isActive: true }
+  );
 
   const eventsByUser = new Map<string, StatusEventRow[]>();
   for (const e of statusEvents) {
@@ -165,18 +173,22 @@ export async function getInstitutionUsersForMonth(
     });
   }
   for (const t of teachers) {
+    const u = personUsers.get(t.userId);
+    if (!u) continue; // orphaned academic row with no central user — skip
     pushIfExisted({
-      userId: t.user.id, name: t.user.name, email: t.user.email, createdAt: t.user.createdAt, isActive: t.user.isActive,
+      userId: u.id, name: u.name, email: u.email, createdAt: u.createdAt, isActive: u.isActive,
       role: "TEACHER", businessId: t.teacherId, phone: t.phone,
-      classLabel: null, addedBy: addedByEmail.get(t.user.email) ?? null,
+      classLabel: null, addedBy: addedByEmail.get(u.email) ?? null,
     });
   }
   for (const s of students) {
+    const u = personUsers.get(s.userId);
+    if (!u) continue; // orphaned academic row with no central user — skip
     const classLabel = s.division ? s.division.name : null;
     pushIfExisted({
-      userId: s.user.id, name: s.user.name, email: s.user.email, createdAt: s.user.createdAt, isActive: s.user.isActive,
+      userId: u.id, name: u.name, email: u.email, createdAt: u.createdAt, isActive: u.isActive,
       role: "STUDENT", businessId: s.studentId, phone: s.phone,
-      classLabel, addedBy: addedByEmail.get(s.user.email) ?? null,
+      classLabel, addedBy: addedByEmail.get(u.email) ?? null,
     });
   }
 

@@ -7,4 +7,5 @@ module.exports = {
   setupFiles: ["dotenv/config"],
   testTimeout: 15000,
   maxWorkers: 1,
+  workerIdleMemoryLimit: "512MB",
 };

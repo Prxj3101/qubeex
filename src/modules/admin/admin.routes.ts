@@ -1,6 +1,7 @@
 import { Router, raw, Response, NextFunction } from "express";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
+import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
 import { requirePermission } from "../../middlewares/requirePermission.middleware";
 import { prisma } from "../../utils/prisma";
 import { setPresence } from "../../services/presence.service";
@@ -23,10 +24,10 @@ import {
 const router = Router();
 
 // ADMIN or SUB_ADMIN — shared base
-const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware];
+const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // ADMIN only
-const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
+const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // SUB_ADMIN needs STAFF_TEACHERS to view teacher list/detail
 const TEACHERS_READ = [...A, requirePermission("STAFF_TEACHERS")];

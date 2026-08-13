@@ -1,4 +1,4 @@
-import { prisma } from "../utils/prisma";
+import { academicDb } from "../utils/academicContext";
 
 export interface FeePaymentEntry {
   studentId: string;
@@ -14,7 +14,7 @@ export async function getDivisionFeePaymentsData(
   divisionId: string,
   institutionId: string
 ): Promise<FeePaymentEntry[]> {
-  const payments = await prisma.studentFeePayment.findMany({
+  const payments = await academicDb().studentFeePayment.findMany({
     where: { institutionId, student: { divisionId, institutionId } },
     select: { studentId: true, feeMonthId: true, status: true, paidDate: true, remark: true, extraFields: true, extraStructureIds: true },
   });
@@ -42,7 +42,7 @@ export async function upsertFeePaymentData(params: {
 }): Promise<FeePaymentEntry> {
   const { institutionId, studentId, feeMonthId, status, paidDate, remark, extraFields, extraStructureIds } = params;
 
-  const payment = await prisma.studentFeePayment.upsert({
+  const payment = await academicDb().studentFeePayment.upsert({
     where: { studentId_feeMonthId: { studentId, feeMonthId } },
     create: { institutionId, studentId, feeMonthId, status, paidDate, remark, extraFields: extraFields ?? undefined, extraStructureIds: extraStructureIds ?? undefined },
     update: { status, paidDate, remark, extraFields: extraFields ?? undefined, extraStructureIds: extraStructureIds ?? undefined },

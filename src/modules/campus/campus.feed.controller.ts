@@ -1,11 +1,12 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
 import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 import { resolveAuthorDisplay, DisplayInfo } from "../../utils/authorDisplay";
+import { resolveUsers } from "../../services/userLookup.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 
@@ -132,25 +133,27 @@ export const listPosts = async (req: AuthRequest, res: Response, next: NextFunct
       ? { institutionId, divisionId, ...typeCondition }
       : { institutionId, divisionId: null, ...typeCondition };
 
-    const [posts, total] = await prisma.$transaction([
-      prisma.campusFeedPost.findMany({
+    const [posts, total] = await academicDb().$transaction([
+      academicDb().campusFeedPost.findMany({
         where,
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
-        include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
       }),
-      prisma.campusFeedPost.count({ where }),
+      academicDb().campusFeedPost.count({ where }),
     ]);
 
-    const displayMap = await resolveAuthorDisplay(posts.map(p => p.author), institutionId);
-    const rawAvatarUrls = posts.map(p => displayMap.get(p.author.id)?.avatarUrl ?? null);
+    const feedAuthorUserMap = await resolveUsers(posts.map(p => p.authorId), { id: true, name: true, role: true });
+    const postsWithAuthor = posts.map(p => ({ ...p, author: feedAuthorUserMap.get(p.authorId) ?? { id: p.authorId, name: null, role: "ADMIN" } }));
+
+    const displayMap = await resolveAuthorDisplay(postsWithAuthor.map(p => p.author), institutionId);
+    const rawAvatarUrls = postsWithAuthor.map(p => displayMap.get(p.author.id)?.avatarUrl ?? null);
     const signedMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
     const resolveAvatar = (url: string | null | undefined) => url ? (signedMap[url] ?? url) : null;
 
     res.json({
       success: true,
-      data: posts.map(p => formatPost(p, resolveAvatar(displayMap.get(p.author.id)?.avatarUrl), displayMap.get(p.author.id))),
+      data: postsWithAuthor.map(p => formatPost(p, resolveAvatar(displayMap.get(p.author.id)?.avatarUrl), displayMap.get(p.author.id))),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
@@ -166,7 +169,7 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
     let subjectName = data.subject;
 
     if (data.subjectId) {
-      const subject = await prisma.subject.findFirst({
+      const subject = await academicDb().subject.findFirst({
         where: { id: data.subjectId, institutionId },
         select: { id: true, name: true },
       });
@@ -176,9 +179,9 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
       // A teacher (not admin) may only tag a subject they're actually assigned to
       // teach in that division, or if they're the division's class teacher.
       if (req.user!.role === "TEACHER" && data.divisionId) {
-        const teacher = await prisma.teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
+        const teacher = await academicDb().teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
         const assignment = teacher
-          ? await prisma.divisionAssignment.findFirst({
+          ? await academicDb().divisionAssignment.findFirst({
               where: {
                 divisionId: data.divisionId,
                 teacherId: teacher.id,
@@ -192,7 +195,7 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
       }
     }
 
-    const post = await prisma.campusFeedPost.create({
+    const post = await academicDb().campusFeedPost.create({
       data: {
         institutionId,
         authorId: userId,
@@ -206,15 +209,16 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
         attachmentType: data.attachmentType,
         attachmentName: data.attachmentName,
       },
-      include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
     });
+    const createFeedAuthorUserMap = await resolveUsers([post.authorId], { id: true, name: true, role: true });
+    const postWithAuthor = { ...post, author: createFeedAuthorUserMap.get(post.authorId) ?? { id: post.authorId, name: null, role: "ADMIN" } };
 
-    const displayMap = await resolveAuthorDisplay([post.author], institutionId);
-    const rawUrl = displayMap.get(post.author.id)?.avatarUrl ?? null;
+    const displayMap = await resolveAuthorDisplay([postWithAuthor.author], institutionId);
+    const rawUrl = displayMap.get(postWithAuthor.author.id)?.avatarUrl ?? null;
     const signedMap2 = await generateSignedAvatarUrlsBatch([rawUrl]);
     const authorAvatarUrl = rawUrl ? (signedMap2[rawUrl] ?? rawUrl) : null;
 
-    res.status(201).json({ success: true, data: formatPost(post, authorAvatarUrl, displayMap.get(post.author.id)) });
+    res.status(201).json({ success: true, data: formatPost(postWithAuthor, authorAvatarUrl, displayMap.get(postWithAuthor.author.id)) });
     logAudit("ANNOUNCEMENT_POSTED", {
       userId,
       actorRole: req.user!.role,
@@ -233,13 +237,13 @@ export const deletePost = async (req: AuthRequest, res: Response, next: NextFunc
     const { institutionId, userId } = requireInstitution(req);
     const id = req.params.id as string;
 
-    const post = await prisma.campusFeedPost.findFirst({ where: { id, institutionId } });
+    const post = await academicDb().campusFeedPost.findFirst({ where: { id, institutionId } });
     if (!post) throw new NotFoundError("Post not found");
     if (post.authorId !== userId && req.user!.role !== "ADMIN") {
       throw new BadRequestError("You can only delete your own posts");
     }
 
-    await prisma.campusFeedPost.delete({ where: { id } });
+    await academicDb().campusFeedPost.delete({ where: { id } });
 
     // Schedule R2 attachment deletion after grace period
     if (post.attachmentUrl) {
@@ -280,11 +284,11 @@ export const listEvents = async (req: AuthRequest, res: Response, next: NextFunc
       ? { institutionId, date: { gte: start, lte: end }, divisionId }
       : { institutionId, date: { gte: start, lte: end }, divisionId: null };
 
-    const events = await prisma.calendarEvent.findMany({
+    const events = await academicDb().calendarEvent.findMany({
       where,
       orderBy: { date: "asc" },
-      include: { createdBy: { select: { id: true, name: true } } },
     });
+    const eventCreatorUserMap = await resolveUsers(events.map(e => e.createdById), { id: true, name: true });
 
     const data = events.map(e => ({
       id: e.id,
@@ -293,7 +297,7 @@ export const listEvents = async (req: AuthRequest, res: Response, next: NextFunc
       date: e.date.getUTCDate(),
       fullDate: e.date.toISOString(),
       divisionId: e.divisionId,
-      createdBy: e.createdBy ? { id: e.createdBy.id, name: e.createdBy.name } : null,
+      createdBy: eventCreatorUserMap.get(e.createdById) ?? null,
     }));
 
     res.json({ success: true, data });
@@ -312,7 +316,7 @@ export const createEvent = async (req: AuthRequest, res: Response, next: NextFun
       throw new BadRequestError("Teachers can only add events to class calendars");
     }
 
-    const event = await prisma.calendarEvent.create({
+    const event = await academicDb().calendarEvent.create({
       data: {
         institutionId,
         createdById: userId,
@@ -343,10 +347,10 @@ export const deleteEvent = async (req: AuthRequest, res: Response, next: NextFun
     const { institutionId } = requireInstitution(req);
     const id = req.params.id as string;
 
-    const event = await prisma.calendarEvent.findFirst({ where: { id, institutionId } });
+    const event = await academicDb().calendarEvent.findFirst({ where: { id, institutionId } });
     if (!event) throw new NotFoundError("Event not found");
 
-    await prisma.calendarEvent.delete({ where: { id } });
+    await academicDb().calendarEvent.delete({ where: { id } });
     res.json({ success: true });
   } catch (err) {
     next(err);
@@ -373,25 +377,27 @@ export const listMergedPosts = async (req: AuthRequest, res: Response, next: Nex
       ? { institutionId, OR: [{ divisionId: null }, { divisionId }], ...typeCondition }
       : { institutionId, divisionId: null, ...typeCondition };
 
-    const [posts, total] = await prisma.$transaction([
-      prisma.campusFeedPost.findMany({
+    const [posts, total] = await academicDb().$transaction([
+      academicDb().campusFeedPost.findMany({
         where,
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
-        include: { author: { select: { id: true, name: true, role: true, teacher: { select: { avatarUrl: true } } } } },
       }),
-      prisma.campusFeedPost.count({ where }),
+      academicDb().campusFeedPost.count({ where }),
     ]);
 
-    const displayMapMerged = await resolveAuthorDisplay(posts.map(p => p.author), institutionId);
-    const rawAvatarUrlsMerged = posts.map(p => displayMapMerged.get(p.author.id)?.avatarUrl ?? null);
+    const mergedAuthorUserMap = await resolveUsers(posts.map(p => p.authorId), { id: true, name: true, role: true });
+    const postsWithAuthorMerged = posts.map(p => ({ ...p, author: mergedAuthorUserMap.get(p.authorId) ?? { id: p.authorId, name: null, role: "ADMIN" } }));
+
+    const displayMapMerged = await resolveAuthorDisplay(postsWithAuthorMerged.map(p => p.author), institutionId);
+    const rawAvatarUrlsMerged = postsWithAuthorMerged.map(p => displayMapMerged.get(p.author.id)?.avatarUrl ?? null);
     const signedMapMerged = await generateSignedAvatarUrlsBatch(rawAvatarUrlsMerged);
     const resolveAvatarMerged = (url: string | null | undefined) => url ? (signedMapMerged[url] ?? url) : null;
 
     res.json({
       success: true,
-      data: posts.map(p => ({ ...formatPost(p, resolveAvatarMerged(displayMapMerged.get(p.author.id)?.avatarUrl), displayMapMerged.get(p.author.id)), source: p.divisionId ? "class" : "general" })),
+      data: postsWithAuthorMerged.map(p => ({ ...formatPost(p, resolveAvatarMerged(displayMapMerged.get(p.author.id)?.avatarUrl), displayMapMerged.get(p.author.id)), source: p.divisionId ? "class" : "general" })),
       meta: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
@@ -418,11 +424,11 @@ export const listMergedEvents = async (req: AuthRequest, res: Response, next: Ne
       ? { institutionId, date: { gte: start, lte: end }, OR: [{ divisionId }, { divisionId: null }] }
       : { institutionId, date: { gte: start, lte: end }, divisionId: null };
 
-    const events = await prisma.calendarEvent.findMany({
+    const events = await academicDb().calendarEvent.findMany({
       where,
       orderBy: { date: "asc" },
-      include: { createdBy: { select: { id: true, name: true } } },
     });
+    const mergedEventCreatorUserMap = await resolveUsers(events.map(e => e.createdById), { id: true, name: true });
 
     const data = events.map(e => ({
       id: e.id,
@@ -432,7 +438,7 @@ export const listMergedEvents = async (req: AuthRequest, res: Response, next: Ne
       fullDate: e.date.toISOString(),
       divisionId: e.divisionId,
       isClassEvent: !!e.divisionId,
-      createdBy: e.createdBy ? { id: e.createdBy.id, name: e.createdBy.name } : null,
+      createdBy: mergedEventCreatorUserMap.get(e.createdById) ?? null,
     }));
 
     res.json({ success: true, data });

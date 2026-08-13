@@ -1,4 +1,4 @@
-import { prisma } from "../utils/prisma";
+import { academicDb } from "../utils/academicContext";
 
 export interface AttendanceMonthData { month: string; key: number; year: number; present: number; absent: number; leave: number; total: number; pct: number | null }
 
@@ -36,7 +36,7 @@ export async function getStudentAttendanceTrendData(
   const startDate = `${startYear}-06-01`;
   const endDate = `${startYear + 1}-05-31`;
 
-  const records = await prisma.attendance.findMany({
+  const records = await academicDb().attendance.findMany({
     where: { studentId, institutionId, date: { gte: startDate, lte: endDate } },
     select: { date: true, status: true },
   });

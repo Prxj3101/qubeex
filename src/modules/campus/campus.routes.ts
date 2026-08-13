@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
+import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
 import { requirePermission } from "../../middlewares/requirePermission.middleware";
 import {
   listStandards,
@@ -61,10 +62,10 @@ import {
 const router = Router();
 
 // Base: ADMIN or SUB_ADMIN (role check only)
-const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware];
+const A = [authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // ADMIN only
-const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware];
+const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
 // Any CAMPUS_* permission allows navigating to the campus section
 const ANY_CAMPUS = [...A, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW", "CAMPUS_MANAGE", "CAMPUS_FEES", "CAMPUS_ATTENDANCE", "CAMPUS_MARKSHEET")];

@@ -1,7 +1,7 @@
 // src/modules/teacher/notepad.controller.ts
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
 import {
   createNoteSchema,
   updateNoteSchema,
@@ -10,7 +10,7 @@ import {
 } from "./notepad.schema";
 
 async function getTeacherId(userId: string, institutionId: string): Promise<string> {
-  const teacher = await prisma.teacher.findFirst({
+  const teacher = await academicDb().teacher.findFirst({
     where: { userId, institutionId },
     select: { id: true },
   });
@@ -37,11 +37,11 @@ export async function getNotepad(req: AuthRequest, res: Response, next: NextFunc
     const teacherId = await getTeacherId(userId, institutionId);
 
     const [notes, tasks] = await Promise.all([
-      prisma.teacherNote.findMany({
+      academicDb().teacherNote.findMany({
         where: { teacherId, institutionId },
         orderBy: { createdAt: "desc" },
       }),
-      prisma.teacherTask.findMany({
+      academicDb().teacherTask.findMany({
         where: { teacherId, institutionId },
         orderBy: { createdAt: "asc" },
       }),
@@ -63,7 +63,7 @@ export async function createNote(req: AuthRequest, res: Response, next: NextFunc
     const teacherId = await getTeacherId(userId, institutionId);
     const { text, color } = createNoteSchema.parse(req.body);
 
-    const note = await prisma.teacherNote.create({
+    const note = await academicDb().teacherNote.create({
       data: { teacherId, institutionId, text, color },
     });
     res.status(201).json({ success: true, data: note });
@@ -83,13 +83,13 @@ export async function updateNote(req: AuthRequest, res: Response, next: NextFunc
     const { text } = updateNoteSchema.parse(req.body);
     const id = req.params.id as string;
 
-    const existing = await prisma.teacherNote.findFirst({ where: { id, teacherId, institutionId } });
+    const existing = await academicDb().teacherNote.findFirst({ where: { id, teacherId, institutionId } });
     if (!existing) {
       res.status(404).json({ success: false, error: "Note not found" });
       return;
     }
 
-    const note = await prisma.teacherNote.update({ where: { id }, data: { text } });
+    const note = await academicDb().teacherNote.update({ where: { id }, data: { text } });
     res.json({ success: true, data: note });
   } catch (err) {
     handleError(err, res, next);
@@ -106,13 +106,13 @@ export async function deleteNote(req: AuthRequest, res: Response, next: NextFunc
     const teacherId = await getTeacherId(userId, institutionId);
     const id = req.params.id as string;
 
-    const existing = await prisma.teacherNote.findFirst({ where: { id, teacherId, institutionId } });
+    const existing = await academicDb().teacherNote.findFirst({ where: { id, teacherId, institutionId } });
     if (!existing) {
       res.status(404).json({ success: false, error: "Note not found" });
       return;
     }
 
-    await prisma.teacherNote.delete({ where: { id } });
+    await academicDb().teacherNote.delete({ where: { id } });
     res.json({ success: true });
   } catch (err) {
     handleError(err, res, next);
@@ -129,7 +129,7 @@ export async function createTask(req: AuthRequest, res: Response, next: NextFunc
     const teacherId = await getTeacherId(userId, institutionId);
     const { text } = createTaskSchema.parse(req.body);
 
-    const task = await prisma.teacherTask.create({
+    const task = await academicDb().teacherTask.create({
       data: { teacherId, institutionId, text },
     });
     res.status(201).json({ success: true, data: task });
@@ -149,13 +149,13 @@ export async function updateTask(req: AuthRequest, res: Response, next: NextFunc
     const data = updateTaskSchema.parse(req.body);
     const id = req.params.id as string;
 
-    const existing = await prisma.teacherTask.findFirst({ where: { id, teacherId, institutionId } });
+    const existing = await academicDb().teacherTask.findFirst({ where: { id, teacherId, institutionId } });
     if (!existing) {
       res.status(404).json({ success: false, error: "Task not found" });
       return;
     }
 
-    const task = await prisma.teacherTask.update({ where: { id }, data });
+    const task = await academicDb().teacherTask.update({ where: { id }, data });
     res.json({ success: true, data: task });
   } catch (err) {
     handleError(err, res, next);
@@ -172,13 +172,13 @@ export async function deleteTask(req: AuthRequest, res: Response, next: NextFunc
     const teacherId = await getTeacherId(userId, institutionId);
     const id = req.params.id as string;
 
-    const existing = await prisma.teacherTask.findFirst({ where: { id, teacherId, institutionId } });
+    const existing = await academicDb().teacherTask.findFirst({ where: { id, teacherId, institutionId } });
     if (!existing) {
       res.status(404).json({ success: false, error: "Task not found" });
       return;
     }
 
-    await prisma.teacherTask.delete({ where: { id } });
+    await academicDb().teacherTask.delete({ where: { id } });
     res.json({ success: true });
   } catch (err) {
     handleError(err, res, next);

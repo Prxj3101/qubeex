@@ -1,7 +1,8 @@
 import { Response, NextFunction } from "express";
 import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 
 // ── GET /api/admin/marksheet ──────────────────────────────────────────────────
 
@@ -20,7 +21,7 @@ export async function adminListMarksheets(
       academicYear?: string;
     };
 
-    const marksheets = await prisma.marksheet.findMany({
+    const marksheets = await academicDb().marksheet.findMany({
       where: {
         institutionId,
         ...(divisionId && { divisionId }),
@@ -29,11 +30,14 @@ export async function adminListMarksheets(
       },
       include: {
         division: { include: { standard: true } },
-        createdBy: { include: { user: { select: { name: true } } } },
+        createdBy: { select: { userId: true } },
         _count: { select: { examColumns: true, scores: true } },
       },
       orderBy: { createdAt: "desc" },
     });
+
+    // Creator names are central (Teacher/Marksheet may be in a tenant DB, BYOD).
+    const createdByUsers = await resolveUsers(marksheets.map((m) => m.createdBy.userId), { id: true, name: true });
 
     res.json({
       success: true,
@@ -45,7 +49,7 @@ export async function adminListMarksheets(
         divisionId: m.divisionId,
         divisionName: m.division.name,
         standardName: m.division.standard.name,
-        createdByName: m.createdBy.user.name,
+        createdByName: createdByUsers.get(m.createdBy.userId)?.name ?? null,
         examColumnCount: m._count.examColumns,
         scoreCount: m._count.scores,
         createdAt: m.createdAt,
@@ -69,7 +73,7 @@ export async function adminGetDivisionMarksheet(
     const divisionId = req.params.divisionId as string;
     const academicYear = (req.query.academicYear as string) || getCurrentAcademicYear();
 
-    const marksheet = await prisma.marksheet.findUnique({
+    const marksheet = await academicDb().marksheet.findUnique({
       where: { divisionId_academicYear: { divisionId, academicYear } },
       select: { id: true, institutionId: true },
     });
@@ -79,37 +83,37 @@ export async function adminGetDivisionMarksheet(
     }
 
     const [ms, examColumns, scores, gradedSubjects, gradedScores, students] = await Promise.all([
-      prisma.marksheet.findUnique({
+      academicDb().marksheet.findUnique({
         where: { id: marksheet.id },
         select: {
           id: true, academicYear: true, status: true, shareToken: true, gradedSectionTitle: true, gradeScale: true,
           subjectConfigs: { select: { subjectId: true, passingMarks: true, gradeScale: true } },
         },
       }),
-      prisma.marksheetExamColumn.findMany({
+      academicDb().marksheetExamColumn.findMany({
         where: { marksheetId: marksheet.id, institutionId },
         orderBy: [{ subjectId: "asc" }, { order: "asc" }],
         select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
       }),
-      prisma.marksheetScore.findMany({
+      academicDb().marksheetScore.findMany({
         where: { marksheetId: marksheet.id },
         select: { examColumnId: true, studentId: true, score: true, isAbsent: true },
       }),
-      prisma.marksheetGradedSubject.findMany({
+      academicDb().marksheetGradedSubject.findMany({
         where: { marksheetId: marksheet.id },
         orderBy: { order: "asc" },
         select: { id: true, name: true, order: true },
       }),
-      prisma.marksheetGradedScore.findMany({
+      academicDb().marksheetGradedScore.findMany({
         where: { marksheetId: marksheet.id },
         select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
       }),
-      prisma.student.findMany({
+      academicDb().student.findMany({
         where: { divisionId, institutionId },
-        include: { user: { select: { name: true } } },
         orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
       }),
     ]);
+    const detailStudentUsers = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
 
     const columnsBySubject: Record<string, typeof examColumns> = {};
     for (const col of examColumns) {
@@ -142,7 +146,7 @@ export async function adminGetDivisionMarksheet(
         scores: scoreMap,
         gradedSubjects,
         gradedScores: gradedScoreMap,
-        students: students.map((s) => ({ id: s.id, name: s.user.name, rollNo: s.rollNo ?? "" })),
+        students: students.map((s) => ({ id: s.id, name: detailStudentUsers.get(s.userId)?.name ?? null, rollNo: s.rollNo ?? "" })),
       },
     });
   } catch (err) {
@@ -169,14 +173,14 @@ export async function assignClassTeacher(
     }
     const { teacherId } = parseResult.data;
 
-    const division = await prisma.division.findFirst({
+    const division = await academicDb().division.findFirst({
       where: { id: divisionId, institutionId },
       select: { id: true },
     });
     if (!division) { res.status(404).json({ success: false, error: "Division not found" }); return; }
 
     if (teacherId !== null) {
-      const teacher = await prisma.teacher.findFirst({
+      const teacher = await academicDb().teacher.findFirst({
         where: { id: teacherId, institutionId },
         select: { id: true },
       });
@@ -184,7 +188,7 @@ export async function assignClassTeacher(
 
       // A teacher can be class teacher (null subjectId) of at most one division —
       // reject if they're already the class teacher elsewhere.
-      const existingClassTeacherDivision = await prisma.division.findFirst({
+      const existingClassTeacherDivision = await academicDb().division.findFirst({
         where: { institutionId, classTeacherId: teacherId, id: { not: divisionId } },
         select: { name: true, standard: { select: { name: true } } },
       });
@@ -197,7 +201,7 @@ export async function assignClassTeacher(
       }
     }
 
-    await prisma.$transaction(async (tx) => {
+    await academicDb().$transaction(async (tx) => {
       await tx.division.update({
         where: { id: divisionId },
         data: { classTeacherId: teacherId ?? null },

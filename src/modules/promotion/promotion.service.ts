@@ -1,4 +1,5 @@
-import { prisma } from "../../utils/prisma";
+import { academicDb } from "../../utils/academicContext";
+import { resolveUsers } from "../../services/userLookup.service";
 import { SubmitOutcomesInput } from "./promotion.schema";
 
 export interface PreviewStudent { id: string; studentId: string; name: string | null; rollNo: string | null }
@@ -22,19 +23,19 @@ export async function getPromotionPreview(
   divisionId: string,
   institutionId: string
 ): Promise<PreviewData | null> {
-  const division = await prisma.division.findFirst({
+  const division = await academicDb().division.findFirst({
     where: { id: divisionId, institutionId },
     select: { id: true, name: true, standardId: true, standard: { select: { name: true, order: true } } },
   });
   if (!division) return null;
 
   const [students, nextStandard] = await Promise.all([
-    prisma.student.findMany({
+    academicDb().student.findMany({
       where: { divisionId, institutionId, status: "ACTIVE" },
       orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
-      select: { id: true, studentId: true, rollNo: true, user: { select: { name: true } } },
+      select: { id: true, studentId: true, rollNo: true, userId: true },
     }),
-    prisma.standard.findFirst({
+    academicDb().standard.findFirst({
       where: { institutionId, order: division.standard.order + 1 },
       select: { id: true },
     }),
@@ -42,7 +43,7 @@ export async function getPromotionPreview(
 
   let targets: PreviewTarget[] = [];
   if (nextStandard) {
-    const divisions = await prisma.division.findMany({
+    const divisions = await academicDb().division.findMany({
       where: { standardId: nextStandard.id, institutionId },
       select: { id: true, name: true, capacity: true, _count: { select: { students: { where: { status: "ACTIVE" } } } } },
     });
@@ -54,9 +55,11 @@ export async function getPromotionPreview(
     }));
   }
 
+  const users = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
+
   return {
     sourceDivision: { id: division.id, name: division.name, standardName: division.standard.name },
-    students: students.map((s) => ({ id: s.id, studentId: s.studentId, name: s.user.name, rollNo: s.rollNo })),
+    students: students.map((s) => ({ id: s.id, studentId: s.studentId, name: users.get(s.userId)?.name ?? null, rollNo: s.rollNo })),
     isHighestStandard: !nextStandard,
     targets,
   };
@@ -71,14 +74,14 @@ export async function applyPromotionOutcomes(params: {
 }): Promise<{ batchId: string; warning?: string }> {
   const { divisionId, institutionId, userId, actorRole, input } = params;
 
-  const division = await prisma.division.findFirst({
+  const division = await academicDb().division.findFirst({
     where: { id: divisionId, institutionId },
     select: { id: true, standardId: true },
   });
   if (!division) throw { status: 404, message: "Division not found" };
 
   const studentIds = input.outcomes.map((o) => o.studentId);
-  const students = await prisma.student.findMany({
+  const students = await academicDb().student.findMany({
     where: { id: { in: studentIds }, divisionId, institutionId, status: "ACTIVE" },
     select: { id: true, standardId: true, divisionId: true, status: true },
   });
@@ -95,8 +98,8 @@ export async function applyPromotionOutcomes(params: {
   let targetDivision: { id: string; standardId: string; name: string; capacity: number | null } | null = null;
   if (hasPromoted) {
     if (!input.targetDivisionId) throw { status: 400, message: "targetDivisionId is required when promoting students" };
-    const sourceStandard = await prisma.standard.findUnique({ where: { id: division.standardId }, select: { order: true } });
-    const target = await prisma.division.findFirst({
+    const sourceStandard = await academicDb().standard.findUnique({ where: { id: division.standardId }, select: { order: true } });
+    const target = await academicDb().division.findFirst({
       where: { id: input.targetDivisionId, institutionId },
       select: { id: true, standardId: true, name: true, capacity: true, standard: { select: { order: true } } },
     });
@@ -109,7 +112,7 @@ export async function applyPromotionOutcomes(params: {
   const studentById = new Map(students.map((s) => [s.id, s]));
   const academicYear = getAcademicYear();
 
-  const batchId = await prisma.$transaction(async (tx) => {
+  const batchId = await academicDb().$transaction(async (tx) => {
     const batch = await tx.promotionBatch.create({
       data: {
         institutionId,
@@ -155,7 +158,7 @@ export async function applyPromotionOutcomes(params: {
 
   let warning: string | undefined;
   if (targetDivision && targetDivision.capacity !== null) {
-    const newHeadcount = await prisma.student.count({ where: { divisionId: targetDivision.id, institutionId, status: "ACTIVE" } });
+    const newHeadcount = await academicDb().student.count({ where: { divisionId: targetDivision.id, institutionId, status: "ACTIVE" } });
     if (newHeadcount > targetDivision.capacity) {
       warning = `Target division ${targetDivision.name} is now at ${newHeadcount}/${targetDivision.capacity} capacity`;
     }
@@ -165,7 +168,7 @@ export async function applyPromotionOutcomes(params: {
 }
 
 export async function undoPromotionBatch(batchId: string, institutionId: string): Promise<void> {
-  const batch = await prisma.promotionBatch.findFirst({
+  const batch = await academicDb().promotionBatch.findFirst({
     where: { id: batchId, institutionId },
     include: { outcomes: true },
   });
@@ -174,7 +177,7 @@ export async function undoPromotionBatch(batchId: string, institutionId: string)
   const hoursSince = (Date.now() - batch.createdAt.getTime()) / (1000 * 60 * 60);
   if (hoursSince > 48) throw { status: 409, message: "The 48-hour undo window has expired" };
 
-  await prisma.$transaction(async (tx) => {
+  await academicDb().$transaction(async (tx) => {
     for (const o of batch.outcomes) {
       await tx.student.update({
         where: { id: o.studentId },
@@ -200,7 +203,7 @@ export async function listPromotionBatches(
   institutionId: string,
   divisionIds?: string[]
 ): Promise<BatchSummary[]> {
-  const batches = await prisma.promotionBatch.findMany({
+  const batches = await academicDb().promotionBatch.findMany({
     where: {
       institutionId,
       ...(divisionIds ? { fromDivisionId: { in: divisionIds } } : {}),
@@ -220,8 +223,8 @@ export async function listPromotionBatches(
     if (b.toDivisionId) divisionIdSet.add(b.toDivisionId);
   }
   const [standards, divisions] = await Promise.all([
-    prisma.standard.findMany({ where: { id: { in: [...standardIds] } }, select: { id: true, name: true } }),
-    prisma.division.findMany({ where: { id: { in: [...divisionIdSet] } }, select: { id: true, name: true } }),
+    academicDb().standard.findMany({ where: { id: { in: [...standardIds] } }, select: { id: true, name: true } }),
+    academicDb().division.findMany({ where: { id: { in: [...divisionIdSet] } }, select: { id: true, name: true } }),
   ]);
   const standardMap = new Map(standards.map((s) => [s.id, s.name]));
   const divisionMap = new Map(divisions.map((d) => [d.id, d.name]));

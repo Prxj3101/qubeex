@@ -570,6 +570,8 @@ model Division {
   name     String
   capacity Int?
 
+  timetableUrl String? // class-teacher-uploaded timetable image, shown as-is (no signing needed)
+
   classTeacherId String?
   classTeacher   Teacher? @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
 

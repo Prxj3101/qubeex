@@ -30,8 +30,11 @@ const ADMIN_ONLY = [authMiddleware(["ADMIN"]), institutionAccessMiddleware, acad
 // SUB_ADMIN needs STAFF_STAFFROOM
 const STAFFROOM_PERM = [...A, requirePermission("STAFF_STAFFROOM")];
 
-// Upload — admin only
-router.post("/upload", ...ADMIN_ONLY, upload.single("file"), uploadAttachment);
+// Upload — admin only. multer runs before academicRoutingMiddleware (not via
+// `...ADMIN_ONLY`): busboy's internal stream events aren't reliably tracked as
+// children of the AsyncLocalStorage scope academicRoutingMiddleware opens, so
+// parsing the file first avoids the handler seeing "No academic client in context".
+router.post("/upload", authMiddleware(["ADMIN"]), institutionAccessMiddleware, upload.single("file"), academicRoutingMiddleware, uploadAttachment);
 
 // Feed
 router.get("/posts", ...STAFFROOM_PERM, listPosts);

@@ -1,6 +1,7 @@
 import { prisma } from "../utils/prisma";
 import { getAcademicClient } from "./tenantDb.service";
 import { resolveUsers } from "./userLookup.service";
+import { generateSignedAvatarUrlsBatch } from "./storage.service";
 
 export type DirectoryRole = "ADMIN" | "SUB_ADMIN" | "TEACHER" | "STUDENT";
 
@@ -15,6 +16,7 @@ export interface DirectoryUser {
   addedBy: string | null;
   joinedAt: string; // ISO date
   status: "ACTIVE" | "INACTIVE";
+  avatarUrl: string | null;
 }
 
 interface StatusEventRow { userId: string; isActive: boolean; createdAt: Date }
@@ -63,7 +65,7 @@ export async function getInstitutionUsersForMonth(
   const acad = await getAcademicClient(institutionId);
 
   const [institution, admins, subAdmins, teachers, students, statusEvents, addedByLogs] = await Promise.all([
-    prisma.institution.findUnique({ where: { id: institutionId }, select: { adminPhone: true } }),
+    prisma.institution.findUnique({ where: { id: institutionId }, select: { adminPhone: true, adminAvatarUrl: true } }),
     prisma.user.findMany({
       where: { institutionId, role: "ADMIN" },
       select: { id: true, name: true, email: true, displayId: true, createdAt: true, isActive: true },
@@ -71,18 +73,18 @@ export async function getInstitutionUsersForMonth(
     prisma.subAdmin.findMany({
       where: { institutionId },
       select: {
-        userId: true, phone: true, createdById: true,
+        userId: true, phone: true, createdById: true, avatarUrl: true,
         user: { select: { id: true, name: true, email: true, displayId: true, createdAt: true, isActive: true } },
       },
     }),
     acad.teacher.findMany({
       where: { institutionId },
-      select: { userId: true, teacherId: true, phone: true, joinedAt: true },
+      select: { userId: true, teacherId: true, phone: true, joinedAt: true, avatarUrl: true },
     }),
     acad.student.findMany({
       where: { institutionId },
       select: {
-        userId: true, studentId: true, phone: true,
+        userId: true, studentId: true, phone: true, avatarUrl: true,
         standard: { select: { name: true } },
         division: { select: { name: true } },
       },
@@ -133,11 +135,21 @@ export async function getInstitutionUsersForMonth(
     }
   }
 
+  // Sign every raw avatar URL across all four sources in one batch call.
+  const signedMap = await generateSignedAvatarUrlsBatch([
+    institution?.adminAvatarUrl ?? null,
+    ...subAdmins.map((sa) => sa.avatarUrl),
+    ...teachers.map((t) => t.avatarUrl),
+    ...students.map((s) => s.avatarUrl),
+  ]);
+  const signAvatar = (raw: string | null | undefined) => (raw ? (signedMap[raw] ?? raw) : null);
+
   const results: DirectoryUser[] = [];
 
   const pushIfExisted = (opts: {
     userId: string; name: string | null; email: string; createdAt: Date; isActive: boolean;
     role: DirectoryRole; businessId: string; phone: string | null; classLabel: string | null; addedBy: string | null;
+    avatarUrl: string | null;
   }) => {
     if (opts.createdAt > monthEnd) return; // didn't exist yet this month
     const events = eventsByUser.get(opts.userId) ?? [];
@@ -155,6 +167,7 @@ export async function getInstitutionUsersForMonth(
       addedBy: opts.addedBy,
       joinedAt: opts.createdAt.toISOString(),
       status,
+      avatarUrl: opts.avatarUrl,
     });
   };
 
@@ -163,6 +176,7 @@ export async function getInstitutionUsersForMonth(
       userId: a.id, name: a.name, email: a.email, createdAt: a.createdAt, isActive: a.isActive,
       role: "ADMIN", businessId: a.displayId ?? "—", phone: institution?.adminPhone ?? null,
       classLabel: null, addedBy: addedByEmail.get(a.email) ?? null,
+      avatarUrl: signAvatar(institution?.adminAvatarUrl),
     });
   }
   for (const sa of subAdmins) {
@@ -170,6 +184,7 @@ export async function getInstitutionUsersForMonth(
       userId: sa.user.id, name: sa.user.name, email: sa.user.email, createdAt: sa.user.createdAt, isActive: sa.user.isActive,
       role: "SUB_ADMIN", businessId: sa.user.displayId ?? "—", phone: sa.phone,
       classLabel: null, addedBy: addedByEmail.get(sa.user.email) ?? null,
+      avatarUrl: signAvatar(sa.avatarUrl),
     });
   }
   for (const t of teachers) {
@@ -179,6 +194,7 @@ export async function getInstitutionUsersForMonth(
       userId: u.id, name: u.name, email: u.email, createdAt: u.createdAt, isActive: u.isActive,
       role: "TEACHER", businessId: t.teacherId, phone: t.phone,
       classLabel: null, addedBy: addedByEmail.get(u.email) ?? null,
+      avatarUrl: signAvatar(t.avatarUrl),
     });
   }
   for (const s of students) {
@@ -189,8 +205,18 @@ export async function getInstitutionUsersForMonth(
       userId: u.id, name: u.name, email: u.email, createdAt: u.createdAt, isActive: u.isActive,
       role: "STUDENT", businessId: s.studentId, phone: s.phone,
       classLabel, addedBy: addedByEmail.get(u.email) ?? null,
+      avatarUrl: signAvatar(s.avatarUrl),
     });
   }
+
+  // Keep the fixed role grouping (Admin → Sub-Admin → Teacher → Student), but
+  // sort old-to-new within each group — role block order never changes, only
+  // who appears first inside a given block.
+  const roleRank: Record<DirectoryRole, number> = { ADMIN: 0, SUB_ADMIN: 1, TEACHER: 2, STUDENT: 3 };
+  results.sort((a, b) => {
+    if (roleRank[a.role] !== roleRank[b.role]) return roleRank[a.role] - roleRank[b.role];
+    return new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime();
+  });
 
   return results;
 }

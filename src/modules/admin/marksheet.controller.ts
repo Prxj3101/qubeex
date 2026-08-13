@@ -3,6 +3,7 @@ import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
+import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 
 // ── GET /api/admin/marksheet ──────────────────────────────────────────────────
 
@@ -114,6 +115,7 @@ export async function adminGetDivisionMarksheet(
       }),
     ]);
     const detailStudentUsers = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
+    const signedAvatarMap = await generateSignedAvatarUrlsBatch(students.map((s) => s.avatarUrl));
 
     const columnsBySubject: Record<string, typeof examColumns> = {};
     for (const col of examColumns) {
@@ -146,7 +148,12 @@ export async function adminGetDivisionMarksheet(
         scores: scoreMap,
         gradedSubjects,
         gradedScores: gradedScoreMap,
-        students: students.map((s) => ({ id: s.id, name: detailStudentUsers.get(s.userId)?.name ?? null, rollNo: s.rollNo ?? "" })),
+        students: students.map((s) => ({
+          id: s.id,
+          name: detailStudentUsers.get(s.userId)?.name ?? null,
+          rollNo: s.rollNo ?? "",
+          avatarUrl: s.avatarUrl ? (signedAvatarMap[s.avatarUrl] ?? s.avatarUrl) : null,
+        })),
       },
     });
   } catch (err) {

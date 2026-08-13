@@ -5,6 +5,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
+import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -486,6 +487,7 @@ async function fetchMarksheetFull(
   }
 
   const studentUsers = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
+  const signedAvatarMap = await generateSignedAvatarUrlsBatch(students.map((s) => s.avatarUrl));
 
   return {
     marksheet: {
@@ -507,6 +509,7 @@ async function fetchMarksheetFull(
       id: s.id,
       name: studentUsers.get(s.userId)?.name ?? null,
       rollNo: s.rollNo ?? "",
+      avatarUrl: s.avatarUrl ? (signedAvatarMap[s.avatarUrl] ?? s.avatarUrl) : null,
     })),
   };
 }

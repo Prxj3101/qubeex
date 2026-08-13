@@ -22,8 +22,11 @@ const router = Router();
 
 const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware, academicRoutingMiddleware];
 
-// Upload
-router.post("/upload", ...T, upload.single("file"), uploadAttachment);
+// Upload — multer runs before academicRoutingMiddleware (not via `...T`): busboy's
+// internal stream events aren't reliably tracked as children of the AsyncLocalStorage
+// scope academicRoutingMiddleware opens, so parsing the file first avoids the handler
+// seeing "No academic client in context".
+router.post("/upload", authMiddleware(["TEACHER"]), institutionAccessMiddleware, upload.single("file"), academicRoutingMiddleware, uploadAttachment);
 
 // Feed
 router.get("/posts", ...T, listPosts);

@@ -119,9 +119,13 @@ router.get("/divisions/:divisionId/fee-payments", ...CAMPUS_FEES_PERM, getDivisi
 router.patch("/divisions/:divisionId/fee-payments", ...CAMPUS_FEES_PERM, updateFeePayment);
 router.patch("/divisions/:divisionId/students/:studentId/detail-fields", ...CAMPUS_FEES_PERM, updateStudentDetailField);
 
-// Feed upload — campus feed OR class overview (VIEW)
+// Feed upload — campus feed OR class overview (VIEW). multer runs before
+// academicRoutingMiddleware (not via `...FEED_WRITE`): busboy's internal stream
+// events aren't reliably tracked as children of the AsyncLocalStorage scope
+// academicRoutingMiddleware opens, so parsing the file first avoids the handler
+// seeing "No academic client in context".
 const FEED_WRITE = [...A, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW")];
-router.post("/feed/upload", ...FEED_WRITE, upload.single("file"), uploadFeedAttachment);
+router.post("/feed/upload", authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW"), upload.single("file"), academicRoutingMiddleware, uploadFeedAttachment);
 
 // Feed posts — campus feed OR class overview (VIEW/MANAGE can read class posts)
 const FEED_READ = [...A, requirePermission("CAMPUS_FEED", "CAMPUS_VIEW", "CAMPUS_MANAGE")];

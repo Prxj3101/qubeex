@@ -108,7 +108,11 @@ router.get("/tasks/attempts/:id", ...S, getAttempt);
 
 // ── Assignment routes ──────────────────────────────────────────────────────────
 router.get("/tasks/assignments", ...S, listAssignments);
-router.post("/tasks/assignments/:id/submit", ...S, assignmentUpload.single("file"), submitAssignment);
+// multer runs before academicRoutingMiddleware (not via `...S`): busboy's internal
+// stream events aren't reliably tracked as children of the AsyncLocalStorage scope
+// academicRoutingMiddleware opens, so parsing the file first avoids the handler
+// seeing "No academic client in context".
+router.post("/tasks/assignments/:id/submit", authMiddleware(["STUDENT"]), institutionAccessMiddleware, assignmentUpload.single("file"), academicRoutingMiddleware, submitAssignment);
 router.get("/tasks/assignments/:id/submission", ...S, getOwnSubmission);
 
 // ── PATCH /student/profile ────────────────────────────────────────────────────
@@ -187,7 +191,11 @@ router.patch("/profile", ...S, async (req: AuthRequest, res: Response, next: Nex
 });
 
 // ── POST /student/photo ───────────────────────────────────────────────────────
-router.post("/photo", ...S, upload.single("photo"), async (req: AuthRequest, res: Response, next: NextFunction) => {
+// multer runs before academicRoutingMiddleware (not via `...S`): busboy's internal
+// stream events aren't reliably tracked as children of the AsyncLocalStorage scope
+// academicRoutingMiddleware opens, so parsing the file first avoids the handler
+// seeing "No academic client in context".
+router.post("/photo", authMiddleware(["STUDENT"]), institutionAccessMiddleware, upload.single("photo"), academicRoutingMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { userId, institutionId } = req.user!;
     if (!req.file) {
@@ -1049,6 +1057,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
           classTeacherAvatarUrl: resolveAvatar((division.classTeacher as { avatarUrl?: string | null } | null)?.avatarUrl),
           totalStudents: division._count.students,
           subjects: subjectList,
+          timetableUrl: division.timetableUrl,
         },
         resultFiles,
         subjectMaterials,

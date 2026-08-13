@@ -290,7 +290,12 @@ router.patch("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunc
 });
 
 // ── POST /teacher/photo ───────────────────────────────────────────────────────
-router.post("/photo", ...T, photoUpload.single("photo"), async (req: AuthRequest, res: Response, next: NextFunction) => {
+// Multer must run before academicRoutingMiddleware — busboy's internal stream
+// events (Multipart 'close'/nextTick) aren't reliably tracked as children of the
+// AsyncLocalStorage scope academicRoutingMiddleware opens, so a route handler
+// downstream of `...T` sees "No academic client in context" if multer parses
+// the body afterwards. Parsing the file first avoids crossing that boundary.
+router.post("/photo", authMiddleware(["TEACHER"]), institutionAccessMiddleware, photoUpload.single("photo"), academicRoutingMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { userId, institutionId } = req.user!;
     if (!req.file) {
@@ -1073,7 +1078,7 @@ router.post(
 router.get("/blackboard/storage/folders", ...T, listFolders);
 router.post("/blackboard/storage/folders", ...T, createFolder);
 router.delete("/blackboard/storage/folders/:id", ...T, deleteFolder);
-router.post("/blackboard/storage/folders/:id/files", ...T, upload.single("file"), uploadFile);
+router.post("/blackboard/storage/folders/:id/files", authMiddleware(["TEACHER"]), institutionAccessMiddleware, upload.single("file"), academicRoutingMiddleware, uploadFile);
 router.delete("/blackboard/storage/files/:id", ...T, deleteFile);
 
 // ── Blackboard AI ─────────────────────────────────────────────────────────────
@@ -1085,7 +1090,7 @@ router.post("/blackboard/ai/quiz", ...T, aiQuiz);
 router.get("/blackboard/images", ...T, searchImages);
 
 // ── Tasks — PDF Generation ────────────────────────────────────────────────────
-router.post("/tasks/generate", ...T, taskUpload.single("file"), generateQuestions);
+router.post("/tasks/generate", authMiddleware(["TEACHER"]), institutionAccessMiddleware, taskUpload.single("file"), academicRoutingMiddleware, generateQuestions);
 router.get("/tasks/uploads", ...T, listUploads);
 router.get("/tasks/uploads/:id", ...T, getUploadStatus);
 
@@ -1598,10 +1603,13 @@ router.patch("/notepad/tasks/:id", ...T, updateTask);
 router.delete("/notepad/tasks/:id", ...T, deleteTask);
 
 // ── Students — Upload Photo (class teacher only) ──────────────────────────────
+// Multer must run before academicRoutingMiddleware — same reason as /photo above.
 router.post(
   "/classes/:divisionId/students/:studentId/photo",
-  ...T,
+  authMiddleware(["TEACHER"]),
+  institutionAccessMiddleware,
   photoUpload.single("photo"),
+  academicRoutingMiddleware,
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const { userId, institutionId } = req.user!;
@@ -1639,6 +1647,57 @@ router.post(
 
       const signedUrl = (await generateSignedAvatarUrl(publicUrl)) ?? publicUrl;
       res.json({ success: true, data: { avatarUrl: signedUrl } });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// ── Timetable — Upload (class teacher only) ────────────────────────────────────
+// Multer must run before academicRoutingMiddleware — same reason as /photo above.
+// Stored as a plain public R2 URL (like fee-structure qrImageUrl/schoolLogoUrl) —
+// class timetable isn't sensitive per-user data, so no signed-URL step needed.
+router.post(
+  "/classes/:divisionId/timetable",
+  authMiddleware(["TEACHER"]),
+  institutionAccessMiddleware,
+  photoUpload.single("timetable"),
+  academicRoutingMiddleware,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+      const divisionId = req.params.divisionId as string;
+
+      if (!req.file) { res.status(400).json({ success: false, error: "No timetable file provided" }); return; }
+
+      const teacher = await academicDb().teacher.findFirst({
+        where: { userId, institutionId },
+        select: { id: true },
+      });
+      if (!teacher) { res.status(404).json({ success: false, error: "Teacher profile not found" }); return; }
+
+      const classAssignment = await academicDb().divisionAssignment.findFirst({
+        where: { divisionId, teacherId: teacher.id, institutionId, subjectId: null },
+        select: { id: true },
+      });
+      if (!classAssignment) { res.status(403).json({ success: false, error: "Only the class teacher can upload the timetable" }); return; }
+
+      const division = await academicDb().division.findFirst({
+        where: { id: divisionId, institutionId },
+        select: { id: true },
+      });
+      if (!division) { res.status(404).json({ success: false, error: "Division not found" }); return; }
+
+      const { publicUrl } = await uploadImageToR2(req.file.buffer, {
+        contentType: req.file.mimetype,
+        folder: "timetables",
+        ownerId: division.id,
+      });
+
+      await academicDb().division.update({ where: { id: division.id }, data: { timetableUrl: publicUrl } });
+
+      res.json({ success: true, data: { timetableUrl: publicUrl } });
     } catch (err) {
       next(err);
     }

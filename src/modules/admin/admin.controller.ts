@@ -175,6 +175,7 @@ export const getMyInstitution = async (
         subscription: {
           include: { plan: true },
         },
+        dbConfig: { select: { mode: true } },
       },
     });
 

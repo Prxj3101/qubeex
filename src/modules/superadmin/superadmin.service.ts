@@ -487,6 +487,7 @@ export const getInstitution = async () => {
         orderBy: { createdAt: "asc" },
       },
       subscription: { include: { plan: true } },
+      dbConfig: { select: { mode: true, engine: true } },
     },
     orderBy: { createdAt: "desc" },
   });

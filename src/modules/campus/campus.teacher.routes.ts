@@ -50,7 +50,11 @@ async function requireClassTeacherAccess(req: AuthRequest, res: Response, next: 
 router.get("/feed/posts", ...T, listPosts);
 router.post("/feed/posts", ...T, createPost);
 router.delete("/feed/posts/:id", ...T, deletePost);
-router.post("/feed/upload", ...T, upload.single("file"), uploadFeedAttachment);
+// multer runs before academicRoutingMiddleware (not via `...T`): busboy's internal
+// stream events aren't reliably tracked as children of the AsyncLocalStorage scope
+// academicRoutingMiddleware opens, so parsing the file first avoids the handler
+// seeing "No academic client in context".
+router.post("/feed/upload", authMiddleware(["TEACHER", "ADMIN"]), institutionAccessMiddleware, upload.single("file"), academicRoutingMiddleware, uploadFeedAttachment);
 
 // Calendar events (teacher can only add to class calendar, not main)
 router.get("/feed/events", ...T, listEvents);

@@ -165,7 +165,11 @@ router.get("/structure", ...A, getInstitutionStructure);
 router.get("/support/tickets", ...SUPPORT_PERM, listTickets);
 router.post("/support/tickets", ...SUPPORT_PERM, createTicket);
 router.post("/support/tickets/:ticketId/replies", ...SUPPORT_PERM, addTicketReply);
-router.post("/support/tickets/attachments", ...SUPPORT_PERM, ticketAttachmentUpload.single("file"), uploadTicketAttachment);
+// multer runs before academicRoutingMiddleware (not via `...SUPPORT_PERM`): busboy's
+// internal stream events aren't reliably tracked as children of the AsyncLocalStorage
+// scope academicRoutingMiddleware opens, so parsing the file first avoids the handler
+// seeing "No academic client in context".
+router.post("/support/tickets/attachments", authMiddleware(["ADMIN", "SUB_ADMIN"]), institutionAccessMiddleware, requirePermission("SUPPORT"), ticketAttachmentUpload.single("file"), academicRoutingMiddleware, uploadTicketAttachment);
 router.get("/support/reviews", ...SUPPORT_PERM, listReviews);
 router.post("/support/reviews", ...SUPPORT_PERM, createReview);
 router.patch("/support/reviews/:id", ...SUPPORT_PERM, updateReview);

@@ -68,6 +68,10 @@ const updateTeacherSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
 });
 
+const updateAiSoftLimitSchema = z.object({
+  softLimitTokens: z.number().int().min(0).nullable(),
+});
+
 const VALID_PERMISSIONS = [
   "STAFF_TEACHERS",
   "STAFF_STAFFROOM",
@@ -749,6 +753,31 @@ export const updateTeacher = async (
         title: teacher.title,
       },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTeacherAiSoftLimit = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { institutionId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+    const id = req.params.id as string;
+    const { softLimitTokens } = updateAiSoftLimitSchema.parse(req.body);
+
+    const existing = await academicDb().teacher.findFirst({ where: { id, institutionId } });
+    if (!existing) throw new NotFoundError("Teacher not found");
+
+    const updated = await academicDb().teacher.update({
+      where: { id },
+      data: { aiSoftLimitTokens: softLimitTokens },
+    });
+
+    res.json({ success: true, data: { aiSoftLimitTokens: updated.aiSoftLimitTokens } });
   } catch (error) {
     next(error);
   }

@@ -52,6 +52,7 @@ import {
   // System
   getSystemHealth,
   getAIUsage,
+  getInstitutionAiUsage,
   // Vault
   getVaultStats,
   // Billing
@@ -105,6 +106,7 @@ router.patch("/institutions/:id/plan",                 SA, updateInstitutionPlan
 router.post("/institutions/:id/activate",              SA, activateInstitutionPlan);
 router.patch("/institutions/:id/features",             SA, updateInstitutionFeatures);
 router.get("/institutions/:id/trial/usage",            SA, getTrialUsage);
+router.get("/institutions/:id/ai-usage",                SA, getInstitutionAiUsage);
 router.post("/institutions/:id/trial/activate",        SA, activateTrial);
 router.post("/institutions/:id/trial/extend",          SA, extendTrial);
 router.post("/institutions/:id/trial/churn",           SA, markTrialChurned);

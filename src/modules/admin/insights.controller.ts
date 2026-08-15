@@ -2,10 +2,19 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
-import { BadRequestError } from "../../utils/errors";
-import { redis } from "../../utils/redis";
+import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { getCache, setCache } from "../../utils/cache";
 import { getInstitutionUsersForMonth } from "../../services/userDirectory.service";
+import {
+  getInstitutionTeacherBreakdown,
+  getTeacherUsageSummary,
+  rangeToFromDate,
+  bucketEvents,
+  bucketGranularity,
+  getInstitutionAiTokenLimit,
+} from "../../services/ai-usage.service";
+import { prisma } from "../../utils/prisma";
+import { redis } from "../../utils/redis";
 
 // Both endpoints below scan full-institution history on every request (all
 // attendance rows for the academic year; all status/audit events ever, with
@@ -296,32 +305,110 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
+    // All-time, institution-wide event scan — expensive enough (and stable
+    // enough minute-to-minute) to deserve the same short TTL cache the other
+    // Insights endpoints in this file use.
+    const cacheKey = `insights:ai-usage:v1:${institutionId}`;
+    const cached = await getCache<unknown>(cacheKey);
+    if (cached) {
+      res.json({ success: true, data: cached });
+      return;
+    }
+
     const teachers = await academicDb().teacher.findMany({
       where: { institutionId },
       select: { id: true, userId: true },
     });
     const teacherUsers = await resolveUsers(teachers.map((t) => t.userId), { id: true, name: true });
 
-    let usageByTeacher: Record<string, number> = {};
-    if (redis && teachers.length) {
-      const keys = teachers.map((t) => `ai:usage:teacher:${t.id}`);
-      // Per-teacher AI usage is a nice-to-have panel — a Redis timeout should
-      // render it empty, not 500 the whole analytics dashboard.
-      const values = await redis.mget(...keys).catch((err) => {
-        console.warn("[insights] AI-usage read failed, omitting panel:", err?.message ?? err);
-        return keys.map(() => null);
-      });
-      usageByTeacher = Object.fromEntries(
-        teachers.map((t, i) => [t.id, parseInt(values[i] ?? "0", 10) || 0])
-      );
-    }
+    const from = new Date(0); // "all time" — this endpoint has always shown cumulative usage, not a windowed range
+    const to = new Date();
+    const breakdown = await getInstitutionTeacherBreakdown(institutionId, from, to);
+    const byTeacherId = new Map(breakdown.map((b) => [b.teacherId, b]));
 
     const data = teachers
-      .map((t) => ({ name: teacherUsers.get(t.userId)?.name ?? "Unknown", used: usageByTeacher[t.id] ?? 0 }))
-      .filter((t) => t.used > 0)
+      .map((t) => {
+        const summary = byTeacherId.get(t.id);
+        return {
+          teacherId: t.id,
+          name: teacherUsers.get(t.userId)?.name ?? "Unknown",
+          used: summary?.totalTokens ?? 0, // kept for backward compat with the existing frontend field name
+          totalTokens: summary?.totalTokens ?? 0,
+          totalRequests: summary?.totalRequests ?? 0,
+          successRequests: summary?.successRequests ?? 0,
+          failedRequests: summary?.failedRequests ?? 0,
+          byFeature: summary?.byFeature ?? [],
+          isOverSoftLimit: summary?.isOverSoftLimit ?? false,
+        };
+      })
+      // Keep teachers whose requests all FAILED: they have 0 tokens but a
+      // non-zero failedRequests count that admins need to see.
+      .filter((t) => t.used > 0 || t.totalRequests > 0)
       .sort((a, b) => b.used - a.used);
 
+    await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
     res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── GET /admin/teachers/:id/ai-usage — single-teacher usage detail: pool share, feature breakdown, trend ──
+export const getTeacherAiUsage = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+    const teacherId = req.params.id as string;
+
+    // academicDb() (not the raw managed client) so this lookup resolves against
+    // a BYOD institution's own database, matching updateTeacherAiSoftLimit.
+    const teacher = await academicDb().teacher.findFirst({ where: { id: teacherId, institutionId } });
+    if (!teacher) throw new NotFoundError("Teacher not found");
+
+    const range = (req.query.range as string) ?? "1M";
+    const from = rangeToFromDate(range as "7D" | "1M" | "3M" | "6M" | "YTD");
+    const to = new Date();
+
+    const [summary, institutionLimit, poolUsedRaw] = await Promise.all([
+      getTeacherUsageSummary(institutionId, teacherId, from, to),
+      getInstitutionAiTokenLimit(institutionId),
+      redis?.get(`ai:usage:institution:${institutionId}`) ?? Promise.resolve(null),
+    ]);
+
+    const events = await prisma.aiUsageEvent.findMany({
+      where: { institutionId, teacherId, createdAt: { gte: from } },
+      select: { createdAt: true, totalTokens: true },
+    });
+    const trend = bucketEvents(events, bucketGranularity(range), from, to);
+
+    const institutionPoolUsed = Number(poolUsedRaw ?? 0) || 0;
+
+    res.json({
+      success: true,
+      data: {
+        teacherId,
+        totalRequests: summary.totalRequests,
+        successRequests: summary.successRequests,
+        failedRequests: summary.failedRequests,
+        totalTokens: summary.totalTokens,
+        institutionPoolLimit: institutionLimit,
+        institutionPoolUsed,
+        // 2-decimal precision (not whole-percent rounding): a single teacher's
+        // share of a multi-million-token institution pool is often well under
+        // 1% (e.g. 900 / 2,000,000 = 0.045%) — rounding to an integer would
+        // collapse any realistic usage down to a misleading 0%.
+        poolSharePct: institutionLimit > 0 ? Math.round((summary.totalTokens / institutionLimit) * 10000) / 100 : 0,
+        byFeature: summary.byFeature,
+        trend,
+        // softLimitTokens is the *effective* limit (override, else the computed
+        // even-split default) and drives isOverSoftLimit. softLimitOverride is
+        // the admin's explicit setting, null when unset — the UI must use this
+        // one to decide whether a limit is configured at all.
+        softLimitTokens: summary.softLimitTokens,
+        softLimitOverride: summary.softLimitOverride,
+        isOverSoftLimit: summary.isOverSoftLimit,
+      },
+    });
   } catch (err) {
     next(err);
   }

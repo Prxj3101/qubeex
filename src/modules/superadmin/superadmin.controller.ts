@@ -657,6 +657,20 @@ export const getAIUsage = async (
   }
 };
 
+export const getInstitutionAiUsage = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { range = "1M" } = req.query as { range?: string };
+    const data = await service.getInstitutionAiUsage(req.params.id as string, range);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // VAULT
 // ─────────────────────────────────────────────────────────────────────────────

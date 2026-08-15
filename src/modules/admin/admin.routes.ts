@@ -6,14 +6,14 @@ import { requirePermission } from "../../middlewares/requirePermission.middlewar
 import { prisma } from "../../utils/prisma";
 import { setPresence } from "../../services/presence.service";
 import { generateSignedAvatarUrl } from "../../services/storage.service";
-import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdmin, updateSubAdminMe, uploadSubAdminPhoto, updateSubAdminPermissions, deactivateSubAdmin, activateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
+import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, updateTeacherAiSoftLimit, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdmin, updateSubAdminMe, uploadSubAdminPhoto, updateSubAdminPermissions, deactivateSubAdmin, activateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview, uploadTicketAttachment, ticketAttachmentUpload } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
 import { getOverview } from "./overview.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, adminGetDivisionOnlineMarksheet, assignClassTeacher } from "./marksheet.controller";
 import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
-import { getAttendanceInsights, getFeeInsights, getAiUsageInsights, getUsersInsights } from "./insights.controller";
+import { getAttendanceInsights, getFeeInsights, getAiUsageInsights, getUsersInsights, getTeacherAiUsage } from "./insights.controller";
 import {
   getProfile as sharedGetProfile,
   updateProfile as sharedUpdateProfile,
@@ -133,6 +133,8 @@ router.get("/teachers", ...TEACHERS_READ, listTeachers);
 router.post("/teachers", ...ADMIN_ONLY, addTeacher);
 router.get("/teachers/:id", ...TEACHERS_READ, getTeacher);
 router.patch("/teachers/:id", ...ADMIN_ONLY, updateTeacher);
+router.patch("/teachers/:id/ai-soft-limit", ...ADMIN_ONLY, updateTeacherAiSoftLimit);
+router.get("/teachers/:id/ai-usage", ...TEACHERS_READ, getTeacherAiUsage);
 router.post(
   "/teachers/:id/avatar",
   ...ADMIN_ONLY,

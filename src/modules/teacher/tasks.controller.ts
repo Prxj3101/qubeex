@@ -30,6 +30,7 @@ import {
 } from "./tasks.schema";
 import { redis, isRedisReady } from "../../utils/redis";
 import { getAiTokenLimit } from "../../services/billing.service";
+import { recordAiUsage, type AiFeature } from "../../services/ai-usage.service";
 import { generateTestResultPdf } from "../../services/testResultPdf.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
@@ -51,6 +52,7 @@ const openai: import("openai").OpenAI | null = OpenAIModule
     )
   : null;
 const AI_MODEL = process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "llama-3.3-70b-versatile";
+const AI_PROVIDER: "openai" | "groq" = process.env.OPENAI_API_KEY ? "openai" : "groq";
 
 // ── Upload config ─────────────────────────────────────────────────────────────
 export const taskUpload = multer({
@@ -82,12 +84,6 @@ async function checkTokenPool(institutionId: string): Promise<void> {
   if (limitN > 0 && usedN >= limitN) {
     throw Object.assign(new Error("Token limit reached"), { statusCode: 429 });
   }
-}
-
-async function deductTokens(institutionId: string, tokens: number, teacherId?: string): Promise<void> {
-  if (!redis || !isRedisReady || tokens <= 0) return;
-  await redis.incrby(`ai:usage:institution:${institutionId}`, tokens).catch(() => {});
-  if (teacherId) await redis.incrby(`ai:usage:teacher:${teacherId}`, tokens).catch(() => {});
 }
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
@@ -398,7 +394,8 @@ async function processPdfInBackground(
   promptText: string,
   more: boolean,
   containerId: string,
-  sourceFile: string
+  sourceFile: string,
+  userId: string
 ) {
   try {
     const text = await extractPdfText(buffer);
@@ -428,7 +425,6 @@ async function processPdfInBackground(
     }
 
     const allQuestions: TaskQuestion[] = [];
-    let totalTokens = 0;
 
     for (const chunk of processChunk) {
       let userMessage = `${existingList}Notes:\n${chunk}`;
@@ -458,17 +454,33 @@ async function processPdfInBackground(
         break;
       }
 
-      const completion = await openai.chat.completions.create({
-        model: AI_MODEL,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: GENERATION_SYSTEM_PROMPT },
-          { role: "user", content: userMessage },
-        ],
-        temperature: 0.2,
-      });
+      let completion;
+      try {
+        completion = await openai.chat.completions.create({
+          model: AI_MODEL,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: GENERATION_SYSTEM_PROMPT },
+            { role: "user", content: userMessage },
+          ],
+          temperature: 0.2,
+        });
+      } catch (err) {
+        await recordAiUsage({
+          institutionId, teacherId, userId, userRole: "TEACHER",
+          feature: "TASK_QUESTION_GENERATION" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+          requestType: "chat_completion", status: "FAILED", error: err instanceof Error ? err.message : String(err),
+        });
+        continue;
+      }
 
-      totalTokens += completion.usage?.total_tokens ?? 0;
+      await recordAiUsage({
+        institutionId, teacherId, userId, userRole: "TEACHER",
+        feature: "TASK_QUESTION_GENERATION" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+        requestType: "chat_completion", status: "SUCCESS",
+        inputTokens: completion.usage?.prompt_tokens, outputTokens: completion.usage?.completion_tokens,
+        totalTokens: completion.usage?.total_tokens,
+      });
 
       let parsed: { questions: Array<{ type: string; question: string; details: Record<string, unknown> }> };
       try {
@@ -555,8 +567,6 @@ async function processPdfInBackground(
       }
     }
 
-    await deductTokens(institutionId, totalTokens, teacherId);
-
     await academicDb().taskPdfUpload.update({
       where: { id: uploadId },
       data: { status: "completed", questionCount: allQuestions.length },
@@ -612,7 +622,8 @@ export const generateQuestions = async (
     setImmediate(() => {
       processPdfInBackground(
         upload.id, buffer, teacherId, container.subjectId, institutionId,
-        body.prompt ?? "", body.more ?? false, container.id, upload.displayName
+        body.prompt ?? "", body.more ?? false, container.id, upload.displayName,
+        userId
       );
     });
 

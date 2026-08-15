@@ -16,6 +16,7 @@ import { getInstitutionUsersForMonth } from "../../services/userDirectory.servic
 import { getAcademicClient } from "../../services/tenantDb.service";
 import type { AcademicClient } from "../../utils/academicContext";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooManyRequestsError } from "../../utils/errors";
+import { getInstitutionUsageSummary, getPlatformUsageSummary } from "../../services/ai-usage.service";
 import { getCache, setCache, delCache } from "../../utils/cache";
 import { redis, isRedisReady } from "../../utils/redis";
 import bcrypt from "bcrypt";
@@ -1652,20 +1653,25 @@ export const getSystemHealth = async () => {
 // AI USAGE
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const getAIUsage = async (_range: string) => {
-  // Placeholder — real implementation requires an AIUsageLog model
-  // populated whenever AI calls are made in the platform
+export const getAIUsage = async (range: string) => {
+  const summary = await getPlatformUsageSummary(range);
   return {
     summary: {
-      totalTokens: 0,
-      totalCost: 0,
-      avgCostPerInstitution: 0,
-      totalRequests: 0,
+      totalTokens: summary.totalTokens,
+      totalRequests: summary.totalRequests,
+      successRequests: summary.successRequests,
+      failedRequests: summary.failedRequests,
     },
-    trend: [],
-    modelSplit: [],
-    perInstitution: [],
+    trend: summary.trend,
+    byFeature: summary.byFeature,
+    perInstitution: summary.byInstitution,
   };
+};
+
+export const getInstitutionAiUsage = async (institutionId: string, range: string) => {
+  const institution = await prisma.institution.findUnique({ where: { id: institutionId }, select: { id: true } });
+  if (!institution) throw new NotFoundError("Institution not found");
+  return getInstitutionUsageSummary(institutionId, range);
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

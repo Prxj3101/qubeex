@@ -4,6 +4,14 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
+import { redis } from "../../utils/redis";
+import {
+  getTeacherUsageSummary,
+  getInstitutionAiTokenLimit,
+  rangeToFromDate,
+  bucketEvents,
+  bucketGranularity,
+} from "../../services/ai-usage.service";
 
 function calcPct(present: number, absent: number, late: number): number | null {
   const total = present + absent + late;
@@ -153,6 +161,63 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
         attendanceTrend,
         shortAttendance,
         auditLogs: auditLogRows.map((l) => ({ ...l, createdAt: l.createdAt.toISOString() })),
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Self-service — a teacher's own AI usage against the shared institution pool.
+// Scoped entirely from the JWT's userId; there is no :id param, so a teacher
+// can never query another teacher's usage through this route.
+export async function getMyAiUsage(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution associated with this account" });
+      return;
+    }
+
+    const teacher = await academicDb().teacher.findFirst({ where: { userId, institutionId } });
+    if (!teacher) {
+      res.status(404).json({ success: false, error: "Teacher profile not found" });
+      return;
+    }
+
+    const range = (req.query.range as string) ?? "1M";
+    const from = rangeToFromDate(range as "7D" | "1M" | "3M" | "6M" | "YTD");
+    const to = new Date();
+
+    const [summary, institutionLimit, poolUsedRaw] = await Promise.all([
+      getTeacherUsageSummary(institutionId, teacher.id, from, to),
+      getInstitutionAiTokenLimit(institutionId),
+      redis?.get(`ai:usage:institution:${institutionId}`) ?? Promise.resolve(null),
+    ]);
+
+    const events = await prisma.aiUsageEvent.findMany({
+      where: { institutionId, teacherId: teacher.id, createdAt: { gte: from } },
+      select: { createdAt: true, totalTokens: true },
+    });
+    const trend = bucketEvents(events, bucketGranularity(range), from, to);
+
+    const institutionPoolUsed = Number(poolUsedRaw ?? 0) || 0;
+
+    res.json({
+      success: true,
+      data: {
+        totalRequests: summary.totalRequests,
+        successRequests: summary.successRequests,
+        failedRequests: summary.failedRequests,
+        totalTokens: summary.totalTokens,
+        institutionPoolLimit: institutionLimit,
+        institutionPoolUsed,
+        poolSharePct: institutionLimit > 0 ? Math.round((summary.totalTokens / institutionLimit) * 10000) / 100 : 0,
+        byFeature: summary.byFeature,
+        trend,
+        softLimitTokens: summary.softLimitTokens,
+        softLimitOverride: summary.softLimitOverride,
+        isOverSoftLimit: summary.isOverSoftLimit,
       },
     });
   } catch (err) {

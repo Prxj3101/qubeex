@@ -1496,7 +1496,12 @@ export const downloadAttemptPdfForTeacher = async (req: AuthRequest, res: Respon
     const answersWithSections = attempt.answers.map((a) => {
       const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
       const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
-      return { ...a, sectionTitle: section?.title ?? null, sectionInstruction: section?.instruction ?? null };
+      return {
+        ...a,
+        generatedOptions: Array.isArray(a.generatedOptions) ? (a.generatedOptions as string[]) : null,
+        sectionTitle: section?.title ?? null,
+        sectionInstruction: section?.instruction ?? null,
+      };
     });
 
     const pdfBuffer = await generateTestResultPdf({

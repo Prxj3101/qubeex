@@ -447,7 +447,7 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
 
     // Online: same live-computed source the online marksheet tab and
     // leaderboard read from — no publish step of its own, always current.
-    const online = await computeOnlineMarksheet(student.division.id, institutionId, null);
+    const online = await computeOnlineMarksheet(student.division.id, institutionId!, null);
 
     let grandScored = 0;
     let grandMax = 0;
@@ -969,7 +969,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
     // attempt per student per test) — same source the online marksheet tab
     // and leaderboard read from. Computed unconditionally (no offline
     // marksheet required), unlike offline which needs a published sheet.
-    const online = await computeOnlineMarksheet(divisionId, institutionId, null);
+    const online = await computeOnlineMarksheet(divisionId, institutionId!, null);
     const onlineColumnsFlat = Object.values(online.examColumns).flat();
     for (const c of onlineColumnsFlat) onlineGrandMax += c.maxMarks;
     for (const studentScores of Object.values(online.scores)) {

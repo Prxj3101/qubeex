@@ -172,7 +172,7 @@ import {
   updateTask,
   deleteTask,
 } from "./notepad.controller";
-import { getOverview } from "./overview.controller";
+import { getOverview, getMyAiUsage } from "./overview.controller";
 import { getProfile, updateProfile, changePassword, getLoginActivity } from "../shared/profile.controller";
 
 const router = Router();
@@ -197,6 +197,7 @@ router.post("/presence", ...T, async (req: AuthRequest, res: Response, next: Nex
 
 // ── Overview ──────────────────────────────────────────────────────────────────
 router.get("/overview", ...T, getOverview);
+router.get("/ai-usage", ...T, getMyAiUsage);
 
 // ── Me ────────────────────────────────────────────────────────────────────────
 router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {

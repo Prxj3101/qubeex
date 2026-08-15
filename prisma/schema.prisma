@@ -183,6 +183,7 @@ model Institution {
   studentFeePayments StudentFeePayment[]
   promotionBatches         PromotionBatch[]
   studentPromotionOutcomes StudentPromotionOutcome[]
+  aiUsageEvents            AiUsageEvent[]
 }
 
 model User {
@@ -217,6 +218,7 @@ model User {
   studentRemarksReported  StudentRemark[] @relation("StudentRemarkReporter")
   studentRemarksAssigned  StudentRemark[] @relation("StudentRemarkAssignee")
   studentRemarksReviewed  StudentRemark[] @relation("StudentRemarkReviewer")
+  aiUsageEvents           AiUsageEvent[]
 }
 
 enum TrialOutcome {
@@ -335,6 +337,7 @@ model Teacher {
   experience    String?
   prefix        String?
   title         String? @default("Teacher")
+  aiSoftLimitTokens Int? // admin-set monthly override; null = use computed default (pool ÷ teachers ÷ 26 days)
 
   status   TeacherStatus @default(ACTIVE)
   joinedAt DateTime      @default(now())
@@ -1509,6 +1512,40 @@ model MarksheetGradedScore {
 
   @@unique([gradedSubjectId, studentId])
   @@index([marksheetId])
+}
+
+// One row per AI provider call (chat completion). Central table — never
+// routed through academicDb() — so SuperAdmin platform-wide aggregation
+// stays a single query. institutionId/userId relate to Institution/User
+// (always central); teacherId is a plain, unrelated scalar so this table
+// never takes on an FK dependency on wherever a BYOD institution's Teacher
+// rows happen to live.
+model AiUsageEvent {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  teacherId     String?
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  userRole      String
+
+  feature     String // "BLACKBOARD_CONTEXT" | "BLACKBOARD_SCAN" | "BLACKBOARD_CHAT" | "BLACKBOARD_QUIZ" | "TASK_QUESTION_GENERATION"
+  provider    String // "openai" | "groq"
+  model       String // "gpt-4.1-mini" | "llama-3.3-70b-versatile"
+  requestType String // "chat_completion"
+
+  inputTokens  Int?
+  outputTokens Int?
+  totalTokens  Int?
+
+  status String // "SUCCESS" | "FAILED"
+  error  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([institutionId, createdAt])
+  @@index([teacherId, createdAt])
+  @@index([institutionId, feature, createdAt])
 }
 
 // Per-student "Conduct" + "Remarks" on the offline report card — written by

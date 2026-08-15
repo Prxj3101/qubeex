@@ -10,6 +10,7 @@ const multer = require("multer");
 import { redis, isRedisReady } from "../../utils/redis";
 import { getCache, setCache } from "../../utils/cache";
 import { getAiTokenLimit } from "../../services/billing.service";
+import { recordAiUsage, type AiFeature } from "../../services/ai-usage.service";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const OpenAIModule = (process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY) ? require("openai") : null;
@@ -21,6 +22,7 @@ const openai: import("openai").OpenAI | null = OpenAIModule
     )
   : null;
 const AI_MODEL = process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "llama-3.3-70b-versatile";
+const AI_PROVIDER: "openai" | "groq" = process.env.OPENAI_API_KEY ? "openai" : "groq";
 
 async function checkTokenPool(institutionId: string): Promise<void> {
   if (!openai) return;
@@ -46,12 +48,6 @@ async function checkTokenPool(institutionId: string): Promise<void> {
   if (limitN > 0 && usedN >= limitN) {
     throw Object.assign(new Error("Token limit reached"), { statusCode: 429 });
   }
-}
-
-async function deductTokens(institutionId: string, tokens: number, teacherId?: string): Promise<void> {
-  if (!redis || !isRedisReady || tokens <= 0) return;
-  await redis.incrby(`ai:usage:institution:${institutionId}`, tokens).catch(() => {});
-  if (teacherId) await redis.incrby(`ai:usage:teacher:${teacherId}`, tokens).catch(() => {});
 }
 
 export const upload = multer({
@@ -1113,7 +1109,8 @@ const CONTEXT_SYSTEM_PROMPT =
 async function buildDocumentContext(
   pageText: string,
   institutionId: string,
-  teacherId: string
+  teacherId: string,
+  userId: string
 ): Promise<DocumentContext | null> {
   if (!openai) return null;
 
@@ -1121,17 +1118,33 @@ async function buildDocumentContext(
   const cached = await getCache<DocumentContext>(cacheKey);
   if (cached) return cached;
 
-  const completion = await openai.chat.completions.create({
-    model: AI_MODEL,
-    messages: [
-      { role: "system", content: CONTEXT_SYSTEM_PROMPT },
-      { role: "user", content: `Combined content from the selected page(s):\n${pageText}` },
-    ],
-    response_format: { type: "json_object" },
-    max_tokens: 900,
-  });
+  let completion;
+  try {
+    completion = await openai.chat.completions.create({
+      model: AI_MODEL,
+      messages: [
+        { role: "system", content: CONTEXT_SYSTEM_PROMPT },
+        { role: "user", content: `Combined content from the selected page(s):\n${pageText}` },
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 900,
+    });
+  } catch (err) {
+    await recordAiUsage({
+      institutionId, teacherId, userId, userRole: "TEACHER",
+      feature: "BLACKBOARD_CONTEXT" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+      requestType: "chat_completion", status: "FAILED", error: err instanceof Error ? err.message : String(err),
+    });
+    throw err;
+  }
 
-  await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
+  await recordAiUsage({
+    institutionId, teacherId, userId, userRole: "TEACHER",
+    feature: "BLACKBOARD_CONTEXT" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+    requestType: "chat_completion", status: "SUCCESS",
+    inputTokens: completion.usage?.prompt_tokens, outputTokens: completion.usage?.completion_tokens,
+    totalTokens: completion.usage?.total_tokens,
+  });
 
   let parsed: Partial<DocumentContext>;
   try {
@@ -1202,7 +1215,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     // Cached by content hash, so repeat scans of the same pages (different
     // instructions, switching summary/notes) skip this entirely.
     const context = data.pageText
-      ? await buildDocumentContext(data.pageText, institutionId, teacherId)
+      ? await buildDocumentContext(data.pageText, institutionId, teacherId, userId)
       : null;
 
     // ── Stage 3: interpret the instructions against that understanding ───────
@@ -1250,19 +1263,35 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       userContent = `Topic: ${data.topic}\n${scanInstructionBlock}`;
     }
 
-    const completion = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userContent },
-      ],
-      response_format: { type: "json_object" },
-      // Notes mode asks for a much longer detailedNotes field on top of the
-      // usual fields, so it needs a bigger budget than a quick summary.
-      max_tokens: data.mode === "notes" ? 1400 : 650,
-    });
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userContent },
+        ],
+        response_format: { type: "json_object" },
+        // Notes mode asks for a much longer detailedNotes field on top of the
+        // usual fields, so it needs a bigger budget than a quick summary.
+        max_tokens: data.mode === "notes" ? 1400 : 650,
+      });
+    } catch (err) {
+      await recordAiUsage({
+        institutionId, teacherId, userId, userRole: "TEACHER",
+        feature: "BLACKBOARD_SCAN" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+        requestType: "chat_completion", status: "FAILED", error: err instanceof Error ? err.message : String(err),
+      });
+      throw err;
+    }
 
-    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
+    await recordAiUsage({
+      institutionId, teacherId, userId, userRole: "TEACHER",
+      feature: "BLACKBOARD_SCAN" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+      requestType: "chat_completion", status: "SUCCESS",
+      inputTokens: completion.usage?.prompt_tokens, outputTokens: completion.usage?.completion_tokens,
+      totalTokens: completion.usage?.total_tokens,
+    });
 
     let parsed: Record<string, unknown>;
     try {
@@ -1374,7 +1403,7 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
     // aiScan's cached context, so this is free when those pages were already
     // scanned.
     const docContext = data.pageText
-      ? await buildDocumentContext(data.pageText, institutionId, teacherId)
+      ? await buildDocumentContext(data.pageText, institutionId, teacherId, userId)
       : null;
 
     // The assistant must not police scope. A teacher asking about surrogacy
@@ -1421,16 +1450,32 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
       systemContent = `You are a classroom teaching assistant. Answer clearly and concisely, with educational accuracy. ${scopeRule}`;
     }
 
-    const completion = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [
-        { role: "system", content: systemContent },
-        ...data.messages,
-      ],
-      max_tokens: 500,
-    });
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          { role: "system", content: systemContent },
+          ...data.messages,
+        ],
+        max_tokens: 500,
+      });
+    } catch (err) {
+      await recordAiUsage({
+        institutionId, teacherId, userId, userRole: "TEACHER",
+        feature: "BLACKBOARD_CHAT" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+        requestType: "chat_completion", status: "FAILED", error: err instanceof Error ? err.message : String(err),
+      });
+      throw err;
+    }
 
-    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
+    await recordAiUsage({
+      institutionId, teacherId, userId, userRole: "TEACHER",
+      feature: "BLACKBOARD_CHAT" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+      requestType: "chat_completion", status: "SUCCESS",
+      inputTokens: completion.usage?.prompt_tokens, outputTokens: completion.usage?.completion_tokens,
+      totalTokens: completion.usage?.total_tokens,
+    });
 
     res.json({ success: true, data: { reply: completion.choices[0].message.content ?? "" } });
   } catch (err) { next(err); }
@@ -1487,7 +1532,7 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
     // scanned, and gives the generator a real understanding of the material
     // rather than only the raw text.
     const quizContext = data.pageText
-      ? await buildDocumentContext(data.pageText, institutionId, teacherId)
+      ? await buildDocumentContext(data.pageText, institutionId, teacherId, userId)
       : null;
 
     // "at hard difficulty" on its own is a label the model applies weakly and
@@ -1549,25 +1594,41 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
         ].filter(Boolean).join("\n")
       : [`Topic: ${data.topic}`, instructionBlock, avoidBlock].filter(Boolean).join("\n");
 
-    const completion = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userContent },
-      ],
-      response_format: { type: "json_object" },
-      // Quizzes are the one place here where we actively want sampling
-      // variance — a teacher regenerating expects a different paper, not the
-      // same one reworded. Set explicitly rather than relying on the
-      // provider default, which differs between OpenAI and Groq.
-      temperature: 1,
-      // Each question now carries an explanation on top of its options, so the
-      // budget scales with question count rather than sitting at a flat cap
-      // that would truncate the JSON mid-array for larger quizzes.
-      max_tokens: Math.min(600 + data.count * 220, 3000),
-    });
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userContent },
+        ],
+        response_format: { type: "json_object" },
+        // Quizzes are the one place here where we actively want sampling
+        // variance — a teacher regenerating expects a different paper, not the
+        // same one reworded. Set explicitly rather than relying on the
+        // provider default, which differs between OpenAI and Groq.
+        temperature: 1,
+        // Each question now carries an explanation on top of its options, so the
+        // budget scales with question count rather than sitting at a flat cap
+        // that would truncate the JSON mid-array for larger quizzes.
+        max_tokens: Math.min(600 + data.count * 220, 3000),
+      });
+    } catch (err) {
+      await recordAiUsage({
+        institutionId, teacherId, userId, userRole: "TEACHER",
+        feature: "BLACKBOARD_QUIZ" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+        requestType: "chat_completion", status: "FAILED", error: err instanceof Error ? err.message : String(err),
+      });
+      throw err;
+    }
 
-    await deductTokens(institutionId, completion.usage?.total_tokens ?? 0, teacherId);
+    await recordAiUsage({
+      institutionId, teacherId, userId, userRole: "TEACHER",
+      feature: "BLACKBOARD_QUIZ" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+      requestType: "chat_completion", status: "SUCCESS",
+      inputTokens: completion.usage?.prompt_tokens, outputTokens: completion.usage?.completion_tokens,
+      totalTokens: completion.usage?.total_tokens,
+    });
 
     let parsed: { questions?: unknown };
     try {

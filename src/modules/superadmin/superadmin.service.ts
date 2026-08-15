@@ -17,6 +17,7 @@ import { getAcademicClient } from "../../services/tenantDb.service";
 import type { AcademicClient } from "../../utils/academicContext";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooManyRequestsError } from "../../utils/errors";
 import { getCache, setCache, delCache } from "../../utils/cache";
+import { redis, isRedisReady } from "../../utils/redis";
 import bcrypt from "bcrypt";
 
 const CACHE_KEYS = {
@@ -827,13 +828,15 @@ export const getTrialUsage = async (id: string) => {
     ? Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
     : null;
 
-  const storageGbUsed = bytesToGb(await getInstitutionStorageBytes(id));
+  const [storageGbUsed, aiTokensUsed] = await Promise.all([
+    bytesToGb(await getInstitutionStorageBytes(id)),
+    getAiTokensUsed(id),
+  ]);
 
   return {
     users:      { used: institution._count.users, limit: 500 },
-    // Storage is real (summed from Cloudflare R2); AI tokens still pending.
     storageGb:  { used: storageGbUsed,            limit: 10 },
-    aiTokens:   { used: 0,                        limit: PLAN_AI_TOKENS.TRIAL },
+    aiTokens:   { used: aiTokensUsed,             limit: PLAN_AI_TOKENS.TRIAL },
     daysRemaining,
     trialEndDate: endDate?.toISOString() ?? null,
     status: sub?.status ?? null,
@@ -1042,7 +1045,17 @@ export const getAuditLogs = async (query: {
 // PLAN MANAGEMENT
 // ─────────────────────────────────────────────────────────────────────────────
 
-function computeUsageMeters(planName: string, addons: unknown, storageGbUsed = 0) {
+async function getAiTokensUsed(institutionId: string): Promise<number> {
+  if (!redis || !isRedisReady) return 0;
+  try {
+    const used = await redis.get(`ai:usage:institution:${institutionId}`);
+    return Number(used ?? 0) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function computeUsageMeters(institutionId: string, planName: string, addons: unknown, storageGbUsed = 0) {
   const baseTokens = PLAN_AI_TOKENS[planName as keyof typeof PLAN_AI_TOKENS] ?? PLAN_AI_TOKENS.BASIC;
   const normalizedAddons = (addons && typeof addons === "object" && !Array.isArray(addons))
     ? addons as Record<string, unknown>
@@ -1057,9 +1070,10 @@ function computeUsageMeters(planName: string, addons: unknown, storageGbUsed = 0
     .reduce((sum, s) => sum + (s.gbPurchased ?? 0), 0);
 
   const basePlanStorageGb = planName === "PRO" ? 1024 : 500;
+  const tokensUsed = await getAiTokensUsed(institutionId);
 
   return {
-    aiTokens: { used: 0, total: baseTokens + extraTokens },
+    aiTokens: { used: tokensUsed, total: baseTokens + extraTokens },
     storageGb: { used: storageGbUsed, total: basePlanStorageGb + extraStorageGb },
   };
 }
@@ -1129,7 +1143,8 @@ export const getInstitutionPlanDashboard = async (id: string) => {
         }
       : null,
     addonStatus: (institution.subscription.addons ?? {}) as Record<string, unknown>,
-    usageMeters: computeUsageMeters(
+    usageMeters: await computeUsageMeters(
+      id,
       institution.subscription.plan.name,
       institution.subscription.addons,
       bytesToGb(await getInstitutionStorageBytes(id)),

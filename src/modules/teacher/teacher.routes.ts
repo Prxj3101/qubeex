@@ -129,6 +129,7 @@ import {
   removeTestQuestion,
   getTestResults,
   downloadTestResults,
+  downloadAttemptPdfForTeacher,
   savePaper,
   listModules,
   createModule,
@@ -154,12 +155,13 @@ import {
   deleteContainer,
 } from "./tasks.controller";
 import {
-  initMarksheet, getDivisionMarksheet,
+  initMarksheet, getDivisionMarksheet, getDivisionOnlineMarksheet,
   addColumn, editColumn, deleteColumn, reorderColumns,
   setSubjectConfig, bulkUpsertScores,
   addGradedSubject, editGradedSubject, deleteGradedSubject,
   reorderGradedSubjects, updateGradedSectionTitle, bulkUpsertGradedScores,
   publishMarksheet, downloadMarksheet, updateMarksheetGradeScale,
+  upsertMarksheetRemark,
 } from "./marksheet.controller";
 import {
   getNotepad,
@@ -403,6 +405,7 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
         subjectName: a.subject!.name,
         subjectColor: a.subject!.color,
         studentCount: a.division._count.students,
+        createdAt: a.createdAt.toISOString(),
       }));
 
     res.json({ success: true, data: { classTeacher, subjectTeacher } });
@@ -676,6 +679,7 @@ router.post(
         actorRole: "TEACHER",
         institutionId,
         details: `Added student ${data.name} to ${division.standard.name} - ${division.name}`,
+        metadata: { studentId: student.studentId, email: createdStudentUserMap.get(student.userId)?.email },
       });
 
       res.status(201).json({ success: true, data: { student, tempPassword: plainPassword } });
@@ -1122,6 +1126,7 @@ router.post("/tasks/tests/:id/questions", ...T, addTestQuestion);
 router.delete("/tasks/tests/:id/questions/:qid", ...T, removeTestQuestion);
 router.get("/tasks/tests/:id/results", ...T, getTestResults);
 router.get("/tasks/tests/:id/results/download", ...T, downloadTestResults);
+router.get("/tasks/attempts/:id/pdf", ...T, downloadAttemptPdfForTeacher);
 
 // ── Tasks — Assignments ───────────────────────────────────────────────────────
 router.get("/tasks/assignments", ...T, listAssignments);
@@ -1577,6 +1582,7 @@ router.get(
 // ── Marksheet ─────────────────────────────────────────────────────────────────
 router.post("/marksheet/division/:divisionId/init", ...T, initMarksheet);
 router.get("/marksheet/division/:divisionId", ...T, getDivisionMarksheet);
+router.get("/marksheet/division/:divisionId/online", ...T, getDivisionOnlineMarksheet);
 router.post("/marksheet/:id/columns", ...T, addColumn);
 router.patch("/marksheet/:id/columns/:colId", ...T, editColumn);
 router.delete("/marksheet/:id/columns/:colId", ...T, deleteColumn);
@@ -1590,6 +1596,7 @@ router.put("/marksheet/:id/graded-subjects/reorder", ...T, reorderGradedSubjects
 router.patch("/marksheet/:id/graded-section-title", ...T, updateGradedSectionTitle);
 router.patch("/marksheet/:id/grade-scale", ...T, updateMarksheetGradeScale);
 router.put("/marksheet/:id/graded-scores", ...T, bulkUpsertGradedScores);
+router.put("/marksheet/:id/remarks/:studentId", ...T, upsertMarksheetRemark);
 router.post("/marksheet/:id/publish", ...T, publishMarksheet);
 router.get("/marksheet/:id/download", ...T, downloadMarksheet);
 

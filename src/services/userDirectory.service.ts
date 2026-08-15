@@ -84,7 +84,7 @@ export async function getInstitutionUsersForMonth(
     acad.student.findMany({
       where: { institutionId },
       select: {
-        userId: true, studentId: true, phone: true, avatarUrl: true,
+        userId: true, studentId: true, phone: true, avatarUrl: true, hasLoggedIn: true,
         standard: { select: { name: true } },
         division: { select: { name: true } },
       },
@@ -149,13 +149,21 @@ export async function getInstitutionUsersForMonth(
   const pushIfExisted = (opts: {
     userId: string; name: string | null; email: string; createdAt: Date; isActive: boolean;
     role: DirectoryRole; businessId: string; phone: string | null; classLabel: string | null; addedBy: string | null;
-    avatarUrl: string | null;
+    avatarUrl: string | null; neverLoggedIn: boolean;
   }) => {
     if (opts.createdAt > monthEnd) return; // didn't exist yet this month
     const events = eventsByUser.get(opts.userId) ?? [];
-    const status: "ACTIVE" | "INACTIVE" = events.length > 0
+    let status: "ACTIVE" | "INACTIVE" = events.length > 0
       ? (wasActiveDuringMonth(events, monthStart, monthEnd) ? "ACTIVE" : "INACTIVE")
       : (opts.isActive ? "ACTIVE" : "INACTIVE"); // legacy fallback: no tracked history, use current state
+    // A user who has NEVER completed their very first login can't be counted
+    // as Active, no matter what the billing status says — they haven't
+    // actually started using the account yet. This is a one-way flag (set
+    // once on first login, e.g. Student.hasLoggedIn) — unlike a "must change
+    // password" flag, it does NOT get reset by a later password reset, so a
+    // student who was active all month and gets their password reset near
+    // month-end still correctly counts as Active for that month.
+    if (opts.neverLoggedIn) status = "INACTIVE";
     results.push({
       id: opts.userId,
       name: opts.name ?? "—",
@@ -177,6 +185,7 @@ export async function getInstitutionUsersForMonth(
       role: "ADMIN", businessId: a.displayId ?? "—", phone: institution?.adminPhone ?? null,
       classLabel: null, addedBy: addedByEmail.get(a.email) ?? null,
       avatarUrl: signAvatar(institution?.adminAvatarUrl),
+      neverLoggedIn: false, // no first-login tracking for this role yet
     });
   }
   for (const sa of subAdmins) {
@@ -185,6 +194,7 @@ export async function getInstitutionUsersForMonth(
       role: "SUB_ADMIN", businessId: sa.user.displayId ?? "—", phone: sa.phone,
       classLabel: null, addedBy: addedByEmail.get(sa.user.email) ?? null,
       avatarUrl: signAvatar(sa.avatarUrl),
+      neverLoggedIn: false, // no first-login tracking for this role yet
     });
   }
   for (const t of teachers) {
@@ -195,17 +205,24 @@ export async function getInstitutionUsersForMonth(
       role: "TEACHER", businessId: t.teacherId, phone: t.phone,
       classLabel: null, addedBy: addedByEmail.get(u.email) ?? null,
       avatarUrl: signAvatar(t.avatarUrl),
+      neverLoggedIn: false, // no first-login tracking for this role yet
     });
   }
   for (const s of students) {
     const u = personUsers.get(s.userId);
     if (!u) continue; // orphaned academic row with no central user — skip
     const classLabel = s.division ? s.division.name : null;
+    // Students without a real email get a synthetic login placeholder
+    // (`<studentId>@students.qubeex.local`, see teacher.routes.ts student
+    // creation) purely so the login system has something unique to key on —
+    // it was never meant to be shown to anyone as "the student's email".
+    const displayEmail = u.email.endsWith("@students.qubeex.local") ? "" : u.email;
     pushIfExisted({
-      userId: u.id, name: u.name, email: u.email, createdAt: u.createdAt, isActive: u.isActive,
+      userId: u.id, name: u.name, email: displayEmail, createdAt: u.createdAt, isActive: u.isActive,
       role: "STUDENT", businessId: s.studentId, phone: s.phone,
       classLabel, addedBy: addedByEmail.get(u.email) ?? null,
       avatarUrl: signAvatar(s.avatarUrl),
+      neverLoggedIn: !s.hasLoggedIn, // one-way flag, unaffected by later password resets
     });
   }
 

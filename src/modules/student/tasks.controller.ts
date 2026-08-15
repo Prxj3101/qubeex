@@ -13,6 +13,7 @@ import {
   parseSections,
 } from "../teacher/tasks.controller";
 import { uploadAttachmentToR2 } from "../../services/storage.service";
+import { generateTestResultPdf } from "../../services/testResultPdf.service";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
@@ -28,12 +29,12 @@ export const assignmentUpload = multer({
 
 async function getStudentForRequest(
   req: AuthRequest
-): Promise<{ id: string; institutionId: string; divisionId: string; rollNo: string; name: string }> {
+): Promise<{ id: string; institutionId: string; divisionId: string; rollNo: string; name: string; studentId: string }> {
   const { userId, institutionId } = req.user!;
   if (!institutionId) throw new BadRequestError("No institution associated with this account");
   const student = await academicDb().student.findFirst({
     where: { userId, institutionId },
-    select: { id: true, divisionId: true, rollNo: true, userId: true },
+    select: { id: true, divisionId: true, rollNo: true, userId: true, studentId: true },
   });
   if (!student) throw new NotFoundError("Student profile not found");
   if (!student.divisionId) throw new BadRequestError("You are not assigned to a division yet");
@@ -47,6 +48,7 @@ async function getStudentForRequest(
     divisionId: student.divisionId,
     rollNo: student.rollNo,
     name: studentName,
+    studentId: student.studentId,
   };
 }
 
@@ -73,7 +75,7 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
     const attempts = testIds.length > 0
       ? await academicDb().taskTestAttempt.findMany({
           where: { testId: { in: testIds }, studentId: student.id },
-          select: { id: true, testId: true, status: true, totalScore: true, attemptNumber: true, endTime: true },
+          select: { id: true, testId: true, status: true, totalScore: true, attemptNumber: true, startTime: true, endTime: true, malpracticeFlag: true },
           orderBy: { attemptNumber: "desc" },
         })
       : [];
@@ -90,6 +92,23 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
 
       // The most recent completed attempt for deep-linking to result
       const lastCompletedAttempt = testAttempts.find((a) => a.status === "completed");
+
+      // All completed attempts (ascending) so the card can offer left/right
+      // navigation between attempt results without a round trip to the result
+      // page first — mirrors the result page's own attempt list.
+      const completedAttemptsAsc = completed
+        .slice()
+        .sort((a, b) => a.attemptNumber - b.attemptNumber)
+        .map((a) => ({
+          id: a.id,
+          attemptNumber: a.attemptNumber,
+          totalScore: a.totalScore,
+          maxScore: t.totalMarks,
+          percentage: t.totalMarks > 0 ? Math.round((a.totalScore / t.totalMarks) * 100) : 0,
+          startTime: a.startTime,
+          endTime: a.endTime,
+          malpracticeFlag: a.malpracticeFlag,
+        }));
 
       const isExpired = (t.status === "COMPLETED") || (t.validUntil !== null && t.validUntil < now);
       const isStarted = !t.startDate || t.startDate <= now;
@@ -130,7 +149,10 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
         bestScore,
         bestPercentage,
         lastAttemptId: lastCompletedAttempt?.id ?? null,
+        lastAttemptStartTime: lastCompletedAttempt?.startTime ?? null,
         lastAttemptEndTime: lastCompletedAttempt?.endTime ?? null,
+        lastAttemptMalpracticeFlag: lastCompletedAttempt?.malpracticeFlag ?? false,
+        attempts: completedAttemptsAsc,
       };
     });
 
@@ -399,6 +421,8 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
           select: {
             title: true, totalMarks: true, sections: true, durationMinutes: true, maxAttempts: true,
             questions: { select: { questionId: true, sectionId: true } },
+            subject: { select: { name: true } },
+            division: { select: { name: true } },
           },
         },
         answers: {
@@ -414,6 +438,15 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
     if (attempt.status !== "completed") throw new BadRequestError("Attempt is not yet submitted");
 
     const percentage = attempt.maxScore > 0 ? Math.round((attempt.totalScore / attempt.maxScore) * 100) : 0;
+
+    // All of this student's completed attempts on the same test, so the result
+    // page can offer left/right navigation between attempt 1, attempt 2, etc.
+    // instead of only ever being reachable one attempt at a time.
+    const siblingAttempts = await academicDb().taskTestAttempt.findMany({
+      where: { testId: attempt.testId, studentId: student.id, status: "completed" },
+      select: { id: true, attemptNumber: true, totalScore: true, maxScore: true },
+      orderBy: { attemptNumber: "asc" },
+    });
 
     // Section info isn't stored on TaskStudentAnswer - looked up from the
     // test's own question list + sections JSON, same as on resume.
@@ -443,10 +476,96 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
         attemptNumber: attempt.attemptNumber,
         startTime: attempt.startTime,
         endTime: attempt.endTime,
-        test: { title: attempt.test.title, totalMarks: attempt.test.totalMarks, durationMinutes: attempt.test.durationMinutes, maxAttempts: attempt.test.maxAttempts },
+        student: {
+          name: student.name,
+          rollNo: student.rollNo,
+          studentId: student.studentId,
+          className: `Class ${attempt.test.division.name}`,
+        },
+        test: {
+          title: attempt.test.title, totalMarks: attempt.test.totalMarks, durationMinutes: attempt.test.durationMinutes,
+          maxAttempts: attempt.test.maxAttempts, subjectName: attempt.test.subject.name,
+        },
+        attempts: siblingAttempts.map((s) => ({
+          id: s.id,
+          attemptNumber: s.attemptNumber,
+          totalScore: s.totalScore,
+          maxScore: s.maxScore,
+          percentage: s.maxScore > 0 ? Math.round((s.totalScore / s.maxScore) * 100) : 0,
+        })),
         answers: answersWithSections,
       },
     });
+  } catch (err) { next(err); }
+};
+
+// ── GET /student/tasks/attempts/:id/pdf — download own result as a PDF ────────
+// Same generator/layout the teacher's per-student download icon uses (see
+// downloadAttemptPdfForTeacher in teacher/tasks.controller.ts) — it's just a
+// static snapshot of one attempt, so there's no reason for the two to differ.
+export const downloadAttemptPdf = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const student = await getStudentForRequest(req);
+    const id = req.params.id as string;
+
+    const attempt = await academicDb().taskTestAttempt.findUnique({
+      where: { id },
+      include: {
+        test: {
+          select: {
+            title: true, sections: true, durationMinutes: true, maxAttempts: true,
+            questions: { select: { questionId: true, sectionId: true } },
+            subject: { select: { name: true } },
+            division: { select: { name: true } },
+          },
+        },
+        answers: {
+          select: {
+            questionId: true, generatedQuestion: true, generatedOptions: true,
+            studentAnswer: true, correctAnswer: true, isCorrect: true,
+          },
+          orderBy: { order: "asc" },
+        },
+      },
+    });
+    if (!attempt || attempt.studentId !== student.id) throw new NotFoundError("Attempt not found");
+    if (attempt.status !== "completed") throw new BadRequestError("Attempt is not yet submitted");
+
+    const percentage = attempt.maxScore > 0 ? Math.round((attempt.totalScore / attempt.maxScore) * 100) : 0;
+    const sectionsMeta = parseSections(attempt.test.sections);
+    const sectionByQuestionId = new Map(attempt.test.questions.map((tq) => [tq.questionId, tq.sectionId]));
+    const answersWithSections = attempt.answers.map((a) => {
+      const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
+      const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
+      return { ...a, sectionTitle: section?.title ?? null, sectionInstruction: section?.instruction ?? null };
+    });
+
+    const pdfBuffer = await generateTestResultPdf({
+      studentName: student.name,
+      rollNo: student.rollNo,
+      studentBusinessId: student.studentId,
+      className: `Class ${attempt.test.division.name}`,
+      subjectName: attempt.test.subject.name,
+      testTitle: attempt.test.title,
+      totalScore: attempt.totalScore,
+      maxScore: attempt.maxScore,
+      percentage,
+      malpracticeFlag: attempt.malpracticeFlag,
+      tabChangeCount: attempt.tabChangeCount,
+      attemptNumber: attempt.attemptNumber,
+      maxAttempts: attempt.test.maxAttempts,
+      durationMinutes: attempt.test.durationMinutes,
+      startTime: attempt.startTime,
+      endTime: attempt.endTime,
+      questionCount: attempt.answers.length,
+      answers: answersWithSections,
+    });
+
+    const safeName = student.name.replace(/[^a-z0-9]+/gi, "_");
+    const safeTitle = attempt.test.title.replace(/[^a-z0-9]+/gi, "_");
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="Result_${safeName}_${safeTitle}.pdf"`);
+    res.send(pdfBuffer);
   } catch (err) { next(err); }
 };
 

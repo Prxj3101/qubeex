@@ -7,10 +7,11 @@ import { prisma } from "../../utils/prisma";
 import { resolveUsers } from "../../services/userLookup.service";
 import { z } from "zod";
 import multer from "multer";
-import { listTests, startTest, submitTest, getAttempt, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload } from "./tasks.controller";
+import { listTests, startTest, submitTest, getAttempt, downloadAttemptPdf, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload } from "./tasks.controller";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
+import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
 // Notifications are institution-scoped (per NotificationRecipient.institutionId),
 // so the same handlers serve every role within an institution.
@@ -35,7 +36,13 @@ router.patch("/notifications/:recipientId/dismiss", ...S, dismissNotification);
 
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).trim().optional(),
-  email: z.string().email().toLowerCase().trim().optional(),
+  // Students without a real email have it shown as blank in the UI (the
+  // synthetic login placeholder is hidden from them) — editing any OTHER
+  // field (e.g. just Contact No) still resends that blank string. An empty
+  // string is handled in the route itself (not here) because whether it
+  // means "leave unchanged" or "actually clear it" depends on what the
+  // student's current email is.
+  email: z.union([z.string().email().toLowerCase().trim(), z.literal("")]).optional(),
   dob: z.string().optional().nullable(),
   gender: z.string().optional().nullable(),
   phone: z.string().max(20).trim().optional().nullable(),
@@ -88,7 +95,16 @@ router.get("/me", ...S, async (req: AuthRequest, res: Response, next: NextFuncti
       if (signed) avatarUrl = signed;
     }
 
-    res.json({ success: true, data: { ...student, user: userMap.get(student.userId) ?? null, institution, avatarUrl } });
+    // A student account's User.email is auto-filled with a
+    // "@students.qubeex.local" placeholder at creation time (since it can't
+    // be null) unless a real email was actually entered — never show that
+    // placeholder back to the student as if it were their own email.
+    const user = userMap.get(student.userId) ?? null;
+    const userForResponse = user && user.email?.endsWith("@students.qubeex.local")
+      ? { ...user, email: null }
+      : user;
+
+    res.json({ success: true, data: { ...student, user: userForResponse, institution, avatarUrl } });
   } catch (err) {
     next(err);
   }
@@ -105,6 +121,9 @@ router.post("/tasks/tests/:id/submit", ...S, submitTest);
 
 // ── GET /student/tasks/attempts/:id ────────────────────────────────────────────
 router.get("/tasks/attempts/:id", ...S, getAttempt);
+
+// ── GET /student/tasks/attempts/:id/pdf — download own result as PDF ──────────
+router.get("/tasks/attempts/:id/pdf", ...S, downloadAttemptPdf);
 
 // ── Assignment routes ──────────────────────────────────────────────────────────
 router.get("/tasks/assignments", ...S, listAssignments);
@@ -123,7 +142,7 @@ router.patch("/profile", ...S, async (req: AuthRequest, res: Response, next: Nex
 
     const student = await academicDb().student.findFirst({
       where: { userId, institutionId },
-      select: { id: true },
+      select: { id: true, studentId: true },
     });
 
     if (!student) {
@@ -136,12 +155,26 @@ router.patch("/profile", ...S, async (req: AuthRequest, res: Response, next: Nex
 
     const userChanges: { name?: string; email?: string } = {};
     if (name) userChanges.name = name;
-    if (email) {
-      const conflict = await prisma.user.findFirst({ where: { email, NOT: { id: userId } } });
-      if (conflict) {
-        throw new Error("EMAIL_TAKEN");
+    if (email !== undefined) {
+      if (email === "") {
+        // Empty string is ambiguous: it's either "this field was already
+        // blank and just got resent" (student never had a real email) or
+        // "the student just deleted their real email on purpose". Only the
+        // second case needs a write — regenerate the same kind of synthetic
+        // placeholder used at account creation, since User.email can't be
+        // null/empty. If it was already a placeholder, there's nothing to do.
+        const currentUser = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+        const alreadyPlaceholder = currentUser?.email.endsWith("@students.qubeex.local") ?? true;
+        if (!alreadyPlaceholder) {
+          userChanges.email = `${student.studentId.toLowerCase().replace(/-/g, "")}@students.qubeex.local`;
+        }
+      } else {
+        const conflict = await prisma.user.findFirst({ where: { email, NOT: { id: userId } } });
+        if (conflict) {
+          throw new Error("EMAIL_TAKEN");
+        }
+        userChanges.email = email;
       }
-      userChanges.email = email;
     }
     const studentUpdate = {
       where: { id: student.id },
@@ -378,7 +411,7 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
       return;
     }
 
-    const [subjects, examColumns, scores, gradedSubjects, gradedScores] = await Promise.all([
+    const [subjects, examColumns, scores, gradedSubjects, gradedScores, remark] = await Promise.all([
       academicDb().subject.findMany({
         where: { standardId: student.division.standardId, institutionId },
         orderBy: { order: "asc" },
@@ -402,14 +435,24 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
         where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
         select: { gradedSubjectId: true, term1Grade: true, term2Grade: true },
       }),
+      academicDb().marksheetRemark.findFirst({
+        where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
+        select: { conduct: true, remarks: true },
+      }),
     ]);
 
     const scoreByCol = new Map(scores.map((s) => [s.examColumnId, s]));
     const colsBySubject: Record<string, typeof examColumns> = {};
     for (const c of examColumns) (colsBySubject[c.subjectId] ??= []).push(c);
 
+    // Online: same live-computed source the online marksheet tab and
+    // leaderboard read from — no publish step of its own, always current.
+    const online = await computeOnlineMarksheet(student.division.id, institutionId, null);
+
     let grandScored = 0;
     let grandMax = 0;
+    let onlineGrandScored = 0;
+    let onlineGrandMax = 0;
     const subjectResults = subjects.map((sub) => {
       const cols = colsBySubject[sub.id] ?? [];
       let scored = 0;
@@ -425,9 +468,32 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
       grandScored += scored;
       grandMax += max;
       const pct = max > 0 ? Math.round((scored / max) * 100) : null;
-      return { id: sub.id, name: sub.name, code: sub.code ?? sub.name.slice(0, 4), color: sub.color ?? null, columns, total: { scored, max }, pct, grade: gradeFor(pct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]) };
+
+      // Online: the test is already completed by the time it shows up here,
+      // so a missing attempt means the student missed it — a hard 0, not an
+      // unknown/blank value (unlike offline, where no entry = not graded yet).
+      const onlineCols = online.examColumns[sub.id] ?? [];
+      let onlineScored = 0;
+      let onlineMax = 0;
+      const onlineColumns = onlineCols.map((c) => {
+        const e = online.scores[c.id]?.[student.id];
+        const sc = e?.isAbsent ? null : (e?.score ?? 0);
+        if (!e?.isAbsent) { onlineMax += c.maxMarks; if (sc !== null) onlineScored += sc; }
+        return { id: c.id, name: c.name, maxMarks: c.maxMarks, score: sc, isAbsent: e?.isAbsent ?? false };
+      });
+      onlineGrandScored += onlineScored;
+      onlineGrandMax += onlineMax;
+      const onlinePct = onlineMax > 0 ? Math.round((onlineScored / onlineMax) * 100) : null;
+
+      return {
+        id: sub.id, name: sub.name, code: sub.code ?? sub.name.slice(0, 4), color: sub.color ?? null,
+        columns, total: { scored, max }, pct, grade: gradeFor(pct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
+        onlineColumns, onlineTotal: { scored: onlineScored, max: onlineMax }, onlinePct,
+        onlineGrade: gradeFor(onlinePct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
+      };
     });
     const grandPct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
+    const onlineGrandPct = onlineGrandMax > 0 ? Math.round((onlineGrandScored / onlineGrandMax) * 100) : null;
 
     // Compute class rank by comparing this student's total against all others
     const [allMarksheetScores, classSize] = await Promise.all([
@@ -447,6 +513,28 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     }
     const studentsAboveMe = [...studentTotals.values()].filter((t) => t > grandScored).length;
     const classRank = studentsAboveMe + 1;
+
+    // Online + combined rank, same "compare raw totals" approach as offline
+    // (every student shares the same grand max, so ranking by raw scored
+    // totals is equivalent to ranking by %).
+    const onlineStudentTotals = new Map<string, number>();
+    for (const studentScores of Object.values(online.scores)) {
+      for (const [sid, entry] of Object.entries(studentScores)) {
+        if (entry.isAbsent || entry.score === null) continue;
+        onlineStudentTotals.set(sid, (onlineStudentTotals.get(sid) ?? 0) + entry.score);
+      }
+    }
+    const onlineAboveMe = [...onlineStudentTotals.values()].filter((t) => t > onlineGrandScored).length;
+    const onlineClassRank = onlineGrandMax > 0 ? onlineAboveMe + 1 : null;
+
+    const allRankedIds = new Set([...studentTotals.keys(), ...onlineStudentTotals.keys(), student.id]);
+    const combinedTotals = new Map<string, number>();
+    for (const sid of allRankedIds) {
+      combinedTotals.set(sid, (studentTotals.get(sid) ?? 0) + (onlineStudentTotals.get(sid) ?? 0));
+    }
+    const myCombinedTotal = grandScored + onlineGrandScored;
+    const combinedAboveMe = [...combinedTotals.values()].filter((t) => t > myCombinedTotal).length;
+    const combinedClassRank = (grandMax + onlineGrandMax) > 0 ? combinedAboveMe + 1 : null;
 
     const gradeByGs = new Map(gradedScores.map((g) => [g.gradedSubjectId, g]));
     const gradedResults = gradedSubjects.map((gs) => {
@@ -471,9 +559,17 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
         grandTotal: { scored: grandScored, max: grandMax },
         grandPct,
         grade: gradeFor(grandPct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
+        onlineGrandTotal: { scored: onlineGrandScored, max: onlineGrandMax },
+        onlineGrandPct,
+        onlineGrade: gradeFor(onlineGrandPct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
         classRank,
+        offlineClassRank: classRank,
+        onlineClassRank,
+        combinedClassRank,
         classSize,
         gradedSubjects: gradedResults,
+        conduct: remark?.conduct ?? null,
+        remarks: remark?.remarks ?? null,
         pdfUrl,
       },
     });
@@ -858,7 +954,30 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
     let onlineGrandMax = 0;
     let allColumns: { id: string; subjectId: string; name: string; maxMarks: number }[] = [];
     let allScoreRows: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[] = [];
-    let mySubjectScores: { subjectId: string; subjectName: string; subjectCode: string; subjectColor: string; columns: { name: string; scored: number | null; max: number; isAbsent: boolean }[]; totalScored: number; totalMax: number; pct: number | null }[] = [];
+    type ScoreCol = { name: string; scored: number | null; max: number; isAbsent: boolean };
+    let mySubjectScores: {
+      subjectId: string; subjectName: string; subjectCode: string; subjectColor: string;
+      // Combined (offline + online together) — kept for backward compatibility.
+      columns: ScoreCol[]; totalScored: number; totalMax: number; pct: number | null;
+      // Split out so the UI's offline/online/combined toggle can show the
+      // right trend chart + results list instead of always the merged one.
+      offlineColumns: ScoreCol[]; offlineTotalScored: number; offlineTotalMax: number; offlinePct: number | null;
+      onlineColumns: ScoreCol[]; onlineTotalScored: number; onlineTotalMax: number; onlinePct: number | null;
+    }[] = [];
+
+    // Online: auto-computed live from completed tests + attempts (best
+    // attempt per student per test) — same source the online marksheet tab
+    // and leaderboard read from. Computed unconditionally (no offline
+    // marksheet required), unlike offline which needs a published sheet.
+    const online = await computeOnlineMarksheet(divisionId, institutionId, null);
+    const onlineColumnsFlat = Object.values(online.examColumns).flat();
+    for (const c of onlineColumnsFlat) onlineGrandMax += c.maxMarks;
+    for (const studentScores of Object.values(online.scores)) {
+      for (const [sid, entry] of Object.entries(studentScores)) {
+        if (entry.isAbsent || entry.score === null) continue;
+        onlineMarksMap.set(sid, (onlineMarksMap.get(sid) ?? 0) + entry.score);
+      }
+    }
 
     if (marksheet) {
 
@@ -881,32 +1000,18 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       allColumns = columns;
       allScoreRows = allScores;
 
-      // Distinguish online vs offline by column name
-      const isOnlineCol = (name: string) => name.toLowerCase().includes("online");
+      // Grand max totals — every offline column is genuinely offline now
+      // (online tests live entirely outside the MarksheetExamColumn table).
+      for (const c of columns) offlineGrandMax += c.maxMarks;
 
-      // Grand max totals
-      for (const c of columns) {
-        grandMax += c.maxMarks;
-        if (isOnlineCol(c.name)) onlineGrandMax += c.maxMarks;
-        else offlineGrandMax += c.maxMarks;
-      }
-
-      // Build colId → isOnline map
-      const colOnlineMap = new Map(columns.map(c => [c.id, isOnlineCol(c.name)]));
-
-      // Per-student totals (combined, offline, online)
+      // Per-student offline totals
       for (const sc of allScores) {
         if (!sc.isAbsent && sc.score !== null) {
-          marksMap.set(sc.studentId, (marksMap.get(sc.studentId) ?? 0) + sc.score);
-          if (colOnlineMap.get(sc.examColumnId)) {
-            onlineMarksMap.set(sc.studentId, (onlineMarksMap.get(sc.studentId) ?? 0) + sc.score);
-          } else {
-            offlineMarksMap.set(sc.studentId, (offlineMarksMap.get(sc.studentId) ?? 0) + sc.score);
-          }
+          offlineMarksMap.set(sc.studentId, (offlineMarksMap.get(sc.studentId) ?? 0) + sc.score);
         }
       }
 
-      // My subject-wise scores
+      // My subject-wise scores (offline columns + online tests, side by side)
       const myScoreByCol = new Map(myScoresRaw.map(s => [s.examColumnId, s]));
       const colsBySubject = new Map<string, typeof columns>();
       for (const c of columns) {
@@ -917,16 +1022,67 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
 
       for (const subj of subjectList) {
         const cols = colsBySubject.get(subj.id) ?? [];
-        if (cols.length === 0) continue;
-        const subCols = cols.map(c => {
+        const onlineCols = online.examColumns[subj.id] ?? [];
+        if (cols.length === 0 && onlineCols.length === 0) continue;
+        const offCols: ScoreCol[] = cols.map(c => {
           const s = myScoreByCol.get(c.id);
           return { name: c.name, scored: s?.score ?? null, max: c.maxMarks, isAbsent: s?.isAbsent ?? false };
         });
-        const totalMax = cols.reduce((s, c) => s + c.maxMarks, 0);
-        const totalScored = subCols.reduce((s, c) => s + (c.isAbsent ? 0 : (c.scored ?? 0)), 0);
-        const pct = totalMax > 0 ? Math.round((totalScored / totalMax) * 100) : null;
-        mySubjectScores.push({ subjectId: subj.id, subjectName: subj.name, subjectCode: subj.code ?? "", subjectColor: subj.color, columns: subCols, totalScored, totalMax, pct });
+        const onCols: ScoreCol[] = onlineCols.map(c => {
+          const e = online.scores[c.id]?.[student.id];
+          // Online tests are already completed by the time they appear here,
+          // so no recorded attempt means missed — a real 0, not a blank.
+          const sc = e?.isAbsent ? null : (e?.score ?? 0);
+          return { name: c.name, scored: sc, max: c.maxMarks, isAbsent: e?.isAbsent ?? false };
+        });
+        const sumScored = (cs: ScoreCol[]) => cs.reduce((s, c) => s + (c.isAbsent ? 0 : (c.scored ?? 0)), 0);
+        const sumMax = (cs: ScoreCol[]) => cs.reduce((s, c) => s + (c.isAbsent ? 0 : c.max), 0);
+        const offTotalScored = sumScored(offCols), offTotalMax = sumMax(offCols);
+        const onTotalScored = sumScored(onCols), onTotalMax = sumMax(onCols);
+        const subCols = [...offCols, ...onCols];
+        const totalMax = offTotalMax + onTotalMax;
+        const totalScored = offTotalScored + onTotalScored;
+        mySubjectScores.push({
+          subjectId: subj.id, subjectName: subj.name, subjectCode: subj.code ?? "", subjectColor: subj.color,
+          columns: subCols, totalScored, totalMax, pct: totalMax > 0 ? Math.round((totalScored / totalMax) * 100) : null,
+          offlineColumns: offCols, offlineTotalScored: offTotalScored, offlineTotalMax: offTotalMax,
+          offlinePct: offTotalMax > 0 ? Math.round((offTotalScored / offTotalMax) * 100) : null,
+          onlineColumns: onCols, onlineTotalScored: onTotalScored, onlineTotalMax: onTotalMax,
+          onlinePct: onTotalMax > 0 ? Math.round((onTotalScored / onTotalMax) * 100) : null,
+        });
       }
+    } else {
+      // No offline marksheet published yet, but online tests may still exist
+      // — still surface a per-subject breakdown built from online data alone.
+      for (const subj of subjectList) {
+        const onlineCols = online.examColumns[subj.id] ?? [];
+        if (onlineCols.length === 0) continue;
+        const onCols: ScoreCol[] = onlineCols.map(c => {
+          const e = online.scores[c.id]?.[student.id];
+          const sc = e?.isAbsent ? null : (e?.score ?? 0);
+          return { name: c.name, scored: sc, max: c.maxMarks, isAbsent: e?.isAbsent ?? false };
+        });
+        const onTotalMax = onCols.reduce((s, c) => s + (c.isAbsent ? 0 : c.max), 0);
+        const onTotalScored = onCols.reduce((s, c) => s + (c.isAbsent ? 0 : (c.scored ?? 0)), 0);
+        mySubjectScores.push({
+          subjectId: subj.id, subjectName: subj.name, subjectCode: subj.code ?? "", subjectColor: subj.color,
+          columns: onCols, totalScored: onTotalScored, totalMax: onTotalMax,
+          pct: onTotalMax > 0 ? Math.round((onTotalScored / onTotalMax) * 100) : null,
+          offlineColumns: [], offlineTotalScored: 0, offlineTotalMax: 0, offlinePct: null,
+          onlineColumns: onCols, onlineTotalScored: onTotalScored, onlineTotalMax: onTotalMax,
+          onlinePct: onTotalMax > 0 ? Math.round((onTotalScored / onTotalMax) * 100) : null,
+        });
+      }
+    }
+
+    // Combined = offline + online, pooled scored / pooled max — same rule
+    // used by the leaderboard and Overall tab everywhere else.
+    grandMax = offlineGrandMax + onlineGrandMax;
+    for (const s of allStudents) {
+      const off = offlineMarksMap.get(s.id);
+      const on = onlineMarksMap.get(s.id);
+      if (off === undefined && on === undefined) continue;
+      marksMap.set(s.id, (off ?? 0) + (on ?? 0));
     }
 
     // Build ranked classmates (sorted by combined score)
@@ -938,13 +1094,15 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       const marksPct = scored !== null && grandMax > 0 ? Math.round((scored / grandMax) * 100) : null;
       const offlineScored = offlineMarksMap.get(s.id) ?? null;
       const offlinePct = offlineScored !== null && offlineGrandMax > 0 ? Math.round((offlineScored / offlineGrandMax) * 100) : null;
-      const onlineScored = onlineMarksMap.get(s.id) ?? null;
-      const onlinePct = onlineScored !== null && onlineGrandMax > 0 ? Math.round((onlineScored / onlineGrandMax) * 100) : null;
+      // Online: tests are already completed by the time they show up here, so
+      // a student with no recorded attempt still gets a real 0%, not a dash
+      // — same "missed means 0" rule used by the leaderboard/online marksheet.
+      const onlinePct = onlineGrandMax > 0 ? Math.round(((onlineMarksMap.get(s.id) ?? 0) / onlineGrandMax) * 100) : null;
       return {
         id: s.id,
         name: classmateUserMap.get(s.userId)?.name ?? "Unknown",
         rollNo: s.rollNo ?? "—",
-        rank: marksheet ? i + 1 : null,
+        rank: grandMax > 0 ? i + 1 : null,
         attendancePct: attPct,
         marksPct,
         offlinePct,
@@ -955,23 +1113,25 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
     });
 
     // ── Per-subject leaderboards (top 5, with combined/offline/online) ────────
+    // Offline columns come from the published marksheet (real per-column
+    // scores); online columns come from `computeOnlineMarksheet` (real
+    // completed tests + best attempts) — no more guessing "online" by column
+    // name, since online tests never lived in MarksheetExamColumn to begin
+    // with.
     type LbEntry = { name: string; avatarUrl: string | null; combinedPct: number; offlinePct: number | null; onlinePct: number | null; isMe: boolean };
     const subjectLeaderboards: Record<string, LbEntry[]> = {};
-    if (marksheet && allColumns.length > 0) {
-      const isOnlineCol = (name: string) => name.toLowerCase().includes("online");
+    {
       const colSubjectMap = new Map(allColumns.map(c => [c.id, c.subjectId]));
-      const colOnlineMap = new Map(allColumns.map(c => [c.id, isOnlineCol(c.name)]));
 
-      const subjectCombinedMaxMap = new Map<string, number>();
       const subjectOfflineMaxMap = new Map<string, number>();
       const subjectOnlineMaxMap = new Map<string, number>();
       for (const c of allColumns) {
-        subjectCombinedMaxMap.set(c.subjectId, (subjectCombinedMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
-        if (colOnlineMap.get(c.id)) subjectOnlineMaxMap.set(c.subjectId, (subjectOnlineMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
-        else subjectOfflineMaxMap.set(c.subjectId, (subjectOfflineMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
+        subjectOfflineMaxMap.set(c.subjectId, (subjectOfflineMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
+      }
+      for (const cols of Object.values(online.examColumns)) {
+        for (const c of cols) subjectOnlineMaxMap.set(c.subjectId, (subjectOnlineMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
       }
 
-      const subjectStudentCombined = new Map<string, Map<string, number>>();
       const subjectStudentOffline = new Map<string, Map<string, number>>();
       const subjectStudentOnline = new Map<string, Map<string, number>>();
 
@@ -979,20 +1139,19 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
         if (!sc.isAbsent && sc.score !== null) {
           const subjectId = colSubjectMap.get(sc.examColumnId);
           if (!subjectId) continue;
-          const isOnline = colOnlineMap.get(sc.examColumnId) ?? false;
-
-          const cMap = subjectStudentCombined.get(subjectId) ?? new Map<string, number>();
-          cMap.set(sc.studentId, (cMap.get(sc.studentId) ?? 0) + sc.score);
-          subjectStudentCombined.set(subjectId, cMap);
-
-          if (isOnline) {
+          const fMap = subjectStudentOffline.get(subjectId) ?? new Map<string, number>();
+          fMap.set(sc.studentId, (fMap.get(sc.studentId) ?? 0) + sc.score);
+          subjectStudentOffline.set(subjectId, fMap);
+        }
+      }
+      for (const [subjectId, cols] of Object.entries(online.examColumns)) {
+        for (const c of cols) {
+          const entries = online.scores[c.id] ?? {};
+          for (const [sid, e] of Object.entries(entries)) {
+            if (e.isAbsent || e.score === null) continue;
             const oMap = subjectStudentOnline.get(subjectId) ?? new Map<string, number>();
-            oMap.set(sc.studentId, (oMap.get(sc.studentId) ?? 0) + sc.score);
+            oMap.set(sid, (oMap.get(sid) ?? 0) + e.score);
             subjectStudentOnline.set(subjectId, oMap);
-          } else {
-            const fMap = subjectStudentOffline.get(subjectId) ?? new Map<string, number>();
-            fMap.set(sc.studentId, (fMap.get(sc.studentId) ?? 0) + sc.score);
-            subjectStudentOffline.set(subjectId, fMap);
           }
         }
       }
@@ -1001,21 +1160,24 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       for (const s of allStudents) studentNameMap.set(s.id, classmateUserMap.get(s.userId)?.name ?? "—");
 
       for (const subj of subjectList) {
-        const cMap = subjectStudentCombined.get(subj.id);
-        const combinedMax = subjectCombinedMaxMap.get(subj.id) ?? 0;
-        if (!cMap || combinedMax === 0) { subjectLeaderboards[subj.id] = []; continue; }
-        subjectLeaderboards[subj.id] = [...cMap.entries()]
-          .map(([sid, total]): LbEntry => {
-            const offMax = subjectOfflineMaxMap.get(subj.id) ?? 0;
-            const onMax = subjectOnlineMaxMap.get(subj.id) ?? 0;
-            const offScored = subjectStudentOffline.get(subj.id)?.get(sid) ?? null;
-            const onScored = subjectStudentOnline.get(subj.id)?.get(sid) ?? null;
+        const offMax = subjectOfflineMaxMap.get(subj.id) ?? 0;
+        const onMax = subjectOnlineMaxMap.get(subj.id) ?? 0;
+        const combinedMax = offMax + onMax;
+        if (combinedMax === 0) { subjectLeaderboards[subj.id] = []; continue; }
+        const offMapForSubj = subjectStudentOffline.get(subj.id);
+        const onMapForSubj = subjectStudentOnline.get(subj.id);
+        const studentIds = new Set([...(offMapForSubj?.keys() ?? []), ...(onMapForSubj?.keys() ?? [])]);
+        subjectLeaderboards[subj.id] = [...studentIds]
+          .map((sid): LbEntry => {
+            const offScored = offMapForSubj?.get(sid) ?? null;
+            const onScored = onMapForSubj?.get(sid) ?? null;
+            const total = (offScored ?? 0) + (onScored ?? 0);
             return {
               name: studentNameMap.get(sid) ?? "—",
               avatarUrl: studentAvatarMap.get(sid) ?? null,
               combinedPct: Math.round((total / combinedMax) * 100),
               offlinePct: offScored !== null && offMax > 0 ? Math.round((offScored / offMax) * 100) : null,
-              onlinePct: onScored !== null && onMax > 0 ? Math.round((onScored / onMax) * 100) : null,
+              onlinePct: onMax > 0 ? Math.round(((onScored ?? 0) / onMax) * 100) : null,
               isMe: sid === student.id,
             };
           })

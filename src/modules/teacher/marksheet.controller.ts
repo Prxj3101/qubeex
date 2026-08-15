@@ -8,6 +8,7 @@ import { resolveUsers } from "../../services/userLookup.service";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
+import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const PDFDocument = require("pdfkit");
 import {
@@ -23,6 +24,7 @@ import {
   gradedSectionTitleSchema,
   bulkGradedScoresSchema,
   updateMarksheetGradeScaleSchema,
+  upsertMarksheetRemarkSchema,
 } from "./marksheet.schema";
 
 // ── R2 client ─────────────────────────────────────────────────────────────────
@@ -408,7 +410,7 @@ async function fetchMarksheetFull(
   isClassTeacher: boolean,
   mySubjectIds: string[]
 ) {
-  const [marksheet, examColumns, scores, gradedSubjects, gradedScores, students] =
+  const [marksheet, examColumns, scores, gradedSubjects, gradedScores, remarks, students] =
     await Promise.all([
       academicDb().marksheet.findUnique({
         where: { id: marksheetId },
@@ -442,6 +444,10 @@ async function fetchMarksheetFull(
       academicDb().marksheetGradedScore.findMany({
         where: { marksheetId, institutionId },
         select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
+      }),
+      academicDb().marksheetRemark.findMany({
+        where: { marksheetId, institutionId },
+        select: { studentId: true, conduct: true, remarks: true },
       }),
       academicDb().student.findMany({
         where: { institutionId, division: { marksheets: { some: { id: marksheetId } } } },
@@ -486,6 +492,15 @@ async function fetchMarksheetFull(
     }
   }
 
+  // Remarks (Conduct/Remarks) only visible to the class teacher — same
+  // visibility rule as graded scores.
+  const remarksMap: Record<string, { conduct: string | null; remarks: string | null }> = {};
+  if (isClassTeacher) {
+    for (const r of remarks) {
+      remarksMap[r.studentId] = { conduct: r.conduct, remarks: r.remarks };
+    }
+  }
+
   const studentUsers = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
   const signedAvatarMap = await generateSignedAvatarUrlsBatch(students.map((s) => s.avatarUrl));
 
@@ -505,6 +520,7 @@ async function fetchMarksheetFull(
     scores: scoreMap,
     gradedSubjects: isClassTeacher ? gradedSubjects : [],
     gradedScores: gradedScoreMap,
+    remarks: remarksMap,
     students: students.map((s) => ({
       id: s.id,
       name: studentUsers.get(s.userId)?.name ?? null,
@@ -1154,6 +1170,60 @@ export async function bulkUpsertGradedScores(
   }
 }
 
+// ── PUT /:id/remarks/:studentId — Conduct/Remarks, class teacher only ─────────
+
+export async function upsertMarksheetRemark(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const marksheetId = req.params.id as string;
+    const studentId = req.params.studentId as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const marksheet = await academicDb().marksheet.findFirst({
+      where: { id: marksheetId, institutionId },
+      select: { divisionId: true },
+    });
+    if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
+    await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
+
+    const student = await academicDb().student.findFirst({
+      where: { id: studentId, institutionId },
+      select: { id: true },
+    });
+    if (!student) { res.status(404).json({ success: false, error: "Student not found" }); return; }
+
+    const { conduct, remarks } = upsertMarksheetRemarkSchema.parse(req.body);
+
+    const saved = await academicDb().marksheetRemark.upsert({
+      where: { marksheetId_studentId: { marksheetId, studentId } },
+      create: {
+        marksheetId,
+        studentId,
+        institutionId,
+        conduct: conduct ?? null,
+        remarks: remarks ?? null,
+        updatedByTeacherId: teacherId,
+      },
+      update: {
+        ...(conduct !== undefined && { conduct }),
+        ...(remarks !== undefined && { remarks }),
+        updatedByTeacherId: teacherId,
+      },
+    });
+
+    res.json({ success: true, data: { conduct: saved.conduct, remarks: saved.remarks } });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
 // ── GET /division/:divisionId ─────────────────────────────────────────────────
 
 export async function getDivisionMarksheet(
@@ -1194,6 +1264,45 @@ export async function getDivisionMarksheet(
     }
 
     const data = await fetchMarksheetFull(marksheet.id, institutionId, teacherId, isClassTeacher, mySubjectIds);
+    res.json({ success: true, data });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
+    next(err);
+  }
+}
+
+// ── GET /division/:divisionId/online — auto-computed from completed tests ──────
+// No init/create step needed here (unlike the offline sheet) — it's always
+// derived live from TaskTest + TaskTestAttempt, so there's nothing to go out
+// of sync. Same access rule as the offline sheet: a subject teacher only sees
+// their own subject's tests, the class teacher sees every subject.
+export async function getDivisionOnlineMarksheet(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution" });
+      return;
+    }
+    const divisionId = req.params.divisionId as string;
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    const assignments = await academicDb().divisionAssignment.findMany({
+      where: { divisionId, teacherId, institutionId },
+      select: { subjectId: true },
+    });
+    const isClassTeacher = assignments.some((a) => a.subjectId === null);
+    if (assignments.length === 0) {
+      res.status(403).json({ success: false, error: "Not assigned to this division" });
+      return;
+    }
+    const mySubjectIds = assignments.map((a) => a.subjectId).filter((id): id is string => id !== null);
+
+    const data = await computeOnlineMarksheet(divisionId, institutionId, isClassTeacher ? null : mySubjectIds);
     res.json({ success: true, data });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };

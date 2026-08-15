@@ -11,7 +11,7 @@ import { listTickets, createTicket, addTicketReply, listReviews, createReview, u
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
 import { getOverview } from "./overview.controller";
-import { adminListMarksheets, adminGetDivisionMarksheet, assignClassTeacher } from "./marksheet.controller";
+import { adminListMarksheets, adminGetDivisionMarksheet, adminGetDivisionOnlineMarksheet, assignClassTeacher } from "./marksheet.controller";
 import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
 import { getAttendanceInsights, getFeeInsights, getAiUsageInsights, getUsersInsights } from "./insights.controller";
 import {
@@ -186,6 +186,7 @@ router.patch("/notifications/:recipientId/dismiss", ...A, dismissNotification);
 // ── Marksheet (admin read-only) ───────────────────────────────────────────────
 router.get("/marksheet", ...MARKSHEET_PERM, adminListMarksheets);
 router.get("/marksheet/division/:divisionId", ...MARKSHEET_PERM, adminGetDivisionMarksheet);
+router.get("/marksheet/division/:divisionId/online", ...MARKSHEET_PERM, adminGetDivisionOnlineMarksheet);
 
 // ── Class teacher assignment ──────────────────────────────────────────────────
 router.patch("/campus/divisions/:divisionId/class-teacher", ...ADMIN_ONLY, assignClassTeacher);

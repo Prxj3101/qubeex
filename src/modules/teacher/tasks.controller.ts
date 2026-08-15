@@ -30,6 +30,7 @@ import {
 } from "./tasks.schema";
 import { redis, isRedisReady } from "../../utils/redis";
 import { getAiTokenLimit } from "../../services/billing.service";
+import { generateTestResultPdf } from "../../services/testResultPdf.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -1016,9 +1017,11 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
     const teacherId = await getTeacherId(userId, institutionId);
     const divisionId = req.query.divisionId as string;
     if (!divisionId) throw new BadRequestError("divisionId query param is required");
+    const explicitSubjectId = req.query.subjectId as string | undefined;
+    const { subjectId } = await resolveSubjectAssignment(teacherId, divisionId, institutionId, explicitSubjectId);
 
     const tests = await academicDb().taskTest.findMany({
-      where: { teacherId, divisionId, institutionId },
+      where: { teacherId, divisionId, subjectId, institutionId },
       include: {
         questions: { select: { id: true, isCompulsory: true } },
         _count: { select: { attempts: true } },
@@ -1026,10 +1029,12 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
       orderBy: { createdAt: "desc" },
     });
 
-    // "attempts" above counts every attempt row (including ones still in
-    // progress). "Submitted" should only reflect attempts the student has
-    // actually finished, so tally completed attempts separately and merge
-    // them in — same status filter the Results tab uses ("completed").
+    // The raw `_count.attempts` above counts every attempt row including
+    // ones still in progress or abandoned mid-test — not a real signal of
+    // how many times students have actually attempted the test. Both the
+    // "attempts" and "submitted" chips should reflect only completed
+    // attempts (a student who attempted twice counts as 2 in both) — same
+    // status filter the Results tab uses.
     const completedCounts = tests.length
       ? await academicDb().taskTestAttempt.groupBy({
           by: ["testId"],
@@ -1040,7 +1045,11 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
     const completedMap = new Map(completedCounts.map(c => [c.testId, c._count._all]));
     const testsWithSubmitted = tests.map(t => ({
       ...t,
-      _count: { ...t._count, submitted: completedMap.get(t.id) ?? 0 },
+      _count: {
+        ...t._count,
+        attempts: completedMap.get(t.id) ?? 0,
+        submitted: completedMap.get(t.id) ?? 0,
+      },
     }));
 
     res.json({ success: true, data: testsWithSubmitted });
@@ -1325,29 +1334,45 @@ export const getTestResults = async (req: AuthRequest, res: Response, next: Next
 
     const test = await academicDb().taskTest.findFirst({
       where: { id, teacherId, institutionId },
-      include: { subject: { select: { name: true } }, division: { select: { name: true } } },
+      include: { subject: { select: { name: true } }, division: { select: { id: true, name: true } } },
     });
     if (!test) throw new NotFoundError("Test not found");
 
-    const attempts = await academicDb().taskTestAttempt.findMany({
-      where: { testId: id, status: "completed" },
-      select: {
-        id: true,
-        studentName: true,
-        rollNo: true,
-        attemptNumber: true,
-        totalScore: true,
-        maxScore: true,
-        tabChangeCount: true,
-        malpracticeFlag: true,
-        startTime: true,
-        endTime: true,
-        student: { select: { id: true } },
-      },
-      orderBy: { rollNo: "asc" },
-    });
+    const [attempts, students] = await Promise.all([
+      academicDb().taskTestAttempt.findMany({
+        where: { testId: id, status: "completed" },
+        select: {
+          id: true,
+          studentName: true,
+          rollNo: true,
+          attemptNumber: true,
+          totalScore: true,
+          maxScore: true,
+          tabChangeCount: true,
+          malpracticeFlag: true,
+          startTime: true,
+          endTime: true,
+          student: { select: { id: true } },
+        },
+        orderBy: { rollNo: "asc" },
+      }),
+      academicDb().student.findMany({
+        where: { divisionId: test.divisionId, institutionId, status: "ACTIVE" },
+        select: { id: true, userId: true, rollNo: true },
+        orderBy: { rollNo: "asc" },
+      }),
+    ]);
 
-    res.json({ success: true, data: { test, attempts } });
+    // Full class roster, so the teacher can see who hasn't submitted at all —
+    // not just the list of completed attempts.
+    const rosterUserMap = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
+    const roster = students.map((s) => ({
+      id: s.id,
+      name: rosterUserMap.get(s.userId)?.name ?? "—",
+      rollNo: s.rollNo ?? "",
+    }));
+
+    res.json({ success: true, data: { test, attempts, roster } });
   } catch (err) { next(err); }
 };
 
@@ -1415,6 +1440,80 @@ export const downloadTestResults = async (req: AuthRequest, res: Response, next:
     res.setHeader("Content-Type", "text/csv");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(csvLines.join("\n"));
+  } catch (err) { next(err); }
+};
+
+// ── GET /teacher/tasks/attempts/:id/pdf — download one student's result as a PDF ──
+// Same generator/layout the student's own "Download Result PDF" button uses
+// (see downloadAttemptPdf in student/tasks.controller.ts) — it's just a
+// static snapshot of one attempt, so there's no reason for the two to differ.
+export const downloadAttemptPdfForTeacher = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+
+    const attempt = await academicDb().taskTestAttempt.findUnique({
+      where: { id },
+      include: {
+        test: {
+          select: {
+            title: true, teacherId: true, institutionId: true, sections: true, durationMinutes: true, maxAttempts: true,
+            questions: { select: { questionId: true, sectionId: true } },
+            subject: { select: { name: true } },
+            division: { select: { name: true } },
+          },
+        },
+        student: { select: { studentId: true } },
+        answers: {
+          select: {
+            questionId: true, generatedQuestion: true, generatedOptions: true,
+            studentAnswer: true, correctAnswer: true, isCorrect: true,
+          },
+          orderBy: { order: "asc" },
+        },
+      },
+    });
+    if (!attempt || attempt.test.teacherId !== teacherId || attempt.test.institutionId !== institutionId) {
+      throw new NotFoundError("Attempt not found");
+    }
+    if (attempt.status !== "completed") throw new BadRequestError("This student hasn't submitted yet");
+
+    const percentage = attempt.maxScore > 0 ? Math.round((attempt.totalScore / attempt.maxScore) * 100) : 0;
+    const sectionsMeta = parseSections(attempt.test.sections);
+    const sectionByQuestionId = new Map(attempt.test.questions.map((tq) => [tq.questionId, tq.sectionId]));
+    const answersWithSections = attempt.answers.map((a) => {
+      const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
+      const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
+      return { ...a, sectionTitle: section?.title ?? null, sectionInstruction: section?.instruction ?? null };
+    });
+
+    const pdfBuffer = await generateTestResultPdf({
+      studentName: attempt.studentName,
+      rollNo: attempt.rollNo,
+      studentBusinessId: attempt.student?.studentId ?? "—",
+      className: `Class ${attempt.test.division.name}`,
+      subjectName: attempt.test.subject.name,
+      testTitle: attempt.test.title,
+      totalScore: attempt.totalScore,
+      maxScore: attempt.maxScore,
+      percentage,
+      malpracticeFlag: attempt.malpracticeFlag,
+      tabChangeCount: attempt.tabChangeCount,
+      attemptNumber: attempt.attemptNumber,
+      maxAttempts: attempt.test.maxAttempts,
+      durationMinutes: attempt.test.durationMinutes,
+      startTime: attempt.startTime,
+      endTime: attempt.endTime,
+      questionCount: attempt.answers.length,
+      answers: answersWithSections,
+    });
+
+    const safeName = attempt.studentName.replace(/[^a-z0-9]+/gi, "_");
+    const safeTitle = attempt.test.title.replace(/[^a-z0-9]+/gi, "_");
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="Result_${safeName}_${safeTitle}.pdf"`);
+    res.send(pdfBuffer);
   } catch (err) { next(err); }
 };
 

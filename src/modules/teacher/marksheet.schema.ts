@@ -79,6 +79,13 @@ export const bulkGradedScoresSchema = z.object({
   scores: z.array(gradedScoreItemSchema).min(1),
 });
 
+// Per-student "Conduct" + "Remarks" on the offline report card — class
+// teacher only, one row per student, not tied to any subject/exam column.
+export const upsertMarksheetRemarkSchema = z.object({
+  conduct: z.string().max(200).trim().nullable().optional(),
+  remarks: z.string().max(1000).trim().nullable().optional(),
+});
+
 const marksheetGradeScaleEntrySchema = z.object({
   grade: z.string().min(1).max(10).trim(),
   minPct: z.number().min(0).max(100),

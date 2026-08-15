@@ -31,7 +31,7 @@ export const getUsersInsights = async (req: AuthRequest, res: Response, next: Ne
       throw new BadRequestError("Invalid year/month");
     }
 
-    const cacheKey = `insights:users:v3:${institutionId}:${year}-${month}`;
+    const cacheKey = `insights:users:v7:${institutionId}:${year}-${month}`;
     const cached = await getCache<unknown>(cacheKey);
     if (cached) {
       res.json({ success: true, data: cached });

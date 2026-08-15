@@ -1,4 +1,5 @@
 import { academicDb } from "../utils/academicContext";
+import { computeOnlineMarksheet } from "./onlineMarksheet.service";
 
 export interface SubjectPerf {
   name: string;
@@ -50,11 +51,27 @@ export async function getStudentStatsData(
   let classRank: number | null = null;
   const subjects: SubjectPerf[] = [];
 
+  // Online: auto-computed live from completed tests + attempts — same source
+  // the online marksheet tab and leaderboard read from, best attempt per
+  // student per test. No separate publish step of its own.
+  const online = await computeOnlineMarksheet(divisionId, institutionId, null);
+  let onlineMax = 0;
+  for (const cols of Object.values(online.examColumns)) {
+    for (const c of cols) onlineMax += c.maxMarks;
+  }
+  const onlineTotals = new Map<string, number>();
+  for (const studentScores of Object.values(online.scores)) {
+    for (const [sid, entry] of Object.entries(studentScores)) {
+      if (entry.isAbsent || entry.score === null) continue;
+      onlineTotals.set(sid, (onlineTotals.get(sid) ?? 0) + entry.score);
+    }
+  }
+
   if (marksheet) {
     const columnIds = marksheet.examColumns.map((c) => c.id);
-    const maxTotal = marksheet.examColumns.reduce((sum, c) => sum + c.maxMarks, 0);
+    const offlineMax = marksheet.examColumns.reduce((sum, c) => sum + c.maxMarks, 0);
 
-    if (columnIds.length > 0 && maxTotal > 0) {
+    if (columnIds.length > 0 && offlineMax + onlineMax > 0) {
       const [allScores, studentScores] = await Promise.all([
         academicDb().marksheetScore.findMany({
           where: { marksheetId: marksheet.id, institutionId },
@@ -66,17 +83,28 @@ export async function getStudentStatsData(
         }),
       ]);
 
-      const totals = new Map<string, number>();
+      const offlineTotals = new Map<string, number>();
       for (const s of allScores) {
         if (!s.isAbsent && s.score !== null) {
-          totals.set(s.studentId, (totals.get(s.studentId) ?? 0) + s.score);
+          offlineTotals.set(s.studentId, (offlineTotals.get(s.studentId) ?? 0) + s.score);
         }
       }
 
-      const studentTotal = totals.get(studentId) ?? null;
-      if (studentTotal !== null) {
-        scorePct = Math.round((studentTotal / maxTotal) * 100);
-        const higher = [...totals.values()].filter((t) => t > studentTotal).length;
+      // Combined (offline + online) weighted totals, same "pooled scored /
+      // pooled max" rule used by the leaderboard and Overall tab — not a
+      // naive average of two percentages.
+      const combinedMax = offlineMax + onlineMax;
+      const allStudentIds = new Set([...offlineTotals.keys(), ...onlineTotals.keys(), studentId]);
+      const combinedTotals = new Map<string, number>();
+      for (const sid of allStudentIds) {
+        combinedTotals.set(sid, (offlineTotals.get(sid) ?? 0) + (onlineTotals.get(sid) ?? 0));
+      }
+
+      const studentCombinedTotal = combinedTotals.get(studentId) ?? 0;
+      const hasAnyScore = offlineTotals.has(studentId) || onlineTotals.has(studentId);
+      if (hasAnyScore && combinedMax > 0) {
+        scorePct = Math.round((studentCombinedTotal / combinedMax) * 100);
+        const higher = [...combinedTotals.values()].filter((t) => t > studentCombinedTotal).length;
         classRank = higher + 1;
       }
 
@@ -107,6 +135,14 @@ export async function getStudentStatsData(
           });
         }
       }
+    }
+  } else if (onlineMax > 0) {
+    // No offline marksheet published yet, but online tests exist — combined
+    // score should still reflect online-only performance, not stay blank.
+    const higher = [...onlineTotals.values()].filter((t) => t > (onlineTotals.get(studentId) ?? 0)).length;
+    if (onlineTotals.has(studentId)) {
+      scorePct = Math.round(((onlineTotals.get(studentId) ?? 0) / onlineMax) * 100);
+      classRank = higher + 1;
     }
   }
 

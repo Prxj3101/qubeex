@@ -4,6 +4,7 @@ import { hashToken } from "../../utils/token";
 import { logAudit } from "../../services/audit.service";
 import { UnauthorizedError, BadRequestError } from "../../utils/errors";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
+import { delCache } from "../../utils/cache";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -380,7 +381,7 @@ export const changePassword = async (
 export const studentSetInitialPassword = async (userId: string, newPassword: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { role: true, mustChangePassword: true },
+    select: { role: true, mustChangePassword: true, institutionId: true },
   });
 
   if (!user) throw new UnauthorizedError("User not found");
@@ -399,6 +400,15 @@ export const studentSetInitialPassword = async (userId: string, newPassword: str
       data: { tempPassword: null, hasLoggedIn: true },
     });
   });
+
+  // hasLoggedIn just flipped, which changes this student's Active/Inactive
+  // status in the admin Users Insights list — bust that cache immediately
+  // instead of leaving the admin looking at a stale "Inactive" for up to 5
+  // minutes (INSIGHTS_CACHE_TTL_SECONDS in insights.controller.ts).
+  if (user.institutionId) {
+    const now = new Date();
+    await delCache(`insights:users:v7:${user.institutionId}:${now.getFullYear()}-${now.getMonth() + 1}`);
+  }
 
   logAudit("PASSWORD_CHANGED", {
     userId,

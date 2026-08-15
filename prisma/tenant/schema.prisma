@@ -335,6 +335,7 @@ model Student {
   taskAssignmentSubmissions TaskAssignmentSubmission[]
   marksheetScores          MarksheetScore[]
   marksheetGradedScores MarksheetGradedScore[]
+  marksheetRemarks       MarksheetRemark[]
   remarks               StudentRemark[]
   feePayments           StudentFeePayment[]
   promotionOutcomes     StudentPromotionOutcome[]
@@ -993,6 +994,7 @@ model Marksheet {
   scores         MarksheetScore[]
   gradedSubjects MarksheetGradedSubject[]
   gradedScores   MarksheetGradedScore[]
+  remarks        MarksheetRemark[]
 
   @@unique([divisionId, academicYear])
   @@index([institutionId])
@@ -1078,5 +1080,25 @@ model MarksheetGradedScore {
   updatedAt       DateTime               @updatedAt
 
   @@unique([gradedSubjectId, studentId])
+  @@index([marksheetId])
+}
+
+// Per-student "Conduct" + "Remarks" on the offline report card — written by
+// the class teacher only, one row per student per marksheet (not tied to any
+// subject/exam column), and surfaced read-only on that student's own report
+// card (My Profile > View Report Card > Offline) once written.
+model MarksheetRemark {
+  id                 String    @id @default(uuid())
+  marksheetId        String
+  marksheet          Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  studentId          String
+  student            Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  institutionId      String
+  conduct            String?
+  remarks            String?
+  updatedByTeacherId String?
+  updatedAt          DateTime  @updatedAt
+
+  @@unique([marksheetId, studentId])
   @@index([marksheetId])
 }

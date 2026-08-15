@@ -4,6 +4,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 
 // ── GET /api/admin/marksheet ──────────────────────────────────────────────────
 
@@ -83,7 +84,7 @@ export async function adminGetDivisionMarksheet(
       return;
     }
 
-    const [ms, examColumns, scores, gradedSubjects, gradedScores, students] = await Promise.all([
+    const [ms, examColumns, scores, gradedSubjects, gradedScores, remarks, students] = await Promise.all([
       academicDb().marksheet.findUnique({
         where: { id: marksheet.id },
         select: {
@@ -108,6 +109,10 @@ export async function adminGetDivisionMarksheet(
       academicDb().marksheetGradedScore.findMany({
         where: { marksheetId: marksheet.id },
         select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
+      }),
+      academicDb().marksheetRemark.findMany({
+        where: { marksheetId: marksheet.id },
+        select: { studentId: true, conduct: true, remarks: true },
       }),
       academicDb().student.findMany({
         where: { divisionId, institutionId },
@@ -135,6 +140,13 @@ export async function adminGetDivisionMarksheet(
       gradedScoreMap[gs.gradedSubjectId][gs.studentId] = { term1Grade: gs.term1Grade, term2Grade: gs.term2Grade };
     }
 
+    // Admin sees remarks read-only, same as it sees everything else here —
+    // only the class teacher can write them (via the teacher route).
+    const remarksMap: Record<string, { conduct: string | null; remarks: string | null }> = {};
+    for (const r of remarks) {
+      remarksMap[r.studentId] = { conduct: r.conduct, remarks: r.remarks };
+    }
+
     res.json({
       success: true,
       data: {
@@ -148,6 +160,7 @@ export async function adminGetDivisionMarksheet(
         scores: scoreMap,
         gradedSubjects,
         gradedScores: gradedScoreMap,
+        remarks: remarksMap,
         students: students.map((s) => ({
           id: s.id,
           name: detailStudentUsers.get(s.userId)?.name ?? null,
@@ -232,6 +245,31 @@ export async function assignClassTeacher(
     });
 
     res.json({ success: true, data: { divisionId, classTeacherId: teacherId ?? null } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ── GET /api/admin/marksheet/division/:divisionId/online ───────────────────────
+// Admin always sees every subject in the division — no per-subject restriction.
+export async function adminGetDivisionOnlineMarksheet(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { institutionId } = req.user!;
+    if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
+    const divisionId = req.params.divisionId as string;
+
+    const division = await academicDb().division.findFirst({
+      where: { id: divisionId, institutionId },
+      select: { id: true },
+    });
+    if (!division) { res.status(404).json({ success: false, error: "Division not found" }); return; }
+
+    const data = await computeOnlineMarksheet(divisionId, institutionId, null);
+    res.json({ success: true, data });
   } catch (err) {
     next(err);
   }

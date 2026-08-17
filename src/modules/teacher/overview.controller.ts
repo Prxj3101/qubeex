@@ -70,7 +70,7 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
 
     let avgAttendancePct: number | null = null;
     let attendanceTrend: { month: string; attendance: number; students: number }[] = [];
-    let shortAttendance: { name: string; rollNo: string; pct: number }[] = [];
+    let shortAttendance: { name: string; rollNo: string; pct: number; avatarUrl: string | null }[] = [];
 
     if (classTeacherDivision) {
       const divisionId = classTeacherDivision.id;
@@ -82,7 +82,7 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
         }),
         academicDb().student.findMany({
           where: { divisionId, institutionId },
-          select: { id: true, rollNo: true, userId: true },
+          select: { id: true, rollNo: true, userId: true, avatarUrl: true },
         }),
       ]);
 
@@ -135,9 +135,9 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
         .map((s) => {
           const c = byStudent[s.id] ?? { p: 0, a: 0, l: 0 };
           const pct = calcPct(c.p, c.a, c.l);
-          return { name: studentUsers.get(s.userId)?.name ?? "Unknown", rollNo: s.rollNo ?? "", pct };
+          return { name: studentUsers.get(s.userId)?.name ?? "Unknown", rollNo: s.rollNo ?? "", pct, avatarUrl: s.avatarUrl ?? null };
         })
-        .filter((s): s is { name: string; rollNo: string; pct: number } => s.pct !== null && s.pct < 75)
+        .filter((s): s is { name: string; rollNo: string; pct: number; avatarUrl: string | null } => s.pct !== null && s.pct < 75)
         .sort((a, b) => a.pct - b.pct);
     }
 

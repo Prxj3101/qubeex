@@ -34,11 +34,16 @@ export async function getDivisionLeaderboardData(
     where: { divisionId, institutionId },
     select: { studentId: true, status: true },
   });
-  const attMap = new Map<string, { p: number; total: number }>();
+  // Same "% = (P + L) / Total" formula the attendance sheet itself uses —
+  // Late still counts as attended. Counting only "P" here (as this used to)
+  // undercounted anyone with Late marks, which is why this leaderboard's
+  // attendance % never matched the real cumulative % shown on the
+  // attendance tab / student profile for the same student.
+  const attMap = new Map<string, { pl: number; total: number }>();
   for (const r of attendanceRecords) {
-    const cur = attMap.get(r.studentId) ?? { p: 0, total: 0 };
+    const cur = attMap.get(r.studentId) ?? { pl: 0, total: 0 };
     cur.total++;
-    if (r.status === "P") cur.p++;
+    if (r.status === "P" || r.status === "L") cur.pl++;
     attMap.set(r.studentId, cur);
   }
 
@@ -95,7 +100,7 @@ export async function getDivisionLeaderboardData(
         name: users.get(s.userId)?.name ?? "—",
         rollNo: s.rollNo ?? "",
         avatarUrl: s.avatarUrl,
-        attendancePct: att && att.total > 0 ? Math.round((att.p / att.total) * 100) : null,
+        attendancePct: att && att.total > 0 ? Math.round((att.pl / att.total) * 100) : null,
         combinedPct: combinedMax > 0 ? Math.round((combinedScored / combinedMax) * 100) : 0,
         // Offline: no entry yet reads as unknown (dash), same as the marksheet
         // grid. Online: tests are already completed, so a student with zero

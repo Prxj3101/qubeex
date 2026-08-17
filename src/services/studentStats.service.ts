@@ -28,8 +28,13 @@ export async function getStudentStatsData(
   });
   const attendanceTotal = attendanceRecords.length;
   const attendancePresent = attendanceRecords.filter((r) => r.status === "P").length;
+  // Same "% = (P + L) / Total" formula the attendance sheet itself uses —
+  // Late still counts as attended. `present` stays P-only (it's a literal
+  // count shown alongside Total elsewhere), but the % must include Late or
+  // it silently disagrees with the cumulative % shown on the attendance tab.
+  const attendancePL = attendanceRecords.filter((r) => r.status === "P" || r.status === "L").length;
   const attendancePct = attendanceTotal > 0
-    ? Math.round((attendancePresent / attendanceTotal) * 100)
+    ? Math.round((attendancePL / attendanceTotal) * 100)
     : null;
 
   const [marksheet, division] = await Promise.all([

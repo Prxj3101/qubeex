@@ -1417,6 +1417,19 @@ model Marksheet {
   shareToken         String          @unique
   gradedSectionTitle String          @default("Graded Subjects")
   gradeScale         Json            @default("[]")
+  // Frozen copy of exam columns + scores + graded subjects/scores + remarks +
+  // grade scale + section title, taken at the moment of Publish/Re-publish.
+  // Student-facing reads serve this instead of the live editable tables, so
+  // a teacher's in-progress score edits never reach students until they
+  // explicitly re-publish. Null for marksheets published before this existed
+  // — those fall back to live data until the teacher re-publishes once.
+  publishedSnapshot  Json?
+  publishedAt        DateTime?
+  // True the moment ANY score/column/grade-scale/graded-score/remark edit
+  // happens after the last publish — persisted server-side (not just React
+  // state) so it survives navigation/reload. Reset to false by publish/
+  // re-publish. Drives the "Re-publish" nudge in the marksheet header.
+  hasUnpublishedChanges Boolean      @default(false)
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 

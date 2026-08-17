@@ -395,14 +395,14 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     // year (e.g. 2025-26) are viewed in June of the new year (2026-27).
     let marksheet = await academicDb().marksheet.findUnique({
       where: { divisionId_academicYear: { divisionId: student.division.id, academicYear } },
-      select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true },
+      select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
     });
     console.log("[marksheet] divisionId:", student.division.id, "academicYear:", academicYear, "found:", marksheet?.academicYear, "status:", marksheet?.status);
     if (!marksheet || marksheet.status !== "PUBLISHED") {
       marksheet = await academicDb().marksheet.findFirst({
         where: { divisionId: student.division.id, institutionId, status: "PUBLISHED" },
         orderBy: { academicYear: "desc" },
-        select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true },
+        select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
       });
       console.log("[marksheet] fallback:", marksheet?.academicYear, "status:", marksheet?.status);
     }
@@ -411,35 +411,66 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
       return;
     }
 
-    const [subjects, examColumns, scores, gradedSubjects, gradedScores, remark] = await Promise.all([
-      academicDb().subject.findMany({
-        where: { standardId: student.division.standardId, institutionId },
-        orderBy: { order: "asc" },
-        select: { id: true, name: true, code: true, color: true },
-      }),
-      academicDb().marksheetExamColumn.findMany({
-        where: { marksheetId: marksheet.id, institutionId },
-        orderBy: [{ subjectId: "asc" }, { order: "asc" }],
-        select: { id: true, subjectId: true, name: true, maxMarks: true },
-      }),
-      academicDb().marksheetScore.findMany({
-        where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
-        select: { examColumnId: true, score: true, isAbsent: true },
-      }),
-      academicDb().marksheetGradedSubject.findMany({
-        where: { marksheetId: marksheet.id, institutionId },
-        orderBy: { order: "asc" },
-        select: { id: true, name: true },
-      }),
-      academicDb().marksheetGradedScore.findMany({
-        where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
-        select: { gradedSubjectId: true, term1Grade: true, term2Grade: true },
-      }),
-      academicDb().marksheetRemark.findFirst({
-        where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
-        select: { conduct: true, remarks: true },
-      }),
-    ]);
+    // Student-facing reads prefer the frozen publish-time snapshot so score
+    // edits the teacher hasn't re-published yet stay invisible to students.
+    // Marksheets published before this feature existed have no snapshot —
+    // fall back to live tables for those (backward compatibility).
+    const snap = marksheet.publishedSnapshot as {
+      gradeScale?: GradeScaleEntry[];
+      gradedSectionTitle?: string | null;
+      examColumns: { id: string; subjectId: string; name: string; maxMarks: number }[];
+      scores: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[];
+      gradedSubjects: { id: string; name: string }[];
+      gradedScores: { gradedSubjectId: string; studentId: string; term1Grade: string | null; term2Grade: string | null }[];
+      remarks: { studentId: string; conduct: string | null; remarks: string | null }[];
+    } | null;
+
+    const [subjects, examColumns, scores, gradedSubjects, gradedScores, remark] = snap
+      ? await Promise.all([
+          academicDb().subject.findMany({
+            where: { standardId: student.division.standardId, institutionId },
+            orderBy: { order: "asc" },
+            select: { id: true, name: true, code: true, color: true },
+          }),
+          Promise.resolve(snap.examColumns.map((c) => ({ id: c.id, subjectId: c.subjectId, name: c.name, maxMarks: c.maxMarks }))),
+          Promise.resolve(snap.scores.filter((s) => s.studentId === student.id).map((s) => ({ examColumnId: s.examColumnId, score: s.score, isAbsent: s.isAbsent }))),
+          Promise.resolve(snap.gradedSubjects.map((g) => ({ id: g.id, name: g.name }))),
+          Promise.resolve(snap.gradedScores.filter((g) => g.studentId === student.id).map((g) => ({ gradedSubjectId: g.gradedSubjectId, term1Grade: g.term1Grade, term2Grade: g.term2Grade }))),
+          Promise.resolve(snap.remarks.find((r) => r.studentId === student.id) ?? null),
+        ])
+      : await Promise.all([
+          academicDb().subject.findMany({
+            where: { standardId: student.division.standardId, institutionId },
+            orderBy: { order: "asc" },
+            select: { id: true, name: true, code: true, color: true },
+          }),
+          academicDb().marksheetExamColumn.findMany({
+            where: { marksheetId: marksheet.id, institutionId },
+            orderBy: [{ subjectId: "asc" }, { order: "asc" }],
+            select: { id: true, subjectId: true, name: true, maxMarks: true },
+          }),
+          academicDb().marksheetScore.findMany({
+            where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
+            select: { examColumnId: true, score: true, isAbsent: true },
+          }),
+          academicDb().marksheetGradedSubject.findMany({
+            where: { marksheetId: marksheet.id, institutionId },
+            orderBy: { order: "asc" },
+            select: { id: true, name: true },
+          }),
+          academicDb().marksheetGradedScore.findMany({
+            where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
+            select: { gradedSubjectId: true, term1Grade: true, term2Grade: true },
+          }),
+          academicDb().marksheetRemark.findFirst({
+            where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
+            select: { conduct: true, remarks: true },
+          }),
+        ]);
+
+    // gradeScale/gradedSectionTitle also freeze from the snapshot when present.
+    const effectiveGradeScale = (snap?.gradeScale ?? marksheet.gradeScale ?? []) as GradeScaleEntry[];
+    const effectiveGradedSectionTitle = snap ? (snap.gradedSectionTitle ?? null) : marksheet.gradedSectionTitle;
 
     const scoreByCol = new Map(scores.map((s) => [s.examColumnId, s]));
     const colsBySubject: Record<string, typeof examColumns> = {};
@@ -461,8 +492,10 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
         const e = scoreByCol.get(c.id);
         const sc = e?.score ?? null;
         const absent = e?.isAbsent ?? false;
+        // Matches the marksheet grid's own enteredTotal rule: a column only
+        // counts toward max if this student has a real (non-null) score in
+        // it — blank AND absent both mean "not entered" here.
         if (sc !== null) { scored += sc; max += c.maxMarks; }
-        else if (!absent) { max += c.maxMarks; }
         return { id: c.id, name: c.name, maxMarks: c.maxMarks, score: sc, isAbsent: absent };
       });
       grandScored += scored;
@@ -487,20 +520,24 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
 
       return {
         id: sub.id, name: sub.name, code: sub.code ?? sub.name.slice(0, 4), color: sub.color ?? null,
-        columns, total: { scored, max }, pct, grade: gradeFor(pct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
+        columns, total: { scored, max }, pct, grade: gradeFor(pct, effectiveGradeScale),
         onlineColumns, onlineTotal: { scored: onlineScored, max: onlineMax }, onlinePct,
-        onlineGrade: gradeFor(onlinePct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
+        onlineGrade: gradeFor(onlinePct, effectiveGradeScale),
       };
     });
     const grandPct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
     const onlineGrandPct = onlineGrandMax > 0 ? Math.round((onlineGrandScored / onlineGrandMax) * 100) : null;
 
-    // Compute class rank by comparing this student's total against all others
+    // Compute class rank by comparing this student's total against all others.
+    // Uses the same frozen snapshot (all students' scores) when available, so
+    // ranks don't shift from an unpublished edit either.
     const [allMarksheetScores, classSize] = await Promise.all([
-      academicDb().marksheetScore.findMany({
-        where: { marksheetId: marksheet.id, institutionId },
-        select: { studentId: true, score: true, isAbsent: true },
-      }),
+      snap
+        ? Promise.resolve(snap.scores.map((s) => ({ studentId: s.studentId, score: s.score, isAbsent: s.isAbsent })))
+        : academicDb().marksheetScore.findMany({
+            where: { marksheetId: marksheet.id, institutionId },
+            select: { studentId: true, score: true, isAbsent: true },
+          }),
       academicDb().student.count({
         where: { divisionId: student.division.id, institutionId, status: "ACTIVE" },
       }),
@@ -514,9 +551,10 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     const studentsAboveMe = [...studentTotals.values()].filter((t) => t > grandScored).length;
     const classRank = studentsAboveMe + 1;
 
-    // Online + combined rank, same "compare raw totals" approach as offline
-    // (every student shares the same grand max, so ranking by raw scored
-    // totals is equivalent to ranking by %).
+    // Online + combined rank, same "compare raw totals" approach as offline —
+    // ranking by raw scored totals rather than %, so per-student differences
+    // in entered max (some students may have fewer graded columns than
+    // others at any given moment) don't need to be normalized out here.
     const onlineStudentTotals = new Map<string, number>();
     for (const studentScores of Object.values(online.scores)) {
       for (const [sid, entry] of Object.entries(studentScores)) {
@@ -550,18 +588,18 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
       success: true,
       data: {
         academicYear: marksheet.academicYear,
-        gradeScale: (marksheet.gradeScale ?? []) as GradeScaleEntry[],
-        gradedSectionTitle: marksheet.gradedSectionTitle,
+        gradeScale: effectiveGradeScale,
+        gradedSectionTitle: effectiveGradedSectionTitle,
         standardName: student.division.standard?.name ?? "",
         divisionName: student.division.name,
         student: { name: marksheetStudentName, rollNo: student.rollNo ?? "" },
         subjects: subjectResults,
         grandTotal: { scored: grandScored, max: grandMax },
         grandPct,
-        grade: gradeFor(grandPct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
+        grade: gradeFor(grandPct, effectiveGradeScale),
         onlineGrandTotal: { scored: onlineGrandScored, max: onlineGrandMax },
         onlineGrandPct,
-        onlineGrade: gradeFor(onlineGrandPct, (marksheet.gradeScale ?? []) as GradeScaleEntry[]),
+        onlineGrade: gradeFor(onlineGrandPct, effectiveGradeScale),
         classRank,
         offlineClassRank: classRank,
         onlineClassRank,
@@ -624,15 +662,25 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
       const marksheet = await academicDb().marksheet.findFirst({
         where: { divisionId, institutionId, status: "PUBLISHED" },
         orderBy: { academicYear: "desc" },
-        select: { id: true },
+        select: { id: true, publishedSnapshot: true },
       });
 
       if (marksheet) {
+        // Prefer the frozen publish-time snapshot so unpublished score edits
+        // don't leak into the overview leaderboard. Falls back to live tables
+        // for marksheets published before this feature existed.
+        const overviewSnap = marksheet.publishedSnapshot as {
+          examColumns: { id: string; maxMarks: number }[];
+          scores: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[];
+        } | null;
+
         const [allScores, allStudents] = await Promise.all([
-          academicDb().marksheetScore.findMany({
-            where: { marksheetId: marksheet.id, institutionId },
-            select: { studentId: true, score: true, isAbsent: true },
-          }),
+          overviewSnap
+            ? Promise.resolve(overviewSnap.scores)
+            : academicDb().marksheetScore.findMany({
+                where: { marksheetId: marksheet.id, institutionId },
+                select: { studentId: true, examColumnId: true, score: true, isAbsent: true },
+              }),
           academicDb().student.findMany({
             where: { divisionId, institutionId, status: "ACTIVE" },
             select: { id: true, userId: true, rollNo: true, avatarUrl: true },
@@ -640,37 +688,47 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
         ]);
         const leaderboardUserMap = await resolveUsers(allStudents.map((s) => s.userId), { id: true, name: true });
 
-        const [allCols] = await Promise.all([
-          academicDb().marksheetExamColumn.findMany({
-            where: { marksheetId: marksheet.id, institutionId },
-            select: { id: true, maxMarks: true },
-          }),
-        ]);
-        const grandMax = allCols.reduce((sum, c) => sum + c.maxMarks, 0);
+        const allCols = overviewSnap
+          ? overviewSnap.examColumns
+          : await academicDb().marksheetExamColumn.findMany({
+              where: { marksheetId: marksheet.id, institutionId },
+              select: { id: true, maxMarks: true },
+            });
+        const maxByCol = new Map(allCols.map((c) => [c.id, c.maxMarks]));
 
-        // total scored per student
+        // total scored per student, PLUS each student's own entered max — a
+        // freshly created exam column with no marks filled in yet must not
+        // drag anyone's % down, same "only columns actually graded count
+        // toward the denominator" rule the marksheet grid itself uses.
         const totals = new Map<string, number>();
+        const maxByStudent = new Map<string, number>();
         for (const sc of allScores) {
           if (!sc.isAbsent && sc.score !== null) {
             totals.set(sc.studentId, (totals.get(sc.studentId) ?? 0) + sc.score);
+            const colMax = maxByCol.get(sc.examColumnId) ?? 0;
+            maxByStudent.set(sc.studentId, (maxByStudent.get(sc.studentId) ?? 0) + colMax);
           }
         }
 
         totalStudents = allStudents.length;
         const myTotal = totals.get(student.id) ?? 0;
-        marksPct = grandMax > 0 ? Math.round((myTotal / grandMax) * 100) : null;
+        const myMax = maxByStudent.get(student.id) ?? 0;
+        marksPct = myMax > 0 ? Math.round((myTotal / myMax) * 100) : null;
         classRank = [...totals.values()].filter(t => t > myTotal).length + 1;
 
         // Build leaderboard: sort all students by score desc, take top 5
         const ranked = allStudents
-          .map(s => ({
-            id: s.id,
-            name: leaderboardUserMap.get(s.userId)?.name ?? "Unknown",
-            rollNo: s.rollNo ?? "",
-            avatarUrl: s.avatarUrl ?? null,
-            total: totals.get(s.id) ?? 0,
-            pct: grandMax > 0 ? Math.round(((totals.get(s.id) ?? 0) / grandMax) * 100) : 0,
-          }))
+          .map(s => {
+            const sMax = maxByStudent.get(s.id) ?? 0;
+            return {
+              id: s.id,
+              name: leaderboardUserMap.get(s.userId)?.name ?? "Unknown",
+              rollNo: s.rollNo ?? "",
+              avatarUrl: s.avatarUrl ?? null,
+              total: totals.get(s.id) ?? 0,
+              pct: sMax > 0 ? Math.round(((totals.get(s.id) ?? 0) / sMax) * 100) : 0,
+            };
+          })
           .sort((a, b) => b.total - a.total);
 
         leaderboard = ranked.slice(0, 5).map((s, i) => ({
@@ -894,7 +952,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       academicDb().marksheet.findMany({
         where: { divisionId, institutionId, status: "PUBLISHED" },
         orderBy: { academicYear: "desc" },
-        select: { id: true },
+        select: { id: true, publishedSnapshot: true },
       }),
     ]);
 
@@ -948,9 +1006,14 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
 
     const marksMap = new Map<string, number>(); // studentId → total combined scored
     const offlineMarksMap = new Map<string, number>(); // studentId → offline scored
+    // studentId → offline entered max — per-student, NOT a class-wide
+    // constant. A freshly added exam column with no marks filled in yet must
+    // not drag anyone's % down; only columns a student actually has a score
+    // for count toward their own denominator, same rule the marksheet grid
+    // itself uses.
+    const offlineMaxByStudent = new Map<string, number>();
     const onlineMarksMap = new Map<string, number>(); // studentId → online scored
     let grandMax = 0;
-    let offlineGrandMax = 0;
     let onlineGrandMax = 0;
     let allColumns: { id: string; subjectId: string; name: string; maxMarks: number }[] = [];
     let allScoreRows: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[] = [];
@@ -981,33 +1044,48 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
 
     if (marksheet) {
 
-      const [columns, allScores, myScoresRaw] = await Promise.all([
-        academicDb().marksheetExamColumn.findMany({
-          where: { marksheetId: marksheet.id, institutionId },
-          orderBy: [{ subjectId: "asc" }, { order: "asc" }],
-          select: { id: true, subjectId: true, name: true, maxMarks: true },
-        }),
-        academicDb().marksheetScore.findMany({
-          where: { marksheetId: marksheet.id, institutionId },
-          select: { studentId: true, examColumnId: true, score: true, isAbsent: true },
-        }),
-        academicDb().marksheetScore.findMany({
-          where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
-          select: { examColumnId: true, score: true, isAbsent: true },
-        }),
-      ]);
+      // Prefer the frozen publish-time snapshot (offline scores) so unpublished
+      // edits stay invisible to students/classmates on this page. Old
+      // marksheets published before this feature existed have no snapshot —
+      // fall back to live tables.
+      const classSnap = marksheet.publishedSnapshot as {
+        examColumns: { id: string; subjectId: string; name: string; maxMarks: number }[];
+        scores: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[];
+      } | null;
+
+      const [columns, allScores, myScoresRaw] = classSnap
+        ? [
+            classSnap.examColumns,
+            classSnap.scores,
+            classSnap.scores.filter((s) => s.studentId === student.id).map((s) => ({ examColumnId: s.examColumnId, score: s.score, isAbsent: s.isAbsent })),
+          ]
+        : await Promise.all([
+            academicDb().marksheetExamColumn.findMany({
+              where: { marksheetId: marksheet.id, institutionId },
+              orderBy: [{ subjectId: "asc" }, { order: "asc" }],
+              select: { id: true, subjectId: true, name: true, maxMarks: true },
+            }),
+            academicDb().marksheetScore.findMany({
+              where: { marksheetId: marksheet.id, institutionId },
+              select: { studentId: true, examColumnId: true, score: true, isAbsent: true },
+            }),
+            academicDb().marksheetScore.findMany({
+              where: { marksheetId: marksheet.id, institutionId, studentId: student.id },
+              select: { examColumnId: true, score: true, isAbsent: true },
+            }),
+          ]);
 
       allColumns = columns;
       allScoreRows = allScores;
 
-      // Grand max totals — every offline column is genuinely offline now
-      // (online tests live entirely outside the MarksheetExamColumn table).
-      for (const c of columns) offlineGrandMax += c.maxMarks;
+      const maxByCol = new Map(columns.map((c) => [c.id, c.maxMarks]));
 
-      // Per-student offline totals
+      // Per-student offline totals + per-student entered max
       for (const sc of allScores) {
         if (!sc.isAbsent && sc.score !== null) {
           offlineMarksMap.set(sc.studentId, (offlineMarksMap.get(sc.studentId) ?? 0) + sc.score);
+          const colMax = maxByCol.get(sc.examColumnId) ?? 0;
+          offlineMaxByStudent.set(sc.studentId, (offlineMaxByStudent.get(sc.studentId) ?? 0) + colMax);
         }
       }
 
@@ -1036,7 +1114,13 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
           return { name: c.name, scored: sc, max: c.maxMarks, isAbsent: e?.isAbsent ?? false };
         });
         const sumScored = (cs: ScoreCol[]) => cs.reduce((s, c) => s + (c.isAbsent ? 0 : (c.scored ?? 0)), 0);
-        const sumMax = (cs: ScoreCol[]) => cs.reduce((s, c) => s + (c.isAbsent ? 0 : c.max), 0);
+        // A column only counts toward max if this student has a real
+        // (non-null) `scored` value — matches the marksheet grid's own
+        // enteredTotal rule. Offline: blank AND absent both read as null
+        // here, so neither inflates/shrinks the max. Online: a column is
+        // only null when explicitly absent (a merely-missed test already
+        // defaults to a real 0 above), so it still counts in full otherwise.
+        const sumMax = (cs: ScoreCol[]) => cs.reduce((s, c) => s + (c.scored !== null ? c.max : 0), 0);
         const offTotalScored = sumScored(offCols), offTotalMax = sumMax(offCols);
         const onTotalScored = sumScored(onCols), onTotalMax = sumMax(onCols);
         const subCols = [...offCols, ...onCols];
@@ -1076,8 +1160,11 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
     }
 
     // Combined = offline + online, pooled scored / pooled max — same rule
-    // used by the leaderboard and Overall tab everywhere else.
-    grandMax = offlineGrandMax + onlineGrandMax;
+    // used by the leaderboard and Overall tab everywhere else. Max is
+    // per-student on the offline side (only their own entered columns),
+    // online max stays class-wide since every student is scored against the
+    // same completed tests either way.
+    grandMax = onlineGrandMax; // existence flag only (see `rank` below) — real per-student max computed inline
     for (const s of allStudents) {
       const off = offlineMarksMap.get(s.id);
       const on = onlineMarksMap.get(s.id);
@@ -1091,9 +1178,11 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       const att = attMap.get(s.id);
       const attPct = att && att.total > 0 ? Math.round((att.p / att.total) * 100) : null;
       const scored = marksMap.get(s.id) ?? null;
-      const marksPct = scored !== null && grandMax > 0 ? Math.round((scored / grandMax) * 100) : null;
+      const offlineMaxForStudent = offlineMaxByStudent.get(s.id) ?? 0;
+      const combinedMaxForStudent = offlineMaxForStudent + onlineGrandMax;
+      const marksPct = scored !== null && combinedMaxForStudent > 0 ? Math.round((scored / combinedMaxForStudent) * 100) : null;
       const offlineScored = offlineMarksMap.get(s.id) ?? null;
-      const offlinePct = offlineScored !== null && offlineGrandMax > 0 ? Math.round((offlineScored / offlineGrandMax) * 100) : null;
+      const offlinePct = offlineScored !== null && offlineMaxForStudent > 0 ? Math.round((offlineScored / offlineMaxForStudent) * 100) : null;
       // Online: tests are already completed by the time they show up here, so
       // a student with no recorded attempt still gets a real 0%, not a dash
       // — same "missed means 0" rule used by the leaderboard/online marksheet.
@@ -1102,7 +1191,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
         id: s.id,
         name: classmateUserMap.get(s.userId)?.name ?? "Unknown",
         rollNo: s.rollNo ?? "—",
-        rank: grandMax > 0 ? i + 1 : null,
+        rank: combinedMaxForStudent > 0 ? i + 1 : null,
         attendancePct: attPct,
         marksPct,
         offlinePct,
@@ -1122,18 +1211,20 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
     const subjectLeaderboards: Record<string, LbEntry[]> = {};
     {
       const colSubjectMap = new Map(allColumns.map(c => [c.id, c.subjectId]));
+      const colMaxMap = new Map(allColumns.map(c => [c.id, c.maxMarks]));
 
-      const subjectOfflineMaxMap = new Map<string, number>();
       const subjectOnlineMaxMap = new Map<string, number>();
-      for (const c of allColumns) {
-        subjectOfflineMaxMap.set(c.subjectId, (subjectOfflineMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
-      }
       for (const cols of Object.values(online.examColumns)) {
         for (const c of cols) subjectOnlineMaxMap.set(c.subjectId, (subjectOnlineMaxMap.get(c.subjectId) ?? 0) + c.maxMarks);
       }
 
       const subjectStudentOffline = new Map<string, Map<string, number>>();
       const subjectStudentOnline = new Map<string, Map<string, number>>();
+      // Per-subject, per-student entered offline max — NOT a subject-wide
+      // constant. A freshly added column with no marks yet must not drag
+      // down everyone's subject %; only columns a student actually has a
+      // score for count toward their own denominator.
+      const subjectStudentOfflineMax = new Map<string, Map<string, number>>();
 
       for (const sc of allScoreRows) {
         if (!sc.isAbsent && sc.score !== null) {
@@ -1142,6 +1233,10 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
           const fMap = subjectStudentOffline.get(subjectId) ?? new Map<string, number>();
           fMap.set(sc.studentId, (fMap.get(sc.studentId) ?? 0) + sc.score);
           subjectStudentOffline.set(subjectId, fMap);
+          const mMap = subjectStudentOfflineMax.get(subjectId) ?? new Map<string, number>();
+          const colMax = colMaxMap.get(sc.examColumnId) ?? 0;
+          mMap.set(sc.studentId, (mMap.get(sc.studentId) ?? 0) + colMax);
+          subjectStudentOfflineMax.set(subjectId, mMap);
         }
       }
       for (const [subjectId, cols] of Object.entries(online.examColumns)) {
@@ -1160,22 +1255,23 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       for (const s of allStudents) studentNameMap.set(s.id, classmateUserMap.get(s.userId)?.name ?? "—");
 
       for (const subj of subjectList) {
-        const offMax = subjectOfflineMaxMap.get(subj.id) ?? 0;
         const onMax = subjectOnlineMaxMap.get(subj.id) ?? 0;
-        const combinedMax = offMax + onMax;
-        if (combinedMax === 0) { subjectLeaderboards[subj.id] = []; continue; }
+        const offMaxMapForSubj = subjectStudentOfflineMax.get(subj.id);
         const offMapForSubj = subjectStudentOffline.get(subj.id);
         const onMapForSubj = subjectStudentOnline.get(subj.id);
         const studentIds = new Set([...(offMapForSubj?.keys() ?? []), ...(onMapForSubj?.keys() ?? [])]);
+        if (studentIds.size === 0 && onMax === 0) { subjectLeaderboards[subj.id] = []; continue; }
         subjectLeaderboards[subj.id] = [...studentIds]
           .map((sid): LbEntry => {
             const offScored = offMapForSubj?.get(sid) ?? null;
             const onScored = onMapForSubj?.get(sid) ?? null;
+            const offMax = offMaxMapForSubj?.get(sid) ?? 0;
+            const combinedMax = offMax + onMax;
             const total = (offScored ?? 0) + (onScored ?? 0);
             return {
               name: studentNameMap.get(sid) ?? "—",
               avatarUrl: studentAvatarMap.get(sid) ?? null,
-              combinedPct: Math.round((total / combinedMax) * 100),
+              combinedPct: combinedMax > 0 ? Math.round((total / combinedMax) * 100) : 0,
               offlinePct: offScored !== null && offMax > 0 ? Math.round((offScored / offMax) * 100) : null,
               onlinePct: onMax > 0 ? Math.round(((onScored ?? 0) / onMax) * 100) : null,
               isMe: sid === student.id,

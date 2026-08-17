@@ -252,11 +252,15 @@ async function generateMarksheetPdf(params: {
     params.students.forEach((student) => {
       const subTotals: Record<string, { scored: number; max: number }> = {};
       params.subjects.forEach((sub) => {
+        // Matches the marksheet grid's own enteredTotal rule: a column only
+        // counts toward max if this student has a real (non-null) score in
+        // it. Blank AND absent both mean "not entered" — neither should
+        // inflate the denominator (a freshly added, ungraded column must not
+        // drag anyone's printed % down).
         let scored = 0, max = 0;
         (params.examColumnsBySubject[sub.id] ?? []).forEach((ec) => {
           const e = params.scoreMap[ec.id]?.[student.id];
           if (e?.score !== null && e?.score !== undefined) { scored += e.score!; max += ec.maxMarks; }
-          else if (!e?.isAbsent) { max += ec.maxMarks; }
         });
         subTotals[sub.id] = { scored, max };
       });
@@ -403,6 +407,16 @@ function getCurrentAcademicYear(): string {
   return `${startYear}-${String(startYear + 1).slice(2)}`;
 }
 
+// Marks a marksheet as having edits since its last publish. Persisted in the
+// DB (not just React state) so the "Re-publish" nudge survives navigation —
+// fire-and-forget, never blocks the actual save on failure.
+async function markUnpublishedChanges(marksheetId: string): Promise<void> {
+  await academicDb().marksheet.update({
+    where: { id: marksheetId },
+    data: { hasUnpublishedChanges: true },
+  }).catch(() => {});
+}
+
 async function fetchMarksheetFull(
   marksheetId: string,
   institutionId: string,
@@ -422,6 +436,7 @@ async function fetchMarksheetFull(
           shareToken: true,
           gradedSectionTitle: true,
           gradeScale: true,
+          hasUnpublishedChanges: true,
           subjectConfigs: {
             select: { subjectId: true, passingMarks: true, gradeScale: true },
           },
@@ -511,6 +526,7 @@ async function fetchMarksheetFull(
       status: marksheet.status,
       shareToken: marksheet.shareToken,
       gradedSectionTitle: marksheet.gradedSectionTitle,
+      hasUnpublishedChanges: marksheet.hasUnpublishedChanges,
     },
     gradeScale: (marksheet.gradeScale ?? []) as { grade: string; minPct: number }[],
     subjectConfigs: isClassTeacher
@@ -660,6 +676,7 @@ export async function addColumn(
       },
       select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
     });
+    await markUnpublishedChanges(marksheetId);
 
     res.status(201).json({ success: true, data: column });
   } catch (err: unknown) {
@@ -701,6 +718,7 @@ export async function editColumn(
       },
       select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
     });
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true, data: updated });
   } catch (err: unknown) {
@@ -734,6 +752,7 @@ export async function deleteColumn(
 
     // Cascade deletes scores via onDelete: Cascade on MarksheetScore
     await academicDb().marksheetExamColumn.delete({ where: { id: colId } });
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true });
   } catch (err: unknown) {
@@ -775,6 +794,7 @@ export async function reorderColumns(
         })
       )
     );
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true });
   } catch (err: unknown) {
@@ -813,6 +833,7 @@ export async function setSubjectConfig(
       update: { passingMarks, gradeScale },
       select: { subjectId: true, passingMarks: true, gradeScale: true },
     });
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true, data: config });
   } catch (err: unknown) {
@@ -880,6 +901,7 @@ export async function bulkUpsertScores(
         })
       )
     );
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true, data: { saved: scores.length } });
   } catch (err: unknown) {
@@ -918,6 +940,7 @@ export async function addGradedSubject(
       data: { marksheetId, institutionId, name, order: (maxOrder._max.order ?? -1) + 1 },
       select: { id: true, name: true, order: true },
     });
+    await markUnpublishedChanges(marksheetId);
 
     res.status(201).json({ success: true, data: subject });
   } catch (err: unknown) {
@@ -953,6 +976,7 @@ export async function editGradedSubject(
       data: { name },
       select: { id: true, name: true, order: true },
     });
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true, data: updated });
   } catch (err: unknown) {
@@ -984,6 +1008,7 @@ export async function deleteGradedSubject(
 
     // Cascade deletes graded scores via onDelete: Cascade on MarksheetGradedScore
     await academicDb().marksheetGradedSubject.delete({ where: { id: gsId } });
+    await markUnpublishedChanges(marksheetId);
     res.json({ success: true });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };
@@ -1022,6 +1047,7 @@ export async function reorderGradedSubjects(
         })
       )
     );
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true });
   } catch (err: unknown) {
@@ -1054,7 +1080,7 @@ export async function updateGradedSectionTitle(
     const { title } = gradedSectionTitleSchema.parse(req.body);
     await academicDb().marksheet.update({
       where: { id: marksheetId },
-      data: { gradedSectionTitle: title },
+      data: { gradedSectionTitle: title, hasUnpublishedChanges: true },
     });
 
     res.json({ success: true, data: { gradedSectionTitle: title } });
@@ -1090,7 +1116,7 @@ export async function updateMarksheetGradeScale(
 
     await academicDb().marksheet.update({
       where: { id: marksheetId },
-      data: { gradeScale: sorted },
+      data: { gradeScale: sorted, hasUnpublishedChanges: true },
     });
 
     res.json({ success: true, data: { gradeScale: sorted } });
@@ -1161,6 +1187,7 @@ export async function bulkUpsertGradedScores(
         })
       )
     );
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true, data: { saved: scores.length } });
   } catch (err: unknown) {
@@ -1215,6 +1242,7 @@ export async function upsertMarksheetRemark(
         updatedByTeacherId: teacherId,
       },
     });
+    await markUnpublishedChanges(marksheetId);
 
     res.json({ success: true, data: { conduct: saved.conduct, remarks: saved.remarks } });
   } catch (err: unknown) {
@@ -1613,7 +1641,7 @@ export async function publishMarksheet(
 
     const marksheet = await academicDb().marksheet.findFirst({
       where: { id: marksheetId, institutionId },
-      select: { divisionId: true, pdfR2Key: true, shareToken: true },
+      select: { divisionId: true, pdfR2Key: true, shareToken: true, gradeScale: true, gradedSectionTitle: true },
     });
     if (!marksheet) { res.status(404).json({ success: false, error: "Marksheet not found" }); return; }
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
@@ -1626,9 +1654,47 @@ export async function publishMarksheet(
       return;
     }
 
+    // Freeze everything a student can see into a snapshot right now — this is
+    // what makes "Publish"/"Re-publish" a real gate. Without it, since scores
+    // are edited straight into the same live tables students already read
+    // from, every keystroke after the first publish would go out instantly
+    // with no way to stage changes before showing them.
+    const [examColumns, scores, gradedSubjects, gradedScores, remarks] = await Promise.all([
+      academicDb().marksheetExamColumn.findMany({
+        where: { marksheetId, institutionId },
+        select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
+      }),
+      academicDb().marksheetScore.findMany({
+        where: { marksheetId, institutionId },
+        select: { studentId: true, examColumnId: true, score: true, isAbsent: true },
+      }),
+      academicDb().marksheetGradedSubject.findMany({
+        where: { marksheetId, institutionId },
+        select: { id: true, name: true, order: true },
+      }),
+      academicDb().marksheetGradedScore.findMany({
+        where: { marksheetId, institutionId },
+        select: { gradedSubjectId: true, studentId: true, term1Grade: true, term2Grade: true },
+      }),
+      academicDb().marksheetRemark.findMany({
+        where: { marksheetId, institutionId },
+        select: { studentId: true, conduct: true, remarks: true },
+      }),
+    ]);
+
+    const publishedSnapshot = {
+      gradeScale: marksheet.gradeScale,
+      gradedSectionTitle: marksheet.gradedSectionTitle,
+      examColumns: examColumns.map((c) => ({ ...c, examDate: c.examDate ? c.examDate.toISOString() : null })),
+      scores,
+      gradedSubjects,
+      gradedScores,
+      remarks,
+    };
+
     await academicDb().marksheet.update({
       where: { id: marksheetId },
-      data: { status: "PUBLISHED" },
+      data: { status: "PUBLISHED", publishedSnapshot, publishedAt: new Date(), hasUnpublishedChanges: false },
     });
 
     const pubDivision = await academicDb().division.findFirst({

@@ -89,6 +89,7 @@ export async function adminGetDivisionMarksheet(
         where: { id: marksheet.id },
         select: {
           id: true, academicYear: true, status: true, shareToken: true, gradedSectionTitle: true, gradeScale: true,
+          hasUnpublishedChanges: true,
           subjectConfigs: { select: { subjectId: true, passingMarks: true, gradeScale: true } },
         },
       }),
@@ -153,6 +154,7 @@ export async function adminGetDivisionMarksheet(
         marksheet: {
           id: ms!.id, academicYear: ms!.academicYear, status: ms!.status,
           shareToken: ms!.shareToken, gradedSectionTitle: ms!.gradedSectionTitle,
+          hasUnpublishedChanges: ms!.hasUnpublishedChanges,
         },
         gradeScale: (ms!.gradeScale ?? []) as { grade: string; minPct: number }[],
         subjectConfigs: ms!.subjectConfigs,

@@ -48,8 +48,14 @@ export async function getDivisionLeaderboardData(
   }
 
   const offlineMap = new Map<string, number>();
+  // Per-student entered max — NOT a single class-wide max. A freshly added
+  // exam column with no marks filled in yet must not drag down everyone's %:
+  // the marksheet grid itself only divides by the columns a student actually
+  // has a score for (see MarksTab's getSubjectTotal/enteredTotal), so this
+  // mirrors that exactly instead of dividing by every column's maxMarks
+  // regardless of whether it's been graded.
+  const offlineMaxMap = new Map<string, number>();
   const onlineMap = new Map<string, number>();
-  let offlineMax = 0;
   let onlineMax = 0;
 
   // Offline: the teacher-entered marksheet (published only — same "publish
@@ -59,15 +65,17 @@ export async function getDivisionLeaderboardData(
       where: { marksheetId: marksheet.id, institutionId },
       select: { id: true, maxMarks: true },
     });
-    for (const c of columns) offlineMax += c.maxMarks;
+    const maxByCol = new Map(columns.map((c) => [c.id, c.maxMarks]));
 
     const allScores = await academicDb().marksheetScore.findMany({
       where: { marksheetId: marksheet.id, institutionId },
-      select: { studentId: true, score: true, isAbsent: true },
+      select: { studentId: true, examColumnId: true, score: true, isAbsent: true },
     });
     for (const s of allScores) {
       if (s.isAbsent || s.score === null) continue;
       offlineMap.set(s.studentId, (offlineMap.get(s.studentId) ?? 0) + s.score);
+      const colMax = maxByCol.get(s.examColumnId) ?? 0;
+      offlineMaxMap.set(s.studentId, (offlineMaxMap.get(s.studentId) ?? 0) + colMax);
     }
   }
 
@@ -85,28 +93,32 @@ export async function getDivisionLeaderboardData(
     }
   }
 
-  const combinedMax = offlineMax + onlineMax;
-
   const users = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
 
   const ranked = students
     .map((s) => {
       const att = attMap.get(s.id);
       const offlineScored = offlineMap.get(s.id);
+      const offlineMaxForStudent = offlineMaxMap.get(s.id) ?? 0;
       const onlineScored = onlineMap.get(s.id);
       const combinedScored = (offlineScored ?? 0) + (onlineScored ?? 0);
+      // Per-student combined max: their own entered offline columns + the
+      // (always fully "entered") online max — not a class-wide constant, so
+      // an empty exam column doesn't drag down students who haven't been
+      // graded on it yet, matching the offline marksheet's own math exactly.
+      const combinedMaxForStudent = offlineMaxForStudent + onlineMax;
       return {
         id: s.id,
         name: users.get(s.userId)?.name ?? "—",
         rollNo: s.rollNo ?? "",
         avatarUrl: s.avatarUrl,
         attendancePct: att && att.total > 0 ? Math.round((att.pl / att.total) * 100) : null,
-        combinedPct: combinedMax > 0 ? Math.round((combinedScored / combinedMax) * 100) : 0,
+        combinedPct: combinedMaxForStudent > 0 ? Math.round((combinedScored / combinedMaxForStudent) * 100) : 0,
         // Offline: no entry yet reads as unknown (dash), same as the marksheet
         // grid. Online: tests are already completed, so a student with zero
         // recorded attempts still gets a real 0%, not a dash — same "missed
         // means 0" rule as the online marksheet cells.
-        offlinePct: offlineScored !== undefined && offlineMax > 0 ? Math.round((offlineScored / offlineMax) * 100) : null,
+        offlinePct: offlineScored !== undefined && offlineMaxForStudent > 0 ? Math.round((offlineScored / offlineMaxForStudent) * 100) : null,
         onlinePct: onlineMax > 0 ? Math.round(((onlineScored ?? 0) / onlineMax) * 100) : null,
       };
     })

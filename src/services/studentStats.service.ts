@@ -74,13 +74,12 @@ export async function getStudentStatsData(
 
   if (marksheet) {
     const columnIds = marksheet.examColumns.map((c) => c.id);
-    const offlineMax = marksheet.examColumns.reduce((sum, c) => sum + c.maxMarks, 0);
 
-    if (columnIds.length > 0 && offlineMax + onlineMax > 0) {
+    if (columnIds.length > 0) {
       const [allScores, studentScores] = await Promise.all([
         academicDb().marksheetScore.findMany({
           where: { marksheetId: marksheet.id, institutionId },
-          select: { studentId: true, score: true, isAbsent: true },
+          select: { studentId: true, examColumnId: true, score: true, isAbsent: true },
         }),
         academicDb().marksheetScore.findMany({
           where: { marksheetId: marksheet.id, institutionId, studentId },
@@ -88,17 +87,28 @@ export async function getStudentStatsData(
         }),
       ]);
 
+      const maxByCol = new Map(marksheet.examColumns.map((c) => [c.id, c.maxMarks]));
+
+      // Per-student entered max, NOT a class-wide constant — a freshly added
+      // exam column with no marks filled in yet must not drag down anyone's
+      // %, same as the marksheet grid's own getSubjectTotal/enteredTotal
+      // math (only columns a student actually has a score for count toward
+      // their denominator).
       const offlineTotals = new Map<string, number>();
+      const offlineMaxByStudent = new Map<string, number>();
       for (const s of allScores) {
-        if (!s.isAbsent && s.score !== null) {
-          offlineTotals.set(s.studentId, (offlineTotals.get(s.studentId) ?? 0) + s.score);
-        }
+        if (s.isAbsent || s.score === null) continue;
+        offlineTotals.set(s.studentId, (offlineTotals.get(s.studentId) ?? 0) + s.score);
+        const colMax = maxByCol.get(s.examColumnId) ?? 0;
+        offlineMaxByStudent.set(s.studentId, (offlineMaxByStudent.get(s.studentId) ?? 0) + colMax);
       }
 
       // Combined (offline + online) weighted totals, same "pooled scored /
       // pooled max" rule used by the leaderboard and Overall tab — not a
-      // naive average of two percentages.
-      const combinedMax = offlineMax + onlineMax;
+      // naive average of two percentages. Ranking below is by raw total
+      // marks (not %), so a shared/varying max per student doesn't skew it.
+      const studentOfflineMax = offlineMaxByStudent.get(studentId) ?? 0;
+      const combinedMax = studentOfflineMax + onlineMax;
       const allStudentIds = new Set([...offlineTotals.keys(), ...onlineTotals.keys(), studentId]);
       const combinedTotals = new Map<string, number>();
       for (const sid of allStudentIds) {
@@ -123,12 +133,14 @@ export async function getStudentStatsData(
         for (const sub of subjectRows) {
           const cols = marksheet.examColumns.filter((c) => c.subjectId === sub.id);
           if (cols.length === 0) continue;
+          // Matches the marksheet grid's own enteredTotal rule exactly: a
+          // column only counts toward max if this student has a real
+          // (non-null) score in it. Blank AND absent both mean "not
+          // entered" here — neither should inflate or shrink the max.
           let scored = 0, max = 0;
           for (const col of cols) {
             const e = scoreByCol.get(col.id);
-            if (e?.isAbsent) { max += col.maxMarks; continue; }
-            if (e?.score != null) { scored += e.score; }
-            max += col.maxMarks;
+            if (e?.score != null) { scored += e.score; max += col.maxMarks; }
           }
           subjects.push({
             name: sub.name,

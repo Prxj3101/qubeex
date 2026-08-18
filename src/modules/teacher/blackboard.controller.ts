@@ -21,7 +21,10 @@ const openai: import("openai").OpenAI | null = OpenAIModule
         : { apiKey: process.env.GROQ_API_KEY, baseURL: "https://api.groq.com/openai/v1" }
     )
   : null;
-const AI_MODEL = process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "llama-3.3-70b-versatile";
+// llama-3.3-70b-versatile was retired from Groq's catalog (returns 404
+// model_not_found) — openai/gpt-oss-120b is the current equivalent-tier
+// general-purpose model there.
+const AI_MODEL = process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "openai/gpt-oss-120b";
 const AI_PROVIDER: "openai" | "groq" = process.env.OPENAI_API_KEY ? "openai" : "groq";
 
 async function checkTokenPool(institutionId: string): Promise<void> {
@@ -1097,6 +1100,7 @@ const CONTEXT_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60; // documents don't change
 const CONTEXT_SYSTEM_PROMPT =
   "You are analyzing classroom teaching material. You will be given the combined text of one or more selected pages from a document — treat it as a single unified context, not as separate pages. " +
   "Read it fully, then produce a structured understanding of what it teaches. Do not summarize for a reader; extract structure. " +
+  "Respond only in English, regardless of the language of the source material. " +
   'Return ONLY valid JSON, no markdown, with exactly these keys: ' +
   '"topic" (short string — the real subject, never a page number or file name), ' +
   '"subtopics" (array of 3-6 strings), ' +
@@ -1128,6 +1132,10 @@ async function buildDocumentContext(
       ],
       response_format: { type: "json_object" },
       max_tokens: 900,
+      // gpt-oss models on Groq spend hidden "reasoning" tokens before the
+      // JSON answer; low effort keeps that overhead small and predictable
+      // for a plain extraction task like this. No-op on OpenAI's gpt-4.1-mini.
+      ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
     });
   } catch (err) {
     await recordAiUsage({
@@ -1221,6 +1229,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     // ── Stage 3: interpret the instructions against that understanding ───────
     const groundingRule = "Base your answer primarily on the given material. You may draw on your own knowledge to add helpful context or clarify a concept the material only mentions briefly, but anything you add must stay consistent with the material and must never contradict it.";
     const instructionRule = "The teacher's instructions are REQUIRED reading, not optional flavor text — if given, they must visibly shape what you emphasize, how you format the output, or what you focus on (e.g. \"focus on the diagrams\" or \"summarize for a 5th grader\"). Instructions guide the output; they are never the topic.";
+    const languageRule = "Respond only in English, regardless of the language of the source material or the teacher's instructions.";
     const notesField = data.mode === "notes"
       ? ", detailedNotes (a thorough, well-organized written explanation of the material in multiple short paragraphs — not just a rephrasing of the bullet points, this should read like real study notes a student could learn from, covering definitions, how things work, and why they matter)"
       : "";
@@ -1253,13 +1262,13 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       // Generate from the structured understanding rather than re-reading the
       // raw page text: it's already been distilled, so this call stays small
       // and focused on applying the instructions.
-      systemPrompt = `You are a knowledgeable teacher's assistant. You will be given a structured analysis of classroom material that has already been read and understood, plus the teacher's instructions. ${instructionRule} ${groundingRule} ${outputShape}`;
+      systemPrompt = `You are a knowledgeable teacher's assistant. You will be given a structured analysis of classroom material that has already been read and understood, plus the teacher's instructions. ${instructionRule} ${groundingRule} ${languageRule} ${outputShape}`;
       userContent = `Document analysis:\n${JSON.stringify(context, null, 2)}\n${scanInstructionBlock}`;
     } else {
       // No page content (non-PDF/PPTX doc, extraction failed client-side, or
       // context extraction errored) — fall back to the previous behavior of
       // working from whatever label/instructions we have.
-      systemPrompt = `You are a knowledgeable teacher's assistant. You'll be given a topic/document label and, optionally, the teacher's instructions. ${instructionRule} ${groundingRule} ${outputShape}`;
+      systemPrompt = `You are a knowledgeable teacher's assistant. You'll be given a topic/document label and, optionally, the teacher's instructions. ${instructionRule} ${groundingRule} ${languageRule} ${outputShape}`;
       userContent = `Topic: ${data.topic}\n${scanInstructionBlock}`;
     }
 
@@ -1275,6 +1284,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
         // Notes mode asks for a much longer detailedNotes field on top of the
         // usual fields, so it needs a bigger budget than a quick summary.
         max_tokens: data.mode === "notes" ? 1400 : 650,
+        ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
       });
     } catch (err) {
       await recordAiUsage({
@@ -1425,7 +1435,8 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
       // as gimmicky loses credibility faster than a plain one.
       "Use a few well-chosen emojis to make replies warm and easy to scan — typically one opening the reply and one per list item, matched to the subject (🌱 plants, 🧬 genetics, ⚡ energy, 🔬 experiments, 🌍 geography, 📐 maths, 💡 key insight, ⚠️ common mistake). " +
       "Keep them purposeful and sparing: never more than one per line, never inside the middle of a sentence, and none at all where they would trivialise a serious topic such as health, reproduction, or social issues. " +
-      "Write in a warm, encouraging, conversational voice — you are talking to a fellow teacher, not writing a textbook entry.";
+      "Write in a warm, encouraging, conversational voice — you are talking to a fellow teacher, not writing a textbook entry. " +
+      "Respond only in English, regardless of the language of the lesson material.";
 
     let systemContent: string;
     if (docContext) {
@@ -1459,6 +1470,7 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
           ...data.messages,
         ],
         max_tokens: 500,
+        ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
       });
     } catch (err) {
       await recordAiUsage({
@@ -1569,6 +1581,7 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
       `Return a JSON object with a "questions" array. Each question: ` +
       `{ "id": "q1", "question": "...", "options": ["A", "B", "C", "D"], "answer": <0-indexed correct option number>, ` +
       `"explanation": "1-2 sentences stating why the correct option is right${data.pageText ? ", grounded in what the material actually says" : ""}, and briefly why the tempting wrong option is wrong" }. ` +
+      `Respond only in English, regardless of the language of the source material. ` +
       `Return ONLY valid JSON, no markdown.`;
 
     const historyKey = quizHistoryKey(data.pageText, data.topic);
@@ -1612,6 +1625,7 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
         // budget scales with question count rather than sitting at a flat cap
         // that would truncate the JSON mid-array for larger quizzes.
         max_tokens: Math.min(600 + data.count * 220, 3000),
+        ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
       });
     } catch (err) {
       await recordAiUsage({

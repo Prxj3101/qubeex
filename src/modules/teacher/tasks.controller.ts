@@ -51,7 +51,10 @@ const openai: import("openai").OpenAI | null = OpenAIModule
         : { apiKey: process.env.GROQ_API_KEY, baseURL: "https://api.groq.com/openai/v1" }
     )
   : null;
-const AI_MODEL = process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "llama-3.3-70b-versatile";
+// llama-3.3-70b-versatile was retired from Groq's catalog (returns 404
+// model_not_found) — openai/gpt-oss-120b is the current equivalent-tier
+// general-purpose model there.
+const AI_MODEL = process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "openai/gpt-oss-120b";
 const AI_PROVIDER: "openai" | "groq" = process.env.OPENAI_API_KEY ? "openai" : "groq";
 
 // ── Upload config ─────────────────────────────────────────────────────────────
@@ -464,6 +467,7 @@ async function processPdfInBackground(
             { role: "user", content: userMessage },
           ],
           temperature: 0.2,
+          ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
         });
       } catch (err) {
         await recordAiUsage({

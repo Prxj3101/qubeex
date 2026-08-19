@@ -19,6 +19,12 @@ import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooMa
 import { getInstitutionUsageSummary, getPlatformUsageSummary } from "../../services/ai-usage.service";
 import { getCache, setCache, delCache } from "../../utils/cache";
 import { redis, isRedisReady } from "../../utils/redis";
+import {
+  checkDatabase, checkRedis, checkStorage, checkAI, checkEmail,
+  getServiceUptime24h, getServiceAvgLatency24h,
+  getResponseTimeSeries, getErrorRateSeries, getRecentServerErrors,
+} from "../../services/systemHealth.service";
+import { getCronStatuses } from "../../services/cronTracker.service";
 import bcrypt from "bcrypt";
 
 const CACHE_KEYS = {
@@ -1609,43 +1615,53 @@ export const likeReview = async (id: string) => {
 // SYSTEM HEALTH
 // ─────────────────────────────────────────────────────────────────────────────
 
+const BACKGROUND_JOB_NAMES = [
+  "billing-monthly-bills", "billing-overdue-deactivation", "billing-payment-reminder",
+  "trial-daily-notifications", "trial-auto-lock",
+  "addon-smartboard-expiry", "audit-retention", "storage-cleanup", "health-monitor",
+];
+
 export const getSystemHealth = async () => {
-  // Live DB check
-  let dbStatus = "operational";
-  let dbLatency = 0;
-  try {
-    const start = Date.now();
-    await prisma.$queryRaw`SELECT 1`;
-    dbLatency = Date.now() - start;
-  } catch {
-    dbStatus = "down";
-  }
+  const [db, redisCheck, storage, ai, email] = await Promise.all([
+    checkDatabase(), checkRedis(), checkStorage(), checkAI(), checkEmail(),
+  ]);
+
+  const [
+    dbUptime, redisUptime, storageUptime, aiUptime, emailUptime,
+    dbAvgLatency, redisAvgLatency, storageAvgLatency, aiAvgLatency, emailAvgLatency,
+    pendingFileDeletions, responseTime, errorRate, recentErrors, backgroundJobs,
+  ] = await Promise.all([
+    getServiceUptime24h("database"), getServiceUptime24h("redis"), getServiceUptime24h("storage"),
+    getServiceUptime24h("ai"), getServiceUptime24h("email"),
+    getServiceAvgLatency24h("database"), getServiceAvgLatency24h("redis"), getServiceAvgLatency24h("storage"),
+    getServiceAvgLatency24h("ai"), getServiceAvgLatency24h("email"),
+    prisma.pendingFileDeletion.count({ where: { scheduledAt: { lte: new Date() } } }),
+    getResponseTimeSeries(12),
+    getErrorRateSeries(12),
+    getRecentServerErrors(20),
+    getCronStatuses(BACKGROUND_JOB_NAMES),
+  ]);
 
   const services = [
-    { name: "API Server",     status: "operational", uptime: "99.98%", latency: "—",           region: "Mumbai" },
-    { name: "Database",       status: dbStatus,       uptime: "99.99%", latency: `${dbLatency}ms`, region: "Mumbai" },
-    { name: "Queue (Redis)",  status: "operational", uptime: "99.85%", latency: "—",           region: "Mumbai" },
-    { name: "Storage (S3)",   status: "operational", uptime: "99.95%", latency: "—",           region: "Global" },
-    { name: "AI (Claude)",    status: "operational", uptime: "99.90%", latency: "—",           region: "Global" },
-    { name: "Email (Resend)", status: "operational", uptime: "99.85%", latency: "—",           region: "Global" },
+    {
+      key: "api", name: "API Server", status: "operational" as const,
+      uptimePct: null, latencyMs: null, avgLatencyMs: null,
+      detail: `Up ${Math.floor(process.uptime() / 3600)}h ${Math.floor((process.uptime() % 3600) / 60)}m`,
+    },
+    { key: "database", name: "Database", status: db.status, uptimePct: dbUptime, latencyMs: db.latencyMs, avgLatencyMs: dbAvgLatency, detail: db.error ?? null },
+    { key: "redis", name: "Redis", status: redisCheck.status, uptimePct: redisUptime, latencyMs: redisCheck.latencyMs, avgLatencyMs: redisAvgLatency, detail: redisCheck.error ?? null },
+    { key: "storage", name: "Storage (R2)", status: storage.status, uptimePct: storageUptime, latencyMs: storage.latencyMs, avgLatencyMs: storageAvgLatency, detail: storage.error ?? null },
+    { key: "ai", name: "AI", status: ai.status, uptimePct: aiUptime, latencyMs: ai.latencyMs, avgLatencyMs: aiAvgLatency, detail: ai.error ?? null },
+    { key: "email", name: "Email (Resend)", status: email.status, uptimePct: emailUptime, latencyMs: email.latencyMs, avgLatencyMs: emailAvgLatency, detail: email.error ?? null },
   ];
-
-  // Recent errors from audit logs
-  const recentErrors = await prisma.auditLog.findMany({
-    where: { action: { in: ["LOGIN_FAILED", "INVITE_SENT"] } },
-    take: 5,
-    orderBy: { createdAt: "desc" },
-  });
 
   return {
     services,
-    queues: [
-      { name: "Email Queue",       pending: 0, processing: 0, failed: 0, color: "#7C3AED" },
-      { name: "Test Evaluation",   pending: 0, processing: 0, failed: 0, color: "#F59E0B" },
-      { name: "Report Generation", pending: 0, processing: 0, failed: 0, color: "#10B981" },
-      { name: "AI Processing",     pending: 0, processing: 0, failed: 0, color: "#2563EB" },
-    ],
+    responseTime,
+    errorRate,
     recentErrors,
+    backgroundJobs,
+    storageQueue: { pending: pendingFileDeletions },
   };
 };
 

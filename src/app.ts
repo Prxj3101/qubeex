@@ -17,6 +17,7 @@ import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { generalLimiter } from "./middlewares/rateLimiter.middleware";
 import { prisma } from "./utils/prisma";
 import { redis } from "./utils/redis";
+import { recordApiRequest } from "./services/systemHealth.service";
 
 const app = express();
 
@@ -50,6 +51,16 @@ app.post(
 app.use(express.json({ limit: "10kb" }));
 
 app.use(generalLimiter);
+
+// Records every request's duration + whether it errored, for the superadmin
+// System Health page's response-time and error-rate charts.
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    recordApiRequest(Date.now() - start, res.statusCode >= 500).catch(() => {});
+  });
+  next();
+});
 
 app.use("/api/superadmin", superadminRoutes);
 app.use("/api/auth", authRoutes);

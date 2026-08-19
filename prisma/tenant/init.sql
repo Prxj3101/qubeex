@@ -88,6 +88,7 @@ CREATE TABLE "Teacher" (
     "experience" TEXT,
     "prefix" TEXT,
     "title" TEXT DEFAULT 'Teacher',
+    "aiSoftLimitTokens" INTEGER,
     "status" "TeacherStatus" NOT NULL DEFAULT 'ACTIVE',
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -141,6 +142,7 @@ CREATE TABLE "Division" (
     "institutionId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "capacity" INTEGER,
+    "timetableUrl" TEXT,
     "classTeacherId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -695,6 +697,9 @@ CREATE TABLE "Marksheet" (
     "shareToken" TEXT NOT NULL,
     "gradedSectionTitle" TEXT NOT NULL DEFAULT 'Graded Subjects',
     "gradeScale" JSONB NOT NULL DEFAULT '[]',
+    "publishedSnapshot" JSONB,
+    "publishedAt" TIMESTAMP(3),
+    "hasUnpublishedChanges" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -766,6 +771,20 @@ CREATE TABLE "MarksheetGradedScore" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "MarksheetGradedScore_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MarksheetRemark" (
+    "id" TEXT NOT NULL,
+    "marksheetId" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "institutionId" TEXT NOT NULL,
+    "conduct" TEXT,
+    "remarks" TEXT,
+    "updatedByTeacherId" TEXT,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "MarksheetRemark_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -1062,6 +1081,12 @@ CREATE INDEX "MarksheetGradedScore_marksheetId_idx" ON "MarksheetGradedScore"("m
 -- CreateIndex
 CREATE UNIQUE INDEX "MarksheetGradedScore_gradedSubjectId_studentId_key" ON "MarksheetGradedScore"("gradedSubjectId", "studentId");
 
+-- CreateIndex
+CREATE INDEX "MarksheetRemark_marksheetId_idx" ON "MarksheetRemark"("marksheetId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MarksheetRemark_marksheetId_studentId_key" ON "MarksheetRemark"("marksheetId", "studentId");
+
 -- AddForeignKey
 ALTER TABLE "TeacherNote" ADD CONSTRAINT "TeacherNote_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -1265,4 +1290,10 @@ ALTER TABLE "MarksheetGradedScore" ADD CONSTRAINT "MarksheetGradedScore_gradedSu
 
 -- AddForeignKey
 ALTER TABLE "MarksheetGradedScore" ADD CONSTRAINT "MarksheetGradedScore_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MarksheetRemark" ADD CONSTRAINT "MarksheetRemark_marksheetId_fkey" FOREIGN KEY ("marksheetId") REFERENCES "Marksheet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MarksheetRemark" ADD CONSTRAINT "MarksheetRemark_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 

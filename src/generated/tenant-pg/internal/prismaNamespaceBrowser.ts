@@ -93,7 +93,8 @@ export const ModelName = {
   MarksheetExamColumn: 'MarksheetExamColumn',
   MarksheetScore: 'MarksheetScore',
   MarksheetGradedSubject: 'MarksheetGradedSubject',
-  MarksheetGradedScore: 'MarksheetGradedScore'
+  MarksheetGradedScore: 'MarksheetGradedScore',
+  MarksheetRemark: 'MarksheetRemark'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -130,6 +131,7 @@ export const TeacherScalarFieldEnum = {
   experience: 'experience',
   prefix: 'prefix',
   title: 'title',
+  aiSoftLimitTokens: 'aiSoftLimitTokens',
   status: 'status',
   joinedAt: 'joinedAt',
   createdAt: 'createdAt',
@@ -183,6 +185,7 @@ export const DivisionScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   capacity: 'capacity',
+  timetableUrl: 'timetableUrl',
   classTeacherId: 'classTeacherId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -737,6 +740,9 @@ export const MarksheetScalarFieldEnum = {
   shareToken: 'shareToken',
   gradedSectionTitle: 'gradedSectionTitle',
   gradeScale: 'gradeScale',
+  publishedSnapshot: 'publishedSnapshot',
+  publishedAt: 'publishedAt',
+  hasUnpublishedChanges: 'hasUnpublishedChanges',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -809,6 +815,20 @@ export const MarksheetGradedScoreScalarFieldEnum = {
 } as const
 
 export type MarksheetGradedScoreScalarFieldEnum = (typeof MarksheetGradedScoreScalarFieldEnum)[keyof typeof MarksheetGradedScoreScalarFieldEnum]
+
+
+export const MarksheetRemarkScalarFieldEnum = {
+  id: 'id',
+  marksheetId: 'marksheetId',
+  studentId: 'studentId',
+  institutionId: 'institutionId',
+  conduct: 'conduct',
+  remarks: 'remarks',
+  updatedByTeacherId: 'updatedByTeacherId',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MarksheetRemarkScalarFieldEnum = (typeof MarksheetRemarkScalarFieldEnum)[keyof typeof MarksheetRemarkScalarFieldEnum]
 
 
 export const SortOrder = {

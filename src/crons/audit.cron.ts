@@ -1,5 +1,6 @@
 import cron from "node-cron";
 import { prisma } from "../utils/prisma";
+import { recordCronRun } from "../services/cronTracker.service";
 
 function daysAgo(days: number): Date {
   return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
@@ -53,8 +54,10 @@ export async function runAuditRetention(): Promise<void> {
         `[Audit Retention] Purged ${total} rows (system=${system.count}, secInfo=${securityInfo.count}, secWarn=${securityWarning.count}, admin=${admin.count}, billing=${billing.count})`
       );
     }
+    await recordCronRun("audit-retention", true);
   } catch (err) {
     console.error("[Audit Retention] Failed:", err);
+    await recordCronRun("audit-retention", false, err instanceof Error ? err.message : "Unknown error");
   }
 }
 

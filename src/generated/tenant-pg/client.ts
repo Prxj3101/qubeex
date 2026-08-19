@@ -254,3 +254,8 @@ export type MarksheetGradedSubject = Prisma.MarksheetGradedSubjectModel
  * 
  */
 export type MarksheetGradedScore = Prisma.MarksheetGradedScoreModel
+/**
+ * Model MarksheetRemark
+ * 
+ */
+export type MarksheetRemark = Prisma.MarksheetRemarkModel

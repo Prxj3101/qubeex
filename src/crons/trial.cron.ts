@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { prisma } from "../utils/prisma";
 import { logAudit } from "../services/audit.service";
 import { sendTrialEndingEmail } from "../services/email.service";
+import { recordCronRun } from "../services/cronTracker.service";
 
 // ─── Daily: 9:00 AM IST (03:30 UTC) ─────────────────────────────────────────
 
@@ -153,8 +154,10 @@ export function startTrialCron() {
     console.log(`[Trial Cron] Running daily trial notifications at ${new Date().toISOString()}`);
     try {
       await runDailyTrialNotifications();
+      await recordCronRun("trial-daily-notifications", true);
     } catch (err) {
       console.error("[Trial Cron] Daily notification run failed:", err);
+      await recordCronRun("trial-daily-notifications", false, err instanceof Error ? err.message : "Unknown error");
     }
   }, { timezone: "Asia/Kolkata" });
 
@@ -163,8 +166,10 @@ export function startTrialCron() {
     console.log(`[Trial Cron] Running hourly auto-lock check at ${new Date().toISOString()}`);
     try {
       await runHourlyAutoLock();
+      await recordCronRun("trial-auto-lock", true);
     } catch (err) {
       console.error("[Trial Cron] Hourly auto-lock run failed:", err);
+      await recordCronRun("trial-auto-lock", false, err instanceof Error ? err.message : "Unknown error");
     }
   });
 

@@ -405,6 +405,7 @@ export type StudentWhereInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
   marksheetScores?: Prisma.MarksheetScoreListRelationFilter
   marksheetGradedScores?: Prisma.MarksheetGradedScoreListRelationFilter
+  marksheetRemarks?: Prisma.MarksheetRemarkListRelationFilter
   remarks?: Prisma.StudentRemarkListRelationFilter
   feePayments?: Prisma.StudentFeePaymentListRelationFilter
   promotionOutcomes?: Prisma.StudentPromotionOutcomeListRelationFilter
@@ -451,6 +452,7 @@ export type StudentOrderByWithRelationInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionOrderByRelationAggregateInput
   marksheetScores?: Prisma.MarksheetScoreOrderByRelationAggregateInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreOrderByRelationAggregateInput
+  marksheetRemarks?: Prisma.MarksheetRemarkOrderByRelationAggregateInput
   remarks?: Prisma.StudentRemarkOrderByRelationAggregateInput
   feePayments?: Prisma.StudentFeePaymentOrderByRelationAggregateInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeOrderByRelationAggregateInput
@@ -501,6 +503,7 @@ export type StudentWhereUniqueInput = Prisma.AtLeast<{
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
   marksheetScores?: Prisma.MarksheetScoreListRelationFilter
   marksheetGradedScores?: Prisma.MarksheetGradedScoreListRelationFilter
+  marksheetRemarks?: Prisma.MarksheetRemarkListRelationFilter
   remarks?: Prisma.StudentRemarkListRelationFilter
   feePayments?: Prisma.StudentFeePaymentListRelationFilter
   promotionOutcomes?: Prisma.StudentPromotionOutcomeListRelationFilter
@@ -623,6 +626,7 @@ export type StudentCreateInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
@@ -667,6 +671,7 @@ export type StudentUncheckedCreateInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
@@ -711,6 +716,7 @@ export type StudentUpdateInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
@@ -755,6 +761,7 @@ export type StudentUncheckedUpdateInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
@@ -1197,6 +1204,20 @@ export type StudentUpdateOneRequiredWithoutMarksheetGradedScoresNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StudentUpdateToOneWithWhereWithoutMarksheetGradedScoresInput, Prisma.StudentUpdateWithoutMarksheetGradedScoresInput>, Prisma.StudentUncheckedUpdateWithoutMarksheetGradedScoresInput>
 }
 
+export type StudentCreateNestedOneWithoutMarksheetRemarksInput = {
+  create?: Prisma.XOR<Prisma.StudentCreateWithoutMarksheetRemarksInput, Prisma.StudentUncheckedCreateWithoutMarksheetRemarksInput>
+  connectOrCreate?: Prisma.StudentCreateOrConnectWithoutMarksheetRemarksInput
+  connect?: Prisma.StudentWhereUniqueInput
+}
+
+export type StudentUpdateOneRequiredWithoutMarksheetRemarksNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentCreateWithoutMarksheetRemarksInput, Prisma.StudentUncheckedCreateWithoutMarksheetRemarksInput>
+  connectOrCreate?: Prisma.StudentCreateOrConnectWithoutMarksheetRemarksInput
+  upsert?: Prisma.StudentUpsertWithoutMarksheetRemarksInput
+  connect?: Prisma.StudentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StudentUpdateToOneWithWhereWithoutMarksheetRemarksInput, Prisma.StudentUpdateWithoutMarksheetRemarksInput>, Prisma.StudentUncheckedUpdateWithoutMarksheetRemarksInput>
+}
+
 export type StudentCreateWithoutStandardInput = {
   id?: string
   studentId: string
@@ -1235,6 +1256,7 @@ export type StudentCreateWithoutStandardInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
@@ -1278,6 +1300,7 @@ export type StudentUncheckedCreateWithoutStandardInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
@@ -1386,6 +1409,7 @@ export type StudentCreateWithoutDivisionInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
@@ -1429,6 +1453,7 @@ export type StudentUncheckedCreateWithoutDivisionInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
@@ -1499,6 +1524,7 @@ export type StudentCreateWithoutPromotionOutcomesInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
 }
@@ -1542,6 +1568,7 @@ export type StudentUncheckedCreateWithoutPromotionOutcomesInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
 }
@@ -1601,6 +1628,7 @@ export type StudentUpdateWithoutPromotionOutcomesInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
 }
@@ -1644,6 +1672,7 @@ export type StudentUncheckedUpdateWithoutPromotionOutcomesInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
 }
@@ -1687,6 +1716,7 @@ export type StudentCreateWithoutRemarksInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
 }
@@ -1730,6 +1760,7 @@ export type StudentUncheckedCreateWithoutRemarksInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
 }
@@ -1789,6 +1820,7 @@ export type StudentUpdateWithoutRemarksInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
 }
@@ -1832,6 +1864,7 @@ export type StudentUncheckedUpdateWithoutRemarksInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
 }
@@ -1874,6 +1907,7 @@ export type StudentCreateWithoutAttendancesInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
@@ -1917,6 +1951,7 @@ export type StudentUncheckedCreateWithoutAttendancesInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
@@ -1976,6 +2011,7 @@ export type StudentUpdateWithoutAttendancesInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
@@ -2019,6 +2055,7 @@ export type StudentUncheckedUpdateWithoutAttendancesInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
@@ -2063,6 +2100,7 @@ export type StudentCreateWithoutFeePaymentsInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
 }
@@ -2106,6 +2144,7 @@ export type StudentUncheckedCreateWithoutFeePaymentsInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
 }
@@ -2165,6 +2204,7 @@ export type StudentUpdateWithoutFeePaymentsInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
 }
@@ -2208,6 +2248,7 @@ export type StudentUncheckedUpdateWithoutFeePaymentsInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
 }
@@ -2250,6 +2291,7 @@ export type StudentCreateWithoutTaskTestAttemptsInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
@@ -2293,6 +2335,7 @@ export type StudentUncheckedCreateWithoutTaskTestAttemptsInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
@@ -2352,6 +2395,7 @@ export type StudentUpdateWithoutTaskTestAttemptsInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
@@ -2395,6 +2439,7 @@ export type StudentUncheckedUpdateWithoutTaskTestAttemptsInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
@@ -2438,6 +2483,7 @@ export type StudentCreateWithoutTaskAssignmentSubmissionsInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
@@ -2481,6 +2527,7 @@ export type StudentUncheckedCreateWithoutTaskAssignmentSubmissionsInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
@@ -2540,6 +2587,7 @@ export type StudentUpdateWithoutTaskAssignmentSubmissionsInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
@@ -2583,6 +2631,7 @@ export type StudentUncheckedUpdateWithoutTaskAssignmentSubmissionsInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
@@ -2626,6 +2675,7 @@ export type StudentCreateWithoutMarksheetScoresInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
@@ -2669,6 +2719,7 @@ export type StudentUncheckedCreateWithoutMarksheetScoresInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
@@ -2728,6 +2779,7 @@ export type StudentUpdateWithoutMarksheetScoresInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
@@ -2771,6 +2823,7 @@ export type StudentUncheckedUpdateWithoutMarksheetScoresInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
@@ -2814,6 +2867,7 @@ export type StudentCreateWithoutMarksheetGradedScoresInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
@@ -2857,6 +2911,7 @@ export type StudentUncheckedCreateWithoutMarksheetGradedScoresInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
   remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
@@ -2916,6 +2971,7 @@ export type StudentUpdateWithoutMarksheetGradedScoresInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
@@ -2959,6 +3015,199 @@ export type StudentUncheckedUpdateWithoutMarksheetGradedScoresInput = {
   taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+}
+
+export type StudentCreateWithoutMarksheetRemarksInput = {
+  id?: string
+  studentId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  rollNo?: string | null
+  houseColor?: string | null
+  bloodGroup?: string | null
+  aadharNo?: string | null
+  panNo?: string | null
+  emergencyContact?: string | null
+  religion?: string | null
+  category?: string | null
+  nationality?: string | null
+  admissionYear?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tempPassword?: string | null
+  hasLoggedIn?: boolean
+  status?: $Enums.StudentStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
+  marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+}
+
+export type StudentUncheckedCreateWithoutMarksheetRemarksInput = {
+  id?: string
+  studentId: string
+  userId: string
+  institutionId: string
+  standardId?: string | null
+  divisionId?: string | null
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  rollNo?: string | null
+  houseColor?: string | null
+  bloodGroup?: string | null
+  aadharNo?: string | null
+  panNo?: string | null
+  emergencyContact?: string | null
+  religion?: string | null
+  category?: string | null
+  nationality?: string | null
+  admissionYear?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tempPassword?: string | null
+  hasLoggedIn?: boolean
+  status?: $Enums.StudentStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
+  marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+}
+
+export type StudentCreateOrConnectWithoutMarksheetRemarksInput = {
+  where: Prisma.StudentWhereUniqueInput
+  create: Prisma.XOR<Prisma.StudentCreateWithoutMarksheetRemarksInput, Prisma.StudentUncheckedCreateWithoutMarksheetRemarksInput>
+}
+
+export type StudentUpsertWithoutMarksheetRemarksInput = {
+  update: Prisma.XOR<Prisma.StudentUpdateWithoutMarksheetRemarksInput, Prisma.StudentUncheckedUpdateWithoutMarksheetRemarksInput>
+  create: Prisma.XOR<Prisma.StudentCreateWithoutMarksheetRemarksInput, Prisma.StudentUncheckedCreateWithoutMarksheetRemarksInput>
+  where?: Prisma.StudentWhereInput
+}
+
+export type StudentUpdateToOneWithWhereWithoutMarksheetRemarksInput = {
+  where?: Prisma.StudentWhereInput
+  data: Prisma.XOR<Prisma.StudentUpdateWithoutMarksheetRemarksInput, Prisma.StudentUncheckedUpdateWithoutMarksheetRemarksInput>
+}
+
+export type StudentUpdateWithoutMarksheetRemarksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
+  marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+}
+
+export type StudentUncheckedUpdateWithoutMarksheetRemarksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  standardId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
@@ -3037,6 +3286,7 @@ export type StudentUpdateWithoutStandardInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
@@ -3080,6 +3330,7 @@ export type StudentUncheckedUpdateWithoutStandardInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
@@ -3193,6 +3444,7 @@ export type StudentUpdateWithoutDivisionInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
@@ -3236,6 +3488,7 @@ export type StudentUncheckedUpdateWithoutDivisionInput = {
   taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
   remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
@@ -3287,6 +3540,7 @@ export type StudentCountOutputType = {
   taskAssignmentSubmissions: number
   marksheetScores: number
   marksheetGradedScores: number
+  marksheetRemarks: number
   remarks: number
   feePayments: number
   promotionOutcomes: number
@@ -3298,6 +3552,7 @@ export type StudentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   taskAssignmentSubmissions?: boolean | StudentCountOutputTypeCountTaskAssignmentSubmissionsArgs
   marksheetScores?: boolean | StudentCountOutputTypeCountMarksheetScoresArgs
   marksheetGradedScores?: boolean | StudentCountOutputTypeCountMarksheetGradedScoresArgs
+  marksheetRemarks?: boolean | StudentCountOutputTypeCountMarksheetRemarksArgs
   remarks?: boolean | StudentCountOutputTypeCountRemarksArgs
   feePayments?: boolean | StudentCountOutputTypeCountFeePaymentsArgs
   promotionOutcomes?: boolean | StudentCountOutputTypeCountPromotionOutcomesArgs
@@ -3346,6 +3601,13 @@ export type StudentCountOutputTypeCountMarksheetScoresArgs<ExtArgs extends runti
  */
 export type StudentCountOutputTypeCountMarksheetGradedScoresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MarksheetGradedScoreWhereInput
+}
+
+/**
+ * StudentCountOutputType without action
+ */
+export type StudentCountOutputTypeCountMarksheetRemarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MarksheetRemarkWhereInput
 }
 
 /**
@@ -3411,6 +3673,7 @@ export type StudentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   taskAssignmentSubmissions?: boolean | Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>
   marksheetScores?: boolean | Prisma.Student$marksheetScoresArgs<ExtArgs>
   marksheetGradedScores?: boolean | Prisma.Student$marksheetGradedScoresArgs<ExtArgs>
+  marksheetRemarks?: boolean | Prisma.Student$marksheetRemarksArgs<ExtArgs>
   remarks?: boolean | Prisma.Student$remarksArgs<ExtArgs>
   feePayments?: boolean | Prisma.Student$feePaymentsArgs<ExtArgs>
   promotionOutcomes?: boolean | Prisma.Student$promotionOutcomesArgs<ExtArgs>
@@ -3538,6 +3801,7 @@ export type StudentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   taskAssignmentSubmissions?: boolean | Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>
   marksheetScores?: boolean | Prisma.Student$marksheetScoresArgs<ExtArgs>
   marksheetGradedScores?: boolean | Prisma.Student$marksheetGradedScoresArgs<ExtArgs>
+  marksheetRemarks?: boolean | Prisma.Student$marksheetRemarksArgs<ExtArgs>
   remarks?: boolean | Prisma.Student$remarksArgs<ExtArgs>
   feePayments?: boolean | Prisma.Student$feePaymentsArgs<ExtArgs>
   promotionOutcomes?: boolean | Prisma.Student$promotionOutcomesArgs<ExtArgs>
@@ -3562,6 +3826,7 @@ export type $StudentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     taskAssignmentSubmissions: Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>[]
     marksheetScores: Prisma.$MarksheetScorePayload<ExtArgs>[]
     marksheetGradedScores: Prisma.$MarksheetGradedScorePayload<ExtArgs>[]
+    marksheetRemarks: Prisma.$MarksheetRemarkPayload<ExtArgs>[]
     remarks: Prisma.$StudentRemarkPayload<ExtArgs>[]
     feePayments: Prisma.$StudentFeePaymentPayload<ExtArgs>[]
     promotionOutcomes: Prisma.$StudentPromotionOutcomePayload<ExtArgs>[]
@@ -4001,6 +4266,7 @@ export interface Prisma__StudentClient<T, Null = never, ExtArgs extends runtime.
   taskAssignmentSubmissions<T extends Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marksheetScores<T extends Prisma.Student$marksheetScoresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$marksheetScoresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marksheetGradedScores<T extends Prisma.Student$marksheetGradedScoresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$marksheetGradedScoresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetGradedScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  marksheetRemarks<T extends Prisma.Student$marksheetRemarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$marksheetRemarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetRemarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   remarks<T extends Prisma.Student$remarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$remarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentRemarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   feePayments<T extends Prisma.Student$feePaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$feePaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentFeePaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   promotionOutcomes<T extends Prisma.Student$promotionOutcomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$promotionOutcomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentPromotionOutcomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4622,6 +4888,30 @@ export type Student$marksheetGradedScoresArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.MarksheetGradedScoreScalarFieldEnum | Prisma.MarksheetGradedScoreScalarFieldEnum[]
+}
+
+/**
+ * Student.marksheetRemarks
+ */
+export type Student$marksheetRemarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MarksheetRemark
+   */
+  select?: Prisma.MarksheetRemarkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MarksheetRemark
+   */
+  omit?: Prisma.MarksheetRemarkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MarksheetRemarkInclude<ExtArgs> | null
+  where?: Prisma.MarksheetRemarkWhereInput
+  orderBy?: Prisma.MarksheetRemarkOrderByWithRelationInput | Prisma.MarksheetRemarkOrderByWithRelationInput[]
+  cursor?: Prisma.MarksheetRemarkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MarksheetRemarkScalarFieldEnum | Prisma.MarksheetRemarkScalarFieldEnum[]
 }
 
 /**

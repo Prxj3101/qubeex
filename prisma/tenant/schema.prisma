@@ -128,6 +128,7 @@ model Teacher {
   experience    String?
   prefix        String?
   title         String? @default("Teacher")
+  aiSoftLimitTokens Int? // admin-set monthly override; null = use computed default (pool ÷ teachers ÷ 26 days)
 
   status   TeacherStatus @default(ACTIVE)
   joinedAt DateTime      @default(now())
@@ -206,6 +207,8 @@ model Division {
 
   name     String
   capacity Int?
+
+  timetableUrl String? // class-teacher-uploaded timetable image, shown as-is (no signing needed)
 
   classTeacherId String?
   classTeacher   Teacher? @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
@@ -1096,10 +1099,6 @@ model MarksheetGradedScore {
   @@index([marksheetId])
 }
 
-// Per-student "Conduct" + "Remarks" on the offline report card — written by
-// the class teacher only, one row per student per marksheet (not tied to any
-// subject/exam column), and surfaced read-only on that student's own report
-// card (My Profile > View Report Card > Offline) once written.
 model MarksheetRemark {
   id                 String    @id @default(uuid())
   marksheetId        String

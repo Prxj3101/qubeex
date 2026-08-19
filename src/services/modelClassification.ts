@@ -26,6 +26,9 @@ export const PLATFORM_MODELS = [
   "PlatformSettings",
   // File-deletion bookkeeping for the central R2 store (files stay central in v1).
   "PendingFileDeletion",
+  // AI token-pool usage/billing events — references User directly, same domain
+  // as the shared per-institution AI token pool tracked centrally.
+  "AiUsageEvent",
 ] as const;
 
 // Academic / institution-owned data — routes to the tenant DB for BYOD institutions,
@@ -74,6 +77,7 @@ export const ACADEMIC_MODELS = [
   "MarksheetScore",
   "MarksheetGradedSubject",
   "MarksheetGradedScore",
+  "MarksheetRemark",
 ] as const;
 
 const academicSet = new Set<string>(ACADEMIC_MODELS);

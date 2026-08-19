@@ -40,6 +40,7 @@ export type DivisionMinAggregateOutputType = {
   institutionId: string | null
   name: string | null
   capacity: number | null
+  timetableUrl: string | null
   classTeacherId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -51,6 +52,7 @@ export type DivisionMaxAggregateOutputType = {
   institutionId: string | null
   name: string | null
   capacity: number | null
+  timetableUrl: string | null
   classTeacherId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,6 +64,7 @@ export type DivisionCountAggregateOutputType = {
   institutionId: number
   name: number
   capacity: number
+  timetableUrl: number
   classTeacherId: number
   createdAt: number
   updatedAt: number
@@ -83,6 +86,7 @@ export type DivisionMinAggregateInputType = {
   institutionId?: true
   name?: true
   capacity?: true
+  timetableUrl?: true
   classTeacherId?: true
   createdAt?: true
   updatedAt?: true
@@ -94,6 +98,7 @@ export type DivisionMaxAggregateInputType = {
   institutionId?: true
   name?: true
   capacity?: true
+  timetableUrl?: true
   classTeacherId?: true
   createdAt?: true
   updatedAt?: true
@@ -105,6 +110,7 @@ export type DivisionCountAggregateInputType = {
   institutionId?: true
   name?: true
   capacity?: true
+  timetableUrl?: true
   classTeacherId?: true
   createdAt?: true
   updatedAt?: true
@@ -203,6 +209,7 @@ export type DivisionGroupByOutputType = {
   institutionId: string
   name: string
   capacity: number | null
+  timetableUrl: string | null
   classTeacherId: string | null
   createdAt: Date
   updatedAt: Date
@@ -237,6 +244,7 @@ export type DivisionWhereInput = {
   institutionId?: Prisma.StringFilter<"Division"> | string
   name?: Prisma.StringFilter<"Division"> | string
   capacity?: Prisma.IntNullableFilter<"Division"> | number | null
+  timetableUrl?: Prisma.StringNullableFilter<"Division"> | string | null
   classTeacherId?: Prisma.StringNullableFilter<"Division"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Division"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Division"> | Date | string
@@ -262,6 +270,7 @@ export type DivisionOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   capacity?: Prisma.SortOrderInput | Prisma.SortOrder
+  timetableUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   classTeacherId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -291,6 +300,7 @@ export type DivisionWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"Division"> | string
   name?: Prisma.StringFilter<"Division"> | string
   capacity?: Prisma.IntNullableFilter<"Division"> | number | null
+  timetableUrl?: Prisma.StringNullableFilter<"Division"> | string | null
   classTeacherId?: Prisma.StringNullableFilter<"Division"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Division"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Division"> | Date | string
@@ -316,6 +326,7 @@ export type DivisionOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   capacity?: Prisma.SortOrderInput | Prisma.SortOrder
+  timetableUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   classTeacherId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -335,6 +346,7 @@ export type DivisionScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"Division"> | string
   name?: Prisma.StringWithAggregatesFilter<"Division"> | string
   capacity?: Prisma.IntNullableWithAggregatesFilter<"Division"> | number | null
+  timetableUrl?: Prisma.StringNullableWithAggregatesFilter<"Division"> | string | null
   classTeacherId?: Prisma.StringNullableWithAggregatesFilter<"Division"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Division"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Division"> | Date | string
@@ -345,6 +357,7 @@ export type DivisionCreateInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -369,6 +382,7 @@ export type DivisionUncheckedCreateInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -391,6 +405,7 @@ export type DivisionUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -415,6 +430,7 @@ export type DivisionUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -438,6 +454,7 @@ export type DivisionCreateManyInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -448,6 +465,7 @@ export type DivisionUpdateManyMutationInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -458,6 +476,7 @@ export type DivisionUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -484,6 +503,7 @@ export type DivisionCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
+  timetableUrl?: Prisma.SortOrder
   classTeacherId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -499,6 +519,7 @@ export type DivisionMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
+  timetableUrl?: Prisma.SortOrder
   classTeacherId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -510,6 +531,7 @@ export type DivisionMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
+  timetableUrl?: Prisma.SortOrder
   classTeacherId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -611,14 +633,6 @@ export type DivisionUncheckedUpdateManyWithoutStandardNestedInput = {
   update?: Prisma.DivisionUpdateWithWhereUniqueWithoutStandardInput | Prisma.DivisionUpdateWithWhereUniqueWithoutStandardInput[]
   updateMany?: Prisma.DivisionUpdateManyWithWhereWithoutStandardInput | Prisma.DivisionUpdateManyWithWhereWithoutStandardInput[]
   deleteMany?: Prisma.DivisionScalarWhereInput | Prisma.DivisionScalarWhereInput[]
-}
-
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type DivisionCreateNestedOneWithoutDivisionSubjectsInput = {
@@ -800,6 +814,7 @@ export type DivisionCreateWithoutClassTeacherInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -823,6 +838,7 @@ export type DivisionUncheckedCreateWithoutClassTeacherInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -874,6 +890,7 @@ export type DivisionScalarWhereInput = {
   institutionId?: Prisma.StringFilter<"Division"> | string
   name?: Prisma.StringFilter<"Division"> | string
   capacity?: Prisma.IntNullableFilter<"Division"> | number | null
+  timetableUrl?: Prisma.StringNullableFilter<"Division"> | string | null
   classTeacherId?: Prisma.StringNullableFilter<"Division"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Division"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Division"> | Date | string
@@ -884,6 +901,7 @@ export type DivisionCreateWithoutStandardInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -906,6 +924,7 @@ export type DivisionUncheckedCreateWithoutStandardInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -954,6 +973,7 @@ export type DivisionCreateWithoutDivisionSubjectsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -977,6 +997,7 @@ export type DivisionUncheckedCreateWithoutDivisionSubjectsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1014,6 +1035,7 @@ export type DivisionUpdateWithoutDivisionSubjectsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1037,6 +1059,7 @@ export type DivisionUncheckedUpdateWithoutDivisionSubjectsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1058,6 +1081,7 @@ export type DivisionCreateWithoutAssignmentsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1081,6 +1105,7 @@ export type DivisionUncheckedCreateWithoutAssignmentsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1118,6 +1143,7 @@ export type DivisionUpdateWithoutAssignmentsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1141,6 +1167,7 @@ export type DivisionUncheckedUpdateWithoutAssignmentsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1162,6 +1189,7 @@ export type DivisionCreateWithoutStudentsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1185,6 +1213,7 @@ export type DivisionUncheckedCreateWithoutStudentsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1222,6 +1251,7 @@ export type DivisionUpdateWithoutStudentsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1245,6 +1275,7 @@ export type DivisionUncheckedUpdateWithoutStudentsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1266,6 +1297,7 @@ export type DivisionCreateWithoutAttendancesInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1289,6 +1321,7 @@ export type DivisionUncheckedCreateWithoutAttendancesInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1326,6 +1359,7 @@ export type DivisionUpdateWithoutAttendancesInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1349,6 +1383,7 @@ export type DivisionUncheckedUpdateWithoutAttendancesInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1370,6 +1405,7 @@ export type DivisionCreateWithoutAttendanceDayNotesInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1393,6 +1429,7 @@ export type DivisionUncheckedCreateWithoutAttendanceDayNotesInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1430,6 +1467,7 @@ export type DivisionUpdateWithoutAttendanceDayNotesInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1453,6 +1491,7 @@ export type DivisionUncheckedUpdateWithoutAttendanceDayNotesInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1474,6 +1513,7 @@ export type DivisionCreateWithoutCampusPostsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1497,6 +1537,7 @@ export type DivisionUncheckedCreateWithoutCampusPostsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1534,6 +1575,7 @@ export type DivisionUpdateWithoutCampusPostsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1557,6 +1599,7 @@ export type DivisionUncheckedUpdateWithoutCampusPostsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1578,6 +1621,7 @@ export type DivisionCreateWithoutCalendarEventsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1601,6 +1645,7 @@ export type DivisionUncheckedCreateWithoutCalendarEventsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1638,6 +1683,7 @@ export type DivisionUpdateWithoutCalendarEventsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1661,6 +1707,7 @@ export type DivisionUncheckedUpdateWithoutCalendarEventsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1682,6 +1729,7 @@ export type DivisionCreateWithoutFeeStructureInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1705,6 +1753,7 @@ export type DivisionUncheckedCreateWithoutFeeStructureInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1742,6 +1791,7 @@ export type DivisionUpdateWithoutFeeStructureInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1765,6 +1815,7 @@ export type DivisionUncheckedUpdateWithoutFeeStructureInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1786,6 +1837,7 @@ export type DivisionCreateWithoutTaskContainersInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1809,6 +1861,7 @@ export type DivisionUncheckedCreateWithoutTaskContainersInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1846,6 +1899,7 @@ export type DivisionUpdateWithoutTaskContainersInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1869,6 +1923,7 @@ export type DivisionUncheckedUpdateWithoutTaskContainersInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1890,6 +1945,7 @@ export type DivisionCreateWithoutTaskTestsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -1913,6 +1969,7 @@ export type DivisionUncheckedCreateWithoutTaskTestsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1950,6 +2007,7 @@ export type DivisionUpdateWithoutTaskTestsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -1973,6 +2031,7 @@ export type DivisionUncheckedUpdateWithoutTaskTestsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1994,6 +2053,7 @@ export type DivisionCreateWithoutTaskAssignmentsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -2017,6 +2077,7 @@ export type DivisionUncheckedCreateWithoutTaskAssignmentsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2054,6 +2115,7 @@ export type DivisionUpdateWithoutTaskAssignmentsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -2077,6 +2139,7 @@ export type DivisionUncheckedUpdateWithoutTaskAssignmentsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2098,6 +2161,7 @@ export type DivisionCreateWithoutMarksheetsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -2121,6 +2185,7 @@ export type DivisionUncheckedCreateWithoutMarksheetsInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2158,6 +2223,7 @@ export type DivisionUpdateWithoutMarksheetsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -2181,6 +2247,7 @@ export type DivisionUncheckedUpdateWithoutMarksheetsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2203,6 +2270,7 @@ export type DivisionCreateManyClassTeacherInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2212,6 +2280,7 @@ export type DivisionUpdateWithoutClassTeacherInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -2235,6 +2304,7 @@ export type DivisionUncheckedUpdateWithoutClassTeacherInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2257,6 +2327,7 @@ export type DivisionUncheckedUpdateManyWithoutClassTeacherInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2266,6 +2337,7 @@ export type DivisionCreateManyStandardInput = {
   institutionId: string
   name: string
   capacity?: number | null
+  timetableUrl?: string | null
   classTeacherId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2276,6 +2348,7 @@ export type DivisionUpdateWithoutStandardInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -2298,6 +2371,7 @@ export type DivisionUncheckedUpdateWithoutStandardInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2320,6 +2394,7 @@ export type DivisionUncheckedUpdateManyWithoutStandardInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2452,6 +2527,7 @@ export type DivisionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   institutionId?: boolean
   name?: boolean
   capacity?: boolean
+  timetableUrl?: boolean
   classTeacherId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2478,6 +2554,7 @@ export type DivisionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   institutionId?: boolean
   name?: boolean
   capacity?: boolean
+  timetableUrl?: boolean
   classTeacherId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2491,6 +2568,7 @@ export type DivisionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   institutionId?: boolean
   name?: boolean
   capacity?: boolean
+  timetableUrl?: boolean
   classTeacherId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2504,12 +2582,13 @@ export type DivisionSelectScalar = {
   institutionId?: boolean
   name?: boolean
   capacity?: boolean
+  timetableUrl?: boolean
   classTeacherId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DivisionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "standardId" | "institutionId" | "name" | "capacity" | "classTeacherId" | "createdAt" | "updatedAt", ExtArgs["result"]["division"]>
+export type DivisionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "standardId" | "institutionId" | "name" | "capacity" | "timetableUrl" | "classTeacherId" | "createdAt" | "updatedAt", ExtArgs["result"]["division"]>
 export type DivisionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
   classTeacher?: boolean | Prisma.Division$classTeacherArgs<ExtArgs>
@@ -2560,6 +2639,7 @@ export type $DivisionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     institutionId: string
     name: string
     capacity: number | null
+    timetableUrl: string | null
     classTeacherId: string | null
     createdAt: Date
     updatedAt: Date
@@ -3005,6 +3085,7 @@ export interface DivisionFieldRefs {
   readonly institutionId: Prisma.FieldRef<"Division", 'String'>
   readonly name: Prisma.FieldRef<"Division", 'String'>
   readonly capacity: Prisma.FieldRef<"Division", 'Int'>
+  readonly timetableUrl: Prisma.FieldRef<"Division", 'String'>
   readonly classTeacherId: Prisma.FieldRef<"Division", 'String'>
   readonly createdAt: Prisma.FieldRef<"Division", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Division", 'DateTime'>

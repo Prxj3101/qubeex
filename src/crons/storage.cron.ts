@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { prisma } from "../utils/prisma";
 import { deleteFromR2 } from "../services/storage.service";
+import { recordCronRun } from "../services/cronTracker.service";
 
 export async function runStorageCleanup(): Promise<void> {
   const due = await prisma.pendingFileDeletion.findMany({
@@ -24,8 +25,10 @@ export function startStorageCron() {
   cron.schedule("0 2 * * *", async () => {
     try {
       await runStorageCleanup();
+      await recordCronRun("storage-cleanup", true);
     } catch (err) {
       console.error("[storage cron] Error:", err);
+      await recordCronRun("storage-cleanup", false, err instanceof Error ? err.message : "Unknown error");
     }
   });
 }

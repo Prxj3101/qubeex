@@ -27,7 +27,7 @@ const R2_SECRET_KEY    = process.env.R2_SECRET_ACCESS_KEY;
 const R2_BUCKET        = process.env.R2_BUCKET_NAME;
 const R2_PUBLIC_URL    = process.env.R2_PUBLIC_URL;
 
-function getR2Client(): S3Client {
+export function getR2Client(): S3Client {
   if (!R2_ENDPOINT || !R2_ACCESS_KEY_ID || !R2_SECRET_KEY) {
     throw new BadRequestError(
       "Cloudflare R2 is not configured. Set R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_PUBLIC_URL."

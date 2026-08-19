@@ -426,7 +426,8 @@ export const ModelName = {
   MarksheetExamColumn: 'MarksheetExamColumn',
   MarksheetScore: 'MarksheetScore',
   MarksheetGradedSubject: 'MarksheetGradedSubject',
-  MarksheetGradedScore: 'MarksheetGradedScore'
+  MarksheetGradedScore: 'MarksheetGradedScore',
+  MarksheetRemark: 'MarksheetRemark'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -442,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3628,6 +3629,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MarksheetRemark: {
+      payload: Prisma.$MarksheetRemarkPayload<ExtArgs>
+      fields: Prisma.MarksheetRemarkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MarksheetRemarkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MarksheetRemarkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>
+        }
+        findFirst: {
+          args: Prisma.MarksheetRemarkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MarksheetRemarkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>
+        }
+        findMany: {
+          args: Prisma.MarksheetRemarkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>[]
+        }
+        create: {
+          args: Prisma.MarksheetRemarkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>
+        }
+        createMany: {
+          args: Prisma.MarksheetRemarkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MarksheetRemarkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>[]
+        }
+        delete: {
+          args: Prisma.MarksheetRemarkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>
+        }
+        update: {
+          args: Prisma.MarksheetRemarkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>
+        }
+        deleteMany: {
+          args: Prisma.MarksheetRemarkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MarksheetRemarkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MarksheetRemarkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>[]
+        }
+        upsert: {
+          args: Prisma.MarksheetRemarkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarksheetRemarkPayload>
+        }
+        aggregate: {
+          args: Prisma.MarksheetRemarkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMarksheetRemark>
+        }
+        groupBy: {
+          args: Prisma.MarksheetRemarkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MarksheetRemarkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MarksheetRemarkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MarksheetRemarkCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3685,6 +3760,7 @@ export const TeacherScalarFieldEnum = {
   experience: 'experience',
   prefix: 'prefix',
   title: 'title',
+  aiSoftLimitTokens: 'aiSoftLimitTokens',
   status: 'status',
   joinedAt: 'joinedAt',
   createdAt: 'createdAt',
@@ -3738,6 +3814,7 @@ export const DivisionScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   capacity: 'capacity',
+  timetableUrl: 'timetableUrl',
   classTeacherId: 'classTeacherId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -4292,6 +4369,9 @@ export const MarksheetScalarFieldEnum = {
   shareToken: 'shareToken',
   gradedSectionTitle: 'gradedSectionTitle',
   gradeScale: 'gradeScale',
+  publishedSnapshot: 'publishedSnapshot',
+  publishedAt: 'publishedAt',
+  hasUnpublishedChanges: 'hasUnpublishedChanges',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -4366,6 +4446,20 @@ export const MarksheetGradedScoreScalarFieldEnum = {
 export type MarksheetGradedScoreScalarFieldEnum = (typeof MarksheetGradedScoreScalarFieldEnum)[keyof typeof MarksheetGradedScoreScalarFieldEnum]
 
 
+export const MarksheetRemarkScalarFieldEnum = {
+  id: 'id',
+  marksheetId: 'marksheetId',
+  studentId: 'studentId',
+  institutionId: 'institutionId',
+  conduct: 'conduct',
+  remarks: 'remarks',
+  updatedByTeacherId: 'updatedByTeacherId',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MarksheetRemarkScalarFieldEnum = (typeof MarksheetRemarkScalarFieldEnum)[keyof typeof MarksheetRemarkScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4435,6 +4529,20 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
  * Reference to a field of type 'TeacherStatus'
  */
 export type EnumTeacherStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeacherStatus'>
@@ -4466,20 +4574,6 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -4830,6 +4924,7 @@ export type GlobalOmitConfig = {
   marksheetScore?: Prisma.MarksheetScoreOmit
   marksheetGradedSubject?: Prisma.MarksheetGradedSubjectOmit
   marksheetGradedScore?: Prisma.MarksheetGradedScoreOmit
+  marksheetRemark?: Prisma.MarksheetRemarkOmit
 }
 
 /* Types for Logging */

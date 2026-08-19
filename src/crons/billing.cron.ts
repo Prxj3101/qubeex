@@ -4,6 +4,7 @@ import {
   generateMonthlyBills,
 } from "../services/billing.service";
 import { prisma } from "../utils/prisma";
+import { recordCronRun } from "../services/cronTracker.service";
 
 // Runs at 23:59 on the last day of every month (IST = UTC+5:30 → 18:29 UTC)
 // Cron: minute hour day-of-month month day-of-week
@@ -52,8 +53,10 @@ export function startBillingCron() {
           });
         }
         console.log(`[Billing Cron] Sent bill notifications to ${toNotify.length} institution(s)`);
+        await recordCronRun("billing-monthly-bills", true);
       } catch (err) {
         console.error("[Billing Cron] Error generating monthly bills:", err);
+        await recordCronRun("billing-monthly-bills", false, err instanceof Error ? err.message : "Unknown error");
       }
     },
     { timezone: "Asia/Kolkata" },
@@ -66,8 +69,10 @@ export function startBillingCron() {
       console.log(`[Billing Cron] Running overdue payment deactivation at ${new Date().toISOString()}`);
       try {
         await autoDeactivateOverdueInstitutions();
+        await recordCronRun("billing-overdue-deactivation", true);
       } catch (err) {
         console.error("[Billing Cron] Error auto-deactivating overdue institutions:", err);
+        await recordCronRun("billing-overdue-deactivation", false, err instanceof Error ? err.message : "Unknown error");
       }
     },
     { timezone: "Asia/Kolkata" },
@@ -113,8 +118,10 @@ export function startBillingCron() {
           });
         }
         console.log(`[Billing Cron] Sent payment reminders to ${toRemind.length} institution(s)`);
+        await recordCronRun("billing-payment-reminder", true);
       } catch (err) {
         console.error("[Billing Cron] Error sending payment reminders:", err);
+        await recordCronRun("billing-payment-reminder", false, err instanceof Error ? err.message : "Unknown error");
       }
     },
     { timezone: "Asia/Kolkata" },

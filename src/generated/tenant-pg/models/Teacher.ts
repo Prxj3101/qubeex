@@ -20,8 +20,18 @@ export type TeacherModel = runtime.Types.Result.DefaultSelection<Prisma.$Teacher
 
 export type AggregateTeacher = {
   _count: TeacherCountAggregateOutputType | null
+  _avg: TeacherAvgAggregateOutputType | null
+  _sum: TeacherSumAggregateOutputType | null
   _min: TeacherMinAggregateOutputType | null
   _max: TeacherMaxAggregateOutputType | null
+}
+
+export type TeacherAvgAggregateOutputType = {
+  aiSoftLimitTokens: number | null
+}
+
+export type TeacherSumAggregateOutputType = {
+  aiSoftLimitTokens: number | null
 }
 
 export type TeacherMinAggregateOutputType = {
@@ -42,6 +52,7 @@ export type TeacherMinAggregateOutputType = {
   experience: string | null
   prefix: string | null
   title: string | null
+  aiSoftLimitTokens: number | null
   status: $Enums.TeacherStatus | null
   joinedAt: Date | null
   createdAt: Date | null
@@ -66,6 +77,7 @@ export type TeacherMaxAggregateOutputType = {
   experience: string | null
   prefix: string | null
   title: string | null
+  aiSoftLimitTokens: number | null
   status: $Enums.TeacherStatus | null
   joinedAt: Date | null
   createdAt: Date | null
@@ -90,6 +102,7 @@ export type TeacherCountAggregateOutputType = {
   experience: number
   prefix: number
   title: number
+  aiSoftLimitTokens: number
   status: number
   joinedAt: number
   createdAt: number
@@ -97,6 +110,14 @@ export type TeacherCountAggregateOutputType = {
   _all: number
 }
 
+
+export type TeacherAvgAggregateInputType = {
+  aiSoftLimitTokens?: true
+}
+
+export type TeacherSumAggregateInputType = {
+  aiSoftLimitTokens?: true
+}
 
 export type TeacherMinAggregateInputType = {
   id?: true
@@ -116,6 +137,7 @@ export type TeacherMinAggregateInputType = {
   experience?: true
   prefix?: true
   title?: true
+  aiSoftLimitTokens?: true
   status?: true
   joinedAt?: true
   createdAt?: true
@@ -140,6 +162,7 @@ export type TeacherMaxAggregateInputType = {
   experience?: true
   prefix?: true
   title?: true
+  aiSoftLimitTokens?: true
   status?: true
   joinedAt?: true
   createdAt?: true
@@ -164,6 +187,7 @@ export type TeacherCountAggregateInputType = {
   experience?: true
   prefix?: true
   title?: true
+  aiSoftLimitTokens?: true
   status?: true
   joinedAt?: true
   createdAt?: true
@@ -209,6 +233,18 @@ export type TeacherAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: TeacherAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: TeacherSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: TeacherMinAggregateInputType
@@ -239,6 +275,8 @@ export type TeacherGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: TeacherCountAggregateInputType | true
+  _avg?: TeacherAvgAggregateInputType
+  _sum?: TeacherSumAggregateInputType
   _min?: TeacherMinAggregateInputType
   _max?: TeacherMaxAggregateInputType
 }
@@ -261,11 +299,14 @@ export type TeacherGroupByOutputType = {
   experience: string | null
   prefix: string | null
   title: string | null
+  aiSoftLimitTokens: number | null
   status: $Enums.TeacherStatus
   joinedAt: Date
   createdAt: Date
   updatedAt: Date
   _count: TeacherCountAggregateOutputType | null
+  _avg: TeacherAvgAggregateOutputType | null
+  _sum: TeacherSumAggregateOutputType | null
   _min: TeacherMinAggregateOutputType | null
   _max: TeacherMaxAggregateOutputType | null
 }
@@ -306,6 +347,7 @@ export type TeacherWhereInput = {
   experience?: Prisma.StringNullableFilter<"Teacher"> | string | null
   prefix?: Prisma.StringNullableFilter<"Teacher"> | string | null
   title?: Prisma.StringNullableFilter<"Teacher"> | string | null
+  aiSoftLimitTokens?: Prisma.IntNullableFilter<"Teacher"> | number | null
   status?: Prisma.EnumTeacherStatusFilter<"Teacher"> | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
@@ -344,6 +386,7 @@ export type TeacherOrderByWithRelationInput = {
   experience?: Prisma.SortOrderInput | Prisma.SortOrder
   prefix?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -386,6 +429,7 @@ export type TeacherWhereUniqueInput = Prisma.AtLeast<{
   experience?: Prisma.StringNullableFilter<"Teacher"> | string | null
   prefix?: Prisma.StringNullableFilter<"Teacher"> | string | null
   title?: Prisma.StringNullableFilter<"Teacher"> | string | null
+  aiSoftLimitTokens?: Prisma.IntNullableFilter<"Teacher"> | number | null
   status?: Prisma.EnumTeacherStatusFilter<"Teacher"> | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
@@ -424,13 +468,16 @@ export type TeacherOrderByWithAggregationInput = {
   experience?: Prisma.SortOrderInput | Prisma.SortOrder
   prefix?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TeacherCountOrderByAggregateInput
+  _avg?: Prisma.TeacherAvgOrderByAggregateInput
   _max?: Prisma.TeacherMaxOrderByAggregateInput
   _min?: Prisma.TeacherMinOrderByAggregateInput
+  _sum?: Prisma.TeacherSumOrderByAggregateInput
 }
 
 export type TeacherScalarWhereWithAggregatesInput = {
@@ -454,6 +501,7 @@ export type TeacherScalarWhereWithAggregatesInput = {
   experience?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
   prefix?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
   title?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
+  aiSoftLimitTokens?: Prisma.IntNullableWithAggregatesFilter<"Teacher"> | number | null
   status?: Prisma.EnumTeacherStatusWithAggregatesFilter<"Teacher"> | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeWithAggregatesFilter<"Teacher"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Teacher"> | Date | string
@@ -478,6 +526,7 @@ export type TeacherCreateInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -516,6 +565,7 @@ export type TeacherUncheckedCreateInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -554,6 +604,7 @@ export type TeacherUpdateInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -592,6 +643,7 @@ export type TeacherUncheckedUpdateInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -630,6 +682,7 @@ export type TeacherCreateManyInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -654,6 +707,7 @@ export type TeacherUpdateManyMutationInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -678,6 +732,7 @@ export type TeacherUncheckedUpdateManyInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -707,10 +762,15 @@ export type TeacherCountOrderByAggregateInput = {
   experience?: Prisma.SortOrder
   prefix?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type TeacherAvgOrderByAggregateInput = {
+  aiSoftLimitTokens?: Prisma.SortOrder
 }
 
 export type TeacherMaxOrderByAggregateInput = {
@@ -731,6 +791,7 @@ export type TeacherMaxOrderByAggregateInput = {
   experience?: Prisma.SortOrder
   prefix?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -755,10 +816,15 @@ export type TeacherMinOrderByAggregateInput = {
   experience?: Prisma.SortOrder
   prefix?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type TeacherSumOrderByAggregateInput = {
+  aiSoftLimitTokens?: Prisma.SortOrder
 }
 
 export type TeacherScalarRelationFilter = {
@@ -777,6 +843,14 @@ export type StringFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type EnumTeacherStatusFieldUpdateOperationsInput = {
@@ -1003,6 +1077,7 @@ export type TeacherCreateWithoutTeacherNotesInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1040,6 +1115,7 @@ export type TeacherUncheckedCreateWithoutTeacherNotesInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1093,6 +1169,7 @@ export type TeacherUpdateWithoutTeacherNotesInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1130,6 +1207,7 @@ export type TeacherUncheckedUpdateWithoutTeacherNotesInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1167,6 +1245,7 @@ export type TeacherCreateWithoutTeacherTasksInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1204,6 +1283,7 @@ export type TeacherUncheckedCreateWithoutTeacherTasksInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1257,6 +1337,7 @@ export type TeacherUpdateWithoutTeacherTasksInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1294,6 +1375,7 @@ export type TeacherUncheckedUpdateWithoutTeacherTasksInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1331,6 +1413,7 @@ export type TeacherCreateWithoutClassDivisionsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1368,6 +1451,7 @@ export type TeacherUncheckedCreateWithoutClassDivisionsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1421,6 +1505,7 @@ export type TeacherUpdateWithoutClassDivisionsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1458,6 +1543,7 @@ export type TeacherUncheckedUpdateWithoutClassDivisionsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1495,6 +1581,7 @@ export type TeacherCreateWithoutAssignmentsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1532,6 +1619,7 @@ export type TeacherUncheckedCreateWithoutAssignmentsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1585,6 +1673,7 @@ export type TeacherUpdateWithoutAssignmentsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1622,6 +1711,7 @@ export type TeacherUncheckedUpdateWithoutAssignmentsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1659,6 +1749,7 @@ export type TeacherCreateWithoutBlackboardFoldersInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1696,6 +1787,7 @@ export type TeacherUncheckedCreateWithoutBlackboardFoldersInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1749,6 +1841,7 @@ export type TeacherUpdateWithoutBlackboardFoldersInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1786,6 +1879,7 @@ export type TeacherUncheckedUpdateWithoutBlackboardFoldersInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1823,6 +1917,7 @@ export type TeacherCreateWithoutBlackboardMaterialsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1860,6 +1955,7 @@ export type TeacherUncheckedCreateWithoutBlackboardMaterialsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -1913,6 +2009,7 @@ export type TeacherUpdateWithoutBlackboardMaterialsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1950,6 +2047,7 @@ export type TeacherUncheckedUpdateWithoutBlackboardMaterialsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1987,6 +2085,7 @@ export type TeacherCreateWithoutTaskContainersInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2024,6 +2123,7 @@ export type TeacherUncheckedCreateWithoutTaskContainersInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2077,6 +2177,7 @@ export type TeacherUpdateWithoutTaskContainersInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2114,6 +2215,7 @@ export type TeacherUncheckedUpdateWithoutTaskContainersInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2151,6 +2253,7 @@ export type TeacherCreateWithoutTaskQuestionsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2188,6 +2291,7 @@ export type TeacherUncheckedCreateWithoutTaskQuestionsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2241,6 +2345,7 @@ export type TeacherUpdateWithoutTaskQuestionsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2278,6 +2383,7 @@ export type TeacherUncheckedUpdateWithoutTaskQuestionsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2315,6 +2421,7 @@ export type TeacherCreateWithoutTaskModulesInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2352,6 +2459,7 @@ export type TeacherUncheckedCreateWithoutTaskModulesInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2405,6 +2513,7 @@ export type TeacherUpdateWithoutTaskModulesInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2442,6 +2551,7 @@ export type TeacherUncheckedUpdateWithoutTaskModulesInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2479,6 +2589,7 @@ export type TeacherCreateWithoutTaskTestsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2516,6 +2627,7 @@ export type TeacherUncheckedCreateWithoutTaskTestsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2569,6 +2681,7 @@ export type TeacherUpdateWithoutTaskTestsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2606,6 +2719,7 @@ export type TeacherUncheckedUpdateWithoutTaskTestsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2643,6 +2757,7 @@ export type TeacherCreateWithoutTaskPdfUploadsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2680,6 +2795,7 @@ export type TeacherUncheckedCreateWithoutTaskPdfUploadsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2733,6 +2849,7 @@ export type TeacherUpdateWithoutTaskPdfUploadsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2770,6 +2887,7 @@ export type TeacherUncheckedUpdateWithoutTaskPdfUploadsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2807,6 +2925,7 @@ export type TeacherCreateWithoutQuestionShareTokensInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2844,6 +2963,7 @@ export type TeacherUncheckedCreateWithoutQuestionShareTokensInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -2897,6 +3017,7 @@ export type TeacherUpdateWithoutQuestionShareTokensInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2934,6 +3055,7 @@ export type TeacherUncheckedUpdateWithoutQuestionShareTokensInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2971,6 +3093,7 @@ export type TeacherCreateWithoutTaskAssignmentsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -3008,6 +3131,7 @@ export type TeacherUncheckedCreateWithoutTaskAssignmentsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -3061,6 +3185,7 @@ export type TeacherUpdateWithoutTaskAssignmentsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3098,6 +3223,7 @@ export type TeacherUncheckedUpdateWithoutTaskAssignmentsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3135,6 +3261,7 @@ export type TeacherCreateWithoutCreatedMarksheetsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -3172,6 +3299,7 @@ export type TeacherUncheckedCreateWithoutCreatedMarksheetsInput = {
   experience?: string | null
   prefix?: string | null
   title?: string | null
+  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
@@ -3225,6 +3353,7 @@ export type TeacherUpdateWithoutCreatedMarksheetsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3262,6 +3391,7 @@ export type TeacherUncheckedUpdateWithoutCreatedMarksheetsInput = {
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3447,6 +3577,7 @@ export type TeacherSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   experience?: boolean
   prefix?: boolean
   title?: boolean
+  aiSoftLimitTokens?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
@@ -3486,6 +3617,7 @@ export type TeacherSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   experience?: boolean
   prefix?: boolean
   title?: boolean
+  aiSoftLimitTokens?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
@@ -3510,6 +3642,7 @@ export type TeacherSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   experience?: boolean
   prefix?: boolean
   title?: boolean
+  aiSoftLimitTokens?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
@@ -3534,13 +3667,14 @@ export type TeacherSelectScalar = {
   experience?: boolean
   prefix?: boolean
   title?: boolean
+  aiSoftLimitTokens?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TeacherOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "teacherId" | "userId" | "institutionId" | "phone" | "avatarUrl" | "dob" | "gender" | "address" | "city" | "state" | "pincode" | "country" | "qualification" | "experience" | "prefix" | "title" | "status" | "joinedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["teacher"]>
+export type TeacherOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "teacherId" | "userId" | "institutionId" | "phone" | "avatarUrl" | "dob" | "gender" | "address" | "city" | "state" | "pincode" | "country" | "qualification" | "experience" | "prefix" | "title" | "aiSoftLimitTokens" | "status" | "joinedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["teacher"]>
 export type TeacherInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assignments?: boolean | Prisma.Teacher$assignmentsArgs<ExtArgs>
   classDivisions?: boolean | Prisma.Teacher$classDivisionsArgs<ExtArgs>
@@ -3597,6 +3731,7 @@ export type $TeacherPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     experience: string | null
     prefix: string | null
     title: string | null
+    aiSoftLimitTokens: number | null
     status: $Enums.TeacherStatus
     joinedAt: Date
     createdAt: Date
@@ -4055,6 +4190,7 @@ export interface TeacherFieldRefs {
   readonly experience: Prisma.FieldRef<"Teacher", 'String'>
   readonly prefix: Prisma.FieldRef<"Teacher", 'String'>
   readonly title: Prisma.FieldRef<"Teacher", 'String'>
+  readonly aiSoftLimitTokens: Prisma.FieldRef<"Teacher", 'Int'>
   readonly status: Prisma.FieldRef<"Teacher", 'TeacherStatus'>
   readonly joinedAt: Prisma.FieldRef<"Teacher", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Teacher", 'DateTime'>

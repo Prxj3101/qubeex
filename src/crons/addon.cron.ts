@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { prisma } from "../utils/prisma";
 import { logAudit } from "../services/audit.service";
 import { sendSmartBoardFreeExpiryEmail } from "../services/email.service";
+import { recordCronRun } from "../services/cronTracker.service";
 
 type SmartBoardAddonState = {
   active?: boolean;
@@ -114,8 +115,10 @@ export function startAddonCron() {
       console.log(`[Addon Cron] Running smart-board free expiry checks at ${new Date().toISOString()}`);
       try {
         await runSmartBoardFreeExpiryAlerts();
+        await recordCronRun("addon-smartboard-expiry", true);
       } catch (err) {
         console.error("[Addon Cron] Smart-board free expiry run failed:", err);
+        await recordCronRun("addon-smartboard-expiry", false, err instanceof Error ? err.message : "Unknown error");
       }
     },
     { timezone: "Asia/Kolkata" }

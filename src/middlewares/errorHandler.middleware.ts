@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/errors";
 import { z } from "zod";
+import { logAudit } from "../services/audit.service";
 
 export const errorHandler = (
   err: Error,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction
 ): void => {
@@ -31,6 +32,15 @@ export const errorHandler = (
   }
 
   console.error("Unhandled error:", err);
+
+  // Feeds the superadmin System Health page's "Recent Errors" list and error-rate
+  // chart — only genuine unexpected 5xx failures land here, not routine 4xx AppErrors.
+  logAudit("UNHANDLED_ERROR", {
+    category: "SYSTEM",
+    severity: "CRITICAL",
+    details: err.message || "Unhandled server error",
+    metadata: { endpoint: `${req.method} ${req.originalUrl}` },
+  });
 
   res.status(500).json({
     success: false,

@@ -145,6 +145,7 @@ import {
   updateAssignment,
   deleteAssignment,
   getAssignment,
+  getInstitutionLetterhead,
   saveAssignmentPaper,
   getAssignmentSubmissions,
   reviewSubmission,
@@ -1139,6 +1140,7 @@ router.put("/tasks/assignments/:id/paper", ...T, saveAssignmentPaper);
 router.get("/tasks/assignments/:id/submissions", ...T, getAssignmentSubmissions);
 router.patch("/tasks/assignments/:id/submissions/:studentId/review", ...T, reviewSubmission);
 router.patch("/tasks/assignments/:id/submissions/:studentId/offline", ...T, markOfflineSubmission);
+router.get("/institution/letterhead", ...T, getInstitutionLetterhead);
 
 // ── Tasks — Modules ───────────────────────────────────────────────────────────
 router.get("/tasks/modules", ...T, listModules);

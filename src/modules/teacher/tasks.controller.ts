@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
+import { prisma } from "../../utils/prisma";
 import { resolveUsers } from "../../services/userLookup.service";
 import type { TaskQuestion } from "../../generated/prisma/client";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
@@ -2152,18 +2153,34 @@ export const markOfflineSubmission = async (req: AuthRequest, res: Response, nex
   } catch (err) { next(err); }
 };
 
+// Used to print the school's letterhead (logo + name + address) on every
+// page of an assignment paper — pulled from the Institution record the
+// admin already fills in / uploads a logo for under Admin > Settings.
+export const getInstitutionLetterhead = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId } = requireTeacher(req);
+    const institution = await prisma.institution.findUnique({
+      where: { id: institutionId },
+      select: { name: true, logoUrl: true, address: true, city: true, state: true, pincode: true },
+    });
+    if (!institution) throw new NotFoundError("Institution not found");
+    res.json({ success: true, data: institution });
+  } catch (err) { next(err); }
+};
+
 export const saveAssignmentPaper = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId, userId } = requireTeacher(req);
     const teacherId = await getTeacherId(userId, institutionId);
     const id = req.params.id as string;
 
-    const { title, description, isRandomized, answerSpace, sections, questions, totalMarks } = z.object({
+    const { title, description, isRandomized, answerSpace, sections, questions, totalMarks, dueDate } = z.object({
       title: z.string().min(1).max(200),
       description: z.string().max(1000).optional().nullable(),
       isRandomized: z.boolean().default(false),
       answerSpace: z.boolean().default(true),
       totalMarks: z.number().int().min(0).max(1000).optional(),
+      dueDate: z.string().datetime().optional().nullable(),
       sections: z.array(z.object({
         id: z.string(),
         title: z.string(),
@@ -2204,6 +2221,7 @@ export const saveAssignmentPaper = async (req: AuthRequest, res: Response, next:
         questions: JSON.parse(JSON.stringify(questions)),
         numberOfQuestions: questions.length,
         ...(totalMarks !== undefined && { totalMarks }),
+        ...(dueDate !== undefined && { dueDate: dueDate ? new Date(dueDate) : null }),
       },
     });
 

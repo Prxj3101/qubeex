@@ -421,6 +421,7 @@ export const ModelName = {
   QuestionShareToken: 'QuestionShareToken',
   TaskAssignment: 'TaskAssignment',
   TaskAssignmentSubmission: 'TaskAssignmentSubmission',
+  TaskAssignmentSubmissionAttempt: 'TaskAssignmentSubmissionAttempt',
   Marksheet: 'Marksheet',
   MarksheetSubjectConfig: 'MarksheetSubjectConfig',
   MarksheetExamColumn: 'MarksheetExamColumn',
@@ -443,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3185,6 +3186,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TaskAssignmentSubmissionAttempt: {
+      payload: Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>
+      fields: Prisma.TaskAssignmentSubmissionAttemptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaskAssignmentSubmissionAttemptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaskAssignmentSubmissionAttemptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>
+        }
+        findFirst: {
+          args: Prisma.TaskAssignmentSubmissionAttemptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaskAssignmentSubmissionAttemptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>
+        }
+        findMany: {
+          args: Prisma.TaskAssignmentSubmissionAttemptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>[]
+        }
+        create: {
+          args: Prisma.TaskAssignmentSubmissionAttemptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>
+        }
+        createMany: {
+          args: Prisma.TaskAssignmentSubmissionAttemptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaskAssignmentSubmissionAttemptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>[]
+        }
+        delete: {
+          args: Prisma.TaskAssignmentSubmissionAttemptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>
+        }
+        update: {
+          args: Prisma.TaskAssignmentSubmissionAttemptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>
+        }
+        deleteMany: {
+          args: Prisma.TaskAssignmentSubmissionAttemptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaskAssignmentSubmissionAttemptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaskAssignmentSubmissionAttemptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>[]
+        }
+        upsert: {
+          args: Prisma.TaskAssignmentSubmissionAttemptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentSubmissionAttemptPayload>
+        }
+        aggregate: {
+          args: Prisma.TaskAssignmentSubmissionAttemptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaskAssignmentSubmissionAttempt>
+        }
+        groupBy: {
+          args: Prisma.TaskAssignmentSubmissionAttemptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaskAssignmentSubmissionAttemptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaskAssignmentSubmissionAttemptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaskAssignmentSubmissionAttemptCountAggregateOutputType> | number
+        }
+      }
+    }
     Marksheet: {
       payload: Prisma.$MarksheetPayload<ExtArgs>
       fields: Prisma.MarksheetFieldRefs
@@ -4323,6 +4398,7 @@ export const TaskAssignmentScalarFieldEnum = {
   totalMarks: 'totalMarks',
   dueDate: 'dueDate',
   status: 'status',
+  completedAt: 'completedAt',
   submissionType: 'submissionType',
   sections: 'sections',
   questions: 'questions',
@@ -4351,11 +4427,32 @@ export const TaskAssignmentSubmissionScalarFieldEnum = {
   reviewedByTeacherId: 'reviewedByTeacherId',
   offlineSubmittedAt: 'offlineSubmittedAt',
   offlineMarkedByTeacherId: 'offlineMarkedByTeacherId',
+  offlineMarkedLate: 'offlineMarkedLate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type TaskAssignmentSubmissionScalarFieldEnum = (typeof TaskAssignmentSubmissionScalarFieldEnum)[keyof typeof TaskAssignmentSubmissionScalarFieldEnum]
+
+
+export const TaskAssignmentSubmissionAttemptScalarFieldEnum = {
+  id: 'id',
+  submissionId: 'submissionId',
+  assignmentId: 'assignmentId',
+  studentId: 'studentId',
+  institutionId: 'institutionId',
+  attemptNumber: 'attemptNumber',
+  fileKey: 'fileKey',
+  fileUrl: 'fileUrl',
+  submittedAt: 'submittedAt',
+  reviewStatus: 'reviewStatus',
+  reviewNote: 'reviewNote',
+  reviewedAt: 'reviewedAt',
+  reviewedByTeacherId: 'reviewedByTeacherId',
+  createdAt: 'createdAt'
+} as const
+
+export type TaskAssignmentSubmissionAttemptScalarFieldEnum = (typeof TaskAssignmentSubmissionAttemptScalarFieldEnum)[keyof typeof TaskAssignmentSubmissionAttemptScalarFieldEnum]
 
 
 export const MarksheetScalarFieldEnum = {
@@ -4918,6 +5015,7 @@ export type GlobalOmitConfig = {
   questionShareToken?: Prisma.QuestionShareTokenOmit
   taskAssignment?: Prisma.TaskAssignmentOmit
   taskAssignmentSubmission?: Prisma.TaskAssignmentSubmissionOmit
+  taskAssignmentSubmissionAttempt?: Prisma.TaskAssignmentSubmissionAttemptOmit
   marksheet?: Prisma.MarksheetOmit
   marksheetSubjectConfig?: Prisma.MarksheetSubjectConfigOmit
   marksheetExamColumn?: Prisma.MarksheetExamColumnOmit

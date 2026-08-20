@@ -686,6 +686,26 @@ CREATE TABLE "TaskAssignmentSubmission" (
 );
 
 -- CreateTable
+CREATE TABLE "TaskAssignmentSubmissionAttempt" (
+    "id" TEXT NOT NULL,
+    "submissionId" TEXT NOT NULL,
+    "assignmentId" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "institutionId" TEXT NOT NULL,
+    "attemptNumber" INTEGER NOT NULL,
+    "fileKey" TEXT,
+    "fileUrl" TEXT,
+    "submittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "reviewStatus" TEXT,
+    "reviewNote" TEXT,
+    "reviewedAt" TIMESTAMP(3),
+    "reviewedByTeacherId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "TaskAssignmentSubmissionAttempt_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Marksheet" (
     "id" TEXT NOT NULL,
     "institutionId" TEXT NOT NULL,
@@ -1040,6 +1060,18 @@ CREATE INDEX "TaskAssignmentSubmission_institutionId_idx" ON "TaskAssignmentSubm
 CREATE UNIQUE INDEX "TaskAssignmentSubmission_assignmentId_studentId_key" ON "TaskAssignmentSubmission"("assignmentId", "studentId");
 
 -- CreateIndex
+CREATE INDEX "TaskAssignmentSubmissionAttempt_submissionId_idx" ON "TaskAssignmentSubmissionAttempt"("submissionId");
+
+-- CreateIndex
+CREATE INDEX "TaskAssignmentSubmissionAttempt_assignmentId_idx" ON "TaskAssignmentSubmissionAttempt"("assignmentId");
+
+-- CreateIndex
+CREATE INDEX "TaskAssignmentSubmissionAttempt_studentId_idx" ON "TaskAssignmentSubmissionAttempt"("studentId");
+
+-- CreateIndex
+CREATE INDEX "TaskAssignmentSubmissionAttempt_institutionId_idx" ON "TaskAssignmentSubmissionAttempt"("institutionId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Marksheet_shareToken_key" ON "Marksheet"("shareToken");
 
 -- CreateIndex
@@ -1251,6 +1283,12 @@ ALTER TABLE "TaskAssignmentSubmission" ADD CONSTRAINT "TaskAssignmentSubmission_
 
 -- AddForeignKey
 ALTER TABLE "TaskAssignmentSubmission" ADD CONSTRAINT "TaskAssignmentSubmission_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "TaskAssignmentSubmissionAttempt" ADD CONSTRAINT "TaskAssignmentSubmissionAttempt_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "TaskAssignmentSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "TaskAssignmentSubmissionAttempt" ADD CONSTRAINT "TaskAssignmentSubmissionAttempt_assignmentId_fkey" FOREIGN KEY ("assignmentId") REFERENCES "TaskAssignment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "TaskAssignmentSubmissionAttempt" ADD CONSTRAINT "TaskAssignmentSubmissionAttempt_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Marksheet" ADD CONSTRAINT "Marksheet_divisionId_fkey" FOREIGN KEY ("divisionId") REFERENCES "Division"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

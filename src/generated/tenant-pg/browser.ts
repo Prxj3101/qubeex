@@ -203,6 +203,11 @@ export type TaskAssignment = Prisma.TaskAssignmentModel
  */
 export type TaskAssignmentSubmission = Prisma.TaskAssignmentSubmissionModel
 /**
+ * Model TaskAssignmentSubmissionAttempt
+ * 
+ */
+export type TaskAssignmentSubmissionAttempt = Prisma.TaskAssignmentSubmissionAttemptModel
+/**
  * Model Marksheet
  * 
  */

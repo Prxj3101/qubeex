@@ -7,7 +7,7 @@ import { prisma } from "../../utils/prisma";
 import { resolveUsers } from "../../services/userLookup.service";
 import { z } from "zod";
 import multer from "multer";
-import { listTests, startTest, submitTest, getAttempt, downloadAttemptPdf, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload } from "./tasks.controller";
+import { listTests, startTest, submitTest, getAttempt, downloadAttemptPdf, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload, getAssignmentPaper, downloadAssignmentPaperPdf } from "./tasks.controller";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
@@ -133,6 +133,8 @@ router.get("/tasks/assignments", ...S, listAssignments);
 // seeing "No academic client in context".
 router.post("/tasks/assignments/:id/submit", authMiddleware(["STUDENT"]), institutionAccessMiddleware, assignmentUpload.single("file"), academicRoutingMiddleware, submitAssignment);
 router.get("/tasks/assignments/:id/submission", ...S, getOwnSubmission);
+router.get("/tasks/assignments/:id/paper", ...S, getAssignmentPaper);
+router.get("/tasks/assignments/:id/paper/pdf", ...S, downloadAssignmentPaperPdf);
 
 // ── PATCH /student/profile ────────────────────────────────────────────────────
 // Students can edit personal info but NOT academic details (rollNo, houseColor, standardId, divisionId, studentId, status)

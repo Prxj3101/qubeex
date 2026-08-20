@@ -1115,6 +1115,7 @@ export const getTest = async (req: AuthRequest, res: Response, next: NextFunctio
     const test = await academicDb().taskTest.findFirst({
       where: { id, teacherId, institutionId },
       include: {
+        subject: { select: { name: true } },
         questions: {
           include: {
             question: {
@@ -1953,6 +1954,15 @@ export const updateAssignment = async (req: AuthRequest, res: Response, next: Ne
     const existing = await academicDb().taskAssignment.findFirst({ where: { id, teacherId, institutionId } });
     if (!existing) throw new NotFoundError("Assignment not found");
 
+    // completedAt is derived, not client-supplied — it records the real moment
+    // the teacher stopped the assignment (via "Stop Now"), kept separate from
+    // dueDate so the original due date is never overwritten by stopping early.
+    let completedAtUpdate: { completedAt: Date | null } | Record<string, never> = {};
+    if (data.status !== undefined && data.status !== existing.status) {
+      if (data.status === "COMPLETED") completedAtUpdate = { completedAt: new Date() };
+      else if (data.status === "ACTIVE") completedAtUpdate = { completedAt: null };
+    }
+
     const updated = await academicDb().taskAssignment.update({
       where: { id },
       data: {
@@ -1962,6 +1972,7 @@ export const updateAssignment = async (req: AuthRequest, res: Response, next: Ne
         ...(data.dueDate !== undefined && { dueDate: data.dueDate ? new Date(data.dueDate) : null }),
         ...(data.submissionType !== undefined && { submissionType: data.submissionType }),
         ...(data.status !== undefined && { status: data.status }),
+        ...completedAtUpdate,
       },
     });
 
@@ -1990,7 +2001,10 @@ export const getAssignment = async (req: AuthRequest, res: Response, next: NextF
     const teacherId = await getTeacherId(userId, institutionId);
     const id = req.params.id as string;
 
-    const assignment = await academicDb().taskAssignment.findFirst({ where: { id, teacherId, institutionId } });
+    const assignment = await academicDb().taskAssignment.findFirst({
+      where: { id, teacherId, institutionId },
+      include: { subject: { select: { name: true } } },
+    });
     if (!assignment) throw new NotFoundError("Assignment not found");
 
     type StoredQ = { questionId: string; sectionId: string | null; marks: number; order: number; isCompulsory: boolean };
@@ -2040,7 +2054,7 @@ export const getAssignmentSubmissions = async (req: AuthRequest, res: Response, 
 
     const assignment = await academicDb().taskAssignment.findFirst({
       where: { id, teacherId, institutionId },
-      select: { id: true, title: true, submissionType: true, divisionId: true, dueDate: true, totalMarks: true },
+      select: { id: true, title: true, submissionType: true, divisionId: true, dueDate: true, totalMarks: true, status: true, completedAt: true },
     });
     if (!assignment) throw new NotFoundError("Assignment not found");
 
@@ -2059,11 +2073,25 @@ export const getAssignmentSubmissions = async (req: AuthRequest, res: Response, 
 
     const subMap = new Map(submissions.map(s => [s.studentId, s]));
 
+    // Full submission history (newest first) per student — a resubmission
+    // no longer erases the earlier upload from the teacher's view.
+    const attempts = await academicDb().taskAssignmentSubmissionAttempt.findMany({
+      where: { assignmentId: id, institutionId },
+      orderBy: { attemptNumber: "desc" },
+    });
+    const attemptsMap = new Map<string, typeof attempts>();
+    for (const a of attempts) {
+      const list = attemptsMap.get(a.studentId) ?? [];
+      list.push(a);
+      attemptsMap.set(a.studentId, list);
+    }
+
     const data = students.map(student => {
       const sub = subMap.get(student.id) ?? null;
       return {
         student: { id: student.id, name: submissionStudentUserMap.get(student.userId)?.name ?? "Unknown", rollNo: student.rollNo },
         submission: sub,
+        attempts: attemptsMap.get(student.id) ?? [],
       };
     });
 
@@ -2095,15 +2123,29 @@ export const reviewSubmission = async (req: AuthRequest, res: Response, next: Ne
     if (!submission) throw new NotFoundError("No submission found for this student");
     if (!submission.submittedAt) throw new BadRequestError("Student has not submitted yet");
 
+    const reviewedAt = new Date();
     const updated = await academicDb().taskAssignmentSubmission.update({
       where: { assignmentId_studentId: { assignmentId, studentId } },
       data: {
         reviewStatus,
         reviewNote: reviewNote ?? null,
-        reviewedAt: new Date(),
+        reviewedAt,
         reviewedByTeacherId: teacherId,
       },
     });
+
+    // Mirror the review onto the latest attempt too, so submission history
+    // (teacher table + student web/app) shows which specific upload this was.
+    const latestAttempt = await academicDb().taskAssignmentSubmissionAttempt.findFirst({
+      where: { submissionId: submission.id },
+      orderBy: { attemptNumber: "desc" },
+    });
+    if (latestAttempt) {
+      await academicDb().taskAssignmentSubmissionAttempt.update({
+        where: { id: latestAttempt.id },
+        data: { reviewStatus, reviewNote: reviewNote ?? null, reviewedAt, reviewedByTeacherId: teacherId },
+      });
+    }
 
     res.json({ success: true, data: updated });
   } catch (err) { next(err); }
@@ -2146,6 +2188,43 @@ export const markOfflineSubmission = async (req: AuthRequest, res: Response, nex
       update: {
         offlineSubmittedAt: offlineTimestamp,
         offlineMarkedByTeacherId: submitted ? teacherId : null,
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) { next(err); }
+};
+
+// Manual "Mark Late" toggle for an offline copy — independent of whether it's
+// been received yet. Only shows up as an extra tag alongside Submitted once
+// the copy is actually marked received; a due date passing never auto-flags
+// this on its own (that's the whole point — it's a teacher judgment call).
+export const markOfflineLate = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const assignmentId = req.params.id as string;
+    const studentId = req.params.studentId as string;
+
+    const { late } = z.object({
+      late: z.boolean(),
+    }).parse(req.body);
+
+    const assignment = await academicDb().taskAssignment.findFirst({
+      where: { id: assignmentId, teacherId, institutionId },
+    });
+    if (!assignment) throw new NotFoundError("Assignment not found");
+
+    const updated = await academicDb().taskAssignmentSubmission.upsert({
+      where: { assignmentId_studentId: { assignmentId, studentId } },
+      create: {
+        assignmentId,
+        studentId,
+        institutionId,
+        offlineMarkedLate: late,
+      },
+      update: {
+        offlineMarkedLate: late,
       },
     });
 

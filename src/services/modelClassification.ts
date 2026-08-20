@@ -71,6 +71,7 @@ export const ACADEMIC_MODELS = [
   "QuestionShareToken",
   "TaskAssignment",
   "TaskAssignmentSubmission",
+  "TaskAssignmentSubmissionAttempt",
   "Marksheet",
   "MarksheetSubjectConfig",
   "MarksheetExamColumn",

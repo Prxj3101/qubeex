@@ -88,6 +88,7 @@ export const ModelName = {
   QuestionShareToken: 'QuestionShareToken',
   TaskAssignment: 'TaskAssignment',
   TaskAssignmentSubmission: 'TaskAssignmentSubmission',
+  TaskAssignmentSubmissionAttempt: 'TaskAssignmentSubmissionAttempt',
   Marksheet: 'Marksheet',
   MarksheetSubjectConfig: 'MarksheetSubjectConfig',
   MarksheetExamColumn: 'MarksheetExamColumn',
@@ -694,6 +695,7 @@ export const TaskAssignmentScalarFieldEnum = {
   totalMarks: 'totalMarks',
   dueDate: 'dueDate',
   status: 'status',
+  completedAt: 'completedAt',
   submissionType: 'submissionType',
   sections: 'sections',
   questions: 'questions',
@@ -722,11 +724,32 @@ export const TaskAssignmentSubmissionScalarFieldEnum = {
   reviewedByTeacherId: 'reviewedByTeacherId',
   offlineSubmittedAt: 'offlineSubmittedAt',
   offlineMarkedByTeacherId: 'offlineMarkedByTeacherId',
+  offlineMarkedLate: 'offlineMarkedLate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type TaskAssignmentSubmissionScalarFieldEnum = (typeof TaskAssignmentSubmissionScalarFieldEnum)[keyof typeof TaskAssignmentSubmissionScalarFieldEnum]
+
+
+export const TaskAssignmentSubmissionAttemptScalarFieldEnum = {
+  id: 'id',
+  submissionId: 'submissionId',
+  assignmentId: 'assignmentId',
+  studentId: 'studentId',
+  institutionId: 'institutionId',
+  attemptNumber: 'attemptNumber',
+  fileKey: 'fileKey',
+  fileUrl: 'fileUrl',
+  submittedAt: 'submittedAt',
+  reviewStatus: 'reviewStatus',
+  reviewNote: 'reviewNote',
+  reviewedAt: 'reviewedAt',
+  reviewedByTeacherId: 'reviewedByTeacherId',
+  createdAt: 'createdAt'
+} as const
+
+export type TaskAssignmentSubmissionAttemptScalarFieldEnum = (typeof TaskAssignmentSubmissionAttemptScalarFieldEnum)[keyof typeof TaskAssignmentSubmissionAttemptScalarFieldEnum]
 
 
 export const MarksheetScalarFieldEnum = {

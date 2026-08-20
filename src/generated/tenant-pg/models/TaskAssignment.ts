@@ -47,6 +47,7 @@ export type TaskAssignmentMinAggregateOutputType = {
   totalMarks: number | null
   dueDate: Date | null
   status: $Enums.TaskAssignmentStatus | null
+  completedAt: Date | null
   submissionType: string | null
   isRandomized: boolean | null
   answerSpace: boolean | null
@@ -66,6 +67,7 @@ export type TaskAssignmentMaxAggregateOutputType = {
   totalMarks: number | null
   dueDate: Date | null
   status: $Enums.TaskAssignmentStatus | null
+  completedAt: Date | null
   submissionType: string | null
   isRandomized: boolean | null
   answerSpace: boolean | null
@@ -85,6 +87,7 @@ export type TaskAssignmentCountAggregateOutputType = {
   totalMarks: number
   dueDate: number
   status: number
+  completedAt: number
   submissionType: number
   sections: number
   questions: number
@@ -118,6 +121,7 @@ export type TaskAssignmentMinAggregateInputType = {
   totalMarks?: true
   dueDate?: true
   status?: true
+  completedAt?: true
   submissionType?: true
   isRandomized?: true
   answerSpace?: true
@@ -137,6 +141,7 @@ export type TaskAssignmentMaxAggregateInputType = {
   totalMarks?: true
   dueDate?: true
   status?: true
+  completedAt?: true
   submissionType?: true
   isRandomized?: true
   answerSpace?: true
@@ -156,6 +161,7 @@ export type TaskAssignmentCountAggregateInputType = {
   totalMarks?: true
   dueDate?: true
   status?: true
+  completedAt?: true
   submissionType?: true
   sections?: true
   questions?: true
@@ -264,6 +270,7 @@ export type TaskAssignmentGroupByOutputType = {
   totalMarks: number
   dueDate: Date | null
   status: $Enums.TaskAssignmentStatus
+  completedAt: Date | null
   submissionType: string
   sections: runtime.JsonValue | null
   questions: runtime.JsonValue | null
@@ -308,6 +315,7 @@ export type TaskAssignmentWhereInput = {
   totalMarks?: Prisma.IntFilter<"TaskAssignment"> | number
   dueDate?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFilter<"TaskAssignment"> | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
   sections?: Prisma.JsonNullableFilter<"TaskAssignment">
   questions?: Prisma.JsonNullableFilter<"TaskAssignment">
@@ -320,6 +328,7 @@ export type TaskAssignmentWhereInput = {
   subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
   submissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
 }
 
 export type TaskAssignmentOrderByWithRelationInput = {
@@ -333,6 +342,7 @@ export type TaskAssignmentOrderByWithRelationInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   submissionType?: Prisma.SortOrder
   sections?: Prisma.SortOrderInput | Prisma.SortOrder
   questions?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -345,6 +355,7 @@ export type TaskAssignmentOrderByWithRelationInput = {
   subject?: Prisma.SubjectOrderByWithRelationInput
   division?: Prisma.DivisionOrderByWithRelationInput
   submissions?: Prisma.TaskAssignmentSubmissionOrderByRelationAggregateInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptOrderByRelationAggregateInput
 }
 
 export type TaskAssignmentWhereUniqueInput = Prisma.AtLeast<{
@@ -361,6 +372,7 @@ export type TaskAssignmentWhereUniqueInput = Prisma.AtLeast<{
   totalMarks?: Prisma.IntFilter<"TaskAssignment"> | number
   dueDate?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFilter<"TaskAssignment"> | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
   sections?: Prisma.JsonNullableFilter<"TaskAssignment">
   questions?: Prisma.JsonNullableFilter<"TaskAssignment">
@@ -373,6 +385,7 @@ export type TaskAssignmentWhereUniqueInput = Prisma.AtLeast<{
   subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
   submissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
 }, "id">
 
 export type TaskAssignmentOrderByWithAggregationInput = {
@@ -386,6 +399,7 @@ export type TaskAssignmentOrderByWithAggregationInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   submissionType?: Prisma.SortOrder
   sections?: Prisma.SortOrderInput | Prisma.SortOrder
   questions?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -415,6 +429,7 @@ export type TaskAssignmentScalarWhereWithAggregatesInput = {
   totalMarks?: Prisma.IntWithAggregatesFilter<"TaskAssignment"> | number
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignment"> | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusWithAggregatesFilter<"TaskAssignment"> | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignment"> | Date | string | null
   submissionType?: Prisma.StringWithAggregatesFilter<"TaskAssignment"> | string
   sections?: Prisma.JsonNullableWithAggregatesFilter<"TaskAssignment">
   questions?: Prisma.JsonNullableWithAggregatesFilter<"TaskAssignment">
@@ -433,6 +448,7 @@ export type TaskAssignmentCreateInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -445,6 +461,7 @@ export type TaskAssignmentCreateInput = {
   subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentUncheckedCreateInput = {
@@ -458,6 +475,7 @@ export type TaskAssignmentUncheckedCreateInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -467,6 +485,7 @@ export type TaskAssignmentUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentUpdateInput = {
@@ -477,6 +496,7 @@ export type TaskAssignmentUpdateInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -489,6 +509,7 @@ export type TaskAssignmentUpdateInput = {
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateInput = {
@@ -502,6 +523,7 @@ export type TaskAssignmentUncheckedUpdateInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -511,6 +533,7 @@ export type TaskAssignmentUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentCreateManyInput = {
@@ -524,6 +547,7 @@ export type TaskAssignmentCreateManyInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -542,6 +566,7 @@ export type TaskAssignmentUpdateManyMutationInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -563,6 +588,7 @@ export type TaskAssignmentUncheckedUpdateManyInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -594,6 +620,7 @@ export type TaskAssignmentCountOrderByAggregateInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   submissionType?: Prisma.SortOrder
   sections?: Prisma.SortOrder
   questions?: Prisma.SortOrder
@@ -620,6 +647,7 @@ export type TaskAssignmentMaxOrderByAggregateInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   submissionType?: Prisma.SortOrder
   isRandomized?: Prisma.SortOrder
   answerSpace?: Prisma.SortOrder
@@ -639,6 +667,7 @@ export type TaskAssignmentMinOrderByAggregateInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   submissionType?: Prisma.SortOrder
   isRandomized?: Prisma.SortOrder
   answerSpace?: Prisma.SortOrder
@@ -801,6 +830,20 @@ export type TaskAssignmentUpdateOneRequiredWithoutSubmissionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TaskAssignmentUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.TaskAssignmentUpdateWithoutSubmissionsInput>, Prisma.TaskAssignmentUncheckedUpdateWithoutSubmissionsInput>
 }
 
+export type TaskAssignmentCreateNestedOneWithoutSubmissionAttemptsInput = {
+  create?: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutSubmissionAttemptsInput, Prisma.TaskAssignmentUncheckedCreateWithoutSubmissionAttemptsInput>
+  connectOrCreate?: Prisma.TaskAssignmentCreateOrConnectWithoutSubmissionAttemptsInput
+  connect?: Prisma.TaskAssignmentWhereUniqueInput
+}
+
+export type TaskAssignmentUpdateOneRequiredWithoutSubmissionAttemptsNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutSubmissionAttemptsInput, Prisma.TaskAssignmentUncheckedCreateWithoutSubmissionAttemptsInput>
+  connectOrCreate?: Prisma.TaskAssignmentCreateOrConnectWithoutSubmissionAttemptsInput
+  upsert?: Prisma.TaskAssignmentUpsertWithoutSubmissionAttemptsInput
+  connect?: Prisma.TaskAssignmentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TaskAssignmentUpdateToOneWithWhereWithoutSubmissionAttemptsInput, Prisma.TaskAssignmentUpdateWithoutSubmissionAttemptsInput>, Prisma.TaskAssignmentUncheckedUpdateWithoutSubmissionAttemptsInput>
+}
+
 export type TaskAssignmentCreateWithoutTeacherInput = {
   id?: string
   institutionId: string
@@ -809,6 +852,7 @@ export type TaskAssignmentCreateWithoutTeacherInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -820,6 +864,7 @@ export type TaskAssignmentCreateWithoutTeacherInput = {
   subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentUncheckedCreateWithoutTeacherInput = {
@@ -832,6 +877,7 @@ export type TaskAssignmentUncheckedCreateWithoutTeacherInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -841,6 +887,7 @@ export type TaskAssignmentUncheckedCreateWithoutTeacherInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentCreateOrConnectWithoutTeacherInput = {
@@ -883,6 +930,7 @@ export type TaskAssignmentScalarWhereInput = {
   totalMarks?: Prisma.IntFilter<"TaskAssignment"> | number
   dueDate?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFilter<"TaskAssignment"> | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
   sections?: Prisma.JsonNullableFilter<"TaskAssignment">
   questions?: Prisma.JsonNullableFilter<"TaskAssignment">
@@ -901,6 +949,7 @@ export type TaskAssignmentCreateWithoutDivisionInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -912,6 +961,7 @@ export type TaskAssignmentCreateWithoutDivisionInput = {
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
   subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentUncheckedCreateWithoutDivisionInput = {
@@ -924,6 +974,7 @@ export type TaskAssignmentUncheckedCreateWithoutDivisionInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -933,6 +984,7 @@ export type TaskAssignmentUncheckedCreateWithoutDivisionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentCreateOrConnectWithoutDivisionInput = {
@@ -969,6 +1021,7 @@ export type TaskAssignmentCreateWithoutSubjectInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -980,6 +1033,7 @@ export type TaskAssignmentCreateWithoutSubjectInput = {
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentUncheckedCreateWithoutSubjectInput = {
@@ -992,6 +1046,7 @@ export type TaskAssignmentUncheckedCreateWithoutSubjectInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1001,6 +1056,7 @@ export type TaskAssignmentUncheckedCreateWithoutSubjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentCreateOrConnectWithoutSubjectInput = {
@@ -1037,6 +1093,7 @@ export type TaskAssignmentCreateWithoutSubmissionsInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1048,6 +1105,7 @@ export type TaskAssignmentCreateWithoutSubmissionsInput = {
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
   subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentUncheckedCreateWithoutSubmissionsInput = {
@@ -1061,6 +1119,7 @@ export type TaskAssignmentUncheckedCreateWithoutSubmissionsInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1069,6 +1128,7 @@ export type TaskAssignmentUncheckedCreateWithoutSubmissionsInput = {
   numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
 
 export type TaskAssignmentCreateOrConnectWithoutSubmissionsInput = {
@@ -1095,6 +1155,7 @@ export type TaskAssignmentUpdateWithoutSubmissionsInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1106,6 +1167,7 @@ export type TaskAssignmentUpdateWithoutSubmissionsInput = {
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateWithoutSubmissionsInput = {
@@ -1119,6 +1181,7 @@ export type TaskAssignmentUncheckedUpdateWithoutSubmissionsInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1127,6 +1190,115 @@ export type TaskAssignmentUncheckedUpdateWithoutSubmissionsInput = {
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
+}
+
+export type TaskAssignmentCreateWithoutSubmissionAttemptsInput = {
+  id?: string
+  institutionId: string
+  title: string
+  description?: string | null
+  totalMarks?: number
+  dueDate?: Date | string | null
+  status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
+  submissionType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isRandomized?: boolean
+  answerSpace?: boolean
+  numberOfQuestions?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
+  submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
+}
+
+export type TaskAssignmentUncheckedCreateWithoutSubmissionAttemptsInput = {
+  id?: string
+  institutionId: string
+  teacherId: string
+  subjectId: string
+  divisionId: string
+  title: string
+  description?: string | null
+  totalMarks?: number
+  dueDate?: Date | string | null
+  status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
+  submissionType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isRandomized?: boolean
+  answerSpace?: boolean
+  numberOfQuestions?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
+}
+
+export type TaskAssignmentCreateOrConnectWithoutSubmissionAttemptsInput = {
+  where: Prisma.TaskAssignmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutSubmissionAttemptsInput, Prisma.TaskAssignmentUncheckedCreateWithoutSubmissionAttemptsInput>
+}
+
+export type TaskAssignmentUpsertWithoutSubmissionAttemptsInput = {
+  update: Prisma.XOR<Prisma.TaskAssignmentUpdateWithoutSubmissionAttemptsInput, Prisma.TaskAssignmentUncheckedUpdateWithoutSubmissionAttemptsInput>
+  create: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutSubmissionAttemptsInput, Prisma.TaskAssignmentUncheckedCreateWithoutSubmissionAttemptsInput>
+  where?: Prisma.TaskAssignmentWhereInput
+}
+
+export type TaskAssignmentUpdateToOneWithWhereWithoutSubmissionAttemptsInput = {
+  where?: Prisma.TaskAssignmentWhereInput
+  data: Prisma.XOR<Prisma.TaskAssignmentUpdateWithoutSubmissionAttemptsInput, Prisma.TaskAssignmentUncheckedUpdateWithoutSubmissionAttemptsInput>
+}
+
+export type TaskAssignmentUpdateWithoutSubmissionAttemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
+}
+
+export type TaskAssignmentUncheckedUpdateWithoutSubmissionAttemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectId?: Prisma.StringFieldUpdateOperationsInput | string
+  divisionId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentCreateManyTeacherInput = {
@@ -1139,6 +1311,7 @@ export type TaskAssignmentCreateManyTeacherInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1157,6 +1330,7 @@ export type TaskAssignmentUpdateWithoutTeacherInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1168,6 +1342,7 @@ export type TaskAssignmentUpdateWithoutTeacherInput = {
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateWithoutTeacherInput = {
@@ -1180,6 +1355,7 @@ export type TaskAssignmentUncheckedUpdateWithoutTeacherInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1189,6 +1365,7 @@ export type TaskAssignmentUncheckedUpdateWithoutTeacherInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateManyWithoutTeacherInput = {
@@ -1201,6 +1378,7 @@ export type TaskAssignmentUncheckedUpdateManyWithoutTeacherInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1221,6 +1399,7 @@ export type TaskAssignmentCreateManyDivisionInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1239,6 +1418,7 @@ export type TaskAssignmentUpdateWithoutDivisionInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1250,6 +1430,7 @@ export type TaskAssignmentUpdateWithoutDivisionInput = {
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateWithoutDivisionInput = {
@@ -1262,6 +1443,7 @@ export type TaskAssignmentUncheckedUpdateWithoutDivisionInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1271,6 +1453,7 @@ export type TaskAssignmentUncheckedUpdateWithoutDivisionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateManyWithoutDivisionInput = {
@@ -1283,6 +1466,7 @@ export type TaskAssignmentUncheckedUpdateManyWithoutDivisionInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1303,6 +1487,7 @@ export type TaskAssignmentCreateManySubjectInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
+  completedAt?: Date | string | null
   submissionType?: string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1321,6 +1506,7 @@ export type TaskAssignmentUpdateWithoutSubjectInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1332,6 +1518,7 @@ export type TaskAssignmentUpdateWithoutSubjectInput = {
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateWithoutSubjectInput = {
@@ -1344,6 +1531,7 @@ export type TaskAssignmentUncheckedUpdateWithoutSubjectInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1353,6 +1541,7 @@ export type TaskAssignmentUncheckedUpdateWithoutSubjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
+  submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateManyWithoutSubjectInput = {
@@ -1365,6 +1554,7 @@ export type TaskAssignmentUncheckedUpdateManyWithoutSubjectInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submissionType?: Prisma.StringFieldUpdateOperationsInput | string
   sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1382,10 +1572,12 @@ export type TaskAssignmentUncheckedUpdateManyWithoutSubjectInput = {
 
 export type TaskAssignmentCountOutputType = {
   submissions: number
+  submissionAttempts: number
 }
 
 export type TaskAssignmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   submissions?: boolean | TaskAssignmentCountOutputTypeCountSubmissionsArgs
+  submissionAttempts?: boolean | TaskAssignmentCountOutputTypeCountSubmissionAttemptsArgs
 }
 
 /**
@@ -1405,6 +1597,13 @@ export type TaskAssignmentCountOutputTypeCountSubmissionsArgs<ExtArgs extends ru
   where?: Prisma.TaskAssignmentSubmissionWhereInput
 }
 
+/**
+ * TaskAssignmentCountOutputType without action
+ */
+export type TaskAssignmentCountOutputTypeCountSubmissionAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssignmentSubmissionAttemptWhereInput
+}
+
 
 export type TaskAssignmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1417,6 +1616,7 @@ export type TaskAssignmentSelect<ExtArgs extends runtime.Types.Extensions.Intern
   totalMarks?: boolean
   dueDate?: boolean
   status?: boolean
+  completedAt?: boolean
   submissionType?: boolean
   sections?: boolean
   questions?: boolean
@@ -1429,6 +1629,7 @@ export type TaskAssignmentSelect<ExtArgs extends runtime.Types.Extensions.Intern
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   submissions?: boolean | Prisma.TaskAssignment$submissionsArgs<ExtArgs>
+  submissionAttempts?: boolean | Prisma.TaskAssignment$submissionAttemptsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskAssignmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignment"]>
 
@@ -1443,6 +1644,7 @@ export type TaskAssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   totalMarks?: boolean
   dueDate?: boolean
   status?: boolean
+  completedAt?: boolean
   submissionType?: boolean
   sections?: boolean
   questions?: boolean
@@ -1467,6 +1669,7 @@ export type TaskAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   totalMarks?: boolean
   dueDate?: boolean
   status?: boolean
+  completedAt?: boolean
   submissionType?: boolean
   sections?: boolean
   questions?: boolean
@@ -1491,6 +1694,7 @@ export type TaskAssignmentSelectScalar = {
   totalMarks?: boolean
   dueDate?: boolean
   status?: boolean
+  completedAt?: boolean
   submissionType?: boolean
   sections?: boolean
   questions?: boolean
@@ -1501,12 +1705,13 @@ export type TaskAssignmentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TaskAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "divisionId" | "title" | "description" | "totalMarks" | "dueDate" | "status" | "submissionType" | "sections" | "questions" | "isRandomized" | "answerSpace" | "numberOfQuestions" | "createdAt" | "updatedAt", ExtArgs["result"]["taskAssignment"]>
+export type TaskAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "divisionId" | "title" | "description" | "totalMarks" | "dueDate" | "status" | "completedAt" | "submissionType" | "sections" | "questions" | "isRandomized" | "answerSpace" | "numberOfQuestions" | "createdAt" | "updatedAt", ExtArgs["result"]["taskAssignment"]>
 export type TaskAssignmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   submissions?: boolean | Prisma.TaskAssignment$submissionsArgs<ExtArgs>
+  submissionAttempts?: boolean | Prisma.TaskAssignment$submissionAttemptsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskAssignmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskAssignmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1527,6 +1732,7 @@ export type $TaskAssignmentPayload<ExtArgs extends runtime.Types.Extensions.Inte
     subject: Prisma.$SubjectPayload<ExtArgs>
     division: Prisma.$DivisionPayload<ExtArgs>
     submissions: Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>[]
+    submissionAttempts: Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1539,6 +1745,7 @@ export type $TaskAssignmentPayload<ExtArgs extends runtime.Types.Extensions.Inte
     totalMarks: number
     dueDate: Date | null
     status: $Enums.TaskAssignmentStatus
+    completedAt: Date | null
     submissionType: string
     sections: runtime.JsonValue | null
     questions: runtime.JsonValue | null
@@ -1945,6 +2152,7 @@ export interface Prisma__TaskAssignmentClient<T, Null = never, ExtArgs extends r
   subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   division<T extends Prisma.DivisionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionDefaultArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   submissions<T extends Prisma.TaskAssignment$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignment$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  submissionAttempts<T extends Prisma.TaskAssignment$submissionAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignment$submissionAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1984,6 +2192,7 @@ export interface TaskAssignmentFieldRefs {
   readonly totalMarks: Prisma.FieldRef<"TaskAssignment", 'Int'>
   readonly dueDate: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
   readonly status: Prisma.FieldRef<"TaskAssignment", 'TaskAssignmentStatus'>
+  readonly completedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
   readonly submissionType: Prisma.FieldRef<"TaskAssignment", 'String'>
   readonly sections: Prisma.FieldRef<"TaskAssignment", 'Json'>
   readonly questions: Prisma.FieldRef<"TaskAssignment", 'Json'>
@@ -2414,6 +2623,30 @@ export type TaskAssignment$submissionsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.TaskAssignmentSubmissionScalarFieldEnum | Prisma.TaskAssignmentSubmissionScalarFieldEnum[]
+}
+
+/**
+ * TaskAssignment.submissionAttempts
+ */
+export type TaskAssignment$submissionAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskAssignmentSubmissionAttempt
+   */
+  select?: Prisma.TaskAssignmentSubmissionAttemptSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskAssignmentSubmissionAttempt
+   */
+  omit?: Prisma.TaskAssignmentSubmissionAttemptOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskAssignmentSubmissionAttemptInclude<ExtArgs> | null
+  where?: Prisma.TaskAssignmentSubmissionAttemptWhereInput
+  orderBy?: Prisma.TaskAssignmentSubmissionAttemptOrderByWithRelationInput | Prisma.TaskAssignmentSubmissionAttemptOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssignmentSubmissionAttemptWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskAssignmentSubmissionAttemptScalarFieldEnum | Prisma.TaskAssignmentSubmissionAttemptScalarFieldEnum[]
 }
 
 /**

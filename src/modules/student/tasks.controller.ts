@@ -14,6 +14,8 @@ import {
 } from "../teacher/tasks.controller";
 import { uploadAttachmentToR2 } from "../../services/storage.service";
 import { generateTestResultPdf } from "../../services/testResultPdf.service";
+import { generateAssignmentPaperPdf } from "../../services/assignmentPaperPdf.service";
+import { prisma } from "../../utils/prisma";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
@@ -604,35 +606,61 @@ export const listAssignments = async (req: AuthRequest, res: Response, next: Nex
     });
     const subMap = new Map(submissions.map((s) => [s.assignmentId, s]));
 
+    // Full submission history (newest first), grouped by assignment — so a
+    // resubmission shows the earlier PDF instead of losing it.
+    const attempts = await academicDb().taskAssignmentSubmissionAttempt.findMany({
+      where: { assignmentId: { in: assignmentIds }, studentId: student.id },
+      orderBy: { attemptNumber: "desc" },
+    });
+    const attemptsMap = new Map<string, typeof attempts>();
+    for (const a of attempts) {
+      const list = attemptsMap.get(a.assignmentId) ?? [];
+      list.push(a);
+      attemptsMap.set(a.assignmentId, list);
+    }
+
     const now = new Date();
     const data = assignments.map((a) => {
       const sub = subMap.get(a.id) ?? null;
 
       let studentStatus: "PENDING" | "SUBMITTED" | "WRITE_AGAIN" | "CORRECT" | "MISSED" | "OVERDUE";
-      const isOverdue = a.dueDate !== null && a.dueDate < now;
 
       if (a.submissionType === "OFFLINE") {
+        // OFFLINE — deliberately simpler than ONLINE: neither the due date
+        // nor stopping the assignment (Stop Now) ever auto-flips this to
+        // MISSED. It's just PENDING until the teacher marks it received
+        // (SUBMITTED) — full stop. "Late" is a separate manual flag
+        // (offlineMarkedLate) the teacher can toggle, only shown alongside
+        // SUBMITTED, never auto-derived.
         if (sub?.offlineSubmittedAt) {
           studentStatus = "SUBMITTED";
-        } else if (isOverdue) {
-          studentStatus = "MISSED";
         } else {
           studentStatus = "PENDING";
         }
       } else {
-        // ONLINE
+        // ONLINE — the submit link stays open past the due date, so an
+        // unsubmitted assignment stays PENDING the whole time it's ACTIVE
+        // (that keeps the submit button visible). It only becomes MISSED
+        // once the teacher explicitly stops the assignment (status flips to
+        // COMPLETED) and the student never submitted anything.
         if (sub?.reviewStatus === "CORRECT") {
           studentStatus = "CORRECT";
         } else if (sub?.reviewStatus === "WRITE_AGAIN") {
           studentStatus = "WRITE_AGAIN";
         } else if (sub?.submittedAt) {
           studentStatus = "SUBMITTED";
-        } else if (isOverdue) {
+        } else if (a.status !== "ACTIVE") {
           studentStatus = "MISSED";
         } else {
-          studentStatus = isOverdue ? "OVERDUE" : "PENDING";
+          studentStatus = "PENDING";
         }
       }
+
+      // Only meaningful for ONLINE — flags that the current submission landed
+      // after the due date so the UI can show a "Late" tag once it's approved,
+      // without disturbing the PENDING → SUBMITTED → WRITE_AGAIN/CORRECT flow.
+      const lateSubmission =
+        a.submissionType === "ONLINE" && !!sub?.submittedAt && a.dueDate !== null && sub.submittedAt > a.dueDate;
 
       let daysLeft: number | null = null;
       if (a.dueDate) {
@@ -650,6 +678,7 @@ export const listAssignments = async (req: AuthRequest, res: Response, next: Nex
         daysLeft,
         submissionType: a.submissionType,
         studentStatus,
+        lateSubmission,
         submission: sub ? {
           id: sub.id,
           fileUrl: sub.fileUrl,
@@ -659,7 +688,18 @@ export const listAssignments = async (req: AuthRequest, res: Response, next: Nex
           reviewNote: sub.reviewNote,
           reviewedAt: sub.reviewedAt,
           offlineSubmittedAt: sub.offlineSubmittedAt,
+          offlineMarkedLate: sub.offlineMarkedLate,
         } : null,
+        // Newest first — attempts[0] is the same upload mirrored on `submission`.
+        attempts: (attemptsMap.get(a.id) ?? []).map((at) => ({
+          id: at.id,
+          attemptNumber: at.attemptNumber,
+          fileUrl: at.fileUrl,
+          submittedAt: at.submittedAt,
+          reviewStatus: at.reviewStatus,
+          reviewNote: at.reviewNote,
+          reviewedAt: at.reviewedAt,
+        })),
       };
     });
 
@@ -689,10 +729,9 @@ export const submitAssignment = async (
       throw new BadRequestError("This assignment requires offline submission only");
     }
 
-    // Check due date
-    if (assignment.dueDate && assignment.dueDate < new Date()) {
-      throw new BadRequestError("The deadline for this assignment has passed");
-    }
+    // Submissions stay open past the due date — the assignment just gets
+    // flagged as a late submission (see studentStatus/lateSubmission below)
+    // instead of blocking the student from uploading at all.
 
     if (!req.file) throw new BadRequestError("PDF file is required");
 
@@ -714,7 +753,12 @@ export const submitAssignment = async (
     });
 
     const resubmitCount = existing ? existing.resubmitCount + (existing.submittedAt ? 1 : 0) : 0;
+    const now = new Date();
 
+    // TaskAssignmentSubmission stays the "current state" pointer (what every
+    // existing status read already joins against) — always overwritten with
+    // the latest upload. The full history lives in TaskAssignmentSubmissionAttempt,
+    // one row per upload, so a resubmission never erases the previous version.
     const submission = await academicDb().taskAssignmentSubmission.upsert({
       where: { assignmentId_studentId: { assignmentId, studentId: student.id } },
       create: {
@@ -723,19 +767,66 @@ export const submitAssignment = async (
         institutionId: student.institutionId,
         fileKey,
         fileUrl: publicUrl,
-        submittedAt: new Date(),
+        submittedAt: now,
         resubmitCount: 0,
         reviewStatus: null,
       },
       update: {
         fileKey,
         fileUrl: publicUrl,
-        submittedAt: new Date(),
+        submittedAt: now,
         resubmitCount,
         reviewStatus: null,
         reviewNote: null,
         reviewedAt: null,
         reviewedByTeacherId: null,
+      },
+    });
+
+    // attemptNumber is always derived from the highest number already stored
+    // for this submission (not a separately-tracked counter) so it can never
+    // collide, even if older rows are inconsistent for any reason.
+    const currentMax = async () => {
+      const agg = await academicDb().taskAssignmentSubmissionAttempt.aggregate({
+        where: { submissionId: submission.id },
+        _max: { attemptNumber: true },
+      });
+      return agg._max.attemptNumber ?? 0;
+    };
+
+    // Backfill: if this submission predates the attempt-history feature (has
+    // an old upload but zero attempt rows yet), preserve that old upload as
+    // attempt #1 before recording the new one — otherwise it'd be lost the
+    // moment the upsert above overwrote fileUrl/submittedAt on the pointer row.
+    if (existing?.submittedAt && (await currentMax()) === 0) {
+      await academicDb().taskAssignmentSubmissionAttempt.create({
+        data: {
+          submissionId: submission.id,
+          assignmentId,
+          studentId: student.id,
+          institutionId: student.institutionId,
+          attemptNumber: 1,
+          fileKey: existing.fileKey,
+          fileUrl: existing.fileUrl,
+          submittedAt: existing.submittedAt,
+          reviewStatus: existing.reviewStatus,
+          reviewNote: existing.reviewNote,
+          reviewedAt: existing.reviewedAt,
+          reviewedByTeacherId: existing.reviewedByTeacherId,
+        },
+      });
+    }
+
+    await academicDb().taskAssignmentSubmissionAttempt.create({
+      data: {
+        submissionId: submission.id,
+        assignmentId,
+        studentId: student.id,
+        institutionId: student.institutionId,
+        attemptNumber: (await currentMax()) + 1,
+        fileKey,
+        fileUrl: publicUrl,
+        submittedAt: now,
       },
     });
 
@@ -759,5 +850,113 @@ export const getOwnSubmission = async (req: AuthRequest, res: Response, next: Ne
     });
 
     res.json({ success: true, data: submission ?? null });
+  } catch (err) { next(err); }
+};
+
+// ── Assignment Paper (View + Download) ─────────────────────────────────────
+// The paper builder lets a teacher attach an actual question paper (sections
+// + questions) to an assignment, same as a test — but until now students
+// never saw it, only the submission-tracking UI. This assembles that paper
+// exactly as built, personalised per-student the same way a test's questions
+// already are (seededRng(rollNo + questionId) — NUMERICAL gets real computed
+// values instead of the raw {variable} template, CONCEPTUAL/MCQ options are
+// shuffled so the correct answer's position isn't always first/static). The
+// correct answer itself is never included in the response.
+type StoredAssignmentQ = { questionId: string; sectionId: string | null; marks: number; order: number; isCompulsory: boolean };
+
+async function buildAssignmentPaperView(req: AuthRequest) {
+  const student = await getStudentForRequest(req);
+  const assignmentId = req.params.id as string;
+
+  const assignment = await academicDb().taskAssignment.findFirst({
+    where: {
+      id: assignmentId,
+      divisionId: student.divisionId,
+      institutionId: student.institutionId,
+      status: { in: ["ACTIVE", "COMPLETED"] },
+    },
+    select: {
+      id: true, title: true, description: true, totalMarks: true, dueDate: true,
+      submissionType: true, answerSpace: true, isRandomized: true, sections: true, questions: true,
+      subject: { select: { name: true } },
+      division: { select: { name: true } },
+    },
+  });
+  if (!assignment) throw new NotFoundError("Assignment not found");
+
+  const storedQs = (assignment.questions as StoredAssignmentQ[] | null) ?? [];
+  const questionIds = storedQs.map((q) => q.questionId);
+
+  const questionObjects = questionIds.length > 0
+    ? await academicDb().taskQuestion.findMany({
+        where: { id: { in: questionIds }, institutionId: student.institutionId },
+        select: { id: true, type: true, question: true, questionTemplate: true, options: true, answer: true, details: true },
+      })
+    : [];
+  const qMap = new Map(questionObjects.map((q) => [q.id, q]));
+
+  const questions = storedQs
+    .map((sq) => {
+      const q = qMap.get(sq.questionId);
+      if (!q) return null;
+      const generated = personaliseQuestion(q, student.rollNo);
+      const options = q.type === "TRUE_FALSE" ? ["True", "False"] : generated.options;
+      return {
+        id: q.id,
+        type: q.type,
+        question: generated.questionText,
+        options,
+        sectionId: sq.sectionId,
+        marks: sq.marks,
+        order: sq.order,
+      };
+    })
+    .filter((q): q is NonNullable<typeof q> => q !== null)
+    .sort((a, b) => a.order - b.order);
+
+  // Same letterhead the teacher's paper builder prints on an assignment
+  // paper (GET /teacher/institution/letterhead) — fetched here too so the
+  // student's read-only view/PDF matches it exactly, not just the layout.
+  const institution = await prisma.institution.findUnique({
+    where: { id: student.institutionId },
+    select: { name: true, logoUrl: true, address: true, city: true, state: true, pincode: true },
+  });
+
+  return {
+    assignment: {
+      id: assignment.id,
+      title: assignment.title,
+      description: assignment.description,
+      subjectName: assignment.subject.name,
+      className: assignment.division.name,
+      totalMarks: assignment.totalMarks,
+      dueDate: assignment.dueDate,
+      submissionType: assignment.submissionType,
+      answerSpace: assignment.answerSpace,
+      isRandomized: assignment.isRandomized,
+      sections: parseSections(assignment.sections),
+    },
+    questions,
+    student: { name: student.name, rollNo: student.rollNo, studentId: student.studentId },
+    institution,
+  };
+}
+
+// ── GET /student/tasks/assignments/:id/paper — view the built paper ────────
+export const getAssignmentPaper = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const view = await buildAssignmentPaperView(req);
+    res.json({ success: true, data: view });
+  } catch (err) { next(err); }
+};
+
+// ── GET /student/tasks/assignments/:id/paper/pdf — download the paper as PDF ──
+export const downloadAssignmentPaperPdf = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const view = await buildAssignmentPaperView(req);
+    const buffer = await generateAssignmentPaperPdf(view);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${view.assignment.title.replace(/\s+/g, "_")}.pdf"`);
+    res.send(buffer);
   } catch (err) { next(err); }
 };

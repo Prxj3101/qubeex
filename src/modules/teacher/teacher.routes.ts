@@ -150,6 +150,7 @@ import {
   getAssignmentSubmissions,
   reviewSubmission,
   markOfflineSubmission,
+  markOfflineLate,
   listContainers,
   createContainer,
   renameContainer,
@@ -1140,6 +1141,7 @@ router.put("/tasks/assignments/:id/paper", ...T, saveAssignmentPaper);
 router.get("/tasks/assignments/:id/submissions", ...T, getAssignmentSubmissions);
 router.patch("/tasks/assignments/:id/submissions/:studentId/review", ...T, reviewSubmission);
 router.patch("/tasks/assignments/:id/submissions/:studentId/offline", ...T, markOfflineSubmission);
+router.patch("/tasks/assignments/:id/submissions/:studentId/offline-late", ...T, markOfflineLate);
 router.get("/institution/letterhead", ...T, getInstitutionLetterhead);
 
 // ── Tasks — Modules ───────────────────────────────────────────────────────────

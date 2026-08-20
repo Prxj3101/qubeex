@@ -170,6 +170,7 @@ model Institution {
   taskTests          TaskTest[]
   taskAssignments    TaskAssignment[]
   taskAssignmentSubmissions TaskAssignmentSubmission[]
+  taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
   questionShareTokens QuestionShareToken[]
   taskPdfUploads     TaskPdfUpload[]
   attendances        Attendance[]
@@ -705,6 +706,7 @@ model Student {
   attendances           Attendance[]
   taskTestAttempts         TaskTestAttempt[]
   taskAssignmentSubmissions TaskAssignmentSubmission[]
+  taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
   marksheetScores          MarksheetScore[]
   marksheetGradedScores MarksheetGradedScore[]
   marksheetRemarks       MarksheetRemark[]
@@ -1352,6 +1354,7 @@ model TaskAssignment {
   totalMarks        Int                  @default(10)
   dueDate           DateTime?
   status            TaskAssignmentStatus @default(DRAFT)
+  completedAt       DateTime? // set when the teacher hits "Stop Now" — the real end moment, kept separate from dueDate
   submissionType    String               @default("OFFLINE") // OFFLINE | ONLINE
   sections          Json?
   questions         Json?
@@ -1362,6 +1365,7 @@ model TaskAssignment {
   updatedAt         DateTime             @updatedAt
 
   submissions   TaskAssignmentSubmission[]
+  submissionAttempts TaskAssignmentSubmissionAttempt[]
 
   @@index([teacherId, divisionId])
   @@index([institutionId])
@@ -1376,13 +1380,14 @@ model TaskAssignmentSubmission {
   institutionId  String
   institution    Institution    @relation(fields: [institutionId], references: [id])
 
-  // Online PDF submission
+  // Online PDF submission — always mirrors the LATEST attempt below, kept here
+  // so existing "current status" reads don't need to join/order the history.
   fileKey        String?   // R2 object key
   fileUrl        String?   // R2 public URL
   submittedAt    DateTime? // most recent online upload time
   resubmitCount  Int       @default(0)
 
-  // Teacher review of online submission
+  // Teacher review of online submission — mirrors the latest attempt's review.
   reviewStatus   String?   // CORRECT | WRITE_AGAIN | null (pending review)
   reviewNote     String?
   reviewedAt     DateTime?
@@ -1391,11 +1396,48 @@ model TaskAssignmentSubmission {
   // Offline copy submission (teacher marks manually)
   offlineSubmittedAt       DateTime?
   offlineMarkedByTeacherId String?
+  offlineMarkedLate        Boolean   @default(false) // manual "Mark Late" toggle — only shown alongside Submitted once received
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  attempts TaskAssignmentSubmissionAttempt[]
+
   @@unique([assignmentId, studentId])
+  @@index([assignmentId])
+  @@index([studentId])
+  @@index([institutionId])
+}
+
+// Full history of a student's online PDF submissions for one assignment — one
+// row per upload, oldest to newest, so a resubmission never erases the
+// previous version. TaskAssignmentSubmission above stays as the "current
+// state" pointer (latest attempt's file/review mirrored onto it) for cheap
+// status reads; this table is what the UI walks to show submission history.
+model TaskAssignmentSubmissionAttempt {
+  id             String                   @id @default(uuid())
+  submissionId   String
+  submission     TaskAssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  assignmentId   String
+  assignment     TaskAssignment           @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId      String
+  student        Student                  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  institutionId  String
+  institution    Institution              @relation(fields: [institutionId], references: [id])
+
+  attemptNumber Int
+  fileKey       String?
+  fileUrl       String?
+  submittedAt   DateTime @default(now())
+
+  reviewStatus   String?   // CORRECT | WRITE_AGAIN | null (pending review)
+  reviewNote     String?
+  reviewedAt     DateTime?
+  reviewedByTeacherId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([submissionId])
   @@index([assignmentId])
   @@index([studentId])
   @@index([institutionId])

@@ -2,7 +2,7 @@
 // qubeex-web/lib/subjectColors.ts and qubeex-app/lib/subjectColors.ts so a
 // subject renders the same color everywhere on the platform.
 export const SUBJECT_PALETTE = [
-  "#DA7756", // terracotta
+  "#DA7756", 
   "#EC4899", // pink
   "#0891B2", // cyan
   "#7C3AED", // violet

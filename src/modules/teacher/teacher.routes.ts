@@ -108,6 +108,9 @@ import {
 } from "./blackboard.controller";
 import {
   taskUpload,
+  taskImageUpload,
+  addQuestionImages,
+  removeQuestionImage,
   generateQuestions,
   listUploads,
   getUploadStatus,
@@ -1117,6 +1120,16 @@ router.patch("/tasks/questions/:id/status", ...T, updateQuestionStatus);
 router.patch("/tasks/questions/:id", ...T, editQuestion);
 router.delete("/tasks/questions/:id", ...T, deleteQuestion);
 router.get("/tasks/questions/export", ...T, exportQuestions);
+// Multer must run before academicRoutingMiddleware — same reason as /tasks/generate above.
+router.post(
+  "/tasks/questions/:id/images",
+  authMiddleware(["TEACHER"]),
+  institutionAccessMiddleware,
+  taskImageUpload.array("images", 6),
+  academicRoutingMiddleware,
+  addQuestionImages
+);
+router.delete("/tasks/questions/:id/images", ...T, removeQuestionImage);
 
 // ── Tasks — Tests ─────────────────────────────────────────────────────────────
 router.get("/tasks/tests", ...T, listTests);

@@ -79,6 +79,7 @@ export type TaskQuestionCountAggregateOutputType = {
   answer: number
   details: number
   category: number
+  images: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -140,6 +141,7 @@ export type TaskQuestionCountAggregateInputType = {
   answer?: true
   details?: true
   category?: true
+  images?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -234,6 +236,7 @@ export type TaskQuestionGroupByOutputType = {
   answer: string
   details: runtime.JsonValue | null
   category: string | null
+  images: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
   _count: TaskQuestionCountAggregateOutputType | null
@@ -276,6 +279,7 @@ export type TaskQuestionWhereInput = {
   answer?: Prisma.StringFilter<"TaskQuestion"> | string
   details?: Prisma.JsonNullableFilter<"TaskQuestion">
   category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
+  images?: Prisma.JsonNullableFilter<"TaskQuestion">
   createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
   teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
@@ -303,6 +307,7 @@ export type TaskQuestionOrderByWithRelationInput = {
   answer?: Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
+  images?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   teacher?: Prisma.TeacherOrderByWithRelationInput
@@ -333,6 +338,7 @@ export type TaskQuestionWhereUniqueInput = Prisma.AtLeast<{
   answer?: Prisma.StringFilter<"TaskQuestion"> | string
   details?: Prisma.JsonNullableFilter<"TaskQuestion">
   category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
+  images?: Prisma.JsonNullableFilter<"TaskQuestion">
   createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
   teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
@@ -360,6 +366,7 @@ export type TaskQuestionOrderByWithAggregationInput = {
   answer?: Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
+  images?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TaskQuestionCountOrderByAggregateInput
@@ -387,6 +394,7 @@ export type TaskQuestionScalarWhereWithAggregatesInput = {
   answer?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
   details?: Prisma.JsonNullableWithAggregatesFilter<"TaskQuestion">
   category?: Prisma.StringNullableWithAggregatesFilter<"TaskQuestion"> | string | null
+  images?: Prisma.JsonNullableWithAggregatesFilter<"TaskQuestion">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskQuestion"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskQuestion"> | Date | string
 }
@@ -405,6 +413,7 @@ export type TaskQuestionCreateInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
@@ -432,6 +441,7 @@ export type TaskQuestionUncheckedCreateInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
@@ -453,6 +463,7 @@ export type TaskQuestionUpdateInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
@@ -480,6 +491,7 @@ export type TaskQuestionUncheckedUpdateInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
@@ -504,6 +516,7 @@ export type TaskQuestionCreateManyInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -522,6 +535,7 @@ export type TaskQuestionUpdateManyMutationInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -543,6 +557,7 @@ export type TaskQuestionUncheckedUpdateManyInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -574,6 +589,7 @@ export type TaskQuestionCountOrderByAggregateInput = {
   answer?: Prisma.SortOrder
   details?: Prisma.SortOrder
   category?: Prisma.SortOrder
+  images?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -815,6 +831,7 @@ export type TaskQuestionCreateWithoutTeacherInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
@@ -840,6 +857,7 @@ export type TaskQuestionUncheckedCreateWithoutTeacherInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
@@ -893,6 +911,7 @@ export type TaskQuestionScalarWhereInput = {
   answer?: Prisma.StringFilter<"TaskQuestion"> | string
   details?: Prisma.JsonNullableFilter<"TaskQuestion">
   category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
+  images?: Prisma.JsonNullableFilter<"TaskQuestion">
   createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
 }
@@ -911,6 +930,7 @@ export type TaskQuestionCreateWithoutSubjectInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
@@ -936,6 +956,7 @@ export type TaskQuestionUncheckedCreateWithoutSubjectInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
@@ -983,6 +1004,7 @@ export type TaskQuestionCreateWithoutContainerInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
@@ -1008,6 +1030,7 @@ export type TaskQuestionUncheckedCreateWithoutContainerInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
@@ -1055,6 +1078,7 @@ export type TaskQuestionCreateWithoutModuleAssignmentInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
@@ -1081,6 +1105,7 @@ export type TaskQuestionUncheckedCreateWithoutModuleAssignmentInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
@@ -1117,6 +1142,7 @@ export type TaskQuestionUpdateWithoutModuleAssignmentInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
@@ -1143,6 +1169,7 @@ export type TaskQuestionUncheckedUpdateWithoutModuleAssignmentInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
@@ -1163,6 +1190,7 @@ export type TaskQuestionCreateWithoutTestQuestionsInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
@@ -1189,6 +1217,7 @@ export type TaskQuestionUncheckedCreateWithoutTestQuestionsInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
@@ -1225,6 +1254,7 @@ export type TaskQuestionUpdateWithoutTestQuestionsInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
@@ -1251,6 +1281,7 @@ export type TaskQuestionUncheckedUpdateWithoutTestQuestionsInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
@@ -1271,6 +1302,7 @@ export type TaskQuestionCreateWithoutStudentAnswersInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
@@ -1297,6 +1329,7 @@ export type TaskQuestionUncheckedCreateWithoutStudentAnswersInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
@@ -1333,6 +1366,7 @@ export type TaskQuestionUpdateWithoutStudentAnswersInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
@@ -1359,6 +1393,7 @@ export type TaskQuestionUncheckedUpdateWithoutStudentAnswersInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
@@ -1381,6 +1416,7 @@ export type TaskQuestionCreateManyTeacherInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1399,6 +1435,7 @@ export type TaskQuestionUpdateWithoutTeacherInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
@@ -1424,6 +1461,7 @@ export type TaskQuestionUncheckedUpdateWithoutTeacherInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
@@ -1447,6 +1485,7 @@ export type TaskQuestionUncheckedUpdateManyWithoutTeacherInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1467,6 +1506,7 @@ export type TaskQuestionCreateManySubjectInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1485,6 +1525,7 @@ export type TaskQuestionUpdateWithoutSubjectInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
@@ -1510,6 +1551,7 @@ export type TaskQuestionUncheckedUpdateWithoutSubjectInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
@@ -1533,6 +1575,7 @@ export type TaskQuestionUncheckedUpdateManyWithoutSubjectInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1553,6 +1596,7 @@ export type TaskQuestionCreateManyContainerInput = {
   answer: string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1571,6 +1615,7 @@ export type TaskQuestionUpdateWithoutContainerInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
@@ -1596,6 +1641,7 @@ export type TaskQuestionUncheckedUpdateWithoutContainerInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
@@ -1619,6 +1665,7 @@ export type TaskQuestionUncheckedUpdateManyWithoutContainerInput = {
   answer?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1680,6 +1727,7 @@ export type TaskQuestionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   answer?: boolean
   details?: boolean
   category?: boolean
+  images?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
@@ -1708,6 +1756,7 @@ export type TaskQuestionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   answer?: boolean
   details?: boolean
   category?: boolean
+  images?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
@@ -1732,6 +1781,7 @@ export type TaskQuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   answer?: boolean
   details?: boolean
   category?: boolean
+  images?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
@@ -1756,11 +1806,12 @@ export type TaskQuestionSelectScalar = {
   answer?: boolean
   details?: boolean
   category?: boolean
+  images?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaskQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "containerId" | "type" | "status" | "source" | "sourceFile" | "uploadBatchId" | "question" | "questionTemplate" | "options" | "answer" | "details" | "category" | "createdAt" | "updatedAt", ExtArgs["result"]["taskQuestion"]>
+export type TaskQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "containerId" | "type" | "status" | "source" | "sourceFile" | "uploadBatchId" | "question" | "questionTemplate" | "options" | "answer" | "details" | "category" | "images" | "createdAt" | "updatedAt", ExtArgs["result"]["taskQuestion"]>
 export type TaskQuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
@@ -1808,6 +1859,7 @@ export type $TaskQuestionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     answer: string
     details: runtime.JsonValue | null
     category: string | null
+    images: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["taskQuestion"]>
@@ -2255,6 +2307,7 @@ export interface TaskQuestionFieldRefs {
   readonly answer: Prisma.FieldRef<"TaskQuestion", 'String'>
   readonly details: Prisma.FieldRef<"TaskQuestion", 'Json'>
   readonly category: Prisma.FieldRef<"TaskQuestion", 'String'>
+  readonly images: Prisma.FieldRef<"TaskQuestion", 'Json'>
   readonly createdAt: Prisma.FieldRef<"TaskQuestion", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaskQuestion", 'DateTime'>
 }

@@ -33,6 +33,7 @@ import { redis, isRedisReady } from "../../utils/redis";
 import { getAiTokenLimit } from "../../services/billing.service";
 import { recordAiUsage, type AiFeature } from "../../services/ai-usage.service";
 import { generateTestResultPdf } from "../../services/testResultPdf.service";
+import { uploadImageToR2, deleteFromR2 } from "../../services/storage.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -65,6 +66,19 @@ export const taskUpload = multer({
   fileFilter: (_req: any, file: any, cb: any) => {
     if (file.mimetype === "application/pdf") return cb(null, true);
     cb(new BadRequestError("Only PDF files are accepted for question generation"));
+  },
+});
+
+// Attaching one or more diagram/figure images to a question — either an
+// AI-generated one after review, or a manually-added one. Same 2MB-per-file
+// ceiling as other image uploads (assertImageUpload in storage.service), a
+// question realistically never needs more than a handful of images.
+export const taskImageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024, files: 6 },
+  fileFilter: (_req: any, file: any, cb: any) => {
+    if (["image/png", "image/jpeg", "image/webp"].includes(file.mimetype)) return cb(null, true);
+    cb(new BadRequestError("Only PNG, JPG, and WEBP images are allowed"));
   },
 });
 
@@ -813,6 +827,62 @@ export const editQuestion = async (req: AuthRequest, res: Response, next: NextFu
   } catch (err) { next(err); }
 };
 
+// Adds one or more images to a question (AI-generated/approved or manual —
+// both share the same TaskQuestion row, so this works for either). Appends
+// to whatever's already there rather than replacing, since a teacher may add
+// images across a couple of visits.
+export const addQuestionImages = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+    const files = (req.files as Express.Multer.File[] | undefined) ?? [];
+    if (!files.length) throw new BadRequestError("At least one image is required");
+
+    const question = await academicDb().taskQuestion.findFirst({ where: { id, teacherId, institutionId } });
+    if (!question) throw new NotFoundError("Question not found");
+
+    const existing = ((question.images as string[] | null) ?? []);
+    const uploaded = await Promise.all(
+      files.map((file) =>
+        uploadImageToR2(file.buffer, { contentType: file.mimetype, folder: "task-questions", ownerId: id })
+      )
+    );
+    const images = [...existing, ...uploaded.map((u) => u.publicUrl)];
+
+    const updated = await academicDb().taskQuestion.update({ where: { id }, data: { images } });
+    res.json({ success: true, data: updated });
+  } catch (err) { next(err); }
+};
+
+// Removes a single image URL from the question's images array. Best-effort
+// deletes the underlying R2 object too — if that fails (e.g. already gone),
+// the array update still proceeds since that's what the UI actually reflects.
+export const removeQuestionImage = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const id = req.params.id as string;
+    const { url } = req.body as { url?: string };
+    if (!url) throw new BadRequestError("Image url is required");
+
+    const question = await academicDb().taskQuestion.findFirst({ where: { id, teacherId, institutionId } });
+    if (!question) throw new NotFoundError("Question not found");
+
+    const existing = ((question.images as string[] | null) ?? []);
+    const images = existing.filter((u) => u !== url);
+
+    const r2PublicUrl = process.env.R2_PUBLIC_URL?.replace(/\/$/, "");
+    if (r2PublicUrl && url.startsWith(r2PublicUrl + "/")) {
+      const key = url.slice(r2PublicUrl.length + 1);
+      await deleteFromR2(key).catch(() => {});
+    }
+
+    const updated = await academicDb().taskQuestion.update({ where: { id }, data: { images } });
+    res.json({ success: true, data: updated });
+  } catch (err) { next(err); }
+};
+
 export const deleteQuestion = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId, userId } = requireTeacher(req);
@@ -1119,7 +1189,7 @@ export const getTest = async (req: AuthRequest, res: Response, next: NextFunctio
         questions: {
           include: {
             question: {
-              select: { id: true, type: true, status: true, question: true, questionTemplate: true, answer: true, options: true, details: true, category: true },
+              select: { id: true, type: true, status: true, question: true, questionTemplate: true, answer: true, options: true, details: true, category: true, images: true },
             },
           },
           orderBy: { order: "asc" },
@@ -1259,7 +1329,7 @@ export const savePaper = async (req: AuthRequest, res: Response, next: NextFunct
         questions: {
           include: {
             question: {
-              select: { id: true, type: true, status: true, question: true, questionTemplate: true, answer: true, options: true, details: true, category: true },
+              select: { id: true, type: true, status: true, question: true, questionTemplate: true, answer: true, options: true, details: true, category: true, images: true },
             },
           },
           orderBy: { order: "asc" },
@@ -1486,6 +1556,7 @@ export const downloadAttemptPdfForTeacher = async (req: AuthRequest, res: Respon
           select: {
             questionId: true, generatedQuestion: true, generatedOptions: true,
             studentAnswer: true, correctAnswer: true, isCorrect: true,
+            question: { select: { images: true } },
           },
           orderBy: { order: "asc" },
         },
@@ -1500,11 +1571,13 @@ export const downloadAttemptPdfForTeacher = async (req: AuthRequest, res: Respon
     const sectionsMeta = parseSections(attempt.test.sections);
     const sectionByQuestionId = new Map(attempt.test.questions.map((tq) => [tq.questionId, tq.sectionId]));
     const answersWithSections = attempt.answers.map((a) => {
+      const { question, ...rest } = a;
       const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
       const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
       return {
-        ...a,
+        ...rest,
         generatedOptions: Array.isArray(a.generatedOptions) ? (a.generatedOptions as string[]) : null,
+        images: question.images as string[] | null,
         sectionTitle: section?.title ?? null,
         sectionInstruction: section?.instruction ?? null,
       };
@@ -1644,7 +1717,7 @@ export const listModules = async (req: AuthRequest, res: Response, next: NextFun
         questions: {
           include: {
             question: {
-              select: { id: true, type: true, status: true, question: true, options: true, answer: true, createdAt: true, details: true, category: true },
+              select: { id: true, type: true, status: true, question: true, options: true, answer: true, createdAt: true, details: true, category: true, images: true },
             },
           },
           orderBy: { order: "asc" },
@@ -2014,7 +2087,7 @@ export const getAssignment = async (req: AuthRequest, res: Response, next: NextF
     const questionObjects = questionIds.length > 0
       ? await academicDb().taskQuestion.findMany({
           where: { id: { in: questionIds }, teacherId, institutionId },
-          select: { id: true, type: true, status: true, question: true, questionTemplate: true, answer: true, options: true, details: true, category: true },
+          select: { id: true, type: true, status: true, question: true, questionTemplate: true, answer: true, options: true, details: true, category: true, images: true },
         })
       : [];
 

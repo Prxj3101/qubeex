@@ -174,7 +174,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
         questions: {
           include: {
             question: {
-              select: { id: true, type: true, question: true, questionTemplate: true, options: true, answer: true, details: true },
+              select: { id: true, type: true, question: true, questionTemplate: true, options: true, answer: true, details: true, images: true },
             },
           },
         },
@@ -202,7 +202,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
     if (existing) {
       const existingAnswers = await academicDb().taskStudentAnswer.findMany({
         where: { attemptId: existing.id },
-        include: { question: { select: { type: true } } },
+        include: { question: { select: { type: true, images: true } } },
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
       });
       if (existingAnswers.length > 0) {
@@ -231,6 +231,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
                 sectionId,
                 sectionTitle: section?.title ?? null,
                 sectionInstruction: section?.instruction ?? null,
+                images: a.question.images,
               };
             }),
           },
@@ -279,6 +280,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
         sectionId: tq.sectionId,
         sectionTitle: section?.title ?? null,
         sectionInstruction: section?.instruction ?? null,
+        images: q.images as string[] | null,
       };
     });
     // Shuffle within each section (keeps the anti-cheat per-student
@@ -341,6 +343,7 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
           sectionId: q.sectionId,
           sectionTitle: q.sectionTitle,
           sectionInstruction: q.sectionInstruction,
+          images: q.images,
         })),
       },
     });
@@ -431,6 +434,7 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
           select: {
             questionId: true, generatedQuestion: true, generatedOptions: true,
             studentAnswer: true, correctAnswer: true, isCorrect: true,
+            question: { select: { images: true } },
           },
           orderBy: { order: "asc" },
         },
@@ -457,11 +461,13 @@ export const getAttempt = async (req: AuthRequest, res: Response, next: NextFunc
     const answersWithSections = attempt.answers.map((a) => {
       const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
       const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
+      const { question, ...rest } = a;
       return {
-        ...a,
+        ...rest,
         sectionId,
         sectionTitle: section?.title ?? null,
         sectionInstruction: section?.instruction ?? null,
+        images: question.images as string[] | null,
       };
     });
 
@@ -525,6 +531,7 @@ export const downloadAttemptPdf = async (req: AuthRequest, res: Response, next: 
           select: {
             questionId: true, generatedQuestion: true, generatedOptions: true,
             studentAnswer: true, correctAnswer: true, isCorrect: true,
+            question: { select: { images: true } },
           },
           orderBy: { order: "asc" },
         },
@@ -537,11 +544,13 @@ export const downloadAttemptPdf = async (req: AuthRequest, res: Response, next: 
     const sectionsMeta = parseSections(attempt.test.sections);
     const sectionByQuestionId = new Map(attempt.test.questions.map((tq) => [tq.questionId, tq.sectionId]));
     const answersWithSections = attempt.answers.map((a) => {
+      const { question, ...rest } = a;
       const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
       const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
       return {
-        ...a,
+        ...rest,
         generatedOptions: Array.isArray(a.generatedOptions) ? (a.generatedOptions as string[]) : null,
+        images: question.images as string[] | null,
         sectionTitle: section?.title ?? null,
         sectionInstruction: section?.instruction ?? null,
       };
@@ -890,7 +899,7 @@ async function buildAssignmentPaperView(req: AuthRequest) {
   const questionObjects = questionIds.length > 0
     ? await academicDb().taskQuestion.findMany({
         where: { id: { in: questionIds }, institutionId: student.institutionId },
-        select: { id: true, type: true, question: true, questionTemplate: true, options: true, answer: true, details: true },
+        select: { id: true, type: true, question: true, questionTemplate: true, options: true, answer: true, details: true, images: true },
       })
     : [];
   const qMap = new Map(questionObjects.map((q) => [q.id, q]));
@@ -909,6 +918,7 @@ async function buildAssignmentPaperView(req: AuthRequest) {
         sectionId: sq.sectionId,
         marks: sq.marks,
         order: sq.order,
+        images: q.images as string[] | null,
       };
     })
     .filter((q): q is NonNullable<typeof q> => q !== null)

@@ -546,6 +546,7 @@ export const TaskQuestionScalarFieldEnum = {
   answer: 'answer',
   details: 'details',
   category: 'category',
+  images: 'images',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -9,6 +9,7 @@ export interface TestResultPdfAnswer {
   isCorrect: boolean;
   sectionTitle?: string | null;
   sectionInstruction?: string | null;
+  images?: string[] | null;
 }
 
 export interface TestResultPdfData {
@@ -112,6 +113,18 @@ function drawAwardIcon(doc: any, cx: number, cy: number, r: number, color: strin
 // score card layout/colors, same per-question card style — light mode only,
 // since a PDF has no dark-mode concept.
 export async function generateTestResultPdf(data: TestResultPdfData): Promise<Buffer> {
+  // pdfkit's doc.image() needs a Buffer synchronously, so all question images
+  // are downloaded up front (skip any that fail rather than breaking the PDF).
+  const imageUrls = Array.from(new Set(data.answers.flatMap((a) => a.images ?? [])));
+  const imageBuffers = new Map<string, Buffer>();
+  await Promise.all(imageUrls.map(async (url) => {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) return;
+      imageBuffers.set(url, Buffer.from(await resp.arrayBuffer()));
+    } catch { /* skip broken/unreachable image */ }
+  }));
+
   const doc = new PDFDocument({ margin: 32, size: "A4", layout: "portrait" });
   const chunks: Buffer[] = [];
   doc.on("data", (c: Buffer) => chunks.push(c));
@@ -243,7 +256,7 @@ export async function generateTestResultPdf(data: TestResultPdfData): Promise<Bu
     const statW = 64, statH = 36, statGap = 6;
     stats.forEach((s, i) => {
       const sx = startX + 10 + i * (statW + statGap);
-      const sy = data.malpracticeFlag ? cardY + 82 : cardY + cardH - statH - 10;
+      const sy = data.malpracticeFlag ? cardY + 85 : cardY + cardH - statH - 7;
       doc.roundedRect(sx, sy, statW, statH, 8).fill(s.bg);
       s.icon(doc, sx + statW / 2 - 13, sy + 13, 4.5, s.fg);
       doc.font("Helvetica-Bold").fontSize(10).fillColor(s.fg).text(String(s.n), sx + statW / 2 - 4, sy + 8, { width: 24 });
@@ -255,10 +268,46 @@ export async function generateTestResultPdf(data: TestResultPdfData): Promise<Bu
     // ── Per-question breakdown ──────────────────────────────────────────
     let lastSectionTitle: string | null = null;
     data.answers.forEach((a, i) => {
-      if (doc.y > doc.page.height - doc.page.margins.bottom - 90) doc.addPage({ size: "A4", margin: 32 });
+      const cardPad = 10;
+      const textW = pageW - cardPad * 2 - 20;
+      const imgs0 = (a.images ?? []).map((u) => imageBuffers.get(u)).filter((b): b is Buffer => !!b);
+
+      // Estimate the full card's height (question text + images + answer
+      // line(s)) BEFORE drawing anything, so a question with a large image
+      // gets pushed onto a fresh page as a whole instead of pdfkit silently
+      // auto-paginating mid-draw — that mismatch between the box's start
+      // (old page) and end (new page) is what produced the broken/half-circle
+      // rounded-rect artifacts.
+      // heightOfString measures using the CURRENT font/fontSize (it doesn't
+      // accept font/fontSize as options), so set state explicitly before
+      // each measurement — matches whatever font each line is later drawn in.
+      doc.font("Helvetica-Bold").fontSize(9.5);
+      const qTextH = doc.heightOfString(`${i + 1}. ${a.generatedQuestion}`, { width: textW });
+      let imagesH = 0;
+      if (imgs0.length > 0) {
+        const imgSize = 280, imgGap = 6;
+        const itemsPerRow = Math.max(1, Math.floor(textW / (imgSize + imgGap)));
+        const rows = Math.ceil(imgs0.length / itemsPerRow);
+        imagesH = rows * imgSize + (rows - 1) * imgGap + 8;
+      }
+      doc.font("Helvetica").fontSize(8.5);
+      const answerH = doc.heightOfString(`Your answer: ${a.studentAnswer || "—"}`, { width: textW })
+        + (!a.isCorrect ? doc.heightOfString(`Correct answer: ${a.correctAnswer}`, { width: textW }) + 2 : 0);
+      const estCardH = cardPad * 2 + qTextH + 6 + imagesH + answerH + 9;
+      const pageUsableH = doc.page.height - doc.page.margins.top - doc.page.margins.bottom;
+
+      if (doc.y - doc.page.margins.top + estCardH > pageUsableH && estCardH <= pageUsableH) {
+        doc.addPage({ size: "A4", margin: 32 });
+      } else if (doc.y > doc.page.height - doc.page.margins.bottom - 90) {
+        doc.addPage({ size: "A4", margin: 32 });
+      }
 
       if (a.sectionTitle && a.sectionTitle !== lastSectionTitle) {
         lastSectionTitle = a.sectionTitle;
+        // Extra breathing room above a new section's heading, but only when
+        // it's not the very first section (i.e. there's a previous question
+        // box directly above it to separate from).
+        if (i > 0) doc.y += 8;
         const secY = doc.y;
         doc.font("Helvetica-Bold").fontSize(10).fillColor(FOREGROUND)
           .text(a.sectionTitle, startX + 8, secY + 2, { continued: !!a.sectionInstruction });
@@ -266,10 +315,9 @@ export async function generateTestResultPdf(data: TestResultPdfData): Promise<Bu
           doc.font("Helvetica").fontSize(9).fillColor(MUTED_TEXT).text(` : ${a.sectionInstruction}`);
         }
         doc.rect(startX, secY, 3, Math.max(16, doc.y - secY)).fill(TERRACOTTA);
-        doc.y = Math.max(doc.y, secY + 16) + 10;
+        doc.y = Math.max(doc.y, secY + 16) + 6;
       }
 
-      const cardPad = 10;
       const boxTopY = doc.y;
       const qStartY = boxTopY + cardPad;
       const iconColor = a.isCorrect ? EMERALD_TEXT : RED_TEXT;
@@ -277,6 +325,39 @@ export async function generateTestResultPdf(data: TestResultPdfData): Promise<Bu
       doc.font("Helvetica-Bold").fontSize(9.5).fillColor(FOREGROUND)
         .text(`${i + 1}. ${a.generatedQuestion}`, startX + cardPad + 20, qStartY, { width: pageW - cardPad * 2 - 20 });
       doc.moveDown(0.4);
+
+      // Question images, if any — placed directly under the question text,
+      // same as the on-screen result page.
+      const imgs = (a.images ?? []).map((u) => imageBuffers.get(u)).filter((b): b is Buffer => !!b);
+      if (imgs.length > 0) {
+        const imgSize = 280, imgGap = 6;
+        const imgX0 = startX + cardPad + 20;
+        const availW = pageW - cardPad * 2 - 20;
+        let imgX = imgX0;
+        let imgRowY = doc.y;
+        let rowMaxH = 0;
+        imgs.forEach((buf) => {
+          if (imgX + imgSize > imgX0 + availW) {
+            imgX = imgX0;
+            imgRowY += rowMaxH + imgGap;
+            rowMaxH = 0;
+          }
+          // Advance the cursor by the image's actual rendered height (not the
+          // full imgSize box) so a landscape/short image doesn't leave a big
+          // blank gap before the "Your answer" line below it.
+          let renderedH = imgSize;
+          try {
+            const img = doc.openImage(buf);
+            const scale = Math.min(imgSize / img.width, imgSize / img.height);
+            renderedH = img.height * scale;
+          } catch { /* fall back to full box height */ }
+          rowMaxH = Math.max(rowMaxH, renderedH);
+          try { doc.image(buf, imgX, imgRowY, { fit: [imgSize, imgSize] }); } catch { /* skip unreadable image */ }
+          imgX += imgSize + imgGap;
+        });
+        doc.y = imgRowY + rowMaxH + 8;
+      }
+
       doc.font("Helvetica").fontSize(8.5).fillColor(a.isCorrect ? "#047857" : "#B91C1C")
         .text(`Your answer: ${a.studentAnswer || "—"}`, startX + cardPad + 20, doc.y, { width: pageW - cardPad * 2 - 20 });
       if (!a.isCorrect) {

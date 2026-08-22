@@ -1148,6 +1148,7 @@ model TaskQuestion {
   answer           String
   details          Json?              // NUMERICAL: {variables, correct_answer_formula, distractor_formulas, category}; CONCEPTUAL: {correct_answer, distractors, category}
   category         String?
+  images           Json?              // String[] — R2 URLs, teacher-attached (diagrams/figures the question needs)
 
   moduleAssignment TaskModuleQuestion?
   testQuestions    TaskTestQuestion[]

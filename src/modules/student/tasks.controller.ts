@@ -188,9 +188,10 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
 // every 10s, so 30s gives ~2 missed beats of grace before treating it as gone
 // — enough to absorb a brief network hiccup without a real second device
 // waiting unreasonably long.
-// (Declared near the top of the file via var-like const hoisting semantics —
-// referenced both here and in listTests above, which is fine since this
-// module-level const is initialized before any request handler ever runs.)
+// (Declared here via var-like const hoisting semantics — referenced both
+// here and in listTests above, which is fine since this module-level const
+// is initialized before any request handler ever runs.)
+const DEVICE_LOCK_STALE_MS = 30_000;
 
 // Marks an in-progress attempt as completed using whatever answers are
 // already stored for it. There's no live autosave of in-progress answers

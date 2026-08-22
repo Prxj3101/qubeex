@@ -3,8 +3,8 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
-import { BadRequestError, NotFoundError } from "../../utils/errors";
-import { submitTestSchema } from "./tasks.schema";
+import { BadRequestError, ConflictError, NotFoundError } from "../../utils/errors";
+import { submitTestSchema, startTestSchema, heartbeatSchema } from "./tasks.schema";
 import {
   seededRng,
   shuffleArray,
@@ -57,6 +57,10 @@ async function getStudentForRequest(
 export const listTests = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const student = await getStudentForRequest(req);
+    // This device's persistent id, if it sent one — used only to tell "my
+    // own in-progress attempt" apart from "someone else's device is in this
+    // test right now" for the single-device lock (see startTest).
+    const clientId = typeof req.query.clientId === "string" ? req.query.clientId : null;
 
     const tests = await academicDb().taskTest.findMany({
       where: {
@@ -77,7 +81,10 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
     const attempts = testIds.length > 0
       ? await academicDb().taskTestAttempt.findMany({
           where: { testId: { in: testIds }, studentId: student.id },
-          select: { id: true, testId: true, status: true, totalScore: true, attemptNumber: true, startTime: true, endTime: true, malpracticeFlag: true },
+          select: {
+            id: true, testId: true, status: true, totalScore: true, attemptNumber: true, startTime: true, endTime: true, malpracticeFlag: true,
+            activeClientId: true, activeClientAt: true,
+          },
           orderBy: { attemptNumber: "desc" },
         })
       : [];
@@ -94,6 +101,18 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
 
       // The most recent completed attempt for deep-linking to result
       const lastCompletedAttempt = testAttempts.find((a) => a.status === "completed");
+
+      // Single-device lock (see startTest): is there an in-progress attempt
+      // actively held by a DIFFERENT device right now? Shown on the card as
+      // "Test in progress" instead of "Start Test Now" so a student doesn't
+      // open the same test simultaneously on two devices.
+      const inProgressAttempt = testAttempts.find((a) => a.status === "in_progress");
+      const lockedByOtherDevice = !!(
+        inProgressAttempt?.activeClientId &&
+        inProgressAttempt.activeClientId !== clientId &&
+        inProgressAttempt.activeClientAt &&
+        now.getTime() - inProgressAttempt.activeClientAt.getTime() <= DEVICE_LOCK_STALE_MS
+      );
 
       // All completed attempts (ascending) so the card can offer left/right
       // navigation between attempt results without a round trip to the result
@@ -154,6 +173,7 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
         lastAttemptStartTime: lastCompletedAttempt?.startTime ?? null,
         lastAttemptEndTime: lastCompletedAttempt?.endTime ?? null,
         lastAttemptMalpracticeFlag: lastCompletedAttempt?.malpracticeFlag ?? false,
+        lockedByOtherDevice,
         attempts: completedAttemptsAsc,
       };
     });
@@ -162,10 +182,36 @@ export const listTests = async (req: AuthRequest, res: Response, next: NextFunct
   } catch (err) { next(err); }
 };
 
+// Single-device test lock: how long a device's last heartbeat can go without
+// a refresh before it's considered abandoned (crashed, lost network, force-
+// closed) and another device is free to take over. The frontend heartbeats
+// every 10s, so 30s gives ~2 missed beats of grace before treating it as gone
+// — enough to absorb a brief network hiccup without a real second device
+// waiting unreasonably long.
+// (Declared near the top of the file via var-like const hoisting semantics —
+// referenced both here and in listTests above, which is fine since this
+// module-level const is initialized before any request handler ever runs.)
+
+// Marks an in-progress attempt as completed using whatever answers are
+// already stored for it. There's no live autosave of in-progress answers
+// (only the final /submit call writes them), so for a genuinely abandoned
+// device this almost always means "nothing answered" — the same outcome as
+// if the timer had simply run out with no one there to submit it.
+async function autoSubmitAbandonedAttempt(attemptId: string, maxScore: number) {
+  const storedAnswers = await academicDb().taskStudentAnswer.findMany({ where: { attemptId } });
+  const scorePerQuestion = storedAnswers.length > 0 ? maxScore / storedAnswers.length : 0;
+  const totalScore = Math.round(storedAnswers.filter((a) => a.isCorrect).length * scorePerQuestion);
+  await academicDb().taskTestAttempt.update({
+    where: { id: attemptId },
+    data: { status: "completed", endTime: new Date(), totalScore, activeClientId: null, activeClientAt: null },
+  });
+}
+
 export const startTest = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const student = await getStudentForRequest(req);
     const testId = req.params.id as string;
+    const { clientId } = startTestSchema.parse(req.body ?? {});
 
     const test = await academicDb().taskTest.findFirst({
       where: { id: testId, divisionId: student.divisionId, institutionId: student.institutionId },
@@ -200,49 +246,78 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
       where: { testId: test.id, studentId: student.id, status: "in_progress" },
     });
     if (existing) {
-      const existingAnswers = await academicDb().taskStudentAnswer.findMany({
-        where: { attemptId: existing.id },
-        include: { question: { select: { type: true, images: true } } },
-        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
-      });
-      if (existingAnswers.length > 0) {
-        // Section info isn't stored on TaskStudentAnswer, so it's looked up
-        // from the test's own question list + sections JSON at resume time.
-        const sectionsMeta = parseSections(test.sections);
-        const sectionByQuestionId = new Map(test.questions.map((tq) => [tq.questionId, tq.sectionId]));
-        res.json({
-          success: true,
-          data: {
-            attemptId: existing.id,
-            attemptNumber: existing.attemptNumber,
-            testTitle: test.title,
-            subjectName: test.subject.name,
-            durationMinutes: test.durationMinutes,
-            totalMarks: test.totalMarks,
-            startTime: existing.startTime,
-            questions: existingAnswers.map((a) => {
-              const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
-              const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
-              return {
-                questionId: a.questionId,
-                questionText: a.generatedQuestion,
-                options: (a.generatedOptions as string[] | null) ?? [],
-                type: a.question.type,
-                sectionId,
-                sectionTitle: section?.title ?? null,
-                sectionInstruction: section?.instruction ?? null,
-                images: a.question.images,
-              };
-            }),
-          },
-        });
-        return;
+      // Single-device lock: is this the same device that's already holding
+      // the attempt (or nobody's claimed it yet), or a genuinely different
+      // one? `!clientId` (an old cached frontend that hasn't picked up this
+      // change yet) degrades gracefully to "no lock enforcement" rather than
+      // erroring.
+      const isSameClient = !existing.activeClientId || !clientId || existing.activeClientId === clientId;
+      const heartbeatAge = existing.activeClientAt ? now.getTime() - existing.activeClientAt.getTime() : Infinity;
+      const isStale = heartbeatAge > DEVICE_LOCK_STALE_MS;
+
+      if (!isSameClient && !isStale) {
+        throw new ConflictError("This test is already in progress on another device. Finish it there first.");
       }
-      // Extremely rare: an in-progress attempt exists but its question rows never
-      // finished writing (e.g. the server crashed mid-request right after creating
-      // the attempt row). Nothing to resume - discard it and fall through to start
-      // a clean new attempt below.
-      await academicDb().taskTestAttempt.delete({ where: { id: existing.id } });
+      if (!isSameClient && isStale) {
+        // The device holding the lock has gone silent (crashed, lost
+        // network, force-closed) — auto-submit its attempt as abandoned and
+        // fall through below to start a brand new attempt for this device.
+        await autoSubmitAbandonedAttempt(existing.id, existing.maxScore);
+      } else {
+        // Same device resuming (page refresh, app backgrounded/foregrounded,
+        // slow network retry), or the first device to ever claim this
+        // attempt — refresh the lock to this device and hand back the same
+        // in-progress attempt untouched.
+        if (clientId) {
+          await academicDb().taskTestAttempt.update({
+            where: { id: existing.id },
+            data: { activeClientId: clientId, activeClientAt: now },
+          });
+        }
+        const existingAnswers = await academicDb().taskStudentAnswer.findMany({
+          where: { attemptId: existing.id },
+          include: { question: { select: { type: true, images: true } } },
+          orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+        });
+        if (existingAnswers.length > 0) {
+          // Section info isn't stored on TaskStudentAnswer, so it's looked up
+          // from the test's own question list + sections JSON at resume time.
+          const sectionsMeta = parseSections(test.sections);
+          const sectionByQuestionId = new Map(test.questions.map((tq) => [tq.questionId, tq.sectionId]));
+          res.json({
+            success: true,
+            data: {
+              attemptId: existing.id,
+              attemptNumber: existing.attemptNumber,
+              testTitle: test.title,
+              subjectName: test.subject.name,
+              durationMinutes: test.durationMinutes,
+              totalMarks: test.totalMarks,
+              startTime: existing.startTime,
+              questions: existingAnswers.map((a) => {
+                const sectionId = sectionByQuestionId.get(a.questionId) ?? null;
+                const section = sectionId ? sectionsMeta.find((s) => s.id === sectionId) : undefined;
+                return {
+                  questionId: a.questionId,
+                  questionText: a.generatedQuestion,
+                  options: (a.generatedOptions as string[] | null) ?? [],
+                  type: a.question.type,
+                  sectionId,
+                  sectionTitle: section?.title ?? null,
+                  sectionInstruction: section?.instruction ?? null,
+                  images: a.question.images,
+                };
+              }),
+            },
+          });
+          return;
+        }
+        // Extremely rare: an in-progress attempt exists but its question rows never
+        // finished writing (e.g. the server crashed mid-request right after creating
+        // the attempt row). Nothing to resume - discard it and fall through to start
+        // a clean new attempt below.
+        await academicDb().taskTestAttempt.delete({ where: { id: existing.id } });
+      }
     }
 
     const completedAttempts = await academicDb().taskTestAttempt.count({
@@ -264,6 +339,8 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
         attemptNumber,
         maxScore: test.totalMarks,
         status: "in_progress",
+        activeClientId: clientId ?? null,
+        activeClientAt: clientId ? now : null,
       },
     });
 
@@ -350,6 +427,39 @@ export const startTest = async (req: AuthRequest, res: Response, next: NextFunct
   } catch (err) { next(err); }
 };
 
+// ── POST /student/tasks/tests/attempts/:id/heartbeat ─────────────────────────
+// The device currently holding an in-progress attempt's lock calls this every
+// ~10s while the test page is open, to prove it's still active. If another
+// device has since taken over (this device went stale and got overtaken, or
+// the attempt was already auto-submitted as abandoned), `locked: false` tells
+// the frontend to stop and show the "test in progress elsewhere"/"already
+// submitted" state instead of silently continuing an exam that's no longer
+// really this device's to take.
+export const heartbeatAttempt = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const student = await getStudentForRequest(req);
+    const attemptId = req.params.id as string;
+    const { clientId } = heartbeatSchema.parse(req.body);
+
+    const attempt = await academicDb().taskTestAttempt.findFirst({
+      where: { id: attemptId, studentId: student.id },
+      select: { status: true, activeClientId: true },
+    });
+    if (!attempt) throw new NotFoundError("Attempt not found");
+
+    if (attempt.status !== "in_progress" || (attempt.activeClientId && attempt.activeClientId !== clientId)) {
+      res.json({ success: true, data: { locked: false } });
+      return;
+    }
+
+    await academicDb().taskTestAttempt.update({
+      where: { id: attemptId },
+      data: { activeClientId: clientId, activeClientAt: new Date() },
+    });
+    res.json({ success: true, data: { locked: true } });
+  } catch (err) { next(err); }
+};
+
 export const submitTest = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const student = await getStudentForRequest(req);
@@ -392,7 +502,7 @@ export const submitTest = async (req: AuthRequest, res: Response, next: NextFunc
       ),
       academicDb().taskTestAttempt.update({
         where: { id: attemptId },
-        data: { status: "completed", endTime: new Date(), totalScore: roundedTotalScore, tabChangeCount: tabChangeCount ?? 0, malpracticeFlag },
+        data: { status: "completed", endTime: new Date(), totalScore: roundedTotalScore, tabChangeCount: tabChangeCount ?? 0, malpracticeFlag, activeClientId: null, activeClientAt: null },
       }),
     ]);
 

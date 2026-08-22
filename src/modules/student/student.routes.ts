@@ -7,7 +7,7 @@ import { prisma } from "../../utils/prisma";
 import { resolveUsers } from "../../services/userLookup.service";
 import { z } from "zod";
 import multer from "multer";
-import { listTests, startTest, submitTest, getAttempt, downloadAttemptPdf, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload, getAssignmentPaper, downloadAssignmentPaperPdf } from "./tasks.controller";
+import { listTests, startTest, heartbeatAttempt, submitTest, getAttempt, downloadAttemptPdf, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload, getAssignmentPaper, downloadAssignmentPaperPdf } from "./tasks.controller";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
@@ -118,6 +118,11 @@ router.post("/tasks/tests/:id/start", ...S, startTest);
 
 // ── POST /student/tasks/tests/:id/submit ───────────────────────────────────────
 router.post("/tasks/tests/:id/submit", ...S, submitTest);
+
+// ── POST /student/tasks/tests/attempts/:id/heartbeat ───────────────────────────
+// Keeps this device's single-device lock on an in-progress attempt alive
+// while its test page is open (see startTest's device-lock logic).
+router.post("/tasks/tests/attempts/:id/heartbeat", ...S, heartbeatAttempt);
 
 // ── GET /student/tasks/attempts/:id ────────────────────────────────────────────
 router.get("/tasks/attempts/:id", ...S, getAttempt);

@@ -847,6 +847,17 @@ model TaskTestAttempt {
   tabChangeCount  Int      @default(0)
   malpracticeFlag Boolean  @default(false)
 
+  // Single-device lock: which device (a client-generated id persisted in
+  // localStorage, NOT tied to a user account) currently "owns" this
+  // in-progress attempt, and when it last proved it's still active (a
+  // heartbeat sent every ~10s while the test page is open). A second device
+  // trying to /start the same test while this is recent gets blocked; once
+  // it goes stale (no heartbeat for ~30s — the original device crashed,
+  // lost network, or force-closed the app) the attempt gets auto-submitted
+  // as-is and a new device is free to claim a fresh attempt.
+  activeClientId String?
+  activeClientAt DateTime?
+
   answers TaskStudentAnswer[]
 
   @@index([testId])

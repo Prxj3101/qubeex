@@ -4349,7 +4349,9 @@ export const TaskTestAttemptScalarFieldEnum = {
   maxScore: 'maxScore',
   status: 'status',
   tabChangeCount: 'tabChangeCount',
-  malpracticeFlag: 'malpracticeFlag'
+  malpracticeFlag: 'malpracticeFlag',
+  activeClientId: 'activeClientId',
+  activeClientAt: 'activeClientAt'
 } as const
 
 export type TaskTestAttemptScalarFieldEnum = (typeof TaskTestAttemptScalarFieldEnum)[keyof typeof TaskTestAttemptScalarFieldEnum]

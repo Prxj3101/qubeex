@@ -425,7 +425,7 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     const snap = marksheet.publishedSnapshot as {
       gradeScale?: GradeScaleEntry[];
       gradedSectionTitle?: string | null;
-      examColumns: { id: string; subjectId: string; name: string; maxMarks: number }[];
+      examColumns: { id: string; subjectId: string; name: string; maxMarks: number; order?: number }[];
       scores: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[];
       gradedSubjects: { id: string; name: string }[];
       gradedScores: { gradedSubjectId: string; studentId: string; term1Grade: string | null; term2Grade: string | null }[];
@@ -439,7 +439,15 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
             orderBy: { order: "asc" },
             select: { id: true, name: true, code: true, color: true },
           }),
-          Promise.resolve(snap.examColumns.map((c) => ({ id: c.id, subjectId: c.subjectId, name: c.name, maxMarks: c.maxMarks }))),
+          // The snapshot's own array order isn't guaranteed to match the
+          // teacher's actual drag-reorder/add sequence (publishMarksheet's
+          // capture query has no orderBy) — sort by the stored `order` field
+          // explicitly, same as the live-table query below already does.
+          Promise.resolve(
+            [...snap.examColumns]
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map((c) => ({ id: c.id, subjectId: c.subjectId, name: c.name, maxMarks: c.maxMarks }))
+          ),
           Promise.resolve(snap.scores.filter((s) => s.studentId === student.id).map((s) => ({ examColumnId: s.examColumnId, score: s.score, isAbsent: s.isAbsent }))),
           Promise.resolve(snap.gradedSubjects.map((g) => ({ id: g.id, name: g.name }))),
           Promise.resolve(snap.gradedScores.filter((g) => g.studentId === student.id).map((g) => ({ gradedSubjectId: g.gradedSubjectId, term1Grade: g.term1Grade, term2Grade: g.term2Grade }))),
@@ -534,6 +542,11 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     });
     const grandPct = grandMax > 0 ? Math.round((grandScored / grandMax) * 100) : null;
     const onlineGrandPct = onlineGrandMax > 0 ? Math.round((onlineGrandScored / onlineGrandMax) * 100) : null;
+    // Combined = offline + online pooled into one scored/max ratio (matches
+    // the same "combined" mode used elsewhere, e.g. StudentProfileView).
+    const combinedGrandMax = grandMax + onlineGrandMax;
+    const combinedGrandScored = grandScored + onlineGrandScored;
+    const combinedGrandPct = combinedGrandMax > 0 ? Math.round((combinedGrandScored / combinedGrandMax) * 100) : null;
 
     // Compute class rank by comparing this student's total against all others.
     // Uses the same frozen snapshot (all students' scores) when available, so
@@ -607,6 +620,9 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
         onlineGrandTotal: { scored: onlineGrandScored, max: onlineGrandMax },
         onlineGrandPct,
         onlineGrade: gradeFor(onlineGrandPct, effectiveGradeScale),
+        combinedGrandTotal: { scored: combinedGrandScored, max: combinedGrandMax },
+        combinedGrandPct,
+        combinedGrade: gradeFor(combinedGrandPct, effectiveGradeScale),
         classRank,
         offlineClassRank: classRank,
         onlineClassRank,
@@ -1056,13 +1072,17 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       // marksheets published before this feature existed have no snapshot —
       // fall back to live tables.
       const classSnap = marksheet.publishedSnapshot as {
-        examColumns: { id: string; subjectId: string; name: string; maxMarks: number }[];
+        examColumns: { id: string; subjectId: string; name: string; maxMarks: number; order?: number }[];
         scores: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[];
       } | null;
 
       const [columns, allScores, myScoresRaw] = classSnap
         ? [
-            classSnap.examColumns,
+            // The snapshot's own array order isn't guaranteed to match the
+            // teacher's actual drag-reorder/add sequence (publishMarksheet's
+            // capture query has no orderBy) — sort by the stored `order`
+            // field explicitly, same as the live-table query below does.
+            [...classSnap.examColumns].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
             classSnap.scores,
             classSnap.scores.filter((s) => s.studentId === student.id).map((s) => ({ examColumnId: s.examColumnId, score: s.score, isAbsent: s.isAbsent })),
           ]

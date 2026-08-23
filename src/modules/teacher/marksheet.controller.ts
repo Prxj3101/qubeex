@@ -422,9 +422,15 @@ async function fetchMarksheetFull(
   institutionId: string,
   callerTeacherId: string,
   isClassTeacher: boolean,
-  mySubjectIds: string[]
+  mySubjectIds: string[],
+  // Read-only report-card VIEWS (teacher/admin "View Report Card" for a single
+  // student) pass this so live, not-yet-republished score edits stay invisible
+  // — same "frozen at publish time" guarantee the student's own dashboard
+  // already gets. The score-ENTRY UI (same endpoint) must keep reading live
+  // tables, so this defaults to off.
+  publishedOnly = false
 ) {
-  const [marksheet, examColumns, scores, gradedSubjects, gradedScores, remarks, students] =
+  const [marksheetMeta, examColumnsLive, scoresLive, gradedSubjectsLive, gradedScoresLive, remarksLive, students] =
     await Promise.all([
       academicDb().marksheet.findUnique({
         where: { id: marksheetId },
@@ -437,6 +443,7 @@ async function fetchMarksheetFull(
           gradedSectionTitle: true,
           gradeScale: true,
           hasUnpublishedChanges: true,
+          publishedSnapshot: true,
           subjectConfigs: {
             select: { subjectId: true, passingMarks: true, gradeScale: true },
           },
@@ -470,12 +477,42 @@ async function fetchMarksheetFull(
       }),
     ]);
 
-  if (!marksheet || marksheet.institutionId !== institutionId) {
+  if (!marksheetMeta || marksheetMeta.institutionId !== institutionId) {
     throw { status: 404, message: "Marksheet not found" };
   }
+  const marksheet = marksheetMeta;
+
+  if (publishedOnly && marksheet.status !== "PUBLISHED") {
+    // Nothing frozen to show yet — caller (report-card view) falls back to
+    // its own per-student summary source, same as "not published" elsewhere.
+    throw { status: 404, message: "Marksheet not published yet" };
+  }
+
+  const snap = publishedOnly
+    ? (marksheet.publishedSnapshot as {
+        examColumns: { id: string; subjectId: string; name: string; maxMarks: number; examDate: string | null; order: number }[];
+        scores: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[];
+        gradedSubjects: { id: string; name: string; order: number }[];
+        gradedScores: { gradedSubjectId: string; studentId: string; term1Grade: string | null; term2Grade: string | null }[];
+        remarks: { studentId: string; conduct: string | null; remarks: string | null }[];
+      } | null)
+    : null;
+
+  // publishedOnly with no snapshot at all (marksheet published before the
+  // snapshot feature existed) — fall back to live tables rather than showing
+  // nothing, same accommodation studentMarksheet.service.ts makes.
+  // The snapshot's own array order isn't guaranteed to match the teacher's
+  // actual drag-reorder/add sequence (publishMarksheet's capture query has no
+  // orderBy) — sort by the stored `order` field explicitly, same as the
+  // live-table queries above already do via `orderBy: [...,{order:"asc"}]`.
+  const examColumns = snap ? [...snap.examColumns].sort((a, b) => a.order - b.order) : examColumnsLive;
+  const scores = snap ? snap.scores : scoresLive;
+  const gradedSubjects = snap ? [...snap.gradedSubjects].sort((a, b) => a.order - b.order) : gradedSubjectsLive;
+  const gradedScores = snap ? snap.gradedScores : gradedScoresLive;
+  const remarks = snap ? snap.remarks : remarksLive;
 
   // Group exam columns by subjectId
-  const columnsBySubject: Record<string, typeof examColumns> = {};
+  const columnsBySubject: Record<string, (typeof examColumns)[number][]> = {};
   for (const col of examColumns) {
     if (!isClassTeacher && !mySubjectIds.includes(col.subjectId)) continue;
     if (!columnsBySubject[col.subjectId]) columnsBySubject[col.subjectId] = [];
@@ -656,29 +693,70 @@ export async function addColumn(
     // Subject teachers fill marks, they do not create/modify columns.
     await assertClassTeacher(teacherId, marksheet.divisionId, institutionId);
 
-    // Determine next order value
-    const maxOrder = await academicDb().marksheetExamColumn.aggregate({
-      where: { marksheetId, subjectId },
-      _max: { order: true },
+    // An exam (e.g. "Unit Test 1") is one column across every subject, not
+    // just the subject the teacher happened to be looking at when they hit
+    // "+" — so fan the same name/maxMarks/examDate out to every subject in
+    // this division's standard, matching how the report card/marksheet grid
+    // already expects exam columns to line up per-subject (uniqueColNames in
+    // the report card page groups columns by matching NAME across subjects).
+    const division = await academicDb().division.findFirst({
+      where: { id: marksheet.divisionId, institutionId },
+      select: { standardId: true },
     });
-    const nextOrder = (maxOrder._max.order ?? -1) + 1;
+    if (!division) { res.status(404).json({ success: false, error: "Division not found" }); return; }
 
-    const column = await academicDb().marksheetExamColumn.create({
-      data: {
-        marksheetId,
-        subjectId,
-        institutionId,
-        name,
-        maxMarks,
-        examDate: examDate ? new Date(examDate) : null,
-        order: nextOrder,
-        createdByTeacherId: teacherId,
-      },
-      select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
-    });
+    const [allSubjects, existingCols] = await Promise.all([
+      academicDb().subject.findMany({
+        where: { standardId: division.standardId, institutionId },
+        select: { id: true },
+      }),
+      academicDb().marksheetExamColumn.findMany({
+        where: { marksheetId, institutionId },
+        select: { subjectId: true, name: true, order: true },
+      }),
+    ]);
+
+    // Don't double-create for a subject that already has a column with this
+    // exact name (e.g. re-clicking "+" for the same exam after it was
+    // already fanned out here, or a name that already existed per-subject
+    // from before this fan-out behavior existed).
+    const alreadyHasName = new Set(
+      existingCols.filter((c) => c.name.trim().toLowerCase() === name.trim().toLowerCase()).map((c) => c.subjectId)
+    );
+    const maxOrderBySubject = new Map<string, number>();
+    for (const c of existingCols) {
+      maxOrderBySubject.set(c.subjectId, Math.max(maxOrderBySubject.get(c.subjectId) ?? -1, c.order));
+    }
+
+    const targetSubjectIds = allSubjects.map((s) => s.id).filter((id) => !alreadyHasName.has(id));
+    // The subject the teacher explicitly picked should always get it, even
+    // if it's somehow outside allSubjects (shouldn't normally happen).
+    if (!targetSubjectIds.includes(subjectId) && !alreadyHasName.has(subjectId)) targetSubjectIds.push(subjectId);
+
+    const createdColumns = await Promise.all(
+      targetSubjectIds.map((sid) =>
+        academicDb().marksheetExamColumn.create({
+          data: {
+            marksheetId,
+            subjectId: sid,
+            institutionId,
+            name,
+            maxMarks,
+            examDate: examDate ? new Date(examDate) : null,
+            order: (maxOrderBySubject.get(sid) ?? -1) + 1,
+            createdByTeacherId: teacherId,
+          },
+          select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
+        })
+      )
+    );
     await markUnpublishedChanges(marksheetId);
 
-    res.status(201).json({ success: true, data: column });
+    // The subject the caller was actively viewing goes first — the frontend
+    // still expects the primary `data` field for that subject's optimistic
+    // update, with the full fan-out list alongside for the others.
+    const primary = createdColumns.find((c) => c.subjectId === subjectId) ?? createdColumns[0];
+    res.status(201).json({ success: true, data: primary, allCreated: createdColumns });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };
     if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
@@ -743,18 +821,34 @@ export async function deleteColumn(
 
     const column = await academicDb().marksheetExamColumn.findFirst({
       where: { id: colId, marksheetId, institutionId },
-      select: { id: true, subjectId: true, marksheet: { select: { divisionId: true } } },
+      select: { id: true, subjectId: true, name: true, marksheet: { select: { divisionId: true } } },
     });
     if (!column) { res.status(404).json({ success: false, error: "Column not found" }); return; }
 
     // Structure is class-teacher-only.
     await assertClassTeacher(teacherId, column.marksheet.divisionId, institutionId);
 
+    // This exam column was fanned out to every subject when it was created
+    // (see addColumn) — deleting it under one subject should remove the same
+    // exam from all of them, not leave orphaned copies sitting in the other
+    // subjects. Match by name within this marksheet (case-insensitive), same
+    // key addColumn itself uses to avoid double-creating.
+    const siblings = await academicDb().marksheetExamColumn.findMany({
+      where: { marksheetId, institutionId },
+      select: { id: true, subjectId: true, name: true },
+    });
+    const toDeleteIds = siblings
+      .filter((c) => c.name.trim().toLowerCase() === column.name.trim().toLowerCase())
+      .map((c) => c.id);
+    const deletedSubjectIds = siblings
+      .filter((c) => toDeleteIds.includes(c.id))
+      .map((c) => c.subjectId);
+
     // Cascade deletes scores via onDelete: Cascade on MarksheetScore
-    await academicDb().marksheetExamColumn.delete({ where: { id: colId } });
+    await academicDb().marksheetExamColumn.deleteMany({ where: { id: { in: toDeleteIds } } });
     await markUnpublishedChanges(marksheetId);
 
-    res.json({ success: true });
+    res.json({ success: true, deletedColumnIds: toDeleteIds, deletedSubjectIds });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };
     if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
@@ -786,17 +880,44 @@ export async function reorderColumns(
 
     const { orderedIds } = reorderColumnsSchema.parse(req.body);
 
+    // Exam columns are fanned out across every subject when created/deleted
+    // (see addColumn/deleteColumn) so the same exam always lines up — drag
+    // reordering one subject's column list should move the SAME exam to the
+    // same position in every other subject too, not just this one. Match by
+    // name (the same key addColumn/deleteColumn use) since a shared "exam
+    // group" concept doesn't exist as its own row in the schema.
+    const targetCols = await academicDb().marksheetExamColumn.findMany({
+      where: { id: { in: orderedIds }, marksheetId, subjectId, institutionId },
+      select: { id: true, name: true },
+    });
+    const nameById = new Map(targetCols.map((c) => [c.id, c.name]));
+
+    const allMarksheetCols = await academicDb().marksheetExamColumn.findMany({
+      where: { marksheetId, institutionId },
+      select: { id: true, subjectId: true, name: true },
+    });
+
+    const updates: { id: string; subjectId: string; order: number }[] = [];
+    orderedIds.forEach((colId, idx) => {
+      const name = nameById.get(colId);
+      if (name === undefined) return;
+      const key = name.trim().toLowerCase();
+      for (const c of allMarksheetCols) {
+        if (c.name.trim().toLowerCase() === key) updates.push({ id: c.id, subjectId: c.subjectId, order: idx });
+      }
+    });
+
     await prisma.$transaction(
-      orderedIds.map((colId, idx) =>
+      updates.map((u) =>
         academicDb().marksheetExamColumn.updateMany({
-          where: { id: colId, marksheetId, subjectId, institutionId },
-          data: { order: idx },
+          where: { id: u.id, marksheetId, institutionId },
+          data: { order: u.order },
         })
       )
     );
     await markUnpublishedChanges(marksheetId);
 
-    res.json({ success: true });
+    res.json({ success: true, updated: updates });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };
     if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
@@ -1291,7 +1412,8 @@ export async function getDivisionMarksheet(
       return;
     }
 
-    const data = await fetchMarksheetFull(marksheet.id, institutionId, teacherId, isClassTeacher, mySubjectIds);
+    const publishedOnly = req.query.publishedOnly === "1";
+    const data = await fetchMarksheetFull(marksheet.id, institutionId, teacherId, isClassTeacher, mySubjectIds, publishedOnly);
     res.json({ success: true, data });
   } catch (err: unknown) {
     const e = err as { status?: number; message?: string };
@@ -1662,6 +1784,7 @@ export async function publishMarksheet(
     const [examColumns, scores, gradedSubjects, gradedScores, remarks] = await Promise.all([
       academicDb().marksheetExamColumn.findMany({
         where: { marksheetId, institutionId },
+        orderBy: [{ subjectId: "asc" }, { order: "asc" }],
         select: { id: true, subjectId: true, name: true, maxMarks: true, examDate: true, order: true },
       }),
       academicDb().marksheetScore.findMany({
@@ -1670,6 +1793,7 @@ export async function publishMarksheet(
       }),
       academicDb().marksheetGradedSubject.findMany({
         where: { marksheetId, institutionId },
+        orderBy: { order: "asc" },
         select: { id: true, name: true, order: true },
       }),
       academicDb().marksheetGradedScore.findMany({

@@ -84,12 +84,19 @@ export async function adminGetDivisionMarksheet(
       return;
     }
 
-    const [ms, examColumns, scores, gradedSubjects, gradedScores, remarks, students] = await Promise.all([
+    // Read-only report-card VIEWS (admin "View Report Card" for a single
+    // student) pass this so live, not-yet-republished score edits stay
+    // invisible — same "frozen at publish time" guarantee the student's own
+    // dashboard already gets. The score grid's normal use (viewing the whole
+    // class live) keeps reading live tables, so this defaults to off.
+    const publishedOnly = req.query.publishedOnly === "1";
+
+    const [ms, examColumnsLive, scoresLive, gradedSubjectsLive, gradedScoresLive, remarksLive, students] = await Promise.all([
       academicDb().marksheet.findUnique({
         where: { id: marksheet.id },
         select: {
           id: true, academicYear: true, status: true, shareToken: true, gradedSectionTitle: true, gradeScale: true,
-          hasUnpublishedChanges: true,
+          hasUnpublishedChanges: true, publishedSnapshot: true,
           subjectConfigs: { select: { subjectId: true, passingMarks: true, gradeScale: true } },
         },
       }),
@@ -120,10 +127,41 @@ export async function adminGetDivisionMarksheet(
         orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
       }),
     ]);
+
+    if (publishedOnly && ms?.status !== "PUBLISHED") {
+      // Nothing frozen to show yet — caller (report-card view) falls back to
+      // its own per-student summary source, same as "not published" elsewhere.
+      res.status(404).json({ success: false, error: "Marksheet not published yet" });
+      return;
+    }
+
+    const snap = publishedOnly
+      ? (ms?.publishedSnapshot as {
+          examColumns: { id: string; subjectId: string; name: string; maxMarks: number; examDate: string | null; order: number }[];
+          scores: { studentId: string; examColumnId: string; score: number | null; isAbsent: boolean }[];
+          gradedSubjects: { id: string; name: string; order: number }[];
+          gradedScores: { gradedSubjectId: string; studentId: string; term1Grade: string | null; term2Grade: string | null }[];
+          remarks: { studentId: string; conduct: string | null; remarks: string | null }[];
+        } | null)
+      : null;
+
+    // publishedOnly with no snapshot at all (marksheet published before the
+    // snapshot feature existed) — fall back to live tables rather than
+    // showing nothing, same accommodation studentMarksheet.service.ts makes.
+    // The snapshot's own array order isn't guaranteed to match the teacher's
+    // actual drag-reorder/add sequence (publishMarksheet's capture query has
+    // no orderBy) — sort by the stored `order` field explicitly, same as the
+    // live-table queries above already do via `orderBy: [...,{order:"asc"}]`.
+    const examColumns = snap ? [...snap.examColumns].sort((a, b) => a.order - b.order) : examColumnsLive;
+    const scores = snap ? snap.scores : scoresLive;
+    const gradedSubjects = snap ? [...snap.gradedSubjects].sort((a, b) => a.order - b.order) : gradedSubjectsLive;
+    const gradedScores = snap ? snap.gradedScores : gradedScoresLive;
+    const remarks = snap ? snap.remarks : remarksLive;
+
     const detailStudentUsers = await resolveUsers(students.map((s) => s.userId), { id: true, name: true });
     const signedAvatarMap = await generateSignedAvatarUrlsBatch(students.map((s) => s.avatarUrl));
 
-    const columnsBySubject: Record<string, typeof examColumns> = {};
+    const columnsBySubject: Record<string, (typeof examColumns)[number][]> = {};
     for (const col of examColumns) {
       if (!columnsBySubject[col.subjectId]) columnsBySubject[col.subjectId] = [];
       columnsBySubject[col.subjectId].push(col);

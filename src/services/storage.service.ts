@@ -314,6 +314,11 @@ export async function uploadAttachmentToR2(
     contentType:  string;
     institutionId: string;
     area: string; // e.g. "staffroom/posts" | "staffroom/dms" | "feed" | "classes"
+    // Blackboard's teaching-material storage has no size ceiling — teachers
+    // load full lecture PDFs/decks that regularly exceed the 10/15 MB caps
+    // meant for chat-style attachments (staffroom posts, DMs, feed). Every
+    // other caller keeps the normal per-category limit below.
+    skipSizeLimit?: boolean;
   }
 ): Promise<{ path: string; publicUrl: string; attachmentType: AttachmentType }> {
   if (!R2_BUCKET || !R2_PUBLIC_URL) {
@@ -327,7 +332,7 @@ export async function uploadAttachmentToR2(
   const category = getAttachmentCategory(options.contentType);
   const limit    = SIZE_LIMITS[category];
 
-  if (file.length > limit) {
+  if (!options.skipSizeLimit && file.length > limit) {
     throw new BadRequestError(
       `${category === "image" ? "Image" : category === "video" ? "Video" : category === "pdf" ? "PDF" : "File"} must be ${SIZE_LABELS[category]} or smaller`
     );

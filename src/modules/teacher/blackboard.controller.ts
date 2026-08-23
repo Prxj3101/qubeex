@@ -55,7 +55,7 @@ async function checkTokenPool(institutionId: string): Promise<void> {
 
 export const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 25 * 1024 * 1024, files: 1 },
+  limits: { files: 1 },
 });
 
 const ALLOWED_MIMETYPES = new Set([
@@ -209,6 +209,7 @@ export const uploadFile = async (
       contentType: file.mimetype,
       institutionId,
       area: "blackboard",
+      skipSizeLimit: true,
     });
 
     const r2Key = r2KeyFromUrl(result.publicUrl);

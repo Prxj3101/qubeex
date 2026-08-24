@@ -292,18 +292,8 @@ model Subscription {
   startDate DateTime? // null = trial created but not yet activated
   endDate   DateTime?
 
-  // Legacy commitment-plan fields — kept to preserve existing data, not
-  // actively used by any current feature.
-  commitmentEndDate DateTime?
-  planOption        PlanOption @default(NORMAL)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-enum PlanOption {
-  NORMAL
-  COMMITTED
 }
 
 model Bill {

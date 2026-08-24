@@ -4,7 +4,7 @@ import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError } from "../../utils/errors";
 import { redis, isRedisReady } from "../../utils/redis";
-import { getEffectiveRate, getMarginalBill, PLAN_AI_TOKENS } from "../../services/billing.service";
+import { getEffectiveRate, getMarginalBill, getBillingReferenceDate, prorateForMonth, PLAN_AI_TOKENS } from "../../services/billing.service";
 import { getInstitutionStorageBytes } from "../../services/storage.service";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -129,7 +129,15 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
     const billedUsers = Math.max(200, userCount);
     const planOption = subscription?.planOption ?? "NORMAL";
     const perUserRate = isTrial ? 0 : getEffectiveRate(planName as "BASIC" | "PRO", userCount, planOption);
-    const estMonthlyBill = isTrial ? 0 : getMarginalBill(planName as "BASIC" | "PRO", userCount, planOption);
+    // "Est. Bill (this month)" must match what generateMonthlyBills will actually
+    // charge — prorated for mid-month activation/reactivation, same reference
+    // date and formula reused from the real billing run.
+    const billingReferenceDate = getBillingReferenceDate(
+      subscription?.activationDate ?? null,
+      subscription?.lastResumedAt ?? null
+    );
+    const fullMonthBill = isTrial ? 0 : getMarginalBill(planName as "BASIC" | "PRO", userCount, planOption);
+    const estMonthlyBill = isTrial ? 0 : prorateForMonth(fullMonthBill, new Date(), billingReferenceDate);
 
     // ── AI token limit ──
     // Derived from the plan (+ any active extraAiTokens addon) — Redis only
@@ -203,6 +211,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
           perUserRate,
           billedUsers,
           estMonthlyBill,
+          planOption,
           usage: {
             users: { used: userCount, limit: userLimit },
             storage: { used: storageUsedMb, limit: storageLimit },

@@ -280,6 +280,12 @@ model Subscription {
   activationDate  DateTime? // billing anchor — set when plan transitions from TRIAL to ACTIVE
   pausedAt        DateTime? // set when a NORMAL-plan institution is voluntarily deactivated
   pauseMonthsUsed Int       @default(0) // cumulative months spent deactivated (reporting)
+  // Set whenever the subscription returns to ACTIVE from PAUSED/LOCKED/EXPIRED
+  // (never on the original TRIAL->ACTIVE activation, which uses activationDate
+  // instead). Lets billing prorate the remainder of the month the institution
+  // was actually reactivated in, instead of billing the full month for time
+  // they were inaccessible.
+  lastResumedAt DateTime?
   addons          Json?
 
   startDate DateTime? // null = trial created but not yet activated

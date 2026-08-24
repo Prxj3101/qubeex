@@ -58,6 +58,7 @@ type FeatureAddon = {
   active?: boolean;
   billingCycle?: BillingCycle;
   amount?: number | null;
+  activatedAt?: string; // first month it's billed for is prorated from this date
 };
 
 type SmartBoardAddon = FeatureAddon & {
@@ -77,6 +78,7 @@ type AiTokenAddon = {
   active?: boolean;
   tokensPerMonth?: number;
   monthlyAmount?: number;
+  activatedAt?: string; // first month it's billed for is prorated from this date
 };
 
 type SubscriptionAddons = {
@@ -138,10 +140,29 @@ const getDaysInMonth = (date: Date) =>
 const isSameBillingMonth = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
 
-const getActiveDaysForMonth = (billingDate: Date, activationDate: Date | null): number => {
+// Single reused proration primitive — every billing flow (base plan, addons,
+// mid-month reactivation) counts prorated days this same way: if the
+// reference date falls in the billing month, bill from that day through
+// month-end; otherwise the full month applies (steady-state).
+const getActiveDaysForMonth = (billingDate: Date, referenceDate: Date | null): number => {
   const daysInMonth = getDaysInMonth(billingDate);
-  if (!activationDate || !isSameBillingMonth(billingDate, activationDate)) return daysInMonth;
-  return daysInMonth - activationDate.getDate() + 1;
+  if (!referenceDate || !isSameBillingMonth(billingDate, referenceDate)) return daysInMonth;
+  return daysInMonth - referenceDate.getDate() + 1;
+};
+
+/** Prorates a full-month amount down to the billable days remaining, given a reference date (activation/reactivation/addon-start). */
+export const prorateForMonth = (fullMonthAmount: number, billingDate: Date, referenceDate: Date | null): number => {
+  const daysInMonth = getDaysInMonth(billingDate);
+  const activeDays = getActiveDaysForMonth(billingDate, referenceDate);
+  return Math.round((fullMonthAmount / daysInMonth) * activeDays);
+};
+
+/** The date proration should count from for a subscription's base-plan bill this month:
+ *  whichever is later of the original activation or a mid-month reactivation. */
+export const getBillingReferenceDate = (activationDate: Date | null, lastResumedAt: Date | null): Date | null => {
+  if (!activationDate) return lastResumedAt;
+  if (!lastResumedAt) return activationDate;
+  return lastResumedAt > activationDate ? lastResumedAt : activationDate;
 };
 
 const normalizeAddons = (addons: unknown): SubscriptionAddons => {
@@ -214,11 +235,16 @@ const getAddonItems = (addons: SubscriptionAddons, billingDate: Date): { items: 
       }
     }
 
-    const amount = Number(addon.amount ?? 0);
+    const fullAmount = Number(addon.amount ?? 0);
+    if (fullAmount <= 0) continue;
+    const activatedAt = addon.activatedAt ? new Date(addon.activatedAt) : null;
+    const amount = prorateForMonth(fullAmount, billingDate, activatedAt);
     if (amount <= 0) continue;
     items.push({
       label: ADDON_LABELS[key],
-      desc: `${addon.billingCycle ?? "MONTHLY"} addon charge`,
+      desc: activatedAt && isSameBillingMonth(billingDate, activatedAt)
+        ? `${addon.billingCycle ?? "MONTHLY"} addon charge (prorated, activated ${activatedAt.toDateString()})`
+        : `${addon.billingCycle ?? "MONTHLY"} addon charge`,
       amount,
       type: "addon",
     });
@@ -238,7 +264,10 @@ const getAddonItems = (addons: SubscriptionAddons, billingDate: Date): { items: 
 
   for (const tokenAddon of addons.extraAiTokens ?? []) {
     if (!tokenAddon.active) continue;
-    const amount = Number(tokenAddon.monthlyAmount ?? 0);
+    const fullTokenAmount = Number(tokenAddon.monthlyAmount ?? 0);
+    if (fullTokenAmount <= 0) continue;
+    const tokenActivatedAt = tokenAddon.activatedAt ? new Date(tokenAddon.activatedAt) : null;
+    const amount = prorateForMonth(fullTokenAmount, billingDate, tokenActivatedAt);
     if (amount <= 0) continue;
     items.push({
       label: "Extra AI Tokens Add-On",
@@ -295,8 +324,9 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
     const billedUsers = Math.max(200, userSnapshot);
     const fullMonthAmount = getMarginalBill(planName, userSnapshot, sub.planOption);
     const effectiveRate = getEffectiveRate(planName, userSnapshot, sub.planOption);
-    const activeDays = getActiveDaysForMonth(billingDate, sub.activationDate);
-    const baseAmount = Math.round((fullMonthAmount / daysInMonth) * activeDays);
+    const billingReferenceDate = getBillingReferenceDate(sub.activationDate, sub.lastResumedAt);
+    const activeDays = getActiveDaysForMonth(billingDate, billingReferenceDate);
+    const baseAmount = prorateForMonth(fullMonthAmount, billingDate, billingReferenceDate);
 
     const addons = normalizeAddons(sub.addons);
     const { items: addonItems, updatedAddons } = getAddonItems(addons, billingDate);
@@ -473,8 +503,8 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
   const proBill = getMarginalBill("PRO", actualUsers, planOption);
   const billDifference = Math.max(0, proBill - basicBill);
   const daysInMonth = getDaysInMonth(upgradeDate);
-  const remainingDays = daysInMonth - upgradeDate.getDate() + 1;
-  const prorationAmount = Math.round((billDifference / daysInMonth) * remainingDays);
+  const remainingDays = getActiveDaysForMonth(upgradeDate, upgradeDate);
+  const prorationAmount = prorateForMonth(billDifference, upgradeDate, upgradeDate);
   const upgradeFixedCharge = 5000;
   const baseAmount = prorationAmount;
   const totalAmount = prorationAmount + upgradeFixedCharge;
@@ -581,7 +611,7 @@ export const markBillPaid = async (
     await prisma.$transaction([
       prisma.subscription.update({
         where: { institutionId: bill.institutionId },
-        data: { status: "ACTIVE", paymentStatus: "PAID" },
+        data: { status: "ACTIVE", paymentStatus: "PAID", lastResumedAt: new Date() },
       }),
       prisma.institution.update({
         where: { id: bill.institutionId },

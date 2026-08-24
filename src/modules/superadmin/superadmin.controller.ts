@@ -20,6 +20,7 @@ import {
   updatePlanSchema,
   updateFeaturesSchema,
   activatePlanSchema,
+  changePlanOptionSchema,
   broadcastNotificationSchema,
   updateTicketStatusSchema,
   ticketReplySchema,
@@ -406,6 +407,25 @@ export const updateInstitutionPlan = async (
     const result = await service.updateInstitutionPlan(
       req.params.id as string,
       data,
+      req.user?.userId,
+      req.user?.role
+    );
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePlanOption = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { planOption } = changePlanOptionSchema.parse(req.body);
+    const result = await service.changePlanOption(
+      req.params.id as string,
+      planOption,
       req.user?.userId,
       req.user?.role
     );

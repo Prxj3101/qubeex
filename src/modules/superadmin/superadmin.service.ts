@@ -661,10 +661,12 @@ export const toggleInstitutionStatus = async (
         data: { status: "TRIAL", trialOutcome: null },
       });
     }
-    // Paid plans return to ACTIVE; clear the churned outcome.
+    // Paid plans return to ACTIVE; clear the churned outcome. lastResumedAt
+    // lets the next monthly bill prorate for the days they were actually
+    // reactivated, instead of billing the full month.
     return prisma.subscription.update({
       where: { institutionId: id },
-      data: { status: "ACTIVE", trialOutcome: null },
+      data: { status: "ACTIVE", trialOutcome: null, lastResumedAt: new Date() },
     });
   };
 
@@ -702,7 +704,7 @@ export const toggleInstitutionStatus = async (
       );
       return prisma.subscription.update({
         where: { institutionId: id },
-        data: { status: "ACTIVE", pausedAt: null, pauseMonthsUsed: { increment: monthsPaused } },
+        data: { status: "ACTIVE", pausedAt: null, pauseMonthsUsed: { increment: monthsPaused }, lastResumedAt: new Date() },
       });
     }
     return null;
@@ -1357,6 +1359,54 @@ export const activateInstitutionPlan = async (
   return subscription;
 };
 
+// Switches an already-active subscription's billing mode (Normal <-> Committed)
+// without touching activationDate, billing history, or addons — unlike
+// activateInstitutionPlan, this is not a (re-)activation. The 12-month
+// commitment starts from the day the institution actually commits, not
+// retroactively from their original activation date.
+export const changePlanOption = async (
+  id: string,
+  planOption: "NORMAL" | "COMMITTED",
+  actorId?: string,
+  actorRole?: string
+) => {
+  const institution = await prisma.institution.findUnique({
+    where: { id },
+    include: { subscription: true },
+  });
+  if (!institution) throw new NotFoundError("Institution not found");
+  const sub = institution.subscription;
+  if (!sub) throw new NotFoundError("No subscription found for this institution");
+  if (sub.status === "TRIAL") {
+    throw new BadRequestError("Institution is still on trial — activate a paid plan first.");
+  }
+
+  if (sub.planOption === planOption) {
+    return sub;
+  }
+
+  const commitmentEndDate = planOption === "COMMITTED"
+    ? new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate())
+    : null;
+
+  const updated = await prisma.subscription.update({
+    where: { institutionId: id },
+    data: { planOption, commitmentEndDate },
+  });
+
+  logAudit("PLAN_OPTION_CHANGED", {
+    userId: actorId,
+    actorRole,
+    institutionId: id,
+    category: "SUPERADMIN_ACTION",
+    severity: "INFO",
+    details: `${institution.name} switched from ${sub.planOption} to ${planOption} billing`,
+    metadata: { from: sub.planOption, to: planOption, commitmentEndDate },
+  });
+
+  return updated;
+};
+
 export const updateInstitutionFeatures = async (
   id: string,
   features: Record<string, boolean>
@@ -1962,12 +2012,33 @@ export const updateAddons = async (id: string, incoming: AddonUpdate, actorId?: 
 
   const merged: Record<string, unknown> = { ...existing };
 
+  // The backend — not the frontend — decides activatedAt: a true
+  // inactive/zero-amount -> active/priced transition stamps "now" so the
+  // first bill can be prorated for the remaining days this month; a routine
+  // re-save of an already-active addon preserves its original activatedAt so
+  // proration doesn't re-trigger on every unrelated edit.
+  const stampActivation = (
+    existingAddon: unknown,
+    incomingAddon: Record<string, unknown>
+  ): Record<string, unknown> => {
+    const wasActive = !!(existingAddon as { active?: boolean; amount?: number } | undefined)?.active
+      && Number((existingAddon as { amount?: number } | undefined)?.amount ?? 0) > 0;
+    const isNowActive = !!incomingAddon.active && Number(incomingAddon.amount ?? 0) > 0;
+    if (!isNowActive) {
+      return { ...incomingAddon, activatedAt: undefined };
+    }
+    if (wasActive) {
+      return { ...incomingAddon, activatedAt: (existingAddon as { activatedAt?: string }).activatedAt };
+    }
+    return { ...incomingAddon, activatedAt: new Date().toISOString() };
+  };
+
   if (incoming.smartBoardAi !== undefined)
-    merged.smartBoardAi = incoming.smartBoardAi;
+    merged.smartBoardAi = stampActivation(existing.smartBoardAi, incoming.smartBoardAi);
   if (incoming.performanceInsightsAndAnalytics !== undefined)
-    merged.performanceInsightsAndAnalytics = incoming.performanceInsightsAndAnalytics;
+    merged.performanceInsightsAndAnalytics = stampActivation(existing.performanceInsightsAndAnalytics, incoming.performanceInsightsAndAnalytics);
   if (incoming.timetableAutoScheduling !== undefined)
-    merged.timetableAutoScheduling = incoming.timetableAutoScheduling;
+    merged.timetableAutoScheduling = stampActivation(existing.timetableAutoScheduling, incoming.timetableAutoScheduling);
 
   if (incoming.aiTokenAddon !== undefined) {
     if (!incoming.aiTokenAddon.active) {
@@ -1975,7 +2046,11 @@ export const updateAddons = async (id: string, incoming: AddonUpdate, actorId?: 
     } else {
       const { tokensPerMonth, pricePerMillion } = incoming.aiTokenAddon;
       const monthlyAmount = Math.round((tokensPerMonth / 1_000_000) * pricePerMillion);
-      merged.extraAiTokens = [{ active: true, tokensPerMonth, monthlyAmount }];
+      const existingToken = Array.isArray(existing.extraAiTokens)
+        ? (existing.extraAiTokens[0] as { active?: boolean; activatedAt?: string } | undefined)
+        : undefined;
+      const activatedAt = existingToken?.active ? existingToken.activatedAt : new Date().toISOString();
+      merged.extraAiTokens = [{ active: true, tokensPerMonth, monthlyAmount, activatedAt }];
     }
   }
 

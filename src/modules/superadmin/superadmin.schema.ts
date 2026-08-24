@@ -122,6 +122,10 @@ export const activatePlanSchema = z.object({
   planOption: z.enum(["NORMAL", "COMMITTED"]).default("NORMAL"),
 });
 
+export const changePlanOptionSchema = z.object({
+  planOption: z.enum(["NORMAL", "COMMITTED"]),
+});
+
 // ─── Notifications ────────────────────────────────────────────────────────────
 
 export const broadcastNotificationSchema = z.object({

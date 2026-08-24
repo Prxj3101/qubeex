@@ -31,6 +31,7 @@ import {
   getInstitutionPlanDashboard,
   updateInstitutionPlan,
   activateInstitutionPlan,
+  changePlanOption,
   updateInstitutionFeatures,
   extendTrial,
   markTrialChurned,
@@ -104,6 +105,7 @@ router.get("/institutions/:id/plan",                   SA, getInstitutionPlan);
 router.get("/institutions/:id/plan/dashboard",         SA, getInstitutionPlanDashboard);
 router.patch("/institutions/:id/plan",                 SA, updateInstitutionPlan);
 router.post("/institutions/:id/activate",              SA, activateInstitutionPlan);
+router.patch("/institutions/:id/plan-option",          SA, changePlanOption);
 router.patch("/institutions/:id/features",             SA, updateInstitutionFeatures);
 router.get("/institutions/:id/trial/usage",            SA, getTrialUsage);
 router.get("/institutions/:id/ai-usage",                SA, getInstitutionAiUsage);

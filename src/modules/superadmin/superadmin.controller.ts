@@ -435,13 +435,14 @@ export const activateInstitutionPlan = async (
   next: NextFunction
 ) => {
   try {
-    const { plan, discountPct, paymentReceived } = activatePlanSchema.parse(req.body);
+    const { plan, discountPct, paymentReceived, planOption } = activatePlanSchema.parse(req.body);
     const result = await service.activateInstitutionPlan(
       req.params.id as string,
       plan,
       discountPct,
       paymentReceived,
-      req.user?.userId
+      req.user?.userId,
+      planOption
     );
     res.json({ success: true, data: result });
   } catch (error) {

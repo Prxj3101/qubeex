@@ -119,6 +119,7 @@ export const activatePlanSchema = z.object({
     .boolean()
     .refine((value) => value === true, "License payment must be marked as received to activate plan"),
   discountPct: z.number().min(0).max(100).default(0),
+  planOption: z.enum(["NORMAL", "COMMITTED"]).default("NORMAL"),
 });
 
 // ─── Notifications ────────────────────────────────────────────────────────────

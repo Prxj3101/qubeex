@@ -641,8 +641,9 @@ export const toggleInstitutionStatus = async (
   if (!existing) throw new NotFoundError("Institution not found");
 
   // Reactivating must also lift any subscription-level block (LOCKED after a churn,
-  // EXPIRED after auto-deactivation) — otherwise users still can't log in because the
-  // login gate and access middleware block on subscription status.
+  // EXPIRED after auto-deactivation, PAUSED after a voluntary Normal-plan
+  // deactivation) — otherwise users still can't log in because the login gate
+  // and access middleware block on subscription status.
   const sub = existing.subscription;
   const unlockSubscription =
     status === "ACTIVE" &&
@@ -667,7 +668,47 @@ export const toggleInstitutionStatus = async (
     });
   };
 
-  const subscriptionUnlock = buildSubscriptionUnlock();
+  // Deactivate: only NORMAL-plan institutions actually pause billing (their
+  // monthly bill generation is skipped while Subscription.status !== ACTIVE).
+  // COMMITTED institutions stay billed through deactivation — they're locked
+  // into the term regardless of access state — so their Subscription.status
+  // is left untouched here; only Institution.status blocks login.
+  const shouldPauseBilling =
+    status === "SUSPENDED" &&
+    sub != null &&
+    sub.status === "ACTIVE" &&
+    sub.planOption === "NORMAL";
+
+  // Reactivate from a voluntary Normal-plan pause: resume the existing plan/
+  // billing config untouched, just lift the block. Track cumulative paused
+  // months for reporting.
+  const shouldResumeFromPause =
+    status === "ACTIVE" &&
+    sub != null &&
+    sub.status === "PAUSED" &&
+    sub.pausedAt != null;
+
+  const buildPauseOrResume = () => {
+    if (shouldPauseBilling) {
+      return prisma.subscription.update({
+        where: { institutionId: id },
+        data: { status: "PAUSED", pausedAt: new Date() },
+      });
+    }
+    if (shouldResumeFromPause) {
+      const monthsPaused = Math.max(
+        1,
+        Math.ceil((Date.now() - sub!.pausedAt!.getTime()) / (30 * 24 * 60 * 60 * 1000))
+      );
+      return prisma.subscription.update({
+        where: { institutionId: id },
+        data: { status: "ACTIVE", pausedAt: null, pauseMonthsUsed: { increment: monthsPaused } },
+      });
+    }
+    return null;
+  };
+
+  const subscriptionUnlock = buildSubscriptionUnlock() ?? buildPauseOrResume();
   const [result] = await prisma.$transaction([
     prisma.institution.update({ where: { id }, data: { status } }),
     ...(subscriptionUnlock ? [subscriptionUnlock] : []),
@@ -687,8 +728,12 @@ export const toggleInstitutionStatus = async (
     institutionId: id,
     category: "SUPERADMIN_ACTION",
     severity: "WARNING",
-    details: `${existing.name} status changed to ${status}`,
-    metadata: { newStatus: status },
+    details: shouldPauseBilling
+      ? `${existing.name} deactivated (Normal plan — billing paused)`
+      : shouldResumeFromPause
+      ? `${existing.name} reactivated (billing resumed on existing plan)`
+      : `${existing.name} status changed to ${status}`,
+    metadata: { newStatus: status, billingPaused: shouldPauseBilling, billingResumed: shouldResumeFromPause },
   });
 
   return result;
@@ -1207,7 +1252,8 @@ export const activateInstitutionPlan = async (
   planName: PlanName,
   discountPct: number,
   paymentReceived: boolean,
-  actorId?: string
+  actorId?: string,
+  planOption: "NORMAL" | "COMMITTED" = "NORMAL"
 ) => {
   const institution = await prisma.institution.findUnique({
     where: { id },
@@ -1230,6 +1276,9 @@ export const activateInstitutionPlan = async (
   const existingAddons = (institution.subscription.addons ?? {}) as Record<string, unknown>;
   const smartBoardAddon = buildSmartBoardFreeAddon(activationDate);
   const features = getFeatureFlagsForPlan(planName);
+  const commitmentEndDate = planOption === "COMMITTED"
+    ? new Date(activationDate.getFullYear() + 1, activationDate.getMonth(), activationDate.getDate())
+    : null;
 
   const subscription = await prisma.subscription.update({
     where: { institutionId: id },
@@ -1242,6 +1291,8 @@ export const activateInstitutionPlan = async (
       trialOutcome: "ACTIVATED",
       endDate: null,
       features,
+      planOption,
+      commitmentEndDate,
       addons: {
         ...existingAddons,
         [FIRST_YEAR_FREE_ADDON_KEY]: smartBoardAddon,

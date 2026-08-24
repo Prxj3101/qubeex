@@ -51,6 +51,15 @@ enum SubscriptionStatus {
   LOCKED
 }
 
+// NORMAL: pay-as-you-go, can be voluntarily deactivated (no billing while off).
+// COMMITTED: fixed term (12 months) at a discounted rate — cannot voluntarily
+// deactivate to skip billing; only non-payment triggers auto-deactivation, and
+// the commitment is still owed regardless of access state.
+enum PlanOption {
+  NORMAL
+  COMMITTED
+}
+
 enum PaymentStatus {
   PAID
   PENDING
@@ -263,9 +272,14 @@ model Subscription {
   discount      Float              @default(0)
   features      Json?
 
+  // NORMAL (pay-as-you-go, voluntary deactivation, no billing while off) vs
+  // COMMITTED (discounted rate, fixed term, billed through deactivation).
+  planOption        PlanOption @default(NORMAL)
+  commitmentEndDate DateTime? // set when planOption=COMMITTED — term end (activationDate + 12mo)
+
   activationDate  DateTime? // billing anchor — set when plan transitions from TRIAL to ACTIVE
-  pausedAt        DateTime?
-  pauseMonthsUsed Int       @default(0)
+  pausedAt        DateTime? // set when a NORMAL-plan institution is voluntarily deactivated
+  pauseMonthsUsed Int       @default(0) // cumulative months spent deactivated (reporting)
   addons          Json?
 
   startDate DateTime? // null = trial created but not yet activated

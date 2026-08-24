@@ -4,7 +4,7 @@ import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError } from "../../utils/errors";
 import { redis, isRedisReady } from "../../utils/redis";
-import { getRate, PLAN_AI_TOKENS } from "../../services/billing.service";
+import { getEffectiveRate, getMarginalBill, PLAN_AI_TOKENS } from "../../services/billing.service";
 import { getInstitutionStorageBytes } from "../../services/storage.service";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -127,8 +127,9 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
     const storageUsedMb = (await getInstitutionStorageBytes(institutionId)) / (1024 * 1024);
     const testLimit = isTrial ? 500 : 10000;      // test tracking not yet wired
     const billedUsers = Math.max(200, userCount);
-    const perUserRate = isTrial ? 0 : getRate(planName as "BASIC" | "PRO", billedUsers);
-    const estMonthlyBill = perUserRate * billedUsers;
+    const planOption = subscription?.planOption ?? "NORMAL";
+    const perUserRate = isTrial ? 0 : getEffectiveRate(planName as "BASIC" | "PRO", userCount, planOption);
+    const estMonthlyBill = isTrial ? 0 : getMarginalBill(planName as "BASIC" | "PRO", userCount, planOption);
 
     // ── AI token limit ──
     // Derived from the plan (+ any active extraAiTokens addon) — Redis only

@@ -18,6 +18,14 @@ export const PLAN_AI_TOKENS: Record<PlanName, number> = {
 // any active extraAiTokens addon. This is the single source of truth for
 // the token pool ceiling — Redis only tracks the running "used" counter,
 // never the limit itself.
+
+// Smart Board + AI is free-billing for its first year (see buildSmartBoardFreeAddon
+// in superadmin.service.ts), but its AI usage is still capped — it draws from
+// this fixed allowance on top of the plan's base pool, whether the addon is
+// still in its free period or has since been paid for. Locked addons (active:
+// false) contribute nothing.
+export const SMART_BOARD_AI_TOKEN_ALLOWANCE = 500_000;
+
 export const getAiTokenLimit = async (institutionId: string): Promise<number> => {
   const subscription = await prisma.subscription.findUnique({
     where: { institutionId },
@@ -32,8 +40,10 @@ export const getAiTokenLimit = async (institutionId: string): Promise<number> =>
   const extraAiTokens = (addons.extraAiTokens as Array<{ active?: boolean; tokensPerMonth?: number }> ?? [])
     .filter((t) => t.active)
     .reduce((sum, t) => sum + (t.tokensPerMonth ?? 0), 0);
+  const smartBoardAddon = addons.smartBoardAi as { active?: boolean } | undefined;
+  const smartBoardAiTokens = smartBoardAddon?.active ? SMART_BOARD_AI_TOKEN_ALLOWANCE : 0;
 
-  return PLAN_AI_TOKENS[planName] + extraAiTokens;
+  return PLAN_AI_TOKENS[planName] + extraAiTokens + smartBoardAiTokens;
 };
 
 
@@ -53,6 +63,7 @@ type FeatureAddon = {
 type SmartBoardAddon = FeatureAddon & {
   isInFreePeriod?: boolean;
   freeEndDate?: string;
+  lockedAt?: string; // set when the free year ends with no payment configured
 };
 
 type ExtraStorageAddon = {
@@ -76,16 +87,40 @@ type SubscriptionAddons = {
   extraAiTokens?: AiTokenAddon[];
 };
 
-const PER_USER_RATES: Record<PlanName, { min: number; max: number; rate: number }[]> = {
-  BASIC: [
-    { min: 200, max: 1499, rate: 20 },
-    { min: 1500, max: Number.POSITIVE_INFINITY, rate: 17 },
-  ],
-  PRO: [
-    { min: 200, max: 1499, rate: 25 },
-    { min: 1500, max: Number.POSITIVE_INFINITY, rate: 22 },
-  ],
-  TRIAL: [{ min: 0, max: Number.POSITIVE_INFINITY, rate: 0 }],
+type PlanOption = "NORMAL" | "COMMITTED";
+
+// Mirrors the superadmin UI's PLAN_BASE (institution-detail.constants.ts) —
+// keep these two in sync. Marginal billing: first VOLUME_THRESHOLD users at
+// baseRate, users beyond that at the lower marginalRate. COMMITTED plans get
+// COMMITTED_DISCOUNT off the resulting bill.
+const PLAN_BASE_RATES: Record<PlanName, { baseRate: number; marginalRate: number }> = {
+  BASIC: { baseRate: 29, marginalRate: 24 },
+  PRO:   { baseRate: 39, marginalRate: 33 },
+  TRIAL: { baseRate: 0,  marginalRate: 0  },
+};
+
+export const VOLUME_THRESHOLD = 1500;
+export const COMMITTED_DISCOUNT = 0.15;
+
+/** Total monthly bill for a plan/user-count/planOption — matches the frontend's getMarginalMonthlyBill exactly. */
+export const getMarginalBill = (planName: PlanName, userCount: number, planOption: PlanOption = "NORMAL"): number => {
+  const { baseRate, marginalRate } = PLAN_BASE_RATES[planName] ?? PLAN_BASE_RATES.BASIC;
+  const billableUsers = Math.max(200, userCount);
+  let bill: number;
+  if (billableUsers <= VOLUME_THRESHOLD) {
+    bill = billableUsers * baseRate;
+  } else {
+    bill = VOLUME_THRESHOLD * baseRate + (billableUsers - VOLUME_THRESHOLD) * marginalRate;
+  }
+  if (planOption === "COMMITTED") bill = Math.round(bill * (1 - COMMITTED_DISCOUNT));
+  return bill;
+};
+
+/** Effective blended per-user rate for display — matches the frontend's getEffectiveRate. */
+export const getEffectiveRate = (planName: PlanName, userCount: number, planOption: PlanOption = "NORMAL"): number => {
+  const billableUsers = Math.max(200, userCount);
+  const bill = getMarginalBill(planName, userCount, planOption);
+  return Math.round((bill / billableUsers) * 100) / 100;
 };
 
 const ADDON_LABELS: Record<keyof Pick<SubscriptionAddons, "smartBoardAi" | "performanceInsightsAndAnalytics" | "timetableAutoScheduling">, string> = {
@@ -102,11 +137,6 @@ const getDaysInMonth = (date: Date) =>
 
 const isSameBillingMonth = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
-
-export const getRate = (planName: PlanName, userCount: number): number => {
-  const tiers = PER_USER_RATES[planName] ?? PER_USER_RATES.BASIC;
-  return tiers.find((tier) => userCount >= tier.min && userCount <= tier.max)?.rate ?? tiers[0].rate;
-};
 
 const getActiveDaysForMonth = (billingDate: Date, activationDate: Date | null): number => {
   const daysInMonth = getDaysInMonth(billingDate);
@@ -154,13 +184,32 @@ const getAddonItems = (addons: SubscriptionAddons, billingDate: Date): { items: 
         continue;
       }
 
-      if (smartBoard.isInFreePeriod && freeEnd && billingDate > freeEnd) {
+      const freePeriodJustExpired = smartBoard.isInFreePeriod && freeEnd && billingDate > freeEnd;
+      if (freePeriodJustExpired) {
+        // No billingCycle/amount configured means the institution never paid to
+        // continue — lock the addon rather than silently keep it free forever.
+        const hasBeenPriced = !!smartBoard.billingCycle && Number(smartBoard.amount ?? 0) > 0;
+        if (!hasBeenPriced) {
+          updatedAddons = {
+            ...addons,
+            smartBoardAi: {
+              ...smartBoard,
+              active: false,
+              isInFreePeriod: false,
+              lockedAt: billingDate.toISOString(),
+            },
+          };
+          items.push({
+            label: ADDON_LABELS[key],
+            desc: "First-year free period ended — addon locked until reactivated with payment",
+            amount: 0,
+            type: "metadata",
+          });
+          continue;
+        }
         updatedAddons = {
           ...addons,
-          smartBoardAi: {
-            ...smartBoard,
-            isInFreePeriod: false,
-          },
+          smartBoardAi: { ...smartBoard, isInFreePeriod: false },
         };
       }
     }
@@ -244,9 +293,9 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
 
     const userSnapshot = sub.institution._count.users;
     const billedUsers = Math.max(200, userSnapshot);
-    const rate = getRate(planName, billedUsers);
+    const fullMonthAmount = getMarginalBill(planName, userSnapshot, sub.planOption);
+    const effectiveRate = getEffectiveRate(planName, userSnapshot, sub.planOption);
     const activeDays = getActiveDaysForMonth(billingDate, sub.activationDate);
-    const fullMonthAmount = billedUsers * rate;
     const baseAmount = Math.round((fullMonthAmount / daysInMonth) * activeDays);
 
     const addons = normalizeAddons(sub.addons);
@@ -260,7 +309,7 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
     const items: BillItem[] = [
       {
         label: "Monthly User Bill",
-        desc: `${billedUsers} billed users (${userSnapshot} actual snapshot) x Rs.${rate}/user x ${activeDays}/${daysInMonth} days`,
+        desc: `${billedUsers} billed users (${userSnapshot} actual snapshot, ${sub.planOption.toLowerCase()}) x Rs.${effectiveRate}/user (effective) x ${activeDays}/${daysInMonth} days`,
         amount: baseAmount,
         type: "base",
       },
@@ -315,7 +364,8 @@ export const generateMonthlyBills = async (billingDate = new Date()) => {
         billingMonth,
         userSnapshot,
         billedUsers,
-        rate,
+        effectiveRate,
+        planOption: sub.planOption,
         activeDays,
         daysInMonth,
         addonAmount,
@@ -405,6 +455,7 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
     where: { id: institutionId },
     include: {
       _count: { select: { users: true } },
+      subscription: { select: { planOption: true } },
     },
   });
   if (!institution) return null;
@@ -417,12 +468,13 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
 
   const actualUsers = institution._count.users;
   const billedUsers = Math.max(200, actualUsers);
-  const basicRate = getRate("BASIC", billedUsers);
-  const proRate = getRate("PRO", billedUsers);
-  const rateDifference = Math.max(0, proRate - basicRate);
+  const planOption = institution.subscription?.planOption ?? "NORMAL";
+  const basicBill = getMarginalBill("BASIC", actualUsers, planOption);
+  const proBill = getMarginalBill("PRO", actualUsers, planOption);
+  const billDifference = Math.max(0, proBill - basicBill);
   const daysInMonth = getDaysInMonth(upgradeDate);
   const remainingDays = daysInMonth - upgradeDate.getDate() + 1;
-  const prorationAmount = Math.round((billedUsers * rateDifference / daysInMonth) * remainingDays);
+  const prorationAmount = Math.round((billDifference / daysInMonth) * remainingDays);
   const upgradeFixedCharge = 5000;
   const baseAmount = prorationAmount;
   const totalAmount = prorationAmount + upgradeFixedCharge;
@@ -441,7 +493,7 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
       items: [
         {
           label: "Basic to Pro Rate Proration",
-          desc: `${billedUsers} billed users (${actualUsers} actual snapshot) x Rs.${rateDifference}/user difference x ${remainingDays}/${daysInMonth} days`,
+          desc: `${billedUsers} billed users (${actualUsers} actual snapshot), Rs.${billDifference} monthly bill difference (${planOption.toLowerCase()}) x ${remainingDays}/${daysInMonth} days`,
           amount: prorationAmount,
           type: "base",
         },
@@ -482,9 +534,10 @@ export const generateUpgradeProrationBill = async (institutionId: string, upgrad
       billingMonth,
       billedUsers,
       actualUsers,
-      basicRate,
-      proRate,
-      rateDifference,
+      planOption,
+      basicBill,
+      proBill,
+      billDifference,
       remainingDays,
       daysInMonth,
       prorationAmount,

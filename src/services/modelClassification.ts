@@ -11,6 +11,7 @@ export const PLATFORM_MODELS = [
   "Institution",
   "User",
   "InstitutionDbConfig",
+  "WhiteLabelConfig",
   "SubAdmin",
   "Invite",
   "Subscription",

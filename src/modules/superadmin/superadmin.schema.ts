@@ -221,3 +221,12 @@ export const updateAddonsSchema = z.object({
     })
     .strict(),
 });
+
+// ─── White-Labeling ───────────────────────────────────────────────────────────
+
+export const updateWhiteLabelSchema = z.object({
+  enabled: z.boolean().optional(),
+  brandName: z.string().trim().min(1).max(100).nullable().optional(),
+  logoUrl: z.string().url().nullable().optional(),
+  faviconUrl: z.string().url().nullable().optional(),
+}).refine((data) => Object.keys(data).length > 0, "At least one field is required");

@@ -3,6 +3,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { BadRequestError } from "../../utils/errors";
 import * as service from "./superadmin.service";
 import * as dbConfigService from "../../services/dbConfig.service";
+import * as whiteLabelService from "../../services/whiteLabel.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 
@@ -28,6 +29,7 @@ import {
   updateBillStatusSchema,
   updatePaymentSettingsSchema,
   updateAddonsSchema,
+  updateWhiteLabelSchema,
   dbConfigSchema,
 } from "./superadmin.schema";
 
@@ -764,6 +766,51 @@ export const resendBill = async (req: AuthRequest, res: Response, next: NextFunc
   try {
     const result = await service.resendBill(req.params.id as string, req.params.billId as string);
     res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WHITE-LABELING
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getWhiteLabelConfig = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const result = await whiteLabelService.getWhiteLabelConfig(req.params.id as string);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+export const updateWhiteLabelConfig = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const input = updateWhiteLabelSchema.parse(req.body);
+    const result = await whiteLabelService.updateWhiteLabelConfig(req.params.id as string, input, req.user?.userId);
+    res.json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+export const uploadWhiteLabelLogo = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+    const result = await whiteLabelService.uploadWhiteLabelLogo(
+      req.params.id as string,
+      file,
+      req.headers["content-type"] ?? "",
+      req.user?.userId
+    );
+    res.status(201).json({ success: true, data: result });
+  } catch (error) { next(error); }
+};
+
+export const uploadWhiteLabelFavicon = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const file = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+    const result = await whiteLabelService.uploadWhiteLabelFavicon(
+      req.params.id as string,
+      file,
+      req.headers["content-type"] ?? "",
+      req.user?.userId
+    );
+    res.status(201).json({ success: true, data: result });
   } catch (error) { next(error); }
 };
 

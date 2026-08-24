@@ -13,6 +13,7 @@ import teacherRoutes from "./modules/teacher/teacher.routes";
 import studentRoutes from "./modules/student/student.routes";
 import { razorpayWebhookHandler } from "./modules/webhooks/razorpay.webhook";
 import quizRoutes from "./modules/quiz/quiz.routes";
+import brandingRoutes from "./modules/branding/branding.routes";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { generalLimiter } from "./middlewares/rateLimiter.middleware";
 import { prisma } from "./utils/prisma";
@@ -72,6 +73,7 @@ app.use("/api/teacher/staffroom", teacherStaffroomRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/quiz", quizRoutes);
+app.use("/api/branding", brandingRoutes);
 app.use("/api/teacher/promotions", promotionTeacherRoutes);
 
 app.get("/", (_req, res) => {

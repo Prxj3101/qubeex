@@ -155,6 +155,7 @@ model Institution {
   users              User[]
   subscription       Subscription?
   dbConfig           InstitutionDbConfig?
+  whiteLabelConfig   WhiteLabelConfig?
   bills              Bill[]
   invites            Invite[]
   auditLogs          AuditLog[]
@@ -1738,6 +1739,25 @@ model InstitutionDbConfig {
   lastTestedAt  DateTime?
   lastError     String?
   provisionedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Pro-plan-only custom branding. Config is preserved when disabled (re-enabling
+// restores it) — eligibility (Pro + ACTIVE subscription) is re-checked every
+// time branding is served, not just when this is toggled on, so a lapsed Pro
+// subscription silently falls back to QubeEx branding without needing an
+// explicit disable.
+model WhiteLabelConfig {
+  id            String      @id @default(uuid())
+  institutionId String      @unique
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  enabled   Boolean @default(false)
+  brandName String?
+  logoUrl   String?
+  faviconUrl String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

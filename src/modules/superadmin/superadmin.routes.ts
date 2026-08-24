@@ -63,6 +63,10 @@ import {
   updatePaymentSettings,
   // Addons
   updateAddons,
+  getWhiteLabelConfig,
+  updateWhiteLabelConfig,
+  uploadWhiteLabelLogo,
+  uploadWhiteLabelFavicon,
   resendBill,
   // Upgrade / Downgrade
   upgradePlan,
@@ -122,6 +126,12 @@ router.post("/institutions/:id/bills/:billId/resend",       SA, resendBill);
 
 // ─── Addons ───────────────────────────────────────────────────────────────────
 router.patch("/institutions/:id/addons",                    SA, updateAddons);
+
+// ─── White-Labeling ───────────────────────────────────────────────────────────
+router.get("/institutions/:id/white-label",                 SA, getWhiteLabelConfig);
+router.patch("/institutions/:id/white-label",                SA, updateWhiteLabelConfig);
+router.post("/institutions/:id/white-label/logo",            SA, raw({ type: ["image/png", "image/jpeg", "image/webp"], limit: "2mb" }), uploadWhiteLabelLogo);
+router.post("/institutions/:id/white-label/favicon",         SA, raw({ type: ["image/png", "image/jpeg", "image/webp"], limit: "2mb" }), uploadWhiteLabelFavicon);
 
 // ─── Upgrade / Downgrade ──────────────────────────────────────────────────────
 router.post("/institutions/:id/upgrade",               SA, upgradePlan);

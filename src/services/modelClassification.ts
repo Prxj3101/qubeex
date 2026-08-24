@@ -37,6 +37,8 @@ export const ACADEMIC_MODELS = [
   "Teacher",
   "TeacherNote",
   "TeacherTask",
+  "AdminNote",
+  "AdminTask",
   "Standard",
   "Division",
   "Subject",

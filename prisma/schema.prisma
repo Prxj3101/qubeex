@@ -180,6 +180,8 @@ model Institution {
   marksheets    Marksheet[]
   teacherNotes  TeacherNote[]
   teacherTasks  TeacherTask[]
+  adminNotes    AdminNote[]
+  adminTasks    AdminTask[]
   studentRemarks     StudentRemark[]
   studentFeePayments StudentFeePayment[]
   promotionBatches         PromotionBatch[]
@@ -220,6 +222,8 @@ model User {
   studentRemarksAssigned  StudentRemark[] @relation("StudentRemarkAssignee")
   studentRemarksReviewed  StudentRemark[] @relation("StudentRemarkReviewer")
   aiUsageEvents           AiUsageEvent[]
+  adminNotes              AdminNote[]
+  adminTasks              AdminTask[]
 }
 
 enum TrialOutcome {
@@ -267,8 +271,18 @@ model Subscription {
   startDate DateTime? // null = trial created but not yet activated
   endDate   DateTime?
 
+  // Legacy commitment-plan fields — kept to preserve existing data, not
+  // actively used by any current feature.
+  commitmentEndDate DateTime?
+  planOption        PlanOption @default(NORMAL)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum PlanOption {
+  NORMAL
+  COMMITTED
 }
 
 model Bill {
@@ -391,6 +405,34 @@ model TeacherTask {
   updatedAt     DateTime    @updatedAt
 
   @@index([teacherId])
+}
+
+model AdminNote {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  text          String
+  color         String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+model AdminTask {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  text          String
+  done          Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([userId])
 }
 
 model SubAdmin {

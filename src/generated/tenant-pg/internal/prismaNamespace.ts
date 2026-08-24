@@ -400,6 +400,8 @@ export const ModelName = {
   Teacher: 'Teacher',
   TeacherNote: 'TeacherNote',
   TeacherTask: 'TeacherTask',
+  AdminNote: 'AdminNote',
+  AdminTask: 'AdminTask',
   Standard: 'Standard',
   Division: 'Division',
   Subject: 'Subject',
@@ -457,7 +459,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -680,6 +682,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TeacherTaskCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TeacherTaskCountAggregateOutputType> | number
+        }
+      }
+    }
+    AdminNote: {
+      payload: Prisma.$AdminNotePayload<ExtArgs>
+      fields: Prisma.AdminNoteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdminNoteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdminNoteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>
+        }
+        findFirst: {
+          args: Prisma.AdminNoteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdminNoteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>
+        }
+        findMany: {
+          args: Prisma.AdminNoteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>[]
+        }
+        create: {
+          args: Prisma.AdminNoteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>
+        }
+        createMany: {
+          args: Prisma.AdminNoteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdminNoteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>[]
+        }
+        delete: {
+          args: Prisma.AdminNoteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>
+        }
+        update: {
+          args: Prisma.AdminNoteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>
+        }
+        deleteMany: {
+          args: Prisma.AdminNoteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdminNoteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdminNoteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>[]
+        }
+        upsert: {
+          args: Prisma.AdminNoteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminNotePayload>
+        }
+        aggregate: {
+          args: Prisma.AdminNoteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdminNote>
+        }
+        groupBy: {
+          args: Prisma.AdminNoteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminNoteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdminNoteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminNoteCountAggregateOutputType> | number
+        }
+      }
+    }
+    AdminTask: {
+      payload: Prisma.$AdminTaskPayload<ExtArgs>
+      fields: Prisma.AdminTaskFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdminTaskFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdminTaskFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>
+        }
+        findFirst: {
+          args: Prisma.AdminTaskFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdminTaskFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>
+        }
+        findMany: {
+          args: Prisma.AdminTaskFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>[]
+        }
+        create: {
+          args: Prisma.AdminTaskCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>
+        }
+        createMany: {
+          args: Prisma.AdminTaskCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdminTaskCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>[]
+        }
+        delete: {
+          args: Prisma.AdminTaskDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>
+        }
+        update: {
+          args: Prisma.AdminTaskUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdminTaskDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdminTaskUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdminTaskUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdminTaskUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminTaskPayload>
+        }
+        aggregate: {
+          args: Prisma.AdminTaskAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdminTask>
+        }
+        groupBy: {
+          args: Prisma.AdminTaskGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminTaskGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdminTaskCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminTaskCountAggregateOutputType> | number
         }
       }
     }
@@ -3884,6 +4034,32 @@ export const TeacherTaskScalarFieldEnum = {
 export type TeacherTaskScalarFieldEnum = (typeof TeacherTaskScalarFieldEnum)[keyof typeof TeacherTaskScalarFieldEnum]
 
 
+export const AdminNoteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  institutionId: 'institutionId',
+  text: 'text',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdminNoteScalarFieldEnum = (typeof AdminNoteScalarFieldEnum)[keyof typeof AdminNoteScalarFieldEnum]
+
+
+export const AdminTaskScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  institutionId: 'institutionId',
+  text: 'text',
+  done: 'done',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdminTaskScalarFieldEnum = (typeof AdminTaskScalarFieldEnum)[keyof typeof AdminTaskScalarFieldEnum]
+
+
 export const StandardScalarFieldEnum = {
   id: 'id',
   institutionId: 'institutionId',
@@ -5053,6 +5229,8 @@ export type GlobalOmitConfig = {
   teacher?: Prisma.TeacherOmit
   teacherNote?: Prisma.TeacherNoteOmit
   teacherTask?: Prisma.TeacherTaskOmit
+  adminNote?: Prisma.AdminNoteOmit
+  adminTask?: Prisma.AdminTaskOmit
   standard?: Prisma.StandardOmit
   division?: Prisma.DivisionOmit
   subject?: Prisma.SubjectOmit

@@ -54,6 +54,8 @@ export const ModelName = {
   Teacher: 'Teacher',
   TeacherNote: 'TeacherNote',
   TeacherTask: 'TeacherTask',
+  AdminNote: 'AdminNote',
+  AdminTask: 'AdminTask',
   Standard: 'Standard',
   Division: 'Division',
   Subject: 'Subject',
@@ -166,6 +168,32 @@ export const TeacherTaskScalarFieldEnum = {
 } as const
 
 export type TeacherTaskScalarFieldEnum = (typeof TeacherTaskScalarFieldEnum)[keyof typeof TeacherTaskScalarFieldEnum]
+
+
+export const AdminNoteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  institutionId: 'institutionId',
+  text: 'text',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdminNoteScalarFieldEnum = (typeof AdminNoteScalarFieldEnum)[keyof typeof AdminNoteScalarFieldEnum]
+
+
+export const AdminTaskScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  institutionId: 'institutionId',
+  text: 'text',
+  done: 'done',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdminTaskScalarFieldEnum = (typeof AdminTaskScalarFieldEnum)[keyof typeof AdminTaskScalarFieldEnum]
 
 
 export const StandardScalarFieldEnum = {

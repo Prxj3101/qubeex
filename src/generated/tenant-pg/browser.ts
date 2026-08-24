@@ -33,6 +33,16 @@ export type TeacherNote = Prisma.TeacherNoteModel
  */
 export type TeacherTask = Prisma.TeacherTaskModel
 /**
+ * Model AdminNote
+ * 
+ */
+export type AdminNote = Prisma.AdminNoteModel
+/**
+ * Model AdminTask
+ * 
+ */
+export type AdminTask = Prisma.AdminTaskModel
+/**
  * Model Standard
  * 
  */

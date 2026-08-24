@@ -11,6 +11,15 @@ import { listTickets, createTicket, addTicketReply, listReviews, createReview, u
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
 import { getOverview } from "./overview.controller";
+import {
+  getNotepad,
+  createNote,
+  updateNote,
+  deleteNote,
+  createTask,
+  updateTask,
+  deleteTask,
+} from "./notepad.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, adminGetDivisionOnlineMarksheet, assignClassTeacher } from "./marksheet.controller";
 import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
 import { getAttendanceInsights, getFeeInsights, getAiUsageInsights, getUsersInsights, getTeacherAiUsage } from "./insights.controller";
@@ -120,6 +129,15 @@ router.post(
   uploadSubAdminPhoto
 );
 router.get("/overview", ...A, getOverview);
+
+// ── Notepad ───────────────────────────────────────────────────────────────────
+router.get("/notepad", ...A, getNotepad);
+router.post("/notepad/notes", ...A, createNote);
+router.patch("/notepad/notes/:id", ...A, updateNote);
+router.delete("/notepad/notes/:id", ...A, deleteNote);
+router.post("/notepad/tasks", ...A, createTask);
+router.patch("/notepad/tasks/:id", ...A, updateTask);
+router.delete("/notepad/tasks/:id", ...A, deleteTask);
 router.patch("/institution", ...ADMIN_ONLY, updateMyInstitution);
 router.post(
   "/institution/logo",

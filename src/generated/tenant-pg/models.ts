@@ -11,6 +11,8 @@
 export type * from './models/Teacher'
 export type * from './models/TeacherNote'
 export type * from './models/TeacherTask'
+export type * from './models/AdminNote'
+export type * from './models/AdminTask'
 export type * from './models/Standard'
 export type * from './models/Division'
 export type * from './models/Subject'

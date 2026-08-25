@@ -58,15 +58,20 @@ export const getEffectiveBranding = async (institutionId: string): Promise<Effec
   const cached = await getCache<EffectiveBranding>(brandingCacheKey(institutionId));
   if (cached) return cached;
 
-  const [config, eligible] = await Promise.all([
+  const [config, eligible, institution] = await Promise.all([
     prisma.whiteLabelConfig.findUnique({ where: { institutionId } }),
     isWhiteLabelEligible(institutionId),
+    prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true } }),
   ]);
 
   const effective: EffectiveBranding = (eligible && config?.enabled)
     ? {
         enabled: true,
-        brandName: config.brandName || QUBEEX_DEFAULT_BRANDING.brandName,
+        // Fall back to the institution's own registered name, never the
+        // literal "QubeEx" — an institution that enabled white-labeling but
+        // hasn't set a custom brand name yet should still never see QubeEx's
+        // name rendered as if it were their own branding.
+        brandName: config.brandName || institution?.name || QUBEEX_DEFAULT_BRANDING.brandName,
         logoUrl: config.logoUrl || QUBEEX_DEFAULT_BRANDING.logoUrl,
         faviconUrl: config.faviconUrl || QUBEEX_DEFAULT_BRANDING.faviconUrl,
       }

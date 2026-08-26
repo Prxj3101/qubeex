@@ -505,12 +505,19 @@ export const getInstitution = async () => {
     const admin    = inst.users.find((u) => u.role === "ADMIN") ?? null;
     const teachers = inst.users.filter((u) => (u.role as string) === "TEACHER").length;
     const students = inst.users.filter((u) => (u.role as string) === "STUDENT").length;
+    // ADMIN + SUB_ADMIN combined — the admin-side billing count
+    // (prisma.user.count({ where: { institutionId } }), no role filter) is
+    // the source of truth. This was previously hardcoded as "+1" for just
+    // the admin on the frontend, silently dropping any SUB_ADMIN seats from
+    // the superadmin billing summary's user count.
+    const staffCount = inst.users.filter((u) => (u.role as string) === "ADMIN" || (u.role as string) === "SUB_ADMIN").length;
 
     return {
       ...inst,
       admin,
       teacherCount: teachers,
       studentCount: students,
+      staffCount,
     };
   });
 

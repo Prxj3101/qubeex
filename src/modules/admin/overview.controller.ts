@@ -212,6 +212,7 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
           billedUsers,
           estMonthlyBill,
           planOption,
+          commitmentEndDate: subscription?.commitmentEndDate ?? null,
           usage: {
             users: { used: userCount, limit: userLimit },
             storage: { used: storageUsedMb, limit: storageLimit },

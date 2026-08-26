@@ -164,28 +164,39 @@ const LOGIN_WINDOW_SECS = 15 * 60; // 15 min
 
 async function checkLoginLockout(email: string) {
   if (!redis || !isRedisReady) return;
-  const attempts = parseInt((await redis.get(`loginAttempts:${email}`)) ?? "0", 10);
-  if (attempts >= LOGIN_MAX_ATTEMPTS) {
-    const ttl = await redis.ttl(`loginAttempts:${email}`);
-    const mins = Math.ceil(ttl / 60);
-    throw new UnauthorizedError(
-      `Account temporarily locked. Try again in ${mins} minute${mins === 1 ? "" : "s"}.`
-    );
+  try {
+    const attempts = parseInt((await redis.get(`loginAttempts:${email}`)) ?? "0", 10);
+    if (attempts >= LOGIN_MAX_ATTEMPTS) {
+      const ttl = await redis.ttl(`loginAttempts:${email}`);
+      const mins = Math.ceil(ttl / 60);
+      throw new UnauthorizedError(
+        `Account temporarily locked. Try again in ${mins} minute${mins === 1 ? "" : "s"}.`
+      );
+    }
+  } catch (err) {
+    // Re-throw the intentional lockout error — only swallow genuine Redis
+    // failures (e.g. Upstash request-limit exceeded) so a Redis outage
+    // degrades to "no lockout tracking" instead of blocking every login.
+    if (err instanceof UnauthorizedError) throw err;
   }
 }
 
 async function recordFailedAttempt(email: string) {
   if (!redis || !isRedisReady) return;
-  const key = `loginAttempts:${email}`;
-  const attempts = await redis.incr(key);
-  if (attempts === 1) {
-    await redis.expire(key, LOGIN_WINDOW_SECS);
-  }
+  try {
+    const key = `loginAttempts:${email}`;
+    const attempts = await redis.incr(key);
+    if (attempts === 1) {
+      await redis.expire(key, LOGIN_WINDOW_SECS);
+    }
+  } catch { /* Redis unavailable — lockout tracking degrades gracefully */ }
 }
 
 async function clearLoginAttempts(email: string) {
   if (!redis || !isRedisReady) return;
-  await redis.del(`loginAttempts:${email}`);
+  try {
+    await redis.del(`loginAttempts:${email}`);
+  } catch { /* Redis unavailable — nothing to clean up, login still succeeds */ }
 }
 
 export const login = async (email: string, password: string, context: LoginContext = {}) => {

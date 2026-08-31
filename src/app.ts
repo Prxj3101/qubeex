@@ -14,6 +14,7 @@ import studentRoutes from "./modules/student/student.routes";
 import { razorpayWebhookHandler } from "./modules/webhooks/razorpay.webhook";
 import quizRoutes from "./modules/quiz/quiz.routes";
 import brandingRoutes from "./modules/branding/branding.routes";
+import publicRoutes from "./modules/public/public.routes";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { generalLimiter } from "./middlewares/rateLimiter.middleware";
 import { prisma } from "./utils/prisma";
@@ -58,7 +59,7 @@ app.use(generalLimiter);
 app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () => {
-    recordApiRequest(Date.now() - start, res.statusCode >= 500).catch(() => {});
+    recordApiRequest(Date.now() - start, res.statusCode >= 500);
   });
   next();
 });
@@ -74,6 +75,7 @@ app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/branding", brandingRoutes);
+app.use("/api/public", publicRoutes);
 app.use("/api/teacher/promotions", promotionTeacherRoutes);
 
 app.get("/", (_req, res) => {

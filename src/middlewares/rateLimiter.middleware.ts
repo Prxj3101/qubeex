@@ -23,6 +23,24 @@ export const authLimiter = rateLimit({
   },
 });
 
+export const demoRequestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: isDev ? 50 : 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: makeStore("rl:demo-request:"),
+  validate: { default: false },
+  message: {
+    success: false,
+    message: "Too many demo requests. Please try again later.",
+  },
+  keyGenerator: (req) => {
+    const email = (req.body?.email as string | undefined) ?? "unknown";
+    const ip    = req.ip ?? req.socket?.remoteAddress ?? "unknown";
+    return `${email}:${ip}`;
+  },
+});
+
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: isDev ? 10_000 : 300,

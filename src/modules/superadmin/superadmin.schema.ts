@@ -142,6 +142,12 @@ export const updateTicketStatusSchema = z.object({
   status: z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"]),
 });
 
+// ─── Demo Requests ────────────────────────────────────────────────────────────
+
+export const updateDemoRequestStatusSchema = z.object({
+  status: z.enum(["NEW", "CONTACTED", "IN_PROGRESS", "CONVERTED", "CLOSED"]),
+});
+
 const ticketAttachmentSchema = z.object({
   url: z.string().url(),
   name: z.string().max(200),

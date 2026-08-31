@@ -644,3 +644,150 @@ export const sendSubAdminInviteEmail = async ({
         throw new Error('Failed to send subadmin invite email');
     }
 };
+
+// Demo requests must never fail to be stored just because the email
+// provider is down, so both functions below swallow their own errors
+// (mirrors sendMonthlyBillEmail/sendPlanDowngradeEmail) instead of throwing —
+// the caller records whether the send succeeded but always keeps the lead.
+export const sendDemoRequestNotificationEmail = async ({
+    to,
+    name,
+    email,
+    phone,
+    institutionName,
+    institutionType,
+    studentCount,
+    message,
+    submittedAt,
+}: {
+    to: string;
+    name: string;
+    email: string;
+    phone: string;
+    institutionName: string;
+    institutionType: string;
+    studentCount?: number | null;
+    message?: string | null;
+    submittedAt: Date;
+}): Promise<boolean> => {
+    const formattedDate = submittedAt.toLocaleString('en-IN', {
+        day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata',
+    });
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'QubeEx <support@qubeex.in>',
+            to,
+            subject: `New Demo Request — ${institutionName}`,
+            html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background:#0F0A1E;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0A1E;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="background:#1A112E;border-radius:20px;overflow:hidden;border:1px solid rgba(124,58,237,0.2);">
+          <tr><td style="height:4px;background:linear-gradient(90deg,#7C3AED,#DA7756);"></td></tr>
+          <tr>
+            <td align="center" style="padding:36px 40px 24px;">
+              <p style="margin:0;font-size:26px;font-weight:700;color:#FAE5D9;letter-spacing:-0.5px;">QubeEx</p>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;">New Demo Request</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 40px 32px;">
+              <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">
+                A new demo request came in from the landing page.
+              </p>
+              <table cellpadding="0" cellspacing="0" width="100%" style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:12px;padding:4px 0;margin-bottom:20px;">
+                <tr><td style="padding:10px 20px;"><p style="margin:0;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Name</p><p style="margin:2px 0 0;font-size:14px;color:#fff;">${name}</p></td></tr>
+                <tr><td style="padding:10px 20px;"><p style="margin:0;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Email</p><p style="margin:2px 0 0;font-size:14px;color:#fff;">${email}</p></td></tr>
+                <tr><td style="padding:10px 20px;"><p style="margin:0;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Phone</p><p style="margin:2px 0 0;font-size:14px;color:#fff;">${phone}</p></td></tr>
+                <tr><td style="padding:10px 20px;"><p style="margin:0;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Institution</p><p style="margin:2px 0 0;font-size:14px;color:#fff;">${institutionName} (${institutionType})</p></td></tr>
+                ${studentCount ? `<tr><td style="padding:10px 20px;"><p style="margin:0;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Students/Users</p><p style="margin:2px 0 0;font-size:14px;color:#fff;">${studentCount}</p></td></tr>` : ''}
+                ${message ? `<tr><td style="padding:10px 20px;"><p style="margin:0;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Message</p><p style="margin:2px 0 0;font-size:14px;color:#fff;line-height:1.5;">${message}</p></td></tr>` : ''}
+              </table>
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.3);">Submitted ${formattedDate} IST</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+        });
+
+        if (error) {
+            console.error('Resend error (demo request notification):', error);
+            return false;
+        }
+        console.log('Demo request notification email sent:', data?.id);
+        return true;
+    } catch (err) {
+        console.error('Demo request notification email send failed:', err);
+        return false;
+    }
+};
+
+export const sendDemoRequestConfirmationEmail = async ({
+    to,
+    name,
+}: {
+    to: string;
+    name: string;
+}): Promise<boolean> => {
+    const firstName = name.split(' ')[0] || 'there';
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'QubeEx <support@qubeex.in>',
+            to,
+            subject: "We've received your QubeEx demo request",
+            html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background:#0F0A1E;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0A1E;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="background:#1A112E;border-radius:20px;overflow:hidden;border:1px solid rgba(124,58,237,0.2);">
+          <tr><td style="height:4px;background:linear-gradient(90deg,#7C3AED,#DA7756);"></td></tr>
+          <tr>
+            <td align="center" style="padding:36px 40px 24px;">
+              <p style="margin:0;font-size:26px;font-weight:700;color:#FAE5D9;letter-spacing:-0.5px;">QubeEx</p>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;">AI-Powered School Platform</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 40px 32px;">
+              <p style="margin:0 0 16px;font-size:22px;font-weight:600;color:#fff;">Thanks, ${firstName}! 🎉</p>
+              <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">
+                We've received your demo request and our team will reach out within
+                <strong style="color:#DA7756;">24 hours</strong> to schedule your walkthrough.
+              </p>
+              <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.35);">
+                In the meantime, if you have any questions, just reply to this email.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+        });
+
+        if (error) {
+            console.error('Resend error (demo request confirmation):', error);
+            return false;
+        }
+        console.log('Demo request confirmation email sent:', data?.id);
+        return true;
+    } catch (err) {
+        console.error('Demo request confirmation email send failed:', err);
+        return false;
+    }
+};

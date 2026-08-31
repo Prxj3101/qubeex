@@ -162,22 +162,58 @@ export async function getServiceAvgLatency24h(service: string): Promise<number |
   }
 }
 
-/** Records one finished HTTP request (called from Express middleware on every request). */
-export async function recordApiRequest(durationMs: number, isServerError: boolean): Promise<void> {
-  if (!redis || !isRedisReady) return;
+// Every single HTTP request in the app calls recordApiRequest (wired as global
+// middleware in app.ts). Writing straight to Redis per request meant every API
+// call cost ~6 Redis commands (2-3 incr/incrby + 3 expire) just for a System
+// Health chart nobody may even be looking at — that's what blew through
+// Upstash's request quota. Instead, accumulate deltas in memory and flush one
+// pipelined write per hour-bucket on a fixed interval (see startApiMetricsFlusher
+// below) — same "within ~1 min" freshness on the dashboard, a small fraction of
+// the Redis command volume.
+const pendingApiMetrics = new Map<string, { count: number; sum: number; errors: number }>();
+
+export function recordApiRequest(durationMs: number, isServerError: boolean): void {
   const bucket = hourBucket();
+  const entry = pendingApiMetrics.get(bucket) ?? { count: 0, sum: 0, errors: 0 };
+  entry.count += 1;
+  entry.sum += durationMs;
+  if (isServerError) entry.errors += 1;
+  pendingApiMetrics.set(bucket, entry);
+}
+
+/** Flushes accumulated in-memory API metrics to Redis as one pipeline per pending bucket. */
+export async function flushApiMetrics(): Promise<void> {
+  if (pendingApiMetrics.size === 0) return;
+  if (!redis || !isRedisReady) {
+    // Redis isn't up — drop this batch rather than growing unboundedly forever.
+    pendingApiMetrics.clear();
+    return;
+  }
+  const toFlush = Array.from(pendingApiMetrics.entries());
+  pendingApiMetrics.clear();
   try {
     const pipeline = redis.pipeline();
-    pipeline.incr(`health:api:${bucket}:count`);
-    pipeline.incrby(`health:api:${bucket}:sum`, durationMs);
-    if (isServerError) pipeline.incr(`health:api:${bucket}:errors`);
-    for (const suffix of ["count", "sum", "errors"]) {
-      pipeline.expire(`health:api:${bucket}:${suffix}`, BUCKET_TTL_SECONDS);
+    for (const [bucket, { count, sum, errors }] of toFlush) {
+      pipeline.incrby(`health:api:${bucket}:count`, count);
+      pipeline.incrby(`health:api:${bucket}:sum`, sum);
+      if (errors > 0) pipeline.incrby(`health:api:${bucket}:errors`, errors);
+      for (const suffix of ["count", "sum", "errors"]) {
+        pipeline.expire(`health:api:${bucket}:${suffix}`, BUCKET_TTL_SECONDS);
+      }
     }
     await pipeline.exec();
   } catch {
-    // Best-effort.
+    // Best-effort — lost metrics for this flush window are fine, never crash the app for it.
   }
+}
+
+const API_METRICS_FLUSH_INTERVAL_MS = 20_000;
+
+/** Starts the periodic flush of in-memory API metrics to Redis. Call once at server startup. */
+export function startApiMetricsFlusher(): void {
+  setInterval(() => {
+    flushApiMetrics().catch(() => {});
+  }, API_METRICS_FLUSH_INTERVAL_MS);
 }
 
 export interface HourlyPoint {

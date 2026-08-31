@@ -24,6 +24,7 @@ import {
   changePlanOptionSchema,
   broadcastNotificationSchema,
   updateTicketStatusSchema,
+  updateDemoRequestStatusSchema,
   ticketReplySchema,
   reviewReplySchema,
   updateBillStatusSchema,
@@ -579,6 +580,55 @@ export const replyToTicket = async (
     const { message, attachments } = ticketReplySchema.parse(req.body);
     const result = await service.replyToTicket(req.params.id as string, message, attachments);
     res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DEMO REQUESTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getDemoRequests = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { status, search, page, limit } = req.query as Record<string, string>;
+    const data = await service.getDemoRequests({
+      status, search,
+      page:  page  ? parseInt(page)  : 1,
+      limit: limit ? parseInt(limit) : 20,
+    });
+    res.json({ success: true, ...data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDemoRequest = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await service.getDemoRequestById(req.params.id as string);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateDemoRequestStatus = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { status } = updateDemoRequestStatusSchema.parse(req.body);
+    const result = await service.updateDemoRequestStatus(req.params.id as string, status);
+    res.json({ success: true, data: result });
   } catch (error) {
     next(error);
   }

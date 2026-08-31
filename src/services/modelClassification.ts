@@ -18,6 +18,7 @@ export const PLATFORM_MODELS = [
   "Plan",
   "Bill",
   "SupportTicket",
+  "DemoRequest",
   "TicketReply",
   "Review",
   "Notification",

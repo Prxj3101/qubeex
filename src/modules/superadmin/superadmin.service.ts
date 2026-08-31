@@ -1006,13 +1006,24 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
     prisma.institution.delete({ where: { id } }),
   ];
 
+  // ~30 sequential deleteMany calls across all of an institution's data can
+  // easily exceed Prisma's default 5s transaction timeout for an institution
+  // with a non-trivial amount of history (attendance, tasks, marksheets,
+  // etc.), which aborts the whole rollback mid-flight (P2028). Give it real
+  // headroom — this only runs on an explicit, infrequent superadmin action.
+  const DELETE_TRANSACTION_TIMEOUT_MS = 60_000;
+
   if (academicClient === prisma) {
     // Managed: single atomic transaction, academic children before platform parents.
-    await prisma.$transaction([...academicDeletes(prisma), ...platformDeletes]);
+    await prisma.$transaction([...academicDeletes(prisma), ...platformDeletes], {
+      timeout: DELETE_TRANSACTION_TIMEOUT_MS,
+    });
   } else {
     // BYOD: academic rows live in the tenant DB — separate transaction, then platform.
-    await academicClient.$transaction(academicDeletes(academicClient));
-    await prisma.$transaction(platformDeletes);
+    await academicClient.$transaction(academicDeletes(academicClient), {
+      timeout: DELETE_TRANSACTION_TIMEOUT_MS,
+    });
+    await prisma.$transaction(platformDeletes, { timeout: DELETE_TRANSACTION_TIMEOUT_MS });
   }
 
   await delCache(CACHE_KEYS.institutions, CACHE_KEYS.overview);
@@ -1655,6 +1666,49 @@ export const replyToTicket = async (
   });
 
   return reply;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DEMO REQUESTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const getDemoRequests = async (query: {
+  status?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  const { status, search, page = 1, limit = 20 } = query;
+  const skip = (page - 1) * limit;
+
+  const where: any = {};
+  if (status) where.status = status;
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+      { institutionName: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  const [demoRequests, total] = await Promise.all([
+    prisma.demoRequest.findMany({ where, skip, take: limit, orderBy: { createdAt: "desc" } }),
+    prisma.demoRequest.count({ where }),
+  ]);
+
+  return { demoRequests, pagination: { total, page, limit, pages: Math.ceil(total / limit) } };
+};
+
+export const getDemoRequestById = async (id: string) => {
+  const demoRequest = await prisma.demoRequest.findUnique({ where: { id } });
+  if (!demoRequest) throw new NotFoundError("Demo request not found");
+  return demoRequest;
+};
+
+export const updateDemoRequestStatus = async (id: string, status: string) => {
+  const existing = await prisma.demoRequest.findUnique({ where: { id } });
+  if (!existing) throw new NotFoundError("Demo request not found");
+  return prisma.demoRequest.update({ where: { id }, data: { status: status as any } });
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

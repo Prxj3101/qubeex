@@ -566,6 +566,32 @@ model SupportTicket {
   replies TicketReply[]
 }
 
+enum DemoRequestStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  CONVERTED
+  CLOSED
+}
+
+model DemoRequest {
+  id              String            @id @default(uuid())
+  name            String
+  email           String
+  phone           String
+  institutionName String
+  institutionType InstitutionType
+  studentCount    Int?
+  message         String?
+  status          DemoRequestStatus @default(NEW)
+  emailSent       Boolean           @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email, createdAt])
+}
+
 model TicketReply {
   id       String        @id @default(uuid())
   ticketId String

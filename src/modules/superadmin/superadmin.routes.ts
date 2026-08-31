@@ -46,6 +46,10 @@ import {
   replyToTicket,
   uploadTicketReplyAttachment,
   ticketAttachmentUpload,
+  // Demo Requests
+  getDemoRequests,
+  getDemoRequest,
+  updateDemoRequestStatus,
   // Reviews
   getReviews,
   replyToReview,
@@ -151,6 +155,11 @@ router.get("/support/tickets/:id",                     SA, getTicket);
 router.patch("/support/tickets/:id/status",            SA, updateTicketStatus);
 router.post("/support/tickets/:id/reply",              SA, replyToTicket);
 router.post("/support/tickets/:id/attachments",         SA, ticketAttachmentUpload.single("file"), uploadTicketReplyAttachment);
+
+// ─── Support — Demo Requests ──────────────────────────────────────────────────
+router.get("/demo-requests",                           SA, getDemoRequests);
+router.get("/demo-requests/:id",                        SA, getDemoRequest);
+router.patch("/demo-requests/:id/status",               SA, updateDemoRequestStatus);
 
 // ─── Support — Reviews ────────────────────────────────────────────────────────
 router.get("/support/reviews",                         SA, getReviews);

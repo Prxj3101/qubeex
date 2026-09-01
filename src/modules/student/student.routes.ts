@@ -10,6 +10,8 @@ import multer from "multer";
 import { listTests, startTest, heartbeatAttempt, submitTest, getAttempt, downloadAttemptPdf, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload, getAssignmentPaper, downloadAssignmentPaperPdf } from "./tasks.controller";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
+import { listPTMNotes, acknowledgePTMNote } from "../../services/ptmNote.service";
+import { translateBatch, DynamicTranslateLang } from "../../services/translation.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
@@ -846,6 +848,79 @@ router.get("/remarks", ...S, async (req: AuthRequest, res: Response, next: NextF
     const remarks = await listStudentRemarks(student.id, institutionId!, { userId, role: "STUDENT" });
     res.json({ success: true, data: remarks });
   } catch (err) {
+    next(err);
+  }
+});
+
+// ── POST /student/translate — Parent Mode dynamic text (Hindi/Marathi) ──────
+// Translates teacher-entered free text (Marksheet Conduct/Remarks, flag
+// category/title/detail/actionTaken/reviewRemark, PTM notes) that can't be
+// covered by the app's static UI-text dictionary. Only 'hi'/'mr' are valid —
+// the app never calls this for English or Hinglish (Hinglish isn't a real
+// language a translation API can target, so dynamic text stays in its
+// original language when Hinglish is selected).
+const translateBodySchema = z.object({
+  texts: z.array(z.string()).max(100),
+  lang: z.enum(["hi", "mr"]),
+});
+router.post("/translate", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const parsed = translateBodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ success: false, error: "Invalid request body", details: parsed.error.flatten() });
+      return;
+    }
+    const { texts, lang } = parsed.data;
+    const translated = await translateBatch(texts, lang as DynamicTranslateLang);
+    res.json({ success: true, data: { texts: translated } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── PTM Notes — read own history + acknowledge, from the app's Parent Mode ──
+router.get("/ptm-notes", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+
+    const student = await academicDb().student.findFirst({
+      where: { userId, institutionId },
+      select: { id: true },
+    });
+    if (!student) {
+      res.status(404).json({ success: false, error: "Student not found" });
+      return;
+    }
+
+    const notes = await listPTMNotes(student.id, institutionId!);
+    res.json({ success: true, data: notes });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.patch("/ptm-notes/:noteId/acknowledge", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    const noteId = req.params.noteId as string;
+
+    const student = await academicDb().student.findFirst({
+      where: { userId, institutionId },
+      select: { id: true },
+    });
+    if (!student) {
+      res.status(404).json({ success: false, error: "Student not found" });
+      return;
+    }
+
+    const updated = await acknowledgePTMNote({ noteId, studentId: student.id, institutionId: institutionId! });
+    res.json({ success: true, data: updated });
+  } catch (err: unknown) {
+    const e = err as { status?: number; message?: string };
+    if (e.status) {
+      res.status(e.status).json({ success: false, error: e.message });
+      return;
+    }
     next(err);
   }
 });

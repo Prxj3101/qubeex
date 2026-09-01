@@ -69,6 +69,14 @@ export const SubscriptionStatus = {
 export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus]
 
 
+export const PlanOption = {
+  NORMAL: 'NORMAL',
+  COMMITTED: 'COMMITTED'
+} as const
+
+export type PlanOption = (typeof PlanOption)[keyof typeof PlanOption]
+
+
 export const PaymentStatus = {
   PAID: 'PAID',
   PENDING: 'PENDING',
@@ -149,6 +157,17 @@ export const TrialOutcome = {
 } as const
 
 export type TrialOutcome = (typeof TrialOutcome)[keyof typeof TrialOutcome]
+
+
+export const DemoRequestStatus = {
+  NEW: 'NEW',
+  CONTACTED: 'CONTACTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  CONVERTED: 'CONVERTED',
+  CLOSED: 'CLOSED'
+} as const
+
+export type DemoRequestStatus = (typeof DemoRequestStatus)[keyof typeof DemoRequestStatus]
 
 
 export const CampusPostType = {

@@ -52,6 +52,11 @@ enum SubscriptionStatus {
   LOCKED
 }
 
+enum PlanOption {
+  NORMAL
+  COMMITTED
+}
+
 enum PaymentStatus {
   PAID
   PENDING
@@ -150,6 +155,8 @@ model Teacher {
   taskPdfUploads      TaskPdfUpload[]
   teacherNotes        TeacherNote[]
   teacherTasks        TeacherTask[]
+  // See the matching comment on Institution.mindmaps — unrelated project's
+  // table sharing this database, kept only so `db push` leaves it alone.
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
@@ -203,6 +210,14 @@ model AdminTask {
   updatedAt     DateTime    @updatedAt
 
   @@index([userId])
+}
+
+enum DemoRequestStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  CONVERTED
+  CLOSED
 }
 
 model Standard {
@@ -367,6 +382,7 @@ model Student {
   remarks               StudentRemark[]
   feePayments           StudentFeePayment[]
   promotionOutcomes     StudentPromotionOutcome[]
+  ptmNotes              PTMNote[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
@@ -444,6 +460,26 @@ model StudentRemark {
   @@index([studentId])
   @@index([institutionId])
   @@index([assignedToUserId, status])
+}
+
+model PTMNote {
+  id            String      @id @default(uuid())
+  institutionId String
+  studentId     String
+  student       Student     @relation(fields: [studentId], references: [id])
+
+  note String
+
+  createdByUserId String
+  createdByName   String?
+  createdByRole   String
+
+  acknowledgedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([studentId])
+  @@index([institutionId])
 }
 
 model Attendance {
@@ -1184,4 +1220,14 @@ model MarksheetRemark {
 
   @@unique([marksheetId, studentId])
   @@index([marksheetId])
+}
+
+model TranslationCache {
+  id             String   @id @default(uuid())
+  sourceTextHash String
+  targetLang     String // 'hi' | 'mr'
+  translatedText String
+  createdAt      DateTime @default(now())
+
+  @@unique([sourceTextHash, targetLang])
 }

@@ -65,6 +65,7 @@ export const ModelName = {
   PromotionBatch: 'PromotionBatch',
   StudentPromotionOutcome: 'StudentPromotionOutcome',
   StudentRemark: 'StudentRemark',
+  PTMNote: 'PTMNote',
   Attendance: 'Attendance',
   SchoolHoliday: 'SchoolHoliday',
   AttendanceDayNote: 'AttendanceDayNote',
@@ -97,7 +98,8 @@ export const ModelName = {
   MarksheetScore: 'MarksheetScore',
   MarksheetGradedSubject: 'MarksheetGradedSubject',
   MarksheetGradedScore: 'MarksheetGradedScore',
-  MarksheetRemark: 'MarksheetRemark'
+  MarksheetRemark: 'MarksheetRemark',
+  TranslationCache: 'TranslationCache'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -353,6 +355,21 @@ export const StudentRemarkScalarFieldEnum = {
 } as const
 
 export type StudentRemarkScalarFieldEnum = (typeof StudentRemarkScalarFieldEnum)[keyof typeof StudentRemarkScalarFieldEnum]
+
+
+export const PTMNoteScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  studentId: 'studentId',
+  note: 'note',
+  createdByUserId: 'createdByUserId',
+  createdByName: 'createdByName',
+  createdByRole: 'createdByRole',
+  acknowledgedAt: 'acknowledgedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PTMNoteScalarFieldEnum = (typeof PTMNoteScalarFieldEnum)[keyof typeof PTMNoteScalarFieldEnum]
 
 
 export const AttendanceScalarFieldEnum = {
@@ -883,6 +900,17 @@ export const MarksheetRemarkScalarFieldEnum = {
 } as const
 
 export type MarksheetRemarkScalarFieldEnum = (typeof MarksheetRemarkScalarFieldEnum)[keyof typeof MarksheetRemarkScalarFieldEnum]
+
+
+export const TranslationCacheScalarFieldEnum = {
+  id: 'id',
+  sourceTextHash: 'sourceTextHash',
+  targetLang: 'targetLang',
+  translatedText: 'translatedText',
+  createdAt: 'createdAt'
+} as const
+
+export type TranslationCacheScalarFieldEnum = (typeof TranslationCacheScalarFieldEnum)[keyof typeof TranslationCacheScalarFieldEnum]
 
 
 export const SortOrder = {

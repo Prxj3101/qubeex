@@ -88,6 +88,11 @@ export type StudentPromotionOutcome = Prisma.StudentPromotionOutcomeModel
  */
 export type StudentRemark = Prisma.StudentRemarkModel
 /**
+ * Model PTMNote
+ * 
+ */
+export type PTMNote = Prisma.PTMNoteModel
+/**
  * Model Attendance
  * 
  */
@@ -252,3 +257,8 @@ export type MarksheetGradedScore = Prisma.MarksheetGradedScoreModel
  * 
  */
 export type MarksheetRemark = Prisma.MarksheetRemarkModel
+/**
+ * Model TranslationCache
+ * 
+ */
+export type TranslationCache = Prisma.TranslationCacheModel

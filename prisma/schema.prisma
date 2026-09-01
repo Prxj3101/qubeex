@@ -193,10 +193,16 @@ model Institution {
   adminNotes    AdminNote[]
   adminTasks    AdminTask[]
   studentRemarks     StudentRemark[]
+  ptmNotes           PTMNote[]
   studentFeePayments StudentFeePayment[]
   promotionBatches         PromotionBatch[]
   studentPromotionOutcomes StudentPromotionOutcome[]
   aiUsageEvents            AiUsageEvent[]
+  // Owned by a separate/unrelated project sharing this database (not part of
+  // QubeEx) — kept here, exactly matching the live DB, purely so `prisma db
+  // push` never proposes dropping the Mindmap table. @ignore excludes it
+  // from the generated Prisma Client; QubeEx code must never touch it.
+  mindmaps Mindmap[] @ignore
 }
 
 model User {
@@ -231,6 +237,7 @@ model User {
   studentRemarksReported  StudentRemark[] @relation("StudentRemarkReporter")
   studentRemarksAssigned  StudentRemark[] @relation("StudentRemarkAssignee")
   studentRemarksReviewed  StudentRemark[] @relation("StudentRemarkReviewer")
+  ptmNotesCreated         PTMNote[]       @relation("PTMNoteCreator")
   aiUsageEvents           AiUsageEvent[]
   adminNotes              AdminNote[]
   adminTasks              AdminTask[]
@@ -385,6 +392,9 @@ model Teacher {
   taskPdfUploads      TaskPdfUpload[]
   teacherNotes        TeacherNote[]
   teacherTasks        TeacherTask[]
+  // See the matching comment on Institution.mindmaps — unrelated project's
+  // table sharing this database, kept only so `db push` leaves it alone.
+  mindmaps            Mindmap[] @ignore
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
@@ -792,6 +802,7 @@ model Student {
   remarks               StudentRemark[]
   feePayments           StudentFeePayment[]
   promotionOutcomes     StudentPromotionOutcome[]
+  ptmNotes              PTMNote[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
@@ -875,6 +886,33 @@ model StudentRemark {
   @@index([studentId])
   @@index([institutionId])
   @@index([assignedToUserId, status])
+}
+
+// One entry per Parent-Teacher Meeting discussion point for a student, logged
+// live from the app's "Parent Mode" screen (a toggle on the student's own
+// account — no separate parent login exists). The parent taps "Discussed &
+// Acknowledged" on the same device at the end of the meeting as a
+// meeting-closure marker, not identity verification.
+model PTMNote {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  studentId     String
+  student       Student     @relation(fields: [studentId], references: [id])
+
+  note String
+
+  createdByUserId String
+  createdByUser   User    @relation("PTMNoteCreator", fields: [createdByUserId], references: [id])
+  createdByName   String?
+  createdByRole   String
+
+  acknowledgedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([studentId])
+  @@index([institutionId])
 }
 
 // ─── Attendance ───────────────────────────────────────────────────────────────
@@ -1712,6 +1750,41 @@ model MarksheetRemark {
 
   @@unique([marksheetId, studentId])
   @@index([marksheetId])
+}
+
+// NOT a QubeEx table — a friend's separate/unrelated project's table that
+// happens to share this same Postgres database. Declared here, matching the
+// live DB exactly, purely so `prisma db push` sees zero diff and never
+// proposes dropping it. `@@ignore` (+ `@ignore` on the two back-relations
+// above, on Institution and Teacher) excludes it entirely from the generated
+// Prisma Client — QubeEx application code has no way to read/write it.
+model Mindmap {
+  id            String      @id
+  institutionId String
+  teacherId     String
+  title         String
+  data          Json
+  createdAt     DateTime    @default(now())
+  Institution   Institution @relation(fields: [institutionId], references: [id])
+  Teacher       Teacher     @relation(fields: [teacherId], references: [id])
+
+  @@index([institutionId, teacherId])
+  @@ignore
+}
+
+// Cache for machine-translated teacher-entered free text (Conduct/Remarks,
+// flag category/title/detail/actionTaken/reviewRemark) shown in Parent Mode
+// when a parent selects Hindi or Marathi. Keyed by a hash of the original
+// text + target language so the same sentence is only ever sent to the
+// translation API once, no matter how many students/parents view it.
+model TranslationCache {
+  id             String   @id @default(uuid())
+  sourceTextHash String
+  targetLang     String // 'hi' | 'mr'
+  translatedText String
+  createdAt      DateTime @default(now())
+
+  @@unique([sourceTextHash, targetLang])
 }
 
 // Singleton row (fixed id "platform") holding the platform's own payment

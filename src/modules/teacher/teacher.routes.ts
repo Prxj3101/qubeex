@@ -14,6 +14,7 @@ import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch
 import { logAudit } from "../../services/audit.service";
 import { createRemarkSchema, reviewRemarkSchema, editRemarkSchema } from "../../services/remark.schema";
 import { createStudentRemark, listStudentRemarks, listAssignedRemarks, listSubmittedRemarks, reviewStudentRemark, editStudentRemark } from "../../services/remark.service";
+import { createPTMNote, listPTMNotes, editPTMNote } from "../../services/ptmNote.service";
 import { getDivisionLeaderboardData } from "../../services/leaderboard.service";
 import { getStudentStatsData } from "../../services/studentStats.service";
 import { getStudentMarksheetData } from "../../services/studentMarksheet.service";
@@ -1879,6 +1880,123 @@ router.get(
 
       const remarks = await listStudentRemarks(studentId, institutionId, { userId, role: "TEACHER" });
       res.json({ success: true, data: remarks });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+// ── PTM Notes — logged live during a Parent-Teacher Meeting ──────────────────
+router.post(
+  "/classes/:divisionId/students/:studentId/ptm-notes",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const student = await academicDb().student.findFirst({
+        where: { id: studentId, divisionId, institutionId },
+        select: { id: true },
+      });
+      if (!student) {
+        res.status(404).json({ success: false, error: "Student not found in this division" });
+        return;
+      }
+
+      const { note } = z.object({ note: z.string().trim().min(1).max(1000) }).parse(req.body);
+      const created = await createPTMNote({ institutionId, studentId, createdByUserId: userId, createdByRole: "Faculty", note });
+
+      res.status(201).json({ success: true, data: created });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+router.patch(
+  "/classes/:divisionId/students/:studentId/ptm-notes/:noteId",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+      const noteId = req.params.noteId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const student = await academicDb().student.findFirst({
+        where: { id: studentId, divisionId, institutionId },
+        select: { id: true },
+      });
+      if (!student) {
+        res.status(404).json({ success: false, error: "Student not found in this division" });
+        return;
+      }
+
+      const { note } = z.object({ note: z.string().trim().min(1).max(1000) }).parse(req.body);
+      const updated = await editPTMNote({ noteId, studentId, institutionId, viewerUserId: userId, note });
+
+      res.json({ success: true, data: updated });
+    } catch (err: unknown) {
+      const e = err as { status?: number; message?: string };
+      if (e.status) {
+        res.status(e.status).json({ success: false, error: e.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+router.get(
+  "/classes/:divisionId/students/:studentId/ptm-notes",
+  ...T,
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId, institutionId } = req.user!;
+      if (!institutionId) {
+        res.status(400).json({ success: false, error: "No institution" });
+        return;
+      }
+      const divisionId = req.params.divisionId as string;
+      const studentId = req.params.studentId as string;
+
+      await assertDivisionAccess(userId, institutionId, divisionId);
+
+      const student = await academicDb().student.findFirst({
+        where: { id: studentId, divisionId, institutionId },
+        select: { id: true },
+      });
+      if (!student) {
+        res.status(404).json({ success: false, error: "Student not found in this division" });
+        return;
+      }
+
+      const notes = await listPTMNotes(studentId, institutionId);
+      res.json({ success: true, data: notes });
     } catch (err: unknown) {
       const e = err as { status?: number; message?: string };
       if (e.status) {

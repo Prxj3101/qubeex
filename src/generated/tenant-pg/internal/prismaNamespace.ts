@@ -411,6 +411,7 @@ export const ModelName = {
   PromotionBatch: 'PromotionBatch',
   StudentPromotionOutcome: 'StudentPromotionOutcome',
   StudentRemark: 'StudentRemark',
+  PTMNote: 'PTMNote',
   Attendance: 'Attendance',
   SchoolHoliday: 'SchoolHoliday',
   AttendanceDayNote: 'AttendanceDayNote',
@@ -443,7 +444,8 @@ export const ModelName = {
   MarksheetScore: 'MarksheetScore',
   MarksheetGradedSubject: 'MarksheetGradedSubject',
   MarksheetGradedScore: 'MarksheetGradedScore',
-  MarksheetRemark: 'MarksheetRemark'
+  MarksheetRemark: 'MarksheetRemark',
+  TranslationCache: 'TranslationCache'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -459,7 +461,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1496,6 +1498,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.StudentRemarkCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.StudentRemarkCountAggregateOutputType> | number
+        }
+      }
+    }
+    PTMNote: {
+      payload: Prisma.$PTMNotePayload<ExtArgs>
+      fields: Prisma.PTMNoteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PTMNoteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PTMNoteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>
+        }
+        findFirst: {
+          args: Prisma.PTMNoteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PTMNoteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>
+        }
+        findMany: {
+          args: Prisma.PTMNoteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>[]
+        }
+        create: {
+          args: Prisma.PTMNoteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>
+        }
+        createMany: {
+          args: Prisma.PTMNoteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PTMNoteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>[]
+        }
+        delete: {
+          args: Prisma.PTMNoteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>
+        }
+        update: {
+          args: Prisma.PTMNoteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>
+        }
+        deleteMany: {
+          args: Prisma.PTMNoteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PTMNoteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PTMNoteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>[]
+        }
+        upsert: {
+          args: Prisma.PTMNoteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PTMNotePayload>
+        }
+        aggregate: {
+          args: Prisma.PTMNoteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePTMNote>
+        }
+        groupBy: {
+          args: Prisma.PTMNoteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PTMNoteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PTMNoteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PTMNoteCountAggregateOutputType> | number
         }
       }
     }
@@ -3941,6 +4017,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TranslationCache: {
+      payload: Prisma.$TranslationCachePayload<ExtArgs>
+      fields: Prisma.TranslationCacheFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TranslationCacheFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TranslationCacheFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>
+        }
+        findFirst: {
+          args: Prisma.TranslationCacheFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TranslationCacheFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>
+        }
+        findMany: {
+          args: Prisma.TranslationCacheFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>[]
+        }
+        create: {
+          args: Prisma.TranslationCacheCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>
+        }
+        createMany: {
+          args: Prisma.TranslationCacheCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TranslationCacheCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>[]
+        }
+        delete: {
+          args: Prisma.TranslationCacheDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>
+        }
+        update: {
+          args: Prisma.TranslationCacheUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>
+        }
+        deleteMany: {
+          args: Prisma.TranslationCacheDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TranslationCacheUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TranslationCacheUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>[]
+        }
+        upsert: {
+          args: Prisma.TranslationCacheUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationCachePayload>
+        }
+        aggregate: {
+          args: Prisma.TranslationCacheAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTranslationCache>
+        }
+        groupBy: {
+          args: Prisma.TranslationCacheGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TranslationCacheGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TranslationCacheCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TranslationCacheCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4217,6 +4367,21 @@ export const StudentRemarkScalarFieldEnum = {
 } as const
 
 export type StudentRemarkScalarFieldEnum = (typeof StudentRemarkScalarFieldEnum)[keyof typeof StudentRemarkScalarFieldEnum]
+
+
+export const PTMNoteScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  studentId: 'studentId',
+  note: 'note',
+  createdByUserId: 'createdByUserId',
+  createdByName: 'createdByName',
+  createdByRole: 'createdByRole',
+  acknowledgedAt: 'acknowledgedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PTMNoteScalarFieldEnum = (typeof PTMNoteScalarFieldEnum)[keyof typeof PTMNoteScalarFieldEnum]
 
 
 export const AttendanceScalarFieldEnum = {
@@ -4749,6 +4914,17 @@ export const MarksheetRemarkScalarFieldEnum = {
 export type MarksheetRemarkScalarFieldEnum = (typeof MarksheetRemarkScalarFieldEnum)[keyof typeof MarksheetRemarkScalarFieldEnum]
 
 
+export const TranslationCacheScalarFieldEnum = {
+  id: 'id',
+  sourceTextHash: 'sourceTextHash',
+  targetLang: 'targetLang',
+  translatedText: 'translatedText',
+  createdAt: 'createdAt'
+} as const
+
+export type TranslationCacheScalarFieldEnum = (typeof TranslationCacheScalarFieldEnum)[keyof typeof TranslationCacheScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -5240,6 +5416,7 @@ export type GlobalOmitConfig = {
   promotionBatch?: Prisma.PromotionBatchOmit
   studentPromotionOutcome?: Prisma.StudentPromotionOutcomeOmit
   studentRemark?: Prisma.StudentRemarkOmit
+  pTMNote?: Prisma.PTMNoteOmit
   attendance?: Prisma.AttendanceOmit
   schoolHoliday?: Prisma.SchoolHolidayOmit
   attendanceDayNote?: Prisma.AttendanceDayNoteOmit
@@ -5273,6 +5450,7 @@ export type GlobalOmitConfig = {
   marksheetGradedSubject?: Prisma.MarksheetGradedSubjectOmit
   marksheetGradedScore?: Prisma.MarksheetGradedScoreOmit
   marksheetRemark?: Prisma.MarksheetRemarkOmit
+  translationCache?: Prisma.TranslationCacheOmit
 }
 
 /* Types for Logging */

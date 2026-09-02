@@ -13,10 +13,12 @@ import {
   bucketGranularity,
   getInstitutionAiTokenLimit,
   getInstitutionPoolUsed,
+  getInstitutionByFeatureBreakdown,
   currentMonthStartIST,
   istMonthKey,
 } from "../../services/ai-usage.service";
 import { prisma } from "../../utils/prisma";
+import { computeInstitutionFeeStats, computeFeeHealthScore, computeFeeForecast, generateAiFeeForecast, getFeePeerBenchmark } from "../../services/feeInsights.service";
 
 // Both endpoints below scan full-institution history on every request (all
 // attendance rows for the academic year; all status/audit events ever, with
@@ -177,10 +179,16 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
   }
 };
 
-// ── GET /admin/insights/fees — overall (all past-due months) and current-month paid/pending, per standard → division ──
-// "Monthly" = the most recent due month's paid/pending split. "Overall" =
-// cumulative paid/pending across every fee month whose due date has already
-// passed this session, mirroring the Overall/Monthly split used for attendance.
+// ── GET /admin/insights/fees — current-month and previous-months paid/pending, per standard → division ──
+// "Monthly" = the most recent due month's paid/pending split (one entry per
+// student). "Overall" = a per-student classification across every *previous*
+// due month (this session, excluding the current month): a student counts as
+// paid only if they've cleared every one of those previous months, otherwise
+// they count as pending. This used to sum raw paid payment-rows across past
+// months instead (so a class of 5 students could show "13 paid" once more
+// than one month was in the window) — switched to per-student status so the
+// paid+pending total always equals the division's student count, matching
+// the "Monthly" split and the Overall/Monthly convention used for attendance.
 export const getFeeInsights = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId } = req.user!;
@@ -198,6 +206,7 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
             id: true,
             name: true,
             _count: { select: { students: { where: { status: "ACTIVE" } } } },
+            students: { where: { status: "ACTIVE" }, select: { id: true } },
             feeStructure: { select: { feeMonths: true } },
           },
         },
@@ -217,39 +226,46 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
       return Number.isNaN(t) ? Infinity : t;
     }
 
-    // Every past-due month per division (for "overall"), and the "current"
-    // one for "monthly" — matched by calendar month name (e.g. "August"
-    // while today is in August) rather than due-date, since a month's due
-    // date (e.g. the 10th) can still be ahead even though it's already that
-    // month and some students have already paid. Falls back to the closest
-    // due date if the schedule has no entry for the current calendar month.
-    const pastMonthsByDivision = new Map<string, string[]>();
+    // Every past-due month per division EXCLUDING the current one (for
+    // "overall"/previous-months), and the "current" month (for "monthly") —
+    // matched by calendar month name (e.g. "August" while today is in
+    // August) rather than due-date, since a month's due date (e.g. the 10th)
+    // can still be ahead even though it's already that month and some
+    // students have already paid. Falls back to the closest due date if the
+    // schedule has no entry for the current calendar month. The current
+    // month id is resolved first so it can be excluded from "previous".
+    const previousMonthsByDivision = new Map<string, string[]>();
     const currentMonthIdByDivision = new Map<string, string>();
     for (const s of standards) {
       for (const d of s.divisions) {
         const months = (d.feeStructure?.feeMonths as FeeMonth[] | null) ?? [];
         if (months.length === 0) continue;
         const past = months.filter((m) => dueDateMs(m.dueDate) <= todayMs).sort((a, b) => dueDateMs(a.dueDate) - dueDateMs(b.dueDate));
-        if (past.length > 0) pastMonthsByDivision.set(d.id, past.map((m) => m.id));
 
         const thisMonth = months.find((m) => m.month === currentCalendarMonth);
+        let currentId: string | undefined;
         if (thisMonth) {
-          currentMonthIdByDivision.set(d.id, thisMonth.id);
+          currentId = thisMonth.id;
         } else if (past.length > 0) {
-          currentMonthIdByDivision.set(d.id, past[past.length - 1].id);
+          currentId = past[past.length - 1].id;
         } else {
           const earliest = [...months].sort((a, b) => dueDateMs(a.dueDate) - dueDateMs(b.dueDate))[0];
-          if (earliest) currentMonthIdByDivision.set(d.id, earliest.id);
+          currentId = earliest?.id;
         }
+        if (currentId) currentMonthIdByDivision.set(d.id, currentId);
+
+        const previous = past.filter((m) => m.id !== currentId);
+        if (previous.length > 0) previousMonthsByDivision.set(d.id, previous.map((m) => m.id));
       }
     }
 
-    // Must include every division's "current" month id too, not just past-due
-    // ones — a division with no month past due yet still has a "current"
-    // (the earliest upcoming month), and students can be marked paid ahead
-    // of the due date, so that month's payments still need to be fetched.
+    // Must include every division's "current" month id too, not just
+    // previous ones — a division with no month past due yet still has a
+    // "current" (the earliest upcoming month), and students can be marked
+    // paid ahead of the due date, so that month's payments still need to be
+    // fetched.
     const allFeeMonthIds = Array.from(new Set([
-      ...Array.from(pastMonthsByDivision.values()).flat(),
+      ...Array.from(previousMonthsByDivision.values()).flat(),
       ...Array.from(currentMonthIdByDivision.values()),
     ]));
     const payments = allFeeMonthIds.length
@@ -259,14 +275,22 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
         })
       : [];
 
-    const paidByDivision = new Map<string, { monthly: number; overallMonthIds: Set<string> }>();
+    const monthlyPaidByDivision = new Map<string, number>();
+    // studentId → set of previous-month feeMonthIds they've paid — used to
+    // classify each student as fully-paid-for-previous-months or not, rather
+    // than summing raw paid rows (see comment on the endpoint above).
+    const previousMonthsPaidByStudent = new Map<string, Set<string>>();
     for (const p of payments) {
       const divisionId = p.student.divisionId;
       if (!divisionId) continue;
-      const entry = paidByDivision.get(divisionId) ?? { monthly: 0, overallMonthIds: new Set<string>() };
-      if (currentMonthIdByDivision.get(divisionId) === p.feeMonthId) entry.monthly++;
-      if (pastMonthsByDivision.get(divisionId)?.includes(p.feeMonthId)) entry.overallMonthIds.add(`${p.studentId}:${p.feeMonthId}`);
-      paidByDivision.set(divisionId, entry);
+      if (currentMonthIdByDivision.get(divisionId) === p.feeMonthId) {
+        monthlyPaidByDivision.set(divisionId, (monthlyPaidByDivision.get(divisionId) ?? 0) + 1);
+      }
+      if (previousMonthsByDivision.get(divisionId)?.includes(p.feeMonthId)) {
+        const set = previousMonthsPaidByStudent.get(p.studentId) ?? new Set<string>();
+        set.add(p.feeMonthId);
+        previousMonthsPaidByStudent.set(p.studentId, set);
+      }
     }
 
     const data = standards
@@ -278,23 +302,86 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
           .filter((d) => currentMonthIdByDivision.has(d.id))
           .map((d) => {
             const total = d._count.students;
-            const paidEntry = paidByDivision.get(d.id);
-            const monthPaid = paidEntry?.monthly ?? 0;
-            const pastMonthCount = pastMonthsByDivision.get(d.id)?.length ?? 0;
-            const overallTotal = total * pastMonthCount;
-            const overallPaid = paidEntry?.overallMonthIds.size ?? 0;
+            const monthPaid = monthlyPaidByDivision.get(d.id) ?? 0;
+            const previousMonthIds = previousMonthsByDivision.get(d.id) ?? [];
+
+            let overallPaid: number | null = null;
+            let overallPending: number | null = null;
+            if (previousMonthIds.length > 0) {
+              overallPaid = 0;
+              for (const stu of d.students) {
+                const paidSet = previousMonthsPaidByStudent.get(stu.id);
+                const clearedAllPrevious = previousMonthIds.every((mid) => paidSet?.has(mid));
+                if (clearedAllPrevious) overallPaid++;
+              }
+              overallPending = Math.max(0, total - overallPaid);
+            }
+
             return {
               id: d.id,
               name: d.name,
               monthPaid,
               monthPending: Math.max(0, total - monthPaid),
-              overallPaid: pastMonthCount > 0 ? overallPaid : null,
-              overallPending: pastMonthCount > 0 ? Math.max(0, overallTotal - overallPaid) : null,
+              overallPaid,
+              overallPending,
               total,
             };
           }),
       }));
 
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── GET /admin/insights/fees/ai — AI Fee Health Score, forecast graph, peer benchmark ──
+export const getFeeAiInsights = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId, role } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+
+    const cacheKey = `insights:fee-ai:${institutionId}`;
+    const cached = await getCache<unknown>(cacheKey);
+    if (cached) {
+      res.json({ success: true, data: cached });
+      return;
+    }
+
+    const stats = await computeInstitutionFeeStats(academicDb(), institutionId);
+    const { score: healthScore, label: healthLabel } = computeFeeHealthScore(stats);
+    // Ask an actual LLM to read the trend and predict the next month, the
+    // same way the Blackboard AI features call out to OpenAI/Groq — this is
+    // a real model call, not a fixed formula. If it's unavailable (no API
+    // key), the institution's token budget is used up, or the call fails for
+    // any reason, fall back to the plain average-delta extrapolation so the
+    // card still shows *something* rather than breaking.
+    const aiForecast = await generateAiFeeForecast(stats.historical, {
+      institutionId,
+      userId,
+      userRole: role,
+    }).catch(() => null);
+    const forecast = aiForecast
+      ? [...stats.historical, { month: aiForecast.month, rate: Math.round(((aiForecast.low + aiForecast.high) / 2) * 10) / 10, projected: true }]
+      : computeFeeForecast(stats.historical);
+    // Peer benchmark loops every institution on the platform on a cache miss
+    // (once a day, see feeInsights.service.ts) — never let a slow/failed
+    // benchmark computation break the rest of this card.
+    const peerBenchmark = await getFeePeerBenchmark(institutionId, stats).catch(() => null);
+
+    const data = {
+      healthScore,
+      healthLabel,
+      monthlyRate: stats.monthlyTotal > 0 ? Math.round((stats.monthlyPaid / stats.monthlyTotal) * 1000) / 10 : 0,
+      overallRate: stats.overallTotal > 0 ? Math.round((stats.overallPaid / stats.overallTotal) * 1000) / 10 : 0,
+      forecast,
+      forecastRange: aiForecast ? { low: aiForecast.low, high: aiForecast.high } : null,
+      forecastInsight: aiForecast?.insight ?? null,
+      isAiGenerated: !!aiForecast,
+      peerBenchmark,
+    };
+
+    await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
     res.json({ success: true, data });
   } catch (err) {
     next(err);
@@ -315,16 +402,19 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     // Cache key includes the month so a cached response from August can't
     // leak into a September page load.
     const monthKey = istMonthKey(new Date());
-    const cacheKey = `insights:ai-usage:v2:${institutionId}:${monthKey}`;
-    const cached = await getCache<unknown>(cacheKey);
+    // v4: added avatarUrl per teacher — bumped so a stale v3 cache entry
+    // (without it) doesn't leak through and hide photos until the cache
+    // naturally expires.
+    const cacheKey = `insights:ai-usage:v4:${institutionId}:${monthKey}`;
+    const cached = await getCache<{ data: unknown; institutionByFeature: unknown }>(cacheKey);
     if (cached) {
-      res.json({ success: true, data: cached });
+      res.json({ success: true, ...cached });
       return;
     }
 
     const teachers = await academicDb().teacher.findMany({
       where: { institutionId },
-      select: { id: true, userId: true },
+      select: { id: true, userId: true, avatarUrl: true },
     });
     const teacherUsers = await resolveUsers(teachers.map((t) => t.userId), { id: true, name: true });
 
@@ -332,6 +422,9 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     const to = new Date();
     const breakdown = await getInstitutionTeacherBreakdown(institutionId, from, to);
     const byTeacherId = new Map(breakdown.map((b) => [b.teacherId, b]));
+    // Covers admin-triggered features too (e.g. FEE_FORECAST), which have no
+    // teacherId and would otherwise never show up in "Usage by Feature".
+    const institutionByFeature = await getInstitutionByFeatureBreakdown(institutionId, from, to);
 
     const data = teachers
       .map((t) => {
@@ -339,6 +432,7 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
         return {
           teacherId: t.id,
           name: teacherUsers.get(t.userId)?.name ?? "Unknown",
+          avatarUrl: t.avatarUrl ?? null,
           used: summary?.totalTokens ?? 0, // kept for backward compat with the existing frontend field name
           totalTokens: summary?.totalTokens ?? 0,
           totalRequests: summary?.totalRequests ?? 0,
@@ -355,8 +449,9 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
       // doesn't jump around as usage changes.
       .sort((a, b) => b.used - a.used || a.name.localeCompare(b.name));
 
-    await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
-    res.json({ success: true, data });
+    const responseBody = { data, institutionByFeature };
+    await setCache(cacheKey, responseBody, INSIGHTS_CACHE_TTL_SECONDS);
+    res.json({ success: true, ...responseBody });
   } catch (err) {
     next(err);
   }

@@ -15,6 +15,7 @@ import { getStudentAttendanceTrendData } from "../../services/studentAttendanceT
 import { getStudentAttendanceDetailData } from "../../services/studentAttendanceDetail.service";
 import { getDivisionFeePaymentsData, upsertFeePaymentData } from "../../services/feePayment.service";
 import { upsertFeePaymentSchema } from "../../services/feePayment.schema";
+import { delCache } from "../../utils/cache";
 
 function requireInstitution(req: AuthRequest) {
   const { institutionId } = req.user!;
@@ -364,6 +365,11 @@ export const updateFeePayment = async (req: AuthRequest, res: Response, next: Ne
       extraFields: body.extraFields ?? null,
       extraStructureIds: body.extraStructureIds ?? null,
     });
+    // The AI Fee Health Score / Forecast / Peer Benchmark card caches its
+    // response for 5 minutes (INSIGHTS_CACHE_TTL_SECONDS) — without this,
+    // an admin editing a payment right here wouldn't see it reflected in
+    // that card until the cache naturally expired.
+    await delCache(`insights:fee-ai:${institutionId}`);
     res.json({ success: true, data });
   } catch (err) {
     next(err);

@@ -7,7 +7,8 @@ export type AiFeature =
   | "BLACKBOARD_CHAT"
   | "BLACKBOARD_QUIZ"
   | "BLACKBOARD_MINDMAP"
-  | "TASK_QUESTION_GENERATION";
+  | "TASK_QUESTION_GENERATION"
+  | "FEE_FORECAST";
 
 // The institution/teacher token pool is a *monthly* allowance (see
 // PLAN_AI_TOKENS in billing.service), but the Redis counters that back the
@@ -391,6 +392,22 @@ export async function getInstitutionTeacherBreakdown(
     summaries.push(summaryForTeacherEvents(teacherId, teacherEvents, softLimit, override));
   }
   return summaries;
+}
+
+// Institution-wide feature totals, unlike getInstitutionTeacherBreakdown
+// which only looks at events with a teacherId set. Some AI features are
+// triggered by an admin, not a teacher (e.g. FEE_FORECAST) — those events
+// have no teacherId and would silently vanish from any "usage by feature"
+// view built only out of the per-teacher breakdown. This is the one place
+// that counts every event in the window regardless of who triggered it.
+export async function getInstitutionByFeatureBreakdown(
+  institutionId: string, from: Date, to: Date
+): Promise<FeatureBreakdownEntry[]> {
+  const events = await prisma.aiUsageEvent.findMany({
+    where: { institutionId, createdAt: { gte: from, lte: to } },
+    select: { feature: true, status: true, totalTokens: true },
+  });
+  return summarizeEvents(events).byFeature;
 }
 
 export interface InstitutionUsageSummary {

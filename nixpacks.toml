@@ -2,5 +2,10 @@
 # Needed by src/services/pdfNormalize.service.ts, which shells out to `gs`
 # to re-encode certain scanned PDFs' images (JPEG2000/CMYK) into a format
 # pdf.js can actually decode — see that file for the full "why".
+#
+# A custom [phases.setup].nixPkgs list REPLACES Nixpacks' auto-detected
+# packages instead of extending them, so nodejs/pnpm (normally added
+# automatically from the pnpm-lock.yaml + engines field) must be listed
+# here explicitly too, or the build fails with "pnpm: command not found".
 [phases.setup]
-nixPkgs = ["ghostscript"]
+nixPkgs = ["nodejs_20", "pnpm", "ghostscript"]

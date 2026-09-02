@@ -146,6 +146,7 @@ model Teacher {
   createdMarksheets   Marksheet[]          @relation("MarksheetCreator")
   blackboardFolders   BlackboardFolder[]
   blackboardMaterials BlackboardMaterial[]
+  mindmaps            Mindmap[]
   taskQuestions       TaskQuestion[]
   taskContainers      TaskContainer[]
   taskModules         TaskModule[]
@@ -720,6 +721,18 @@ model BlackboardMaterial {
   @@index([institutionId, teacherId])
   @@index([folderId])
   @@index([teacherId])
+}
+
+model Mindmap {
+  id            String @id @default(uuid())
+  institutionId String
+  teacherId     String
+  teacher       Teacher  @relation(fields: [teacherId], references: [id])
+  title         String
+  data          Json // recursive tree: { label: string, children: Mindmap[] }
+  createdAt     DateTime @default(now())
+
+  @@index([institutionId, teacherId])
 }
 
 enum TaskQuestionType {

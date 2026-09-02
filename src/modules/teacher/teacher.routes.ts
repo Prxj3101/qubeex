@@ -106,6 +106,10 @@ import {
   aiScan,
   aiChat,
   aiQuiz,
+  aiMindmap,
+  listMindmaps,
+  getMindmap,
+  deleteMindmap,
   searchImages,
 } from "./blackboard.controller";
 import {
@@ -1101,6 +1105,10 @@ router.post("/blackboard/normalize-pdf", authMiddleware(["TEACHER"]), upload.sin
 router.post("/blackboard/ai/scan", ...T, aiScan);
 router.post("/blackboard/ai/chat", ...T, aiChat);
 router.post("/blackboard/ai/quiz", ...T, aiQuiz);
+router.post("/blackboard/ai/mindmap", ...T, aiMindmap);
+router.get("/blackboard/mindmaps", ...T, listMindmaps);
+router.get("/blackboard/mindmaps/:id", ...T, getMindmap);
+router.delete("/blackboard/mindmaps/:id", ...T, deleteMindmap);
 
 // ── Blackboard Images ─────────────────────────────────────────────────────────
 router.get("/blackboard/images", ...T, searchImages);

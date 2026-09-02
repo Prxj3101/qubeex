@@ -174,6 +174,7 @@ model Institution {
   feeStructures      DivisionFeeStructure[]
   blackboardFolders  BlackboardFolder[]
   blackboardMaterials BlackboardMaterial[]
+  mindmaps           Mindmap[]
   taskQuestions      TaskQuestion[]
   taskContainers     TaskContainer[]
   taskModules        TaskModule[]
@@ -198,11 +199,6 @@ model Institution {
   promotionBatches         PromotionBatch[]
   studentPromotionOutcomes StudentPromotionOutcome[]
   aiUsageEvents            AiUsageEvent[]
-  // Owned by a separate/unrelated project sharing this database (not part of
-  // QubeEx) — kept here, exactly matching the live DB, purely so `prisma db
-  // push` never proposes dropping the Mindmap table. @ignore excludes it
-  // from the generated Prisma Client; QubeEx code must never touch it.
-  mindmaps Mindmap[] @ignore
 }
 
 model User {
@@ -383,6 +379,7 @@ model Teacher {
   createdMarksheets   Marksheet[]          @relation("MarksheetCreator")
   blackboardFolders   BlackboardFolder[]
   blackboardMaterials BlackboardMaterial[]
+  mindmaps            Mindmap[]
   taskQuestions       TaskQuestion[]
   taskContainers      TaskContainer[]
   taskModules         TaskModule[]
@@ -392,9 +389,6 @@ model Teacher {
   taskPdfUploads      TaskPdfUpload[]
   teacherNotes        TeacherNote[]
   teacherTasks        TeacherTask[]
-  // See the matching comment on Institution.mindmaps — unrelated project's
-  // table sharing this database, kept only so `db push` leaves it alone.
-  mindmaps            Mindmap[] @ignore
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
@@ -1193,6 +1187,19 @@ model BlackboardMaterial {
   @@index([teacherId])
 }
 
+model Mindmap {
+  id            String @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  teacherId     String
+  teacher       Teacher  @relation(fields: [teacherId], references: [id])
+  title         String
+  data          Json // recursive tree: { label: string, children: Mindmap[] }
+  createdAt     DateTime @default(now())
+
+  @@index([institutionId, teacherId])
+}
+
 // ─── Task Questions & Modules ─────────────────────────────────────────────────
 
 enum TaskQuestionType {
@@ -1750,26 +1757,6 @@ model MarksheetRemark {
 
   @@unique([marksheetId, studentId])
   @@index([marksheetId])
-}
-
-// NOT a QubeEx table — a friend's separate/unrelated project's table that
-// happens to share this same Postgres database. Declared here, matching the
-// live DB exactly, purely so `prisma db push` sees zero diff and never
-// proposes dropping it. `@@ignore` (+ `@ignore` on the two back-relations
-// above, on Institution and Teacher) excludes it entirely from the generated
-// Prisma Client — QubeEx application code has no way to read/write it.
-model Mindmap {
-  id            String      @id
-  institutionId String
-  teacherId     String
-  title         String
-  data          Json
-  createdAt     DateTime    @default(now())
-  Institution   Institution @relation(fields: [institutionId], references: [id])
-  Teacher       Teacher     @relation(fields: [teacherId], references: [id])
-
-  @@index([institutionId, teacherId])
-  @@ignore
 }
 
 // Cache for machine-translated teacher-entered free text (Conduct/Remarks,

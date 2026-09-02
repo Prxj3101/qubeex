@@ -425,6 +425,7 @@ export const ModelName = {
   StudentFeePayment: 'StudentFeePayment',
   BlackboardFolder: 'BlackboardFolder',
   BlackboardMaterial: 'BlackboardMaterial',
+  Mindmap: 'Mindmap',
   TaskContainer: 'TaskContainer',
   TaskQuestion: 'TaskQuestion',
   TaskModule: 'TaskModule',
@@ -461,7 +462,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2537,6 +2538,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Mindmap: {
+      payload: Prisma.$MindmapPayload<ExtArgs>
+      fields: Prisma.MindmapFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MindmapFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MindmapFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>
+        }
+        findFirst: {
+          args: Prisma.MindmapFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MindmapFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>
+        }
+        findMany: {
+          args: Prisma.MindmapFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>[]
+        }
+        create: {
+          args: Prisma.MindmapCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>
+        }
+        createMany: {
+          args: Prisma.MindmapCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MindmapCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>[]
+        }
+        delete: {
+          args: Prisma.MindmapDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>
+        }
+        update: {
+          args: Prisma.MindmapUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>
+        }
+        deleteMany: {
+          args: Prisma.MindmapDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MindmapUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MindmapUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>[]
+        }
+        upsert: {
+          args: Prisma.MindmapUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MindmapPayload>
+        }
+        aggregate: {
+          args: Prisma.MindmapAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMindmap>
+        }
+        groupBy: {
+          args: Prisma.MindmapGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MindmapGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MindmapCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MindmapCountAggregateOutputType> | number
+        }
+      }
+    }
     TaskContainer: {
       payload: Prisma.$TaskContainerPayload<ExtArgs>
       fields: Prisma.TaskContainerFieldRefs
@@ -4572,6 +4647,18 @@ export const BlackboardMaterialScalarFieldEnum = {
 export type BlackboardMaterialScalarFieldEnum = (typeof BlackboardMaterialScalarFieldEnum)[keyof typeof BlackboardMaterialScalarFieldEnum]
 
 
+export const MindmapScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  teacherId: 'teacherId',
+  title: 'title',
+  data: 'data',
+  createdAt: 'createdAt'
+} as const
+
+export type MindmapScalarFieldEnum = (typeof MindmapScalarFieldEnum)[keyof typeof MindmapScalarFieldEnum]
+
+
 export const TaskContainerScalarFieldEnum = {
   id: 'id',
   institutionId: 'institutionId',
@@ -5430,6 +5517,7 @@ export type GlobalOmitConfig = {
   studentFeePayment?: Prisma.StudentFeePaymentOmit
   blackboardFolder?: Prisma.BlackboardFolderOmit
   blackboardMaterial?: Prisma.BlackboardMaterialOmit
+  mindmap?: Prisma.MindmapOmit
   taskContainer?: Prisma.TaskContainerOmit
   taskQuestion?: Prisma.TaskQuestionOmit
   taskModule?: Prisma.TaskModuleOmit

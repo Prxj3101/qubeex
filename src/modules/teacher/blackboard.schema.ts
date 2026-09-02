@@ -46,3 +46,13 @@ export const aiQuizSchema = z.object({
   // string, guidance competes with the subject instead of shaping the output.
   instructions: z.string().max(500).trim().optional(),
 });
+
+export const aiMindmapSchema = z.object({
+  topic: z.string().min(1).max(200).trim(),
+  pageText: z.string().max(8000).trim().optional(),
+  instructions: z.string().max(500).trim().optional(),
+  // How many levels below the root — 2 is a compact map (root -> subtopics ->
+  // details), 3 goes one level deeper. Kept small since node count grows
+  // exponentially and a cluttered map defeats the point.
+  depth: z.number().int().min(1).max(3).optional().default(2),
+});

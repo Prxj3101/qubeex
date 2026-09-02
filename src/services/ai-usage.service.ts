@@ -6,6 +6,7 @@ export type AiFeature =
   | "BLACKBOARD_SCAN"
   | "BLACKBOARD_CHAT"
   | "BLACKBOARD_QUIZ"
+  | "BLACKBOARD_MINDMAP"
   | "TASK_QUESTION_GENERATION";
 
 // The institution/teacher token pool is a *monthly* allowance (see

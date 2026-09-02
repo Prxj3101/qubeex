@@ -5,7 +5,7 @@ import { academicDb } from "../../utils/academicContext";
 import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
 import { normalizePdfIfNeeded } from "../../services/pdfNormalize.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
-import { createFolderSchema, aiScanSchema, aiChatSchema, aiQuizSchema } from "./blackboard.schema";
+import { createFolderSchema, aiScanSchema, aiChatSchema, aiQuizSchema, aiMindmapSchema } from "./blackboard.schema";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 import { redis, isRedisReady } from "../../utils/redis";
@@ -1809,6 +1809,201 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
     await recordAskedQuestions(historyKey, askedBefore, finalQuestions.map(q => q.question));
 
     res.json({ success: true, data: { questions: finalQuestions } });
+  } catch (err) { next(err); }
+};
+
+// ── AI Mindmap ───────────────────────────────────────────────────────────────
+
+interface MindmapNode {
+  label: string;
+  // One emoji the model picks per node. Rendering it is free and always
+  // legible — unlike asking an image model to draw an icon, where the label
+  // itself is at risk of coming back mangled.
+  emoji?: string;
+  children: MindmapNode[];
+}
+
+const MAX_CHILDREN_PER_NODE = 8;
+
+// A stray sentence in the emoji field would blow out the sticker layout, and
+// emoji are multi-codepoint (👨‍👩‍👧 is 5), so cap by codepoint count rather
+// than string length and drop anything that's clearly not an emoji.
+function normalizeEmoji(raw: unknown): string | undefined {
+  if (typeof raw !== "string") return undefined;
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+  if ([...trimmed].length > 8) return undefined;
+  // Reject plain text ("dna", "A") — a real emoji has no ASCII letters/digits.
+  if (/[A-Za-z0-9]/.test(trimmed)) return undefined;
+  return trimmed;
+}
+
+// Defends against a malformed or oversized LLM response before it's persisted
+// or rendered — caps fan-out per node and recursion depth, drops anything
+// without a usable label.
+function normalizeMindmapNode(raw: unknown, depthLeft: number): MindmapNode | null {
+  if (!raw || typeof raw !== "object") return null;
+  const n = raw as Record<string, unknown>;
+  const label = typeof n.label === "string" ? n.label.trim() : "";
+  if (!label) return null;
+  const emoji = normalizeEmoji(n.emoji);
+  const rawChildren = Array.isArray(n.children) ? n.children : [];
+  const children = depthLeft > 0
+    ? rawChildren
+        .slice(0, MAX_CHILDREN_PER_NODE)
+        .map((c) => normalizeMindmapNode(c, depthLeft - 1))
+        .filter((c): c is MindmapNode => c !== null)
+    : [];
+  return { label, ...(emoji ? { emoji } : {}), children };
+}
+
+export const aiMindmap = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const data = aiMindmapSchema.parse(req.body);
+
+    if (!openai) {
+      const mock: MindmapNode = {
+        label: data.topic,
+        emoji: "🧠",
+        children: [
+          { label: "Key Concept 1", emoji: "💡", children: [{ label: "Detail A", children: [] }, { label: "Detail B", children: [] }] },
+          { label: "Key Concept 2", emoji: "🔬", children: [{ label: "Detail C", children: [] }] },
+          { label: "Key Concept 3", emoji: "🌱", children: [] },
+        ],
+      };
+      return res.json({ success: true, data: { mindmap: mock, saved: false } });
+    }
+
+    await checkTokenPool(institutionId);
+    const teacherId = await getTeacherId(userId, institutionId);
+
+    // Without a varying token the model converges on near-identical
+    // breakdowns for the same topic/pages — a teacher regenerating expects a
+    // genuinely different structure, not the same map reworded. Same fix as
+    // AI Quiz's variationSeed.
+    const variationSeed = crypto.randomBytes(4).toString("hex");
+
+    const systemPrompt =
+      `You are a mindmap generator for school students. Produce a hierarchical mindmap exactly ${data.depth} level(s) deep below the root topic. ` +
+      `Aim for 4-6 main branches, each with 2-4 short points under it. ` +
+      // The map is rendered as fixed-width stickers, so a long label wraps to
+      // three lines and wrecks the layout — this cap is a layout constraint,
+      // not a style preference.
+      `Every label must be SHORT: 2-5 words for a branch, at most 8 words for a point. Never write a full sentence. ` +
+      `Each branch must break the topic into a distinct, non-overlapping idea — not a restatement of the parent. ` +
+      `Give EVERY node an "emoji" field: a single emoji that visually represents that node (e.g. 🧬 for DNA, 🌱 for plants, 🦕 for evolution). ` +
+      `Pick concrete, recognisable emoji a 15-year-old would connect to the idea. Never repeat the same emoji twice in one mindmap. ` +
+      `Variation token ${variationSeed}: produce a genuinely different breakdown from any previous one for this material — vary which sub-ideas you pick, how you group them, and their ordering. ` +
+      (data.pageText
+        ? `Base the mindmap ONLY on the supplied material — do not introduce facts, terms, or examples that do not appear in it. `
+        : "") +
+      `Return a JSON object: { "label": "<root topic>", "emoji": "<emoji>", "children": [ { "label": "...", "emoji": "...", "children": [ { "label": "...", "emoji": "...", "children": [] } ] }, ... ] }. ` +
+      `Respond only in English, regardless of the language of the source material. Return ONLY valid JSON, no markdown.`;
+
+    const instructionBlock = data.instructions
+      ? `\nTEACHER'S INSTRUCTIONS — these are binding, and must shape which branches you include:\n"${data.instructions}"\n`
+      : "";
+
+    const userContent = data.pageText
+      ? [`Material to base the mindmap on:\n${data.pageText}`, instructionBlock].filter(Boolean).join("\n")
+      : [`Topic: ${data.topic}`, instructionBlock].filter(Boolean).join("\n");
+
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: AI_MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userContent },
+        ],
+        response_format: { type: "json_object" },
+        // Same reasoning as AI Quiz — regenerating should feel like a fresh
+        // pass over the material, not a near-duplicate. 0.7 was converging
+        // on the same structure most of the time.
+        temperature: 1,
+        // A mindmap is just short labels, not prose — the token budget is
+        // small even at max depth/fan-out.
+        max_tokens: 1200,
+        ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
+      });
+    } catch (err) {
+      await recordAiUsage({
+        institutionId, teacherId, userId, userRole: "TEACHER",
+        feature: "BLACKBOARD_MINDMAP" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+        requestType: "chat_completion", status: "FAILED", error: err instanceof Error ? err.message : String(err),
+      });
+      throw err;
+    }
+
+    await recordAiUsage({
+      institutionId, teacherId, userId, userRole: "TEACHER",
+      feature: "BLACKBOARD_MINDMAP" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+      requestType: "chat_completion", status: "SUCCESS",
+      inputTokens: completion.usage?.prompt_tokens, outputTokens: completion.usage?.completion_tokens,
+      totalTokens: completion.usage?.total_tokens,
+    });
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
+    } catch {
+      throw new BadRequestError("AI returned malformed JSON — please retry");
+    }
+
+    const mindmap = normalizeMindmapNode(parsed, data.depth);
+    if (!mindmap || mindmap.children.length === 0) {
+      throw new BadRequestError("AI returned an unusable mindmap — please retry");
+    }
+
+    const saved = await academicDb().mindmap.create({
+      data: {
+        institutionId,
+        teacherId,
+        title: mindmap.label || data.topic,
+        data: mindmap as unknown as object,
+      },
+    });
+
+    res.json({ success: true, data: { mindmap, saved: true, id: saved.id } });
+  } catch (err) { next(err); }
+};
+
+export const listMindmaps = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const mindmaps = await academicDb().mindmap.findMany({
+      where: { institutionId, teacherId },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, title: true, createdAt: true },
+    });
+    res.json({ success: true, data: mindmaps });
+  } catch (err) { next(err); }
+};
+
+export const getMindmap = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const mindmap = await academicDb().mindmap.findFirst({
+      where: { id: req.params.id as string, institutionId, teacherId },
+    });
+    if (!mindmap) throw new NotFoundError("Mindmap not found");
+    res.json({ success: true, data: mindmap });
+  } catch (err) { next(err); }
+};
+
+export const deleteMindmap = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const teacherId = await getTeacherId(userId, institutionId);
+    const mindmap = await academicDb().mindmap.findFirst({
+      where: { id: req.params.id as string, institutionId, teacherId },
+    });
+    if (!mindmap) throw new NotFoundError("Mindmap not found");
+    await academicDb().mindmap.delete({ where: { id: mindmap.id } });
+    res.json({ success: true });
   } catch (err) { next(err); }
 };
 

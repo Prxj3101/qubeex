@@ -180,6 +180,11 @@ export type BlackboardFolder = Prisma.BlackboardFolderModel
  */
 export type BlackboardMaterial = Prisma.BlackboardMaterialModel
 /**
+ * Model Mindmap
+ * 
+ */
+export type Mindmap = Prisma.MindmapModel
+/**
  * Model TaskContainer
  * 
  */

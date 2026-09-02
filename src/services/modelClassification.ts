@@ -70,6 +70,7 @@ export const ACADEMIC_MODELS = [
   "StudentFeePayment",
   "BlackboardFolder",
   "BlackboardMaterial",
+  "Mindmap",
   "TaskContainer",
   "TaskQuestion",
   "TaskModule",

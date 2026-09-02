@@ -79,6 +79,7 @@ export const ModelName = {
   StudentFeePayment: 'StudentFeePayment',
   BlackboardFolder: 'BlackboardFolder',
   BlackboardMaterial: 'BlackboardMaterial',
+  Mindmap: 'Mindmap',
   TaskContainer: 'TaskContainer',
   TaskQuestion: 'TaskQuestion',
   TaskModule: 'TaskModule',
@@ -558,6 +559,18 @@ export const BlackboardMaterialScalarFieldEnum = {
 } as const
 
 export type BlackboardMaterialScalarFieldEnum = (typeof BlackboardMaterialScalarFieldEnum)[keyof typeof BlackboardMaterialScalarFieldEnum]
+
+
+export const MindmapScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  teacherId: 'teacherId',
+  title: 'title',
+  data: 'data',
+  createdAt: 'createdAt'
+} as const
+
+export type MindmapScalarFieldEnum = (typeof MindmapScalarFieldEnum)[keyof typeof MindmapScalarFieldEnum]
 
 
 export const TaskContainerScalarFieldEnum = {

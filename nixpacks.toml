@@ -1,0 +1,6 @@
+# Adds the Ghostscript binary ("gs") to the Nixpacks build/runtime image.
+# Needed by src/services/pdfNormalize.service.ts, which shells out to `gs`
+# to re-encode certain scanned PDFs' images (JPEG2000/CMYK) into a format
+# pdf.js can actually decode — see that file for the full "why".
+[phases.setup]
+nixPkgs = ["ghostscript"]

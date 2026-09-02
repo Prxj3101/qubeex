@@ -102,6 +102,7 @@ import {
   deleteFolder,
   uploadFile,
   deleteFile,
+  normalizePdfUpload,
   aiScan,
   aiChat,
   aiQuiz,
@@ -1091,6 +1092,10 @@ router.post("/blackboard/storage/folders", ...T, createFolder);
 router.delete("/blackboard/storage/folders/:id", ...T, deleteFolder);
 router.post("/blackboard/storage/folders/:id/files", authMiddleware(["TEACHER"]), institutionAccessMiddleware, upload.single("file"), academicRoutingMiddleware, uploadFile);
 router.delete("/blackboard/storage/files/:id", ...T, deleteFile);
+// Stateless "clean this PDF for me" pass-through for the client-side
+// "From Computer" load flow, which never otherwise touches the backend —
+// no folder/DB involved, just auth + normalize + return bytes.
+router.post("/blackboard/normalize-pdf", authMiddleware(["TEACHER"]), upload.single("file"), normalizePdfUpload);
 
 // ── Blackboard AI ─────────────────────────────────────────────────────────────
 router.post("/blackboard/ai/scan", ...T, aiScan);

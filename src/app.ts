@@ -36,6 +36,10 @@ const corsOptions = {
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  // Custom response headers aren't visible to frontend JS across origins by
+  // default — X-Pdf-Normalize-Status (Blackboard PDF normalization result)
+  // needs to be explicitly exposed for the frontend to read it.
+  exposedHeaders: ["X-Pdf-Normalize-Status"],
   optionsSuccessStatus: 200,
 };
 

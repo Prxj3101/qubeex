@@ -931,6 +931,65 @@ export const listStudents = async (req: AuthRequest, res: Response, next: NextFu
   }
 };
 
+export const searchStudents = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+
+    const q = String(req.query.q ?? "").trim();
+    if (!q) return res.json({ success: true, data: [] });
+
+    const [students, institution] = await Promise.all([
+      academicDb().student.findMany({
+        where: { institutionId },
+        include: {
+          standard: { select: { id: true, name: true } },
+          division: { select: { id: true, name: true } },
+        },
+        orderBy: { createdAt: "asc" },
+      }),
+      prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true, logoUrl: true } }),
+    ]);
+
+    const userMap = await resolveUsers(students.map((s) => s.userId), { id: true, name: true, email: true });
+
+    const needle = q.toLowerCase();
+    const matches = students
+      .filter((s) => {
+        const name = userMap.get(s.userId)?.name ?? "";
+        return name.toLowerCase().includes(needle) || s.studentId.toLowerCase().includes(needle);
+      })
+      .slice(0, 8);
+
+    const rawAvatarUrls = matches.map((s) => s.avatarUrl ?? null);
+    const signedMap = await generateSignedAvatarUrlsBatch(rawAvatarUrls);
+
+    res.json({
+      success: true,
+      data: matches.map((s) => ({
+        id: s.id,
+        studentId: s.studentId,
+        name: userMap.get(s.userId)?.name,
+        // A student account's User.email is auto-filled with a
+        // "@students.qubeex.local" placeholder at creation time (since it
+        // can't be null) unless a real email was actually entered — never
+        // show that placeholder back as if it were a real email.
+        email: userMap.get(s.userId)?.email?.endsWith("@students.qubeex.local") ? null : userMap.get(s.userId)?.email,
+        avatarUrl: s.avatarUrl ? signedMap[s.avatarUrl] ?? s.avatarUrl : null,
+        rollNo: s.rollNo,
+        dob: s.dob,
+        admissionYear: s.admissionYear,
+        institutionName: institution?.name ?? "",
+        institutionLogoUrl: institution?.logoUrl ?? null,
+        standard: s.standard,
+        division: s.division,
+      })),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const addStudent = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const user = req.user!;

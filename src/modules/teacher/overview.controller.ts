@@ -8,9 +8,10 @@ import { redis } from "../../utils/redis";
 import {
   getTeacherUsageSummary,
   getInstitutionAiTokenLimit,
-  rangeToFromDate,
   bucketEvents,
   bucketGranularity,
+  institutionUsageRedisKey,
+  currentMonthStartIST,
 } from "../../services/ai-usage.service";
 
 function calcPct(present: number, absent: number, late: number): number | null {
@@ -185,14 +186,20 @@ export async function getMyAiUsage(req: AuthRequest, res: Response, next: NextFu
       return;
     }
 
+    // This widget mirrors the "current pool since last reset" the admin
+    // analytics page shows, not an arbitrary historical window — it always
+    // used "last 30 days" (a rolling window) before, which kept showing
+    // August's usage days into September even after the pool had reset.
+    // `range` is kept only for the trend chart's bucketing granularity; the
+    // actual data window is always the current IST calendar month.
     const range = (req.query.range as string) ?? "1M";
-    const from = rangeToFromDate(range as "7D" | "1M" | "3M" | "6M" | "YTD");
+    const from = currentMonthStartIST();
     const to = new Date();
 
     const [summary, institutionLimit, poolUsedRaw] = await Promise.all([
       getTeacherUsageSummary(institutionId, teacher.id, from, to),
       getInstitutionAiTokenLimit(institutionId),
-      redis?.get(`ai:usage:institution:${institutionId}`) ?? Promise.resolve(null),
+      redis?.get(institutionUsageRedisKey(institutionId)) ?? Promise.resolve(null),
     ]);
 
     const events = await prisma.aiUsageEvent.findMany({

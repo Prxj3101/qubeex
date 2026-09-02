@@ -12,9 +12,11 @@ import {
   bucketEvents,
   bucketGranularity,
   getInstitutionAiTokenLimit,
+  getInstitutionPoolUsed,
+  currentMonthStartIST,
+  istMonthKey,
 } from "../../services/ai-usage.service";
 import { prisma } from "../../utils/prisma";
-import { redis } from "../../utils/redis";
 
 // Both endpoints below scan full-institution history on every request (all
 // attendance rows for the academic year; all status/audit events ever, with
@@ -305,10 +307,15 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
-    // All-time, institution-wide event scan — expensive enough (and stable
-    // enough minute-to-minute) to deserve the same short TTL cache the other
-    // Insights endpoints in this file use.
-    const cacheKey = `insights:ai-usage:v1:${institutionId}`;
+    // Current calendar month only — same boundary as the Redis pool counter
+    // (institutionUsageRedisKey), so "Per teacher" / "Usage by Feature" here
+    // always describe the same pool the top-of-card "X / limit tokens" stat
+    // is counting down. This used to scan all-time, which kept showing last
+    // month's (or older) numbers even after the pool had visibly reset.
+    // Cache key includes the month so a cached response from August can't
+    // leak into a September page load.
+    const monthKey = istMonthKey(new Date());
+    const cacheKey = `insights:ai-usage:v2:${institutionId}:${monthKey}`;
     const cached = await getCache<unknown>(cacheKey);
     if (cached) {
       res.json({ success: true, data: cached });
@@ -321,7 +328,7 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     });
     const teacherUsers = await resolveUsers(teachers.map((t) => t.userId), { id: true, name: true });
 
-    const from = new Date(0); // "all time" — this endpoint has always shown cumulative usage, not a windowed range
+    const from = currentMonthStartIST();
     const to = new Date();
     const breakdown = await getInstitutionTeacherBreakdown(institutionId, from, to);
     const byTeacherId = new Map(breakdown.map((b) => [b.teacherId, b]));
@@ -341,10 +348,12 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
           isOverSoftLimit: summary?.isOverSoftLimit ?? false,
         };
       })
-      // Keep teachers whose requests all FAILED: they have 0 tokens but a
-      // non-zero failedRequests count that admins need to see.
-      .filter((t) => t.used > 0 || t.totalRequests > 0)
-      .sort((a, b) => b.used - a.used);
+      // Every teacher is listed, including ones with zero usage this month —
+      // the admin page shows all of them with a 0% bar rather than hiding
+      // anyone who simply hasn't used AI yet this month. Sort puts active
+      // teachers first, then zero-usage teachers alphabetically so the list
+      // doesn't jump around as usage changes.
+      .sort((a, b) => b.used - a.used || a.name.localeCompare(b.name));
 
     await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
     res.json({ success: true, data });
@@ -365,14 +374,21 @@ export const getTeacherAiUsage = async (req: AuthRequest, res: Response, next: N
     const teacher = await academicDb().teacher.findFirst({ where: { id: teacherId, institutionId } });
     if (!teacher) throw new NotFoundError("Teacher not found");
 
+    // Same "current pool since last reset" boundary as the teacher's own
+    // self-service widget and the admin analytics card — always the current
+    // IST calendar month, not a rolling 30-day window (which kept showing
+    // last month's usage days into the new month even after the pool reset).
+    // `range` is kept only for the trend chart's bucketing granularity.
     const range = (req.query.range as string) ?? "1M";
-    const from = rangeToFromDate(range as "7D" | "1M" | "3M" | "6M" | "YTD");
+    const from = currentMonthStartIST();
     const to = new Date();
 
-    const [summary, institutionLimit, poolUsedRaw] = await Promise.all([
+    const [summary, institutionLimit, institutionPoolUsed] = await Promise.all([
       getTeacherUsageSummary(institutionId, teacherId, from, to),
       getInstitutionAiTokenLimit(institutionId),
-      redis?.get(`ai:usage:institution:${institutionId}`) ?? Promise.resolve(null),
+      // Self-healing: reconciles against the AiUsageEvent log so a Redis
+      // counter that fell behind can't leave this stat permanently understated.
+      getInstitutionPoolUsed(institutionId),
     ]);
 
     const events = await prisma.aiUsageEvent.findMany({
@@ -380,8 +396,6 @@ export const getTeacherAiUsage = async (req: AuthRequest, res: Response, next: N
       select: { createdAt: true, totalTokens: true },
     });
     const trend = bucketEvents(events, bucketGranularity(range), from, to);
-
-    const institutionPoolUsed = Number(poolUsedRaw ?? 0) || 0;
 
     res.json({
       success: true,

@@ -7,6 +7,7 @@ import {
   generateUpgradeProrationBill,
   markBillPaid,
   PLAN_AI_TOKENS,
+  getAiTokenLimit,
 } from "../../services/billing.service";
 import { cancelPaymentLink } from "../../services/razorpay.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
@@ -16,7 +17,7 @@ import { getInstitutionUsersForMonth } from "../../services/userDirectory.servic
 import { getAcademicClient } from "../../services/tenantDb.service";
 import type { AcademicClient } from "../../utils/academicContext";
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError, TooManyRequestsError } from "../../utils/errors";
-import { getInstitutionUsageSummary, getPlatformUsageSummary } from "../../services/ai-usage.service";
+import { getInstitutionUsageSummary, getInstitutionMonthlyAiUsage, getPlatformUsageSummary, getInstitutionPoolUsed } from "../../services/ai-usage.service";
 import { getCache, setCache, delCache } from "../../utils/cache";
 import { redis, isRedisReady } from "../../utils/redis";
 import {
@@ -1118,10 +1119,11 @@ export const getAuditLogs = async (query: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function getAiTokensUsed(institutionId: string): Promise<number> {
-  if (!redis || !isRedisReady) return 0;
+  // Self-healing: reconciles against the AiUsageEvent log so a Redis counter
+  // that fell behind (e.g. after a dropped connection — see
+  // getInstitutionPoolUsed) can't leave this stat permanently understated.
   try {
-    const used = await redis.get(`ai:usage:institution:${institutionId}`);
-    return Number(used ?? 0) || 0;
+    return await getInstitutionPoolUsed(institutionId);
   } catch {
     return 0;
   }
@@ -1849,7 +1851,20 @@ export const getAIUsage = async (range: string) => {
 export const getInstitutionAiUsage = async (institutionId: string, range: string) => {
   const institution = await prisma.institution.findUnique({ where: { id: institutionId }, select: { id: true } });
   if (!institution) throw new NotFoundError("Institution not found");
-  return getInstitutionUsageSummary(institutionId, range);
+
+  const [summary, monthly, monthlyLimit] = await Promise.all([
+    getInstitutionUsageSummary(institutionId, range),
+    // Last 5 calendar months (current month included) — "how much of the
+    // pool did this institution actually use each month", independent of
+    // whatever `range` the top-of-page filter is set to.
+    getInstitutionMonthlyAiUsage(institutionId, 5),
+    // Today's plan limit, applied to every month shown — historical plan
+    // changes aren't tracked, so this is the best available reference cap
+    // rather than each month's actual limit at the time.
+    getAiTokenLimit(institutionId),
+  ]);
+
+  return { ...summary, monthly: monthly.map((p) => ({ ...p, limit: monthlyLimit })) };
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

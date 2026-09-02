@@ -87,7 +87,7 @@ router.get("/me", ...S, async (req: AuthRequest, res: Response, next: NextFuncti
 
     const [userMap, institution] = await Promise.all([
       resolveUsers([student.userId], { id: true, name: true, email: true, mustChangePassword: true }),
-      prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true } }),
+      prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true, logoUrl: true } }),
     ]);
 
     // Resolve avatar to a signed URL so it works on both public and private buckets

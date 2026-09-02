@@ -6,7 +6,7 @@ import { requirePermission } from "../../middlewares/requirePermission.middlewar
 import { prisma } from "../../utils/prisma";
 import { setPresence } from "../../services/presence.service";
 import { generateSignedAvatarUrl } from "../../services/storage.service";
-import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, updateTeacherAiSoftLimit, getInstitutionStructure, uploadTeacherAvatar, listStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdmin, updateSubAdminMe, uploadSubAdminPhoto, updateSubAdminPermissions, deactivateSubAdmin, activateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
+import { getMyInstitution, updateMyInstitution, updateAdminMe, uploadAdminPhoto, uploadMyInstitutionLogo, listTeachers, addTeacher, getTeacher, updateTeacher, updateTeacherAiSoftLimit, getInstitutionStructure, uploadTeacherAvatar, listStudents, searchStudents, addStudent, getStudent, updateStudent, resendTeacherInvite, deleteTeacher, listSubAdmins, addSubAdmin, updateSubAdmin, updateSubAdminMe, uploadSubAdminPhoto, updateSubAdminPermissions, deactivateSubAdmin, activateSubAdmin, resendSubAdminInvite, deleteSubAdmin } from "./admin.controller";
 import { listTickets, createTicket, addTicketReply, listReviews, createReview, updateReview, uploadTicketAttachment, ticketAttachmentUpload } from "./support.controller";
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
@@ -174,6 +174,7 @@ router.delete("/subadmins/:id", ...ADMIN_ONLY, deleteSubAdmin);
 
 // Students — ADMIN only
 router.get("/students", ...ADMIN_ONLY, listStudents);
+router.get("/students/search", ...ADMIN_ONLY, searchStudents);
 router.post("/students", ...ADMIN_ONLY, addStudent);
 router.get("/students/:id", ...ADMIN_ONLY, getStudent);
 router.patch("/students/:id", ...ADMIN_ONLY, updateStudent);

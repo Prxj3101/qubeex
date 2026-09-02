@@ -3,6 +3,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
+import { normalizePdfIfNeeded } from "../../services/pdfNormalize.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { createFolderSchema, aiScanSchema, aiChatSchema, aiQuizSchema } from "./blackboard.schema";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -10,7 +11,7 @@ const multer = require("multer");
 import { redis, isRedisReady } from "../../utils/redis";
 import { getCache, setCache } from "../../utils/cache";
 import { getAiTokenLimit } from "../../services/billing.service";
-import { recordAiUsage, type AiFeature } from "../../services/ai-usage.service";
+import { recordAiUsage, type AiFeature, institutionUsageRedisKey } from "../../services/ai-usage.service";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const OpenAIModule = (process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY) ? require("openai") : null;
@@ -33,7 +34,7 @@ async function checkTokenPool(institutionId: string): Promise<void> {
     if (redis) console.warn("[blackboard] Redis configured but not ready — token pool check skipped");
     return;
   }
-  const usageKey = `ai:usage:institution:${institutionId}`;
+  const usageKey = institutionUsageRedisKey(institutionId);
   // A Redis hiccup must not fail the whole request. ioredis rejects commands
   // after `commandTimeout` (5s), and an uncaught rejection here propagates to
   // the central error handler and returns a 500 — turning a transient cache
@@ -55,7 +56,9 @@ async function checkTokenPool(institutionId: string): Promise<void> {
 
 export const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { files: 1 },
+  // 150MB covers even large scanned textbooks; without this multer allows
+  // any size, which is more upload risk than the Blackboard needs.
+  limits: { files: 1, fileSize: 150 * 1024 * 1024 },
 });
 
 const ALLOWED_MIMETYPES = new Set([
@@ -204,7 +207,16 @@ export const uploadFile = async (
       throw new BadRequestError("File type not allowed. Accepted: PDF, PPT, PPTX, DOC, DOCX");
     }
 
-    const result = await uploadAttachmentToR2(file.buffer, {
+    // Some scanned PDFs embed images pdf.js can't decode (see
+    // pdfNormalize.service.ts) — re-encode those at upload time so the
+    // Blackboard viewer never has to deal with them. No-op (returns the
+    // same buffer untouched) for the vast majority of PDFs, and for every
+    // non-PDF file type.
+    const fileBuffer = file.mimetype === "application/pdf"
+      ? (await normalizePdfIfNeeded(file.buffer)).buffer
+      : file.buffer;
+
+    const result = await uploadAttachmentToR2(fileBuffer, {
       originalName: file.originalname,
       contentType: file.mimetype,
       institutionId,
@@ -224,12 +236,44 @@ export const uploadFile = async (
         fileUrl: result.publicUrl,
         r2Key,
         mimeType: file.mimetype,
-        size: file.size,
+        size: fileBuffer.length,
       },
       select: { id: true, name: true, fileUrl: true, mimeType: true, size: true, folderId: true, createdAt: true },
     });
 
     res.status(201).json({ success: true, data: material });
+  } catch (err) { next(err); }
+};
+
+// Stateless pass-through for the "From Computer" flow, which loads a file
+// client-side (blob: URL, never touches the server) and so never gets the
+// benefit of normalizePdfIfNeeded the way a Storage upload does. The
+// frontend only calls this when its own quick client-side byte-scan finds
+// the problematic /JPXDecode marker, so most PDFs never hit this endpoint
+// at all. Nothing here is persisted — no DB row, no R2 upload — it just
+// takes bytes in and returns (possibly) cleaned-up bytes out.
+export const normalizePdfUpload = async (
+  req: AuthRequest & { file?: Express.Multer.File },
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    requireTeacher(req);
+    const file = req.file;
+    if (!file) throw new BadRequestError("No file provided");
+    if (file.mimetype !== "application/pdf") {
+      throw new BadRequestError("Only PDF files are supported here");
+    }
+
+    const { buffer: normalized, status } = await normalizePdfIfNeeded(file.buffer);
+
+    res.setHeader("Content-Type", "application/pdf");
+    // Lets the "From Computer" frontend flow tell the difference between
+    // "this PDF didn't need cleanup" and "we tried and it failed" — the
+    // latter is worth a heads-up toast instead of silently serving the
+    // untouched (still-broken) original.
+    res.setHeader("X-Pdf-Normalize-Status", status);
+    res.status(200).send(normalized);
   } catch (err) { next(err); }
 };
 

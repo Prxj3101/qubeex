@@ -3,9 +3,9 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError } from "../../utils/errors";
-import { redis, isRedisReady } from "../../utils/redis";
 import { getEffectiveRate, getMarginalBill, getBillingReferenceDate, prorateForMonth, PLAN_AI_TOKENS } from "../../services/billing.service";
 import { getInstitutionStorageBytes } from "../../services/storage.service";
+import { getInstitutionPoolUsed } from "../../services/ai-usage.service";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -151,14 +151,14 @@ export const getOverview = async (req: AuthRequest, res: Response, next: NextFun
       .reduce((sum, t) => sum + (t.tokensPerMonth ?? 0), 0);
     const aiTokenLimit = PLAN_AI_TOKENS[tokenPlanName] + extraAiTokens;
 
+    // Self-healing: reconciles against the AiUsageEvent log so a Redis
+    // counter that fell behind (e.g. after a dropped connection) can't leave
+    // this stat permanently understated — see getInstitutionPoolUsed.
     let aiUsage = { used: 0, limit: aiTokenLimit };
-    if (redis && isRedisReady) {
-      try {
-        const usedRaw = await redis.get(`ai:usage:institution:${institutionId}`);
-        aiUsage = { used: Number(usedRaw ?? 0) || 0, limit: aiTokenLimit };
-      } catch {
-        aiUsage = { used: 0, limit: aiTokenLimit };
-      }
+    try {
+      aiUsage = { used: await getInstitutionPoolUsed(institutionId), limit: aiTokenLimit };
+    } catch {
+      aiUsage = { used: 0, limit: aiTokenLimit };
     }
 
     // ── Audit logs ──

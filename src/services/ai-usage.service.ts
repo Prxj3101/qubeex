@@ -8,6 +8,25 @@ export type AiFeature =
   | "BLACKBOARD_QUIZ"
   | "TASK_QUESTION_GENERATION";
 
+// The institution/teacher token pool is a *monthly* allowance (see
+// PLAN_AI_TOKENS in billing.service), but the Redis counters that back the
+// hard-stop check and the "X / limit tokens" UI used to be a single
+// never-reset accumulator — so usage from every month ever kept piling up
+// instead of the pool actually refilling on the 1st. Keying the counter by
+// the current IST calendar month fixes that with no cron needed: once the
+// month rolls over, reads/writes automatically land on a fresh key that
+// starts at 0 (a missing Redis key just reads back as 0/null). Every read
+// and write of these counters anywhere in the codebase must go through
+// these two helpers — a hardcoded `ai:usage:institution:${id}` (no month
+// suffix) is the old, never-reset behavior creeping back in.
+const USAGE_KEY_TTL_SECONDS = 45 * 24 * 60 * 60; // ~1.5 months — old months' keys self-clean instead of accumulating in Redis forever
+export function institutionUsageRedisKey(institutionId: string, at: Date = new Date()): string {
+  return `ai:usage:institution:${institutionId}:${istMonthKey(at)}`;
+}
+export function teacherUsageRedisKey(teacherId: string, at: Date = new Date()): string {
+  return `ai:usage:teacher:${teacherId}:${istMonthKey(at)}`;
+}
+
 export interface RecordAiUsageParams {
   institutionId: string;
   teacherId?: string;
@@ -58,9 +77,13 @@ export async function recordAiUsage(params: RecordAiUsageParams): Promise<void> 
   if (params.status !== "SUCCESS") return;
   const tokens = params.totalTokens ?? 0;
   if (!redis || !isRedisReady || tokens <= 0) return;
-  await redis.incrby(`ai:usage:institution:${params.institutionId}`, tokens).catch(() => {});
+  const institutionKey = institutionUsageRedisKey(params.institutionId);
+  await redis.incrby(institutionKey, tokens).catch(() => {});
+  await redis.expire(institutionKey, USAGE_KEY_TTL_SECONDS).catch(() => {});
   if (params.teacherId) {
-    await redis.incrby(`ai:usage:teacher:${params.teacherId}`, tokens).catch(() => {});
+    const teacherKey = teacherUsageRedisKey(params.teacherId);
+    await redis.incrby(teacherKey, tokens).catch(() => {});
+    await redis.expire(teacherKey, USAGE_KEY_TTL_SECONDS).catch(() => {});
   }
 }
 
@@ -110,6 +133,48 @@ export function istDayKey(d: Date): string {
 // "YYYY-MM" on the IST calendar — the canonical month-bucket key.
 export function istMonthKey(d: Date): string {
   return istDayKey(d).slice(0, 7);
+}
+
+// UTC instant of the 1st of the current IST calendar month, 00:00 IST — the
+// "since the pool last reset" boundary. Any usage view that's meant to
+// track the same monthly pool as the Redis counter (institutionUsageRedisKey)
+// must use this as its `from`, not an arbitrary rolling window or all-time.
+export function currentMonthStartIST(): Date {
+  const { y, m } = istParts(new Date());
+  return istMidnightUtc(y, m, 1);
+}
+
+// The Redis "used" counter (institutionUsageRedisKey) is meant to track the
+// current month's pool 1:1 with the AiUsageEvent log, but recordAiUsage's
+// redis.incrby is best-effort: if Redis drops mid-connection (ioredis here
+// stops retrying after 3 attempts and won't reconnect on error — see
+// utils/redis.ts) every increment that happens while isRedisReady is false
+// is written to Postgres but silently never reaches Redis. The counter then
+// sits permanently stuck below the real total, even after Redis reconnects,
+// until the process restarts and clears the stale in-memory value.
+// Reconciling against the Postgres month-total on every read (and writing
+// the corrected number back to Redis) makes the displayed pool figure
+// self-healing instead of permanently drifting.
+export async function getInstitutionPoolUsed(institutionId: string): Promise<number> {
+  const from = currentMonthStartIST();
+  const [redisRaw, postgresTotal] = await Promise.all([
+    redis && isRedisReady ? redis.get(institutionUsageRedisKey(institutionId)).catch(() => null) : Promise.resolve(null),
+    prisma.aiUsageEvent.aggregate({
+      where: { institutionId, status: "SUCCESS", createdAt: { gte: from } },
+      _sum: { totalTokens: true },
+    }).then((r) => r._sum.totalTokens ?? 0),
+  ]);
+
+  const redisValue = Number(redisRaw ?? 0) || 0;
+  const trueValue = Math.max(redisValue, postgresTotal);
+
+  if (redis && isRedisReady && trueValue > redisValue) {
+    const key = institutionUsageRedisKey(institutionId);
+    redis.set(key, trueValue).catch(() => {});
+    redis.expire(key, USAGE_KEY_TTL_SECONDS).catch(() => {});
+  }
+
+  return trueValue;
 }
 
 export function rangeToFromDate(range: "7D" | "1M" | "3M" | "6M" | "YTD"): Date {
@@ -344,6 +409,40 @@ export async function getInstitutionUsageSummary(institutionId: string, range: s
   return { ...base, trend };
 }
 
+export interface MonthlyAiUsagePoint {
+  month: string; // "YYYY-MM", IST calendar
+  totalTokens: number;
+}
+
+// Calendar-month usage for the last `months` months (current month included),
+// read straight from the AiUsageEvent log rather than the Redis counter —
+// Redis only ever holds the *current* month's running total (see
+// institutionUsageRedisKey's TTL-based rollover) and isn't a source of
+// history. Used by the superadmin institution page to show "how much of the
+// pool did this institution actually use in each of the last few months",
+// which the old single never-reset Redis counter couldn't answer at all.
+export async function getInstitutionMonthlyAiUsage(institutionId: string, months = 5): Promise<MonthlyAiUsagePoint[]> {
+  const { y, m } = istParts(new Date());
+  const from = istMidnightUtc(y, m - (months - 1), 1);
+  const events = await prisma.aiUsageEvent.findMany({
+    where: { institutionId, createdAt: { gte: from }, status: "SUCCESS" },
+    select: { createdAt: true, totalTokens: true },
+  });
+
+  const byMonth = new Map<string, number>();
+  for (const e of events) {
+    const key = istMonthKey(e.createdAt);
+    byMonth.set(key, (byMonth.get(key) ?? 0) + (e.totalTokens ?? 0));
+  }
+
+  const points: MonthlyAiUsagePoint[] = [];
+  for (let i = months - 1; i >= 0; i--) {
+    const key = istMonthKey(istMidnightUtc(y, m - i, 1));
+    points.push({ month: key, totalTokens: byMonth.get(key) ?? 0 });
+  }
+  return points;
+}
+
 export interface PlatformInstitutionRow { institutionId: string; institutionName: string; requests: number; totalTokens: number; successRate: number; }
 export interface PlatformUsageSummary {
   totalRequests: number; successRequests: number; failedRequests: number; totalTokens: number;
@@ -369,15 +468,15 @@ export async function getPlatformUsageSummary(range: string): Promise<PlatformUs
     if (e.status === "SUCCESS") cur.success += 1;
     byInstitutionMap.set(e.institutionId, cur);
   }
-  const institutionIds = Array.from(byInstitutionMap.keys());
-  const institutions = institutionIds.length
-    ? await prisma.institution.findMany({ where: { id: { in: institutionIds } }, select: { id: true, name: true } })
-    : [];
-  const byInstitution: PlatformInstitutionRow[] = institutionIds.map(id => {
-    const v = byInstitutionMap.get(id)!;
+  // Every institution on the platform is listed, not just ones with usage in
+  // this range — a brand new month (or a quiet institution) should still show
+  // up at 0 tokens rather than disappearing from the table entirely.
+  const allInstitutions = await prisma.institution.findMany({ select: { id: true, name: true } });
+  const byInstitution: PlatformInstitutionRow[] = allInstitutions.map(inst => {
+    const v = byInstitutionMap.get(inst.id) ?? { requests: 0, totalTokens: 0, success: 0 };
     return {
-      institutionId: id,
-      institutionName: institutions.find(i => i.id === id)?.name ?? "Unknown",
+      institutionId: inst.id,
+      institutionName: inst.name,
       requests: v.requests, totalTokens: v.totalTokens,
       successRate: v.requests > 0 ? Math.round((v.success / v.requests) * 100) : 0,
     };

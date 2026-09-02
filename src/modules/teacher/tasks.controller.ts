@@ -31,7 +31,7 @@ import {
 } from "./tasks.schema";
 import { redis, isRedisReady } from "../../utils/redis";
 import { getAiTokenLimit } from "../../services/billing.service";
-import { recordAiUsage, type AiFeature } from "../../services/ai-usage.service";
+import { recordAiUsage, type AiFeature, institutionUsageRedisKey } from "../../services/ai-usage.service";
 import { generateTestResultPdf } from "../../services/testResultPdf.service";
 import { uploadImageToR2, deleteFromR2 } from "../../services/storage.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -92,7 +92,7 @@ async function checkTokenPool(institutionId: string): Promise<void> {
   // See blackboard.controller.ts#checkTokenPool — a Redis timeout here would
   // otherwise surface as a 500 rather than degrading gracefully.
   const [used, limitN] = await Promise.all([
-    redis.get(`ai:usage:institution:${institutionId}`).catch((err) => {
+    redis.get(institutionUsageRedisKey(institutionId)).catch((err) => {
       console.warn("[tasks] Token-pool read failed, allowing request:", err?.message ?? err);
       return null;
     }),

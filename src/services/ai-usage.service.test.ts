@@ -1,6 +1,6 @@
 import { prisma } from "../utils/prisma";
 import { redis } from "../utils/redis";
-import { recordAiUsage } from "./ai-usage.service";
+import { recordAiUsage, institutionUsageRedisKey, teacherUsageRedisKey } from "./ai-usage.service";
 import {
   rangeToFromDate, bucketGranularity, bucketEvents, computeSoftLimitDefault,
   getTeacherUsageSummary, getInstitutionTeacherBreakdown, getInstitutionUsageSummary, getPlatformUsageSummary,
@@ -35,12 +35,12 @@ describe("recordAiUsage", () => {
     await prisma.aiUsageEvent.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } }).catch(() => {});
-    await redis?.del(`ai:usage:institution:${institutionId}`);
+    await redis?.del(institutionUsageRedisKey(institutionId));
     await prisma.$disconnect();
   });
 
   it("inserts an AiUsageEvent row and increments the institution Redis counter on SUCCESS", async () => {
-    const before = Number((await redis?.get(`ai:usage:institution:${institutionId}`)) ?? 0);
+    const before = Number((await redis?.get(institutionUsageRedisKey(institutionId))) ?? 0);
 
     await recordAiUsage({
       institutionId, userId, userRole: "TEACHER",
@@ -55,12 +55,12 @@ describe("recordAiUsage", () => {
       feature: "BLACKBOARD_SCAN", provider: "groq", status: "SUCCESS", totalTokens: 150,
     });
 
-    const after = Number((await redis?.get(`ai:usage:institution:${institutionId}`)) ?? 0);
+    const after = Number((await redis?.get(institutionUsageRedisKey(institutionId))) ?? 0);
     expect(after - before).toBe(150);
   });
 
   it("inserts a FAILED event with an error message and does NOT increment Redis", async () => {
-    const before = Number((await redis?.get(`ai:usage:institution:${institutionId}`)) ?? 0);
+    const before = Number((await redis?.get(institutionUsageRedisKey(institutionId))) ?? 0);
 
     await recordAiUsage({
       institutionId, userId, userRole: "TEACHER",
@@ -72,7 +72,7 @@ describe("recordAiUsage", () => {
     expect(failed?.error).toBe("rate limit exceeded");
     expect(failed?.totalTokens).toBeNull();
 
-    const after = Number((await redis?.get(`ai:usage:institution:${institutionId}`)) ?? 0);
+    const after = Number((await redis?.get(institutionUsageRedisKey(institutionId))) ?? 0);
     expect(after).toBe(before);
   });
 
@@ -87,11 +87,11 @@ describe("recordAiUsage", () => {
       requestType: "chat_completion", totalTokens: 200, status: "SUCCESS",
     });
 
-    const teacherUsage = Number((await redis?.get(`ai:usage:teacher:${teacher.id}`)) ?? 0);
+    const teacherUsage = Number((await redis?.get(teacherUsageRedisKey(teacher.id))) ?? 0);
     expect(teacherUsage).toBe(200);
 
     await prisma.teacher.delete({ where: { id: teacher.id } });
-    await redis?.del(`ai:usage:teacher:${teacher.id}`);
+    await redis?.del(teacherUsageRedisKey(teacher.id));
   });
 });
 

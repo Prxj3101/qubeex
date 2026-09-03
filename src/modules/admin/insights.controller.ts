@@ -622,6 +622,7 @@ export const getParentEngagementInsights = async (req: AuthRequest, res: Respons
       where: { institutionId, status: "ACTIVE" },
       select: {
         id: true,
+        studentId: true,
         userId: true,
         avatarUrl: true,
         standard: { select: { id: true, name: true } },
@@ -662,8 +663,11 @@ export const getParentEngagementInsights = async (req: AuthRequest, res: Respons
         if (a.daysSince === null) return -1;
         if (b.daysSince === null) return 1;
         return b.daysSince - a.daysSince;
-      })
-      .slice(0, 10);
+      });
+      // Deliberately NOT capped here (unlike the absence-streak alert list) —
+      // the admin needs to be able to search this for any specific student,
+      // not just the worst offenders, so the frontend gets the full list and
+      // caps how many render by default itself.
 
     const userMap = await resolveUsers(candidates.map((c) => c.student.userId), { id: true, name: true });
 
@@ -671,6 +675,7 @@ export const getParentEngagementInsights = async (req: AuthRequest, res: Respons
       const user = userMap.get(c.student.userId);
       return {
         studentId: c.student.id,
+        studentCode: c.student.studentId, // human-readable ID (e.g. SFHS-01T26-0007), for search
         name: user?.name ?? "Unknown",
         avatarUrl: c.student.avatarUrl ?? null,
         standardId: c.student.standard!.id,

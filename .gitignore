@@ -21,3 +21,7 @@ temp
 docs/
 .superpowers
 .agents/
+
+# This is a pnpm project - never commit an npm lockfile
+package-lock.json
+yarn.lock

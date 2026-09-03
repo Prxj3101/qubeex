@@ -21,6 +21,7 @@ import { getStudentMarksheetData } from "../../services/studentMarksheet.service
 import { getStudentAttendanceTrendData } from "../../services/studentAttendanceTrend.service";
 import { getStudentAttendanceDetailData } from "../../services/studentAttendanceDetail.service";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
+import { delCache } from "../../utils/cache";
 
 const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -1365,6 +1366,16 @@ router.post(
           }
         }
       });
+
+      // The admin Analytics "Attendance Analysis" card caches its numbers for
+      // 5 minutes (insights.controller.ts#getAttendanceInsights) keyed by
+      // institution + current calendar month. Without busting it here, a
+      // teacher marking/correcting attendance wouldn't show up on that card
+      // until the old cache entry naturally expired — same fix already
+      // applied to fee-payment edits busting insights:fee-ai.
+      const now = new Date();
+      const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      await delCache(`insights:attendance:${institutionId}:${currentMonthKey}`);
 
       const attDivision = await academicDb().division.findFirst({
         where: { id: divisionId, institutionId },

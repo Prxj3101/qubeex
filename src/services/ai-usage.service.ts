@@ -8,7 +8,8 @@ export type AiFeature =
   | "BLACKBOARD_QUIZ"
   | "BLACKBOARD_MINDMAP"
   | "TASK_QUESTION_GENERATION"
-  | "FEE_FORECAST";
+  | "FEE_FORECAST"
+  | "ATTENDANCE_SUMMARY";
 
 // The institution/teacher token pool is a *monthly* allowance (see
 // PLAN_AI_TOKENS in billing.service), but the Redis counters that back the

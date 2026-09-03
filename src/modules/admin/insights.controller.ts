@@ -19,6 +19,7 @@ import {
 } from "../../services/ai-usage.service";
 import { prisma } from "../../utils/prisma";
 import { computeInstitutionFeeStats, computeFeeHealthScore, computeFeeForecast, generateAiFeeForecast, getFeePeerBenchmark } from "../../services/feeInsights.service";
+import { generateAiAttendanceSummary } from "../../services/attendanceInsights.service";
 
 // Both endpoints below scan full-institution history on every request (all
 // attendance rows for the academic year; all status/audit events ever, with
@@ -67,7 +68,7 @@ export const getUsersInsights = async (req: AuthRequest, res: Response, next: Ne
 // the current calendar month's % on its own.
 export const getAttendanceInsights = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = req.user!;
+    const { institutionId, userId, role } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
     const now = new Date();
@@ -95,7 +96,7 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
             select: {
               id: true,
               name: true,
-              students: { where: { status: "ACTIVE" }, select: { id: true } },
+              students: { where: { status: "ACTIVE" }, select: { id: true, userId: true, avatarUrl: true } },
             },
           },
         },
@@ -155,7 +156,7 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
       return valid.length > 0 ? Math.round(valid.reduce((a, b) => a + b, 0) / valid.length) : null;
     }
 
-    const data = standards
+    const standardsData = standards
       .filter((s) => s.divisions.length > 0)
       .map((s) => ({
         id: s.id,
@@ -171,6 +172,78 @@ export const getAttendanceInsights = async (req: AuthRequest, res: Response, nex
           };
         }),
       }));
+
+    // ── Absence streak alerts ─────────────────────────────────────────────────
+    // Flags a student the moment they've been marked "A" for 3 or more of
+    // their most recent attendance-taking days in a row — walking backward
+    // from their latest dated record rather than the calendar, since
+    // Sundays/holidays never have rows to begin with. A single "P"/"L"
+    // anywhere in that walk breaks the streak, by design: this is meant to
+    // catch a student who is *currently* missing school, not one who missed
+    // a handful of days spread across the month.
+    function currentAbsenceStreak(studentId: string): number {
+      const recs = (byStudent.get(studentId) ?? []).slice().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+      let streak = 0;
+      for (const r of recs) {
+        if (r.status === "A") streak++;
+        else break;
+      }
+      return streak;
+    }
+
+    const STREAK_ALERT_THRESHOLD = 3;
+    const streakCandidates: { studentId: string; standardId: string; divisionId: string; divisionName: string; streakLength: number }[] = [];
+    for (const s of standardsData) {
+      for (const d of s.divisions) {
+        const division = standards.find((std) => std.id === s.id)?.divisions.find((dv) => dv.id === d.id);
+        if (!division) continue;
+        for (const st of division.students) {
+          const streakLength = currentAbsenceStreak(st.id);
+          if (streakLength >= STREAK_ALERT_THRESHOLD) {
+            streakCandidates.push({ studentId: st.id, standardId: s.id, divisionId: d.id, divisionName: `${s.name} - ${d.name}`, streakLength });
+          }
+        }
+      }
+    }
+    streakCandidates.sort((a, b) => b.streakLength - a.streakLength);
+    const topStreaks = streakCandidates.slice(0, 10);
+    const streakUserIds = standards.flatMap((s) => s.divisions.flatMap((d) => d.students)).filter((st) => topStreaks.some((t) => t.studentId === st.id));
+    const userMap = await resolveUsers(streakUserIds.map((st) => st.userId), { id: true, name: true });
+    const streaks = topStreaks.map((t) => {
+      const student = streakUserIds.find((st) => st.id === t.studentId);
+      const user = student ? userMap.get(student.userId) : undefined;
+      return {
+        studentId: t.studentId,
+        name: user?.name ?? "Unknown",
+        avatarUrl: student?.avatarUrl ?? null,
+        standardId: t.standardId,
+        divisionId: t.divisionId,
+        divisionName: t.divisionName,
+        streakLength: t.streakLength,
+      };
+    });
+
+    // ── AI summary ─────────────────────────────────────────────────────────────
+    // A real LLM call reading the numbers above — throttled to once per
+    // institution per 12-hour window inside generateAiAttendanceSummary, so
+    // an attendance save (which busts this 5-minute cache) never re-triggers
+    // the model on every mark.
+    const divisionsWithMonthPct = standardsData.flatMap((s) => s.divisions.map((d) => ({ name: `${s.name} - ${d.name}`, pct: d.monthPct })))
+      .filter((d): d is { name: string; pct: number } => d.pct !== null);
+    const worstDivisions = divisionsWithMonthPct.slice().sort((a, b) => a.pct - b.pct).slice(0, 3);
+    const overallRate = avg(standardsData.flatMap((s) => s.divisions.map((d) => d.overallPct))) ?? 0;
+    const monthlyRate = avg(standardsData.flatMap((s) => s.divisions.map((d) => d.monthPct))) ?? 0;
+    const aiSummary = await generateAiAttendanceSummary(
+      { overallRate, monthlyRate, worstDivisions, streakAlertCount: streaks.length, dayPatternInsight: null },
+      { institutionId, userId, userRole: role }
+    ).catch(() => null);
+
+    const data = {
+      standards: standardsData,
+      streaks,
+      aiSummary,
+      isAiGenerated: !!aiSummary,
+    };
 
     await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
     res.json({ success: true, data });

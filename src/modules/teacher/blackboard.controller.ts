@@ -1824,6 +1824,9 @@ interface MindmapNode {
 }
 
 const MAX_CHILDREN_PER_NODE = 8;
+// Branches, then points beneath them. Fixed rather than teacher-selectable —
+// see the note in aiMindmapSchema.
+const MINDMAP_DEPTH = 2;
 
 // A stray sentence in the emoji field would blow out the sticker layout, and
 // emoji are multi-codepoint (👨‍👩‍👧 is 5), so cap by codepoint count rather
@@ -1885,8 +1888,12 @@ export const aiMindmap = async (req: AuthRequest, res: Response, next: NextFunct
     const variationSeed = crypto.randomBytes(4).toString("hex");
 
     const systemPrompt =
-      `You are a mindmap generator for school students. Produce a hierarchical mindmap exactly ${data.depth} level(s) deep below the root topic. ` +
-      `Aim for 4-6 main branches, each with 2-4 short points under it. ` +
+      `You are a mindmap generator for school students. Produce the clearest possible study map of the material — always exactly TWO levels below the root topic. ` +
+      `Level 1: 4-6 main branches that together cover the whole topic without overlapping. ` +
+      // Depth used to be a teacher-set option and depth 1 produced branches
+      // with nothing under them. Every branch carrying points is what makes
+      // the thing a mindmap rather than a list of headings.
+      `Level 2: EVERY branch must have 2-4 short points under it. Never leave a branch empty. ` +
       // The map is rendered as fixed-width stickers, so a long label wraps to
       // three lines and wrecks the layout — this cap is a layout constraint,
       // not a style preference.
@@ -1951,9 +1958,16 @@ export const aiMindmap = async (req: AuthRequest, res: Response, next: NextFunct
       throw new BadRequestError("AI returned malformed JSON — please retry");
     }
 
-    const mindmap = normalizeMindmapNode(parsed, data.depth);
+    const mindmap = normalizeMindmapNode(parsed, MINDMAP_DEPTH);
     if (!mindmap || mindmap.children.length === 0) {
       throw new BadRequestError("AI returned an unusable mindmap — please retry");
+    }
+    // A branch with no points renders as an empty box, which is what made the
+    // old depth-1 maps look broken. Drop those rather than persist a map the
+    // student will open once and never again.
+    mindmap.children = mindmap.children.filter((b) => b.children.length > 0);
+    if (mindmap.children.length < 2) {
+      throw new BadRequestError("AI returned a mindmap with no detail — please retry");
     }
 
     const saved = await academicDb().mindmap.create({

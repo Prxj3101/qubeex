@@ -51,8 +51,9 @@ export const aiMindmapSchema = z.object({
   topic: z.string().min(1).max(200).trim(),
   pageText: z.string().max(8000).trim().optional(),
   instructions: z.string().max(500).trim().optional(),
-  // How many levels below the root — 2 is a compact map (root -> subtopics ->
-  // details), 3 goes one level deeper. Kept small since node count grows
-  // exponentially and a cluttered map defeats the point.
-  depth: z.number().int().min(1).max(3).optional().default(2),
+  // No depth option on purpose. It was a teacher-facing choice where one of
+  // the values was simply wrong — depth 1 produced branches with nothing
+  // under them, i.e. a list of headings rather than a mindmap. The shape a
+  // good study map wants is always the same, so the model is told to produce
+  // it rather than asked how deep to go.
 });

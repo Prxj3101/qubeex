@@ -1820,6 +1820,8 @@ interface MindmapNode {
   // legible — unlike asking an image model to draw an icon, where the label
   // itself is at risk of coming back mangled.
   emoji?: string;
+  // Root only — drives which paper/palette/handwriting the renderer uses.
+  subject?: MindmapSubject;
   children: MindmapNode[];
 }
 
@@ -1827,6 +1829,22 @@ const MAX_CHILDREN_PER_NODE = 8;
 // Branches, then points beneath them. Fixed rather than teacher-selectable —
 // see the note in aiMindmapSchema.
 const MINDMAP_DEPTH = 2;
+
+// The renderer picks its paper, palette and handwriting from this, so a
+// biology map looks botanical and a history map looks like parchment. Same
+// trick as the emoji: the model chooses a name from a fixed list and we do
+// the drawing, so a bad value can only ever fall back to "general".
+const MINDMAP_SUBJECTS = [
+  "biology", "chemistry", "physics", "maths", "history",
+  "geography", "language", "computer", "general",
+] as const;
+type MindmapSubject = (typeof MINDMAP_SUBJECTS)[number];
+
+function normalizeSubject(raw: unknown): MindmapSubject {
+  if (typeof raw !== "string") return "general";
+  const v = raw.trim().toLowerCase();
+  return (MINDMAP_SUBJECTS as readonly string[]).includes(v) ? (v as MindmapSubject) : "general";
+}
 
 // A stray sentence in the emoji field would blow out the sticker layout, and
 // emoji are multi-codepoint (👨‍👩‍👧 is 5), so cap by codepoint count rather
@@ -1869,6 +1887,7 @@ export const aiMindmap = async (req: AuthRequest, res: Response, next: NextFunct
       const mock: MindmapNode = {
         label: data.topic,
         emoji: "🧠",
+        subject: "general",
         children: [
           { label: "Key Concept 1", emoji: "💡", children: [{ label: "Detail A", children: [] }, { label: "Detail B", children: [] }] },
           { label: "Key Concept 2", emoji: "🔬", children: [{ label: "Detail C", children: [] }] },
@@ -1905,7 +1924,9 @@ export const aiMindmap = async (req: AuthRequest, res: Response, next: NextFunct
       (data.pageText
         ? `Base the mindmap ONLY on the supplied material — do not introduce facts, terms, or examples that do not appear in it. `
         : "") +
-      `Return a JSON object: { "label": "<root topic>", "emoji": "<emoji>", "children": [ { "label": "...", "emoji": "...", "children": [ { "label": "...", "emoji": "...", "children": [] } ] }, ... ] }. ` +
+      `Also return a top-level "subject" field naming the school subject this material belongs to, chosen from EXACTLY this list: ` +
+      `${MINDMAP_SUBJECTS.join(", ")}. Use "general" only if none of the others fit. ` +
+      `Return a JSON object: { "label": "<root topic>", "emoji": "<emoji>", "subject": "<subject>", "children": [ { "label": "...", "emoji": "...", "children": [ { "label": "...", "emoji": "...", "children": [] } ] }, ... ] }. ` +
       `Respond only in English, regardless of the language of the source material. Return ONLY valid JSON, no markdown.`;
 
     const instructionBlock = data.instructions
@@ -1969,6 +1990,9 @@ export const aiMindmap = async (req: AuthRequest, res: Response, next: NextFunct
     if (mindmap.children.length < 2) {
       throw new BadRequestError("AI returned a mindmap with no detail — please retry");
     }
+    // Only meaningful on the root; normalizeMindmapNode deliberately ignores
+    // it on children so a stray value deeper in the tree can't change the look.
+    mindmap.subject = normalizeSubject((parsed as Record<string, unknown>)?.subject);
 
     const saved = await academicDb().mindmap.create({
       data: {

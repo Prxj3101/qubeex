@@ -408,6 +408,7 @@ export const ModelName = {
   DivisionSubject: 'DivisionSubject',
   DivisionAssignment: 'DivisionAssignment',
   Student: 'Student',
+  ParentModeEvent: 'ParentModeEvent',
   PromotionBatch: 'PromotionBatch',
   StudentPromotionOutcome: 'StudentPromotionOutcome',
   StudentRemark: 'StudentRemark',
@@ -462,7 +463,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1277,6 +1278,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.StudentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.StudentCountAggregateOutputType> | number
+        }
+      }
+    }
+    ParentModeEvent: {
+      payload: Prisma.$ParentModeEventPayload<ExtArgs>
+      fields: Prisma.ParentModeEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ParentModeEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ParentModeEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>
+        }
+        findFirst: {
+          args: Prisma.ParentModeEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ParentModeEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>
+        }
+        findMany: {
+          args: Prisma.ParentModeEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>[]
+        }
+        create: {
+          args: Prisma.ParentModeEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>
+        }
+        createMany: {
+          args: Prisma.ParentModeEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ParentModeEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>[]
+        }
+        delete: {
+          args: Prisma.ParentModeEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>
+        }
+        update: {
+          args: Prisma.ParentModeEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.ParentModeEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ParentModeEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ParentModeEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.ParentModeEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentModeEventPayload>
+        }
+        aggregate: {
+          args: Prisma.ParentModeEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParentModeEvent>
+        }
+        groupBy: {
+          args: Prisma.ParentModeEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParentModeEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ParentModeEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParentModeEventCountAggregateOutputType> | number
         }
       }
     }
@@ -4388,6 +4463,16 @@ export const StudentScalarFieldEnum = {
 export type StudentScalarFieldEnum = (typeof StudentScalarFieldEnum)[keyof typeof StudentScalarFieldEnum]
 
 
+export const ParentModeEventScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  institutionId: 'institutionId',
+  openedAt: 'openedAt'
+} as const
+
+export type ParentModeEventScalarFieldEnum = (typeof ParentModeEventScalarFieldEnum)[keyof typeof ParentModeEventScalarFieldEnum]
+
+
 export const PromotionBatchScalarFieldEnum = {
   id: 'id',
   institutionId: 'institutionId',
@@ -5500,6 +5585,7 @@ export type GlobalOmitConfig = {
   divisionSubject?: Prisma.DivisionSubjectOmit
   divisionAssignment?: Prisma.DivisionAssignmentOmit
   student?: Prisma.StudentOmit
+  parentModeEvent?: Prisma.ParentModeEventOmit
   promotionBatch?: Prisma.PromotionBatchOmit
   studentPromotionOutcome?: Prisma.StudentPromotionOutcomeOmit
   studentRemark?: Prisma.StudentRemarkOmit

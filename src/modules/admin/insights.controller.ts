@@ -595,3 +595,95 @@ export const getTeacherAiUsage = async (req: AuthRequest, res: Response, next: N
     next(err);
   }
 };
+
+// ── GET /admin/insights/parent-engagement — disengaged families ────────────
+// Flags families who haven't opened Parent Mode recently (see
+// ParentModeEvent, logged from the student app whenever a parent switches
+// Parent Mode on). "Disengaged" here just means recency-based for now —
+// students with no open in DISENGAGED_THRESHOLD_DAYS days, or who have never
+// opened it at all (those sort first, ahead of merely-stale ones). Capped to
+// the 10 longest-disengaged so this reads as an actionable shortlist, not a
+// dump of the whole roster.
+const DISENGAGED_THRESHOLD_DAYS = 15;
+
+export const getParentEngagementInsights = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+
+    const cacheKey = `insights:parent-engagement:${institutionId}`;
+    const cached = await getCache<unknown>(cacheKey);
+    if (cached) {
+      res.json({ success: true, data: cached });
+      return;
+    }
+
+    const students = await academicDb().student.findMany({
+      where: { institutionId, status: "ACTIVE" },
+      select: {
+        id: true,
+        userId: true,
+        avatarUrl: true,
+        standard: { select: { id: true, name: true } },
+        division: { select: { id: true, name: true } },
+      },
+    });
+
+    if (students.length === 0) {
+      const data = { disengaged: [] as unknown[] };
+      await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
+      res.json({ success: true, data });
+      return;
+    }
+
+    // Most recent Parent Mode open per student, if any — students with no
+    // row here have simply never opened it.
+    const events = await academicDb().parentModeEvent.groupBy({
+      by: ["studentId"],
+      where: { institutionId },
+      _max: { openedAt: true },
+    });
+    const lastOpenByStudent = new Map(events.map((e) => [e.studentId, e._max.openedAt]));
+
+    const now = Date.now();
+    const candidates = students
+      // Only students actually placed in a class — an unplaced student isn't
+      // something an admin can act on from this card.
+      .filter((s) => s.standard && s.division)
+      .map((s) => {
+        const lastOpen = lastOpenByStudent.get(s.id) ?? null;
+        const daysSince = lastOpen ? Math.floor((now - lastOpen.getTime()) / (1000 * 60 * 60 * 24)) : null;
+        return { student: s, daysSince };
+      })
+      .filter((c) => c.daysSince === null || c.daysSince >= DISENGAGED_THRESHOLD_DAYS)
+      .sort((a, b) => {
+        // Never-opened families first, then longest-since-last-open.
+        if (a.daysSince === null && b.daysSince === null) return 0;
+        if (a.daysSince === null) return -1;
+        if (b.daysSince === null) return 1;
+        return b.daysSince - a.daysSince;
+      })
+      .slice(0, 10);
+
+    const userMap = await resolveUsers(candidates.map((c) => c.student.userId), { id: true, name: true });
+
+    const disengaged = candidates.map((c) => {
+      const user = userMap.get(c.student.userId);
+      return {
+        studentId: c.student.id,
+        name: user?.name ?? "Unknown",
+        avatarUrl: c.student.avatarUrl ?? null,
+        standardId: c.student.standard!.id,
+        divisionId: c.student.division!.id,
+        divisionName: `${c.student.standard!.name} - ${c.student.division!.name}`,
+        daysSinceLastOpen: c.daysSince, // null = never opened
+      };
+    });
+
+    const data = { disengaged };
+    await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};

@@ -62,6 +62,7 @@ export const ModelName = {
   DivisionSubject: 'DivisionSubject',
   DivisionAssignment: 'DivisionAssignment',
   Student: 'Student',
+  ParentModeEvent: 'ParentModeEvent',
   PromotionBatch: 'PromotionBatch',
   StudentPromotionOutcome: 'StudentPromotionOutcome',
   StudentRemark: 'StudentRemark',
@@ -300,6 +301,16 @@ export const StudentScalarFieldEnum = {
 } as const
 
 export type StudentScalarFieldEnum = (typeof StudentScalarFieldEnum)[keyof typeof StudentScalarFieldEnum]
+
+
+export const ParentModeEventScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  institutionId: 'institutionId',
+  openedAt: 'openedAt'
+} as const
+
+export type ParentModeEventScalarFieldEnum = (typeof ParentModeEventScalarFieldEnum)[keyof typeof ParentModeEventScalarFieldEnum]
 
 
 export const PromotionBatchScalarFieldEnum = {

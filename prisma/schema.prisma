@@ -797,9 +797,29 @@ model Student {
   feePayments           StudentFeePayment[]
   promotionOutcomes     StudentPromotionOutcome[]
   ptmNotes              PTMNote[]
+  parentModeEvents      ParentModeEvent[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
+}
+
+// One row per time a parent/guardian opens Parent Mode on the student's
+// app — used by admin insights to flag families who haven't checked their
+// child's attendance/marks/fee status recently ("disengaged families").
+// Deliberately just an append-only event log (no "last seen" field on
+// Student itself) so we can later compute things like open frequency, not
+// just recency. Academic model (BYOD-eligible) — no relation to User or
+// Institution beyond the scalar institutionId, matching Attendance/PTMNote.
+model ParentModeEvent {
+  id            String   @id @default(uuid())
+  studentId     String
+  institutionId String
+  openedAt      DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId, openedAt])
+  @@index([studentId, openedAt])
 }
 
 model PromotionBatch {

@@ -31,12 +31,6 @@ export const PLATFORM_MODELS = [
   // AI token-pool usage/billing events — references User directly, same domain
   // as the shared per-institution AI token pool tracked centrally.
   "AiUsageEvent",
-  // Not a QubeEx table — a separate/unrelated project's table sharing this
-  // same central database. Classified as platform (never BYOD-routed) since
-  // it isn't part of QubeEx's academic data at all, purely to keep the
-  // tenant-schema builder from carrying its relation fields into per-tenant
-  // schemas. QubeEx code never reads/writes it (Mindmap is `@@ignore`d).
-  "Mindmap",
 ] as const;
 
 // Academic / institution-owned data — routes to the tenant DB for BYOD institutions,
@@ -57,6 +51,7 @@ export const ACADEMIC_MODELS = [
   "StudentPromotionOutcome",
   "StudentRemark",
   "PTMNote",
+  "ParentModeEvent",
   "Attendance",
   "SchoolHoliday",
   "AttendanceDayNote",

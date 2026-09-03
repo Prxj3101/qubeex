@@ -73,6 +73,11 @@ export type DivisionAssignment = Prisma.DivisionAssignmentModel
  */
 export type Student = Prisma.StudentModel
 /**
+ * Model ParentModeEvent
+ * 
+ */
+export type ParentModeEvent = Prisma.ParentModeEventModel
+/**
  * Model PromotionBatch
  * 
  */

@@ -156,8 +156,6 @@ model Teacher {
   taskPdfUploads      TaskPdfUpload[]
   teacherNotes        TeacherNote[]
   teacherTasks        TeacherTask[]
-  // See the matching comment on Institution.mindmaps — unrelated project's
-  // table sharing this database, kept only so `db push` leaves it alone.
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
@@ -384,9 +382,22 @@ model Student {
   feePayments           StudentFeePayment[]
   promotionOutcomes     StudentPromotionOutcome[]
   ptmNotes              PTMNote[]
+  parentModeEvents      ParentModeEvent[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
+}
+
+model ParentModeEvent {
+  id            String   @id @default(uuid())
+  studentId     String
+  institutionId String
+  openedAt      DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId, openedAt])
+  @@index([studentId, openedAt])
 }
 
 model PromotionBatch {

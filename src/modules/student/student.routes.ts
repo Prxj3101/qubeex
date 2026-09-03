@@ -12,6 +12,7 @@ import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch
 import { listStudentRemarks } from "../../services/remark.service";
 import { listPTMNotes, acknowledgePTMNote } from "../../services/ptmNote.service";
 import { translateBatch, DynamicTranslateLang } from "../../services/translation.service";
+import { delCache } from "../../utils/cache";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
@@ -873,6 +874,42 @@ router.post("/translate", ...S, async (req: AuthRequest, res: Response, next: Ne
     const { texts, lang } = parsed.data;
     const translated = await translateBatch(texts, lang as DynamicTranslateLang);
     res.json({ success: true, data: { texts: translated } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── POST /student/parent-mode/log — Parent Mode open event ─────────────────
+// Fired once whenever Parent Mode is switched on, so admin insights can flag
+// families who haven't checked their child's attendance/marks/fee status
+// recently. Deliberately fire-and-forget from the app's point of view (it
+// doesn't need the response) — this just needs to not fail loudly, so a
+// missed log here never blocks the parent from actually using Parent Mode.
+router.post("/parent-mode/log", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution associated with this account" });
+      return;
+    }
+    const student = await academicDb().student.findFirst({
+      where: { userId, institutionId },
+      select: { id: true },
+    });
+    if (!student) {
+      res.status(404).json({ success: false, error: "Student profile not found" });
+      return;
+    }
+    await academicDb().parentModeEvent.create({
+      data: { studentId: student.id, institutionId },
+    });
+    // Admin's "Parent Engagement" card caches its computed list for 5 minutes
+    // (see getParentEngagementInsights) — without this, a parent opening
+    // Parent Mode right now would still show as "Never opened" there until
+    // the cache happened to expire, same staleness bug the attendance insight
+    // had before its cache got a matching bust-on-write.
+    await delCache(`insights:parent-engagement:${institutionId}`);
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

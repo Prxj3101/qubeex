@@ -9,7 +9,8 @@ export type AiFeature =
   | "BLACKBOARD_MINDMAP"
   | "TASK_QUESTION_GENERATION"
   | "FEE_FORECAST"
-  | "ATTENDANCE_SUMMARY";
+  | "ATTENDANCE_SUMMARY"
+  | "SCHOOL_ASSISTANT";
 
 // The institution/teacher token pool is a *monthly* allowance (see
 // PLAN_AI_TOKENS in billing.service), but the Redis counters that back the
@@ -145,6 +146,26 @@ export function istMonthKey(d: Date): string {
 export function currentMonthStartIST(): Date {
   const { y, m } = istParts(new Date());
   return istMidnightUtc(y, m, 1);
+}
+
+// UTC instant of today's IST midnight — the "since it last reset at 12am"
+// boundary for the daily token-usage stat shown on the admin analytics page
+// (a separate, purely informational figure from the monthly pool above).
+export function currentDayStartIST(): Date {
+  const { y, m, d } = istParts(new Date());
+  return istMidnightUtc(y, m, d);
+}
+
+// Today's token usage for this institution (IST calendar day), for display
+// only — unlike getInstitutionPoolUsed this doesn't need Redis/self-healing
+// since nothing hard-stops on it, just a straight Postgres sum.
+export async function getInstitutionTodayTokensUsed(institutionId: string): Promise<number> {
+  const from = currentDayStartIST();
+  const result = await prisma.aiUsageEvent.aggregate({
+    where: { institutionId, status: "SUCCESS", createdAt: { gte: from } },
+    _sum: { totalTokens: true },
+  });
+  return result._sum.totalTokens ?? 0;
 }
 
 // The Redis "used" counter (institutionUsageRedisKey) is meant to track the

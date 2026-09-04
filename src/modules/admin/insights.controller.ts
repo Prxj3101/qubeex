@@ -16,10 +16,12 @@ import {
   getInstitutionByFeatureBreakdown,
   currentMonthStartIST,
   istMonthKey,
+  getInstitutionTodayTokensUsed,
 } from "../../services/ai-usage.service";
 import { prisma } from "../../utils/prisma";
 import { computeInstitutionFeeStats, computeFeeHealthScore, computeFeeForecast, generateAiFeeForecast, getFeePeerBenchmark } from "../../services/feeInsights.service";
 import { generateAiAttendanceSummary } from "../../services/attendanceInsights.service";
+import { askSchoolAssistant, type AssistantMessage } from "../../services/schoolAssistant.service";
 
 // Both endpoints below scan full-institution history on every request (all
 // attendance rows for the academic year; all status/audit events ever, with
@@ -475,11 +477,10 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     // Cache key includes the month so a cached response from August can't
     // leak into a September page load.
     const monthKey = istMonthKey(new Date());
-    // v4: added avatarUrl per teacher — bumped so a stale v3 cache entry
-    // (without it) doesn't leak through and hide photos until the cache
-    // naturally expires.
-    const cacheKey = `insights:ai-usage:v4:${institutionId}:${monthKey}`;
-    const cached = await getCache<{ data: unknown; institutionByFeature: unknown }>(cacheKey);
+    // v5: added todayTokensUsed — bumped so a stale v4 cache entry (without
+    // it) doesn't leak through and show a missing/stale daily figure.
+    const cacheKey = `insights:ai-usage:v5:${institutionId}:${monthKey}`;
+    const cached = await getCache<{ data: unknown; institutionByFeature: unknown; todayTokensUsed: number }>(cacheKey);
     if (cached) {
       res.json({ success: true, ...cached });
       return;
@@ -498,6 +499,7 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     // Covers admin-triggered features too (e.g. FEE_FORECAST), which have no
     // teacherId and would otherwise never show up in "Usage by Feature".
     const institutionByFeature = await getInstitutionByFeatureBreakdown(institutionId, from, to);
+    const todayTokensUsed = await getInstitutionTodayTokensUsed(institutionId);
 
     const data = teachers
       .map((t) => {
@@ -522,7 +524,7 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
       // doesn't jump around as usage changes.
       .sort((a, b) => b.used - a.used || a.name.localeCompare(b.name));
 
-    const responseBody = { data, institutionByFeature };
+    const responseBody = { data, institutionByFeature, todayTokensUsed };
     await setCache(cacheKey, responseBody, INSIGHTS_CACHE_TTL_SECONDS);
     res.json({ success: true, ...responseBody });
   } catch (err) {
@@ -688,6 +690,35 @@ export const getParentEngagementInsights = async (req: AuthRequest, res: Respons
     const data = { disengaged };
     await setCache(cacheKey, data, INSIGHTS_CACHE_TTL_SECONDS);
     res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── POST /admin/insights/assistant/ask — AI School PA chat ─────────────────
+// Stateless on the backend: the frontend sends the full running conversation
+// each time (same convention as Blackboard's aiChat) rather than this being
+// persisted server-side. Every question can trigger up to 2 real model
+// calls (see schoolAssistant.service.ts) — both get logged as SCHOOL_ASSISTANT
+// AiUsageEvents, so "Usage by Feature" reflects the true cost.
+export const askAssistant = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = req.user!;
+    if (!institutionId) throw new BadRequestError("No institution associated with this account");
+
+    const rawMessages = req.body?.messages;
+    if (!Array.isArray(rawMessages) || rawMessages.length === 0 || rawMessages.length > 20) {
+      throw new BadRequestError("messages must be a non-empty array of at most 20 items");
+    }
+    const messages: AssistantMessage[] = rawMessages.map((m) => {
+      if (!m || (m.role !== "user" && m.role !== "assistant") || typeof m.content !== "string" || !m.content.trim()) {
+        throw new BadRequestError("Each message needs a role of 'user'/'assistant' and non-empty content");
+      }
+      return { role: m.role, content: m.content.trim().slice(0, 2000) };
+    });
+
+    const result = await askSchoolAssistant(messages, { institutionId, userId, userRole: "ADMIN" });
+    res.json({ success: true, data: result });
   } catch (err) {
     next(err);
   }

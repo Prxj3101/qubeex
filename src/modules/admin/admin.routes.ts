@@ -22,7 +22,7 @@ import {
 } from "./notepad.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, adminGetDivisionOnlineMarksheet, assignClassTeacher } from "./marksheet.controller";
 import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
-import { getAttendanceInsights, getFeeInsights, getFeeAiInsights, getAiUsageInsights, getUsersInsights, getTeacherAiUsage, getParentEngagementInsights, askAssistant } from "./insights.controller";
+import { getAttendanceInsights, getFeeInsights, getFeeAiInsights, getAiUsageInsights, getUsersInsights, getTeacherAiUsage, getParentEngagementInsights, askAssistant, getAssistantHistory, clearAssistantHistory } from "./insights.controller";
 import {
   getProfile as sharedGetProfile,
   updateProfile as sharedUpdateProfile,
@@ -225,6 +225,8 @@ router.get("/insights/fees/ai", ...INSIGHTS_ANALYTICS_PERM, getFeeAiInsights);
 router.get("/insights/ai-usage", ...INSIGHTS_ANALYTICS_PERM, getAiUsageInsights);
 router.get("/insights/parent-engagement", ...INSIGHTS_ANALYTICS_PERM, getParentEngagementInsights);
 router.post("/insights/assistant/ask", ...INSIGHTS_ANALYTICS_PERM, askAssistant);
+router.get("/insights/assistant/history", ...INSIGHTS_ANALYTICS_PERM, getAssistantHistory);
+router.delete("/insights/assistant/history", ...INSIGHTS_ANALYTICS_PERM, clearAssistantHistory);
 router.get("/insights/users", ...A, getUsersInsights);
 
 export default router;

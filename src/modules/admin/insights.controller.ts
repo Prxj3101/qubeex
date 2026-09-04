@@ -22,6 +22,7 @@ import { prisma } from "../../utils/prisma";
 import { computeInstitutionFeeStats, computeFeeHealthScore, computeFeeForecast, generateAiFeeForecast, getFeePeerBenchmark } from "../../services/feeInsights.service";
 import { generateAiAttendanceSummary } from "../../services/attendanceInsights.service";
 import { askSchoolAssistant, type AssistantMessage } from "../../services/schoolAssistant.service";
+import { getChatHistory, appendChatMessages, clearChatHistory } from "../../services/aiChatHistory.service";
 
 // Both endpoints below scan full-institution history on every request (all
 // attendance rows for the academic year; all status/audit events ever, with
@@ -696,11 +697,15 @@ export const getParentEngagementInsights = async (req: AuthRequest, res: Respons
 };
 
 // ── POST /admin/insights/assistant/ask — AI School PA chat ─────────────────
-// Stateless on the backend: the frontend sends the full running conversation
-// each time (same convention as Blackboard's aiChat) rather than this being
-// persisted server-side. Every question can trigger up to 2 real model
-// calls (see schoolAssistant.service.ts) — both get logged as SCHOOL_ASSISTANT
-// AiUsageEvents, so "Usage by Feature" reflects the true cost.
+// The frontend still sends the full running conversation each request (same
+// convention as Blackboard's aiChat) so the model gets its context — but the
+// backend now also persists the new user message and the reply to
+// AiChatMessage, keyed to userId, so the same conversation shows up no
+// matter which device the admin logs in from next. Only the LAST message in
+// the array is persisted here (it's the new one); everything before it was
+// already saved on a prior turn. Every question can trigger up to 2 real
+// model calls (see schoolAssistant.service.ts) — both get logged as
+// SCHOOL_ASSISTANT AiUsageEvents, so "Usage by Feature" reflects the true cost.
 export const askAssistant = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId, userId } = req.user!;
@@ -717,8 +722,36 @@ export const askAssistant = async (req: AuthRequest, res: Response, next: NextFu
       return { role: m.role, content: m.content.trim().slice(0, 2000) };
     });
 
+    const newUserMessage = messages[messages.length - 1];
     const result = await askSchoolAssistant(messages, { institutionId, userId, userRole: "ADMIN" });
+
+    const toSave: Array<{ role: "user" | "assistant"; content: string }> = [newUserMessage];
+    if (result.reply) toSave.push({ role: "assistant", content: result.reply });
+    await appendChatMessages(userId, institutionId, toSave).catch(() => { /* history is best-effort — never fail the chat over it */ });
+
     res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── GET /admin/insights/assistant/history — Jarvis chat history ────────────
+export const getAssistantHistory = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.user!;
+    const history = await getChatHistory(userId);
+    res.json({ success: true, data: { messages: history } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── DELETE /admin/insights/assistant/history — clear Jarvis chat history ───
+export const clearAssistantHistory = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.user!;
+    await clearChatHistory(userId);
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

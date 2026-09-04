@@ -237,6 +237,7 @@ model User {
   aiUsageEvents           AiUsageEvent[]
   adminNotes              AdminNote[]
   adminTasks              AdminTask[]
+  aiChatMessages          AiChatMessage[]
 }
 
 enum TrialOutcome {
@@ -1757,6 +1758,25 @@ model AiUsageEvent {
   @@index([institutionId, createdAt])
   @@index([teacherId, createdAt])
   @@index([institutionId, feature, createdAt])
+}
+
+// Jarvis (AI School PA) chat history — one row per message, keyed to the
+// logged-in user (not a browser/device), so the same conversation is visible
+// no matter which device the admin logs in from. Pruned/ignored past a
+// per-user cap by the reader, not deleted here, so history never silently
+// grows unbounded server-side either.
+model AiChatMessage {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  institutionId String
+
+  role    String // "user" | "assistant"
+  content String @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
 
 // Per-student "Conduct" + "Remarks" on the offline report card — written by

@@ -34,8 +34,20 @@ export async function appendChatMessages(
   messages: Array<{ role: "user" | "assistant"; content: string }>
 ): Promise<void> {
   if (messages.length === 0) return;
+  // createMany's rows can all land on the exact same `now()` (Postgres
+  // evaluates it once per statement), so ordering by createdAt alone left
+  // the user/assistant pair in an undefined tie-break order on read —
+  // sometimes the reply sorted before the question that produced it.
+  // Spacing each row 1ms apart guarantees insertion order survives the sort.
+  const base = Date.now();
   await prisma.aiChatMessage.createMany({
-    data: messages.map((m) => ({ userId, institutionId, role: m.role, content: m.content })),
+    data: messages.map((m, i) => ({
+      userId,
+      institutionId,
+      role: m.role,
+      content: m.content,
+      createdAt: new Date(base + i),
+    })),
   });
 }
 

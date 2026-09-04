@@ -64,7 +64,7 @@ export const SCHOOL_ASSISTANT_TOOLS: ToolDefinition[] = [
   },
   {
     name: "getClassStructure",
-    description: "Get this institution's academic structure. Pass `standard` (e.g. '10' or 'Class 10') to get just that grade's divisions, student counts, and subjects — prefer this when a specific class is named. Omit `standard` only for a broad overview, which returns every standard's name and total student count without the full division/subject breakdown.",
+    description: "Get this institution's academic structure — standards, divisions, student counts, and which subjects exist per division. Pass `standard` (e.g. '10' or 'Class 10') to get just that grade's breakdown — prefer this when a specific class is named. Omit `standard` only for a broad overview, which returns every standard's name and total student count without the full division/subject breakdown. IMPORTANT: this tool does NOT know which teacher teaches which subject — it only lists that the subject exists. For any 'who teaches X' / 'who's the teacher for Y' question, always call getStaffDirectory instead (or in addition), since only that tool has the actual teacher-to-subject-to-class assignments.",
     parameters: {
       type: "object",
       properties: { standard: { type: "string", description: "A specific standard/grade name to filter to, e.g. '10'. Omit for a compact overview of all standards." } },
@@ -295,6 +295,29 @@ export async function getInstitutionProfile(institutionId: string) {
 // existed even when they did.
 const normalizeForMatch = (s: string) => s.toLowerCase().replace(/[\s-]+/g, "");
 
+// Turns a free-form question like "who teaches history in 10-b" into the
+// handful of words that actually carry meaning — ["history", "10b"] — by
+// dropping filler words and collapsing punctuation within each word (so
+// "10-b" becomes one token, "10b", instead of splitting into "10" and "b").
+// A whole-phrase substring match against a label like "History (10 - B)"
+// was failing outright (the label's spacing/punctuation never lines up with
+// natural phrasing) — matching token-by-token against a punctuation-stripped
+// haystack is what actually finds it.
+const QUERY_STOPWORDS = new Set([
+  "who", "what", "which", "teaches", "teach", "teacher", "teachers", "in", "for", "of", "the", "a", "an",
+  "is", "are", "currently", "class", "subject", "tell", "me", "can", "you", "please", "does", "do",
+]);
+
+function significantTokens(rawQuery: string): string[] {
+  return rawQuery
+    .toLowerCase()
+    .split(/\s+/)
+    .map((w) => w.replace(/[^a-z0-9]/g, ""))
+    .filter((w) => w.length > 0 && !QUERY_STOPWORDS.has(w));
+}
+
+const alnumOnly = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
 const ROLE_CATEGORY_KEYWORDS: Record<string, "admin" | "subadmin" | "teacher"> = {
   admin: "admin",
   administrator: "admin",
@@ -379,14 +402,29 @@ export async function getStaffDirectory(institutionId: string, args: { query?: s
 
   // Query given — return only what actually matches (by name, subject, or
   // class/division), full detail included since the result set is small.
-  const matchedTeachers = allTeachers.filter((t) =>
-    t.name.toLowerCase().includes(query) ||
-    t.teaches.some((label) => label.toLowerCase().includes(query))
-  );
-  const matchedSubAdmins = allSubAdmins.filter((s) =>
-    s.name.toLowerCase().includes(query) || normalizeForMatch(s.designation).includes(normalizedQuery)
-  );
-  const adminMatches = admin && admin.name?.toLowerCase().includes(query);
+  // Matched token-by-token (not as one whole-phrase substring) since a
+  // natural question like "who teaches history in 10-b" never lines up
+  // character-for-character with a label like "History (10 - B)" — each
+  // significant word has to appear somewhere in the teacher's name+teaches
+  // text, punctuation-and-spacing differences aside.
+  const tokens = significantTokens(rawQuery);
+  const matchedTeachers = allTeachers.filter((t) => {
+    if (tokens.length === 0) return t.name.toLowerCase().includes(query);
+    // Match against the teacher's name, or against ONE single teaches label
+    // at a time — never all labels concatenated together, which would let a
+    // subject from one assignment falsely pair with a class from a totally
+    // different one (e.g. "Hindi in 10-B" wrongly matching a teacher who
+    // teaches Hindi in 10-A and History in 10-B, just not Hindi in 10-B).
+    if (tokens.every((tok) => alnumOnly(t.name).includes(tok))) return true;
+    return t.teaches.some((label) => tokens.every((tok) => alnumOnly(label).includes(tok)));
+  });
+  const matchedSubAdmins = allSubAdmins.filter((s) => {
+    const haystack = alnumOnly(s.name + " " + s.designation);
+    return tokens.length > 0 ? tokens.every((tok) => haystack.includes(tok)) : normalizeForMatch(s.designation).includes(normalizedQuery);
+  });
+  const adminMatches =
+    admin &&
+    (tokens.length > 0 ? tokens.every((tok) => alnumOnly(admin.name ?? "").includes(tok)) : admin.name?.toLowerCase().includes(query));
 
   return {
     admin: adminMatches ? admin : null,

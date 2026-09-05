@@ -12,6 +12,8 @@ import { sendTeacherInviteEmail, sendSubAdminInviteEmail } from "../../services/
 import { cacheSubAdminPermissions } from "../../middlewares/requirePermission.middleware";
 import { generateUserId } from "../../utils/userId";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
+import { THEME_COLORS, isThemeCustomizationEligible } from "../../services/themeColor.service";
+import { invalidateBrandingCache } from "../../services/whiteLabel.service";
 import { z } from "zod";
 
 const updateInstitutionSchema = z.object({
@@ -26,6 +28,7 @@ const updateInstitutionSchema = z.object({
   board: z.string().trim().optional().nullable(),
   medium: z.string().trim().optional().nullable(),
   establishedOn: z.string().trim().optional().nullable(),
+  themeColor: z.enum(THEME_COLORS).optional(),
 });
 
 const updateAdminMeSchema = z.object({
@@ -194,8 +197,9 @@ export const getMyInstitution = async (
     }
 
     const isTrial = !institution.subscription || institution.subscription.status === "TRIAL";
+    const themeCustomizationEligible = await isThemeCustomizationEligible(institution.id);
 
-    res.json({ success: true, data: { ...institution, adminAvatarUrl, isTrial } });
+    res.json({ success: true, data: { ...institution, adminAvatarUrl, isTrial, themeCustomizationEligible } });
   } catch (error) {
     next(error);
   }
@@ -216,10 +220,27 @@ export const updateMyInstitution = async (
     checkInstitutionAccess(user, user.institutionId);
 
     const data = updateInstitutionSchema.parse(req.body);
+
+    // Never trust the frontend gate: re-validate PRO/TRIAL eligibility
+    // server-side before allowing a themeColor change, same pattern as
+    // isWhiteLabelEligible for white-labeling.
+    if (data.themeColor !== undefined) {
+      const eligible = await isThemeCustomizationEligible(user.institutionId);
+      if (!eligible) {
+        throw new BadRequestError(
+          "Theme customization requires an active Pro plan or trial. Upgrade to Pro to change your theme color."
+        );
+      }
+    }
+
     const institution = await prisma.institution.update({
       where: { id: user.institutionId },
       data,
     });
+
+    if (data.themeColor !== undefined) {
+      await invalidateBrandingCache(institution.id);
+    }
 
     logAudit("INSTITUTION_UPDATED", {
       userId: user.userId,

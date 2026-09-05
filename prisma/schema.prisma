@@ -140,6 +140,12 @@ model Institution {
   medium  String?
   logoUrl String?
 
+  // Self-service accent color family for the admin/teacher/student UI —
+  // PRO + TRIAL eligible, BASIC stays locked to "purple" (see
+  // themeColor.service.ts for the eligibility check, re-validated server-side
+  // on every write so a lapsed Pro subscription can't keep a custom theme).
+  themeColor String @default("purple")
+
   // Admin personal info (one admin per institution)
   adminPrefix       String?
   adminTitle        String?

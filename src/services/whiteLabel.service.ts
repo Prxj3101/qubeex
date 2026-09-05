@@ -12,6 +12,7 @@ export const QUBEEX_DEFAULT_BRANDING = {
   brandName: "QubeEx",
   logoUrl: "/QubeEx_darkmode_DA7756.png",
   faviconUrl: "/favicon.ico",
+  themeColor: "purple",
 } as const;
 
 export type EffectiveBranding = {
@@ -19,6 +20,11 @@ export type EffectiveBranding = {
   brandName: string;
   logoUrl: string;
   faviconUrl: string;
+  // Independent of the enabled/PRO-only white-label toggle above — gated by
+  // its own PRO+TRIAL eligibility check (themeColor.service.ts) at write
+  // time, so it's always safe to read back here regardless of white-label
+  // status. Defaults to "purple" for every institution that hasn't changed it.
+  themeColor: string;
 };
 
 // White-labeling is a Pro-plan feature derived from the institution's existing
@@ -61,8 +67,10 @@ export const getEffectiveBranding = async (institutionId: string): Promise<Effec
   const [config, eligible, institution] = await Promise.all([
     prisma.whiteLabelConfig.findUnique({ where: { institutionId } }),
     isWhiteLabelEligible(institutionId),
-    prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true } }),
+    prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true, themeColor: true } }),
   ]);
+
+  const themeColor = institution?.themeColor || QUBEEX_DEFAULT_BRANDING.themeColor;
 
   const effective: EffectiveBranding = (eligible && config?.enabled)
     ? {
@@ -74,14 +82,15 @@ export const getEffectiveBranding = async (institutionId: string): Promise<Effec
         brandName: config.brandName || institution?.name || QUBEEX_DEFAULT_BRANDING.brandName,
         logoUrl: config.logoUrl || QUBEEX_DEFAULT_BRANDING.logoUrl,
         faviconUrl: config.faviconUrl || QUBEEX_DEFAULT_BRANDING.faviconUrl,
+        themeColor,
       }
-    : { ...QUBEEX_DEFAULT_BRANDING };
+    : { ...QUBEEX_DEFAULT_BRANDING, themeColor };
 
   await setCache(brandingCacheKey(institutionId), effective, BRANDING_CACHE_TTL_SECONDS);
   return effective;
 };
 
-const invalidateBrandingCache = (institutionId: string) => delCache(brandingCacheKey(institutionId));
+export const invalidateBrandingCache = (institutionId: string) => delCache(brandingCacheKey(institutionId));
 
 interface UpdateWhiteLabelInput {
   enabled?: boolean;

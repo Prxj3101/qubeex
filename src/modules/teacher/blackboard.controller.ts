@@ -819,6 +819,68 @@ function normalizeSearchText(query: string): string {
     .trim();
 }
 
+// Words that head thousands of Wikipedia titles. Sharing one of these with a
+// query proves nothing about relevance — "energy" is common to both
+// "Hydroelectric power generation" and "Energy transformation", and letting it
+// validate a match is what pulled generic physics diagrams into lessons about
+// specific power stations.
+const GENERIC_TITLE_WORDS = new Set([
+  "energy", "power", "system", "systems", "process", "processes", "conversion",
+  "transformation", "generation", "method", "methods", "type", "types", "kind",
+  "structure", "function", "principle", "principles", "theory", "science",
+  "study", "development", "production", "technology", "effect", "effects",
+  "cycle", "model", "analysis", "application", "applications", "introduction",
+  "overview", "general", "material", "materials", "natural", "human", "world",
+  "life", "form", "forms", "unit", "units", "change", "changes", "source",
+  "sources", "resource", "resources", "concept", "basic", "basics", "working",
+]);
+
+/** The terms that actually identify what a query is about. */
+function distinctiveTerms(query: string): string[] {
+  const words = keywordsOf(query);
+  const specific = words.filter(w => !GENERIC_TITLE_WORDS.has(w));
+  // A query made entirely of generic words ("Energy conversion") has nothing
+  // distinctive to check, so fall back rather than reject everything.
+  return specific.length > 0 ? specific : words;
+}
+
+/**
+ * Whole-word matching is wrong here: Wikipedia titles inflect ("Hydroelectric"
+ * -> "Hydroelectricity", "Photosynthesis" -> "Photosynthetic"), so a strict
+ * boundary match discards the correct article. Compare stems instead — one
+ * word being a prefix of the other, with a length floor so short fragments
+ * can't match everything.
+ */
+const STEM_PREFIX_MIN = 6;
+
+/** Length of the leading run two words have in common. */
+function sharedPrefixLength(a: string, b: string): number {
+  const max = Math.min(a.length, b.length);
+  let i = 0;
+  while (i < max && a[i] === b[i]) i++;
+  return i;
+}
+
+function termMatchesTitle(term: string, title: string): boolean {
+  const titleWords = title.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  return titleWords.some(tw =>
+    tw === term ||
+    (tw.startsWith(term) && term.length >= 5) ||
+    (term.startsWith(tw) && tw.length >= 5) ||
+    // Inflections that diverge rather than extend — "photosynthesis" against
+    // "photosynthetic", "electrical" against "electricity" — share a stem but
+    // neither is a prefix of the other, so a startsWith test alone drops the
+    // correct article.
+    sharedPrefixLength(tw, term) >= STEM_PREFIX_MIN
+  );
+}
+
+function titleMatchesQuery(title: string, query: string): boolean {
+  const terms = distinctiveTerms(query);
+  if (terms.length === 0) return true;
+  return terms.some(t => termMatchesTitle(t, title));
+}
+
 async function wikipediaOpenSearch(query: string): Promise<string | null> {
   const res = await fetch(
     `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=1&search=${encodeURIComponent(query)}`,
@@ -867,18 +929,22 @@ async function resolveWikipediaTitle(query: string): Promise<string | null> {
     const found = await wikipediaFullTextSearch(normalized);
     if (!found) return null;
 
-    // Full-text search always returns its best guess, however weak — searching
-    // "Artificial classification versus natural classification" returns
-    // "Document classification", a completely different subject. Require the
-    // article title to share a meaningful word with the query, or a bad match
-    // injects an unrelated article's images into the lesson.
-    const queryWords = keywordsOf(normalized);
-    if (queryWords.length > 0) {
-      const titleHaystack = found.toLowerCase();
-      if (!queryWords.some(w => haystackContainsWord(titleHaystack, w))) {
-        console.log(`[blackboard] Full-text match "${found}" rejected as unrelated to "${normalized}"`);
-        return null;
-      }
+    // Full-text search always returns its best guess, however weak. The guard
+    // has to be specific in BOTH directions — an earlier "share any word"
+    // version failed both ways on real queries:
+    //
+    //   "Conversion of potential energy to electrical energy"
+    //        -> "Energy transformation"   ACCEPTED on the word "energy" alone
+    //   "Energy conversion in a hydroelectric plant"
+    //        -> "Hydroelectricity"        REJECTED, because \bhydroelectric\b
+    //                                     does not match inside "Hydroelectricity"
+    //
+    // which is exactly the reported symptom: a lesson on hydroelectric power
+    // showing generic "energy conversion" diagrams. So: match on DISTINCTIVE
+    // terms only, and match them by stem rather than whole word.
+    if (!titleMatchesQuery(found, normalized)) {
+      console.log(`[blackboard] Full-text match "${found}" rejected as too generic for "${normalized}"`);
+      return null;
     }
     return found;
   } catch (err) {
@@ -1121,6 +1187,124 @@ function isPreferredImageSource(rawUrl: string): boolean {
   return hostMatches(host, PREFERRED_IMAGE_DOMAINS);
 }
 
+// ── SerpAPI (optional, paid, preferred provider) ─────────────────────────────
+//
+// serpapi.com's google_images engine, distinct from serper.dev below. Preferred
+// because its results carry the image's real dimensions, which lets the same
+// minimum-width rule that protects Commons results apply here too — a 90px
+// thumbnail matches a query just as well as a 1600px schematic and looks like
+// mush on a projector.
+//
+//   SERPAPI_API_KEY = key from serpapi.com
+//
+// Falls back to Serper when unset, so nothing changes until the key exists.
+const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY ?? "";
+
+// SerpAPI plans are rate-limited per hour (250/hr on the current plan, and this
+// code spends up to MAX_WEB_QUERIES_PER_SCAN per scan). When several teachers
+// scan at once that ceiling is reachable — and without this, a 429 meant the
+// scan simply got no web images, despite a working Serper key sitting right
+// there. Tripping this cooldown makes provider selection fall through to the
+// next configured provider until SerpAPI is worth trying again.
+const SERPAPI_COOLDOWN_MS = 5 * 60 * 1000;
+let serpApiUnavailableUntil = 0;
+
+function markSerpApiUnavailable(reason: string): void {
+  serpApiUnavailableUntil = Date.now() + SERPAPI_COOLDOWN_MS;
+  console.warn(
+    `[blackboard] SerpAPI unavailable (${reason}) — falling back to the next provider for ` +
+    `${SERPAPI_COOLDOWN_MS / 60000} minutes`
+  );
+}
+
+/** True when SerpAPI is configured and not in a rate-limit cooldown. */
+function isSerpApiUsable(): boolean {
+  return !!SERPAPI_API_KEY && Date.now() >= serpApiUnavailableUntil;
+}
+
+async function fetchSerpApiImages(
+  query: string,
+  limit: number,
+  seenUrls: Set<string>,
+  illustrationsOnly = false
+): Promise<{ url: string; caption: string }[]> {
+  if (!SERPAPI_API_KEY || limit <= 0) return [];
+  const params = new URLSearchParams({
+    engine: "google_images",
+    q: query,
+    api_key: SERPAPI_API_KEY,
+    // Google's own SafeSearch. Not sufficient on its own for a children's
+    // product — clinical anatomy passes it — which is why every result still
+    // goes through isClassroomSafe below.
+    safe: "active",
+    ijn: "0",
+  });
+
+  try {
+    const res = await fetch(`https://serpapi.com/search.json?${params.toString()}`, {
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) {
+      console.error(`[blackboard] SerpAPI image search returned ${res.status} for "${query}"`);
+      // 429 = hourly rate limit, 401/403 = bad or exhausted key. All three mean
+      // "stop asking for a while" rather than "this query had no results".
+      if (res.status === 429 || res.status === 401 || res.status === 403) {
+        markSerpApiUnavailable(`HTTP ${res.status}`);
+      }
+      return [];
+    }
+    const json = (await res.json()) as {
+      error?: string;
+      images_results?: Array<{
+        title?: string;
+        original?: string;
+        original_width?: number;
+        original_height?: number;
+        source?: string;
+        link?: string;
+      }>;
+    };
+    if (json.error) {
+      console.error(`[blackboard] SerpAPI returned an error for "${query}": ${json.error}`);
+      // SerpAPI reports quota problems as HTTP 200 with an `error` string, so
+      // the status check above never sees them.
+      if (/rate|limit|quota|exceed|plan|credit/i.test(json.error)) {
+        markSerpApiUnavailable(json.error.slice(0, 80));
+      }
+      return [];
+    }
+
+    const IMAGE_EXT = /\.(jpg|jpeg|png|svg|gif|webp)(?:\?.*)?$/i;
+    const preferred: { url: string; caption: string }[] = [];
+    const other: { url: string; caption: string }[] = [];
+
+    for (const item of json.images_results ?? []) {
+      if (preferred.length + other.length >= limit * 3) break;
+      const url = item.original;
+      if (!url || seenUrls.has(url)) continue;
+      if (!IMAGE_EXT.test(url)) continue;
+      // Dimensions are the reason this provider is preferred — use them.
+      if (item.original_width && item.original_width < MIN_IMAGE_WIDTH) continue;
+      // Judge the image's own host, not the page it was found on.
+      if (isBlockedImageSource(url)) continue;
+      const title = item.title ?? "";
+      if (illustrationsOnly && !isIllustration(title, url)) continue;
+      if (!isClassroomSafe(title, url)) continue;
+      (isPreferredImageSource(url) ? preferred : other).push({
+        url,
+        caption: title.trim() || query,
+      });
+    }
+
+    const out = [...preferred, ...other].slice(0, limit);
+    for (const img of out) seenUrls.add(img.url);
+    return out;
+  } catch (err) {
+    console.error(`[blackboard] SerpAPI image search failed for "${query}":`, err);
+    return [];
+  }
+}
+
 async function fetchSerperImages(
   query: string,
   limit: number,
@@ -1305,12 +1489,152 @@ const DIAGRAM_REQUEST_PATTERN =
 const PHOTO_REQUEST_PATTERN =
   /\b(photo|photos|photograph\w*|real|actual|realistic|picture[sd]? of|satellite|aerial|microscope|micrograph|specimen|looks? like|live)\b/i;
 
+// ── Relevance selection ───────────────────────────────────────────────────────
+//
+// The step that was missing entirely. Retrieval finds images ABOUT A CONCEPT;
+// it has no idea what the teacher's pages actually say. A Wikipedia article
+// covers its whole subject, and its media list is ordered by where images
+// appear in the article — so "Chordate" leads with a glass catfish, a hagfish
+// and a lancelet regardless of whether the lesson is about classification,
+// anatomy or evolution. Taking the first N in article order is why images kept
+// coming back "about the right topic but not about this material".
+//
+// So: gather a WIDE pool of candidates, then have the model choose which of
+// them genuinely illustrate the lesson that was just generated — matching each
+// caption against the scan's own overview and key points. Captions are short,
+// so this is a small call (a 48-image pool is roughly 700 input tokens) next to
+// the scan itself.
+//
+// Fails open: any error, refusal or unusable response leaves the original
+// ordering untouched. Image relevance must never be able to fail a scan.
+const IMAGE_POOL_SIZE = 48;
+const MAX_CAPTION_CHARS = 110;
+
+async function selectRelevantImages(
+  candidates: { url: string; caption: string }[],
+  lessonSummary: string,
+  instructions: string | undefined,
+  limit: number,
+  usage: { institutionId: string; teacherId: string; userId: string },
+  previouslyShown?: string[],
+): Promise<{ url: string; caption: string }[] | null> {
+  if (!openai) return null;
+  // Nothing to choose between — ranking would cost a call and change nothing.
+  if (candidates.length <= 3 || !lessonSummary.trim()) return null;
+
+  const numbered = candidates
+    .map((c, i) => `${i}: ${c.caption.replace(/\s+/g, " ").slice(0, MAX_CAPTION_CHARS)}`)
+    .join("\n");
+
+  const systemPrompt =
+    "You are helping a schoolteacher choose which images to project onto the classroom board for one specific lesson. " +
+    "You will be given what the lesson actually teaches, then a numbered list of available images described by their captions. " +
+    "Select ONLY the images that genuinely illustrate THIS lesson's content. " +
+    "Reject anything that merely belongs to the same broad subject — a picture of one example species does not illustrate a lesson about how organisms are classified. " +
+    "Reject GENERIC images in particular: a lesson about hydroelectric power stations needs dams, turbines and generators, NOT abstract 'energy conversion' or 'energy transformation' diagrams that would suit any physics lesson at all. " +
+    "If a caption would fit equally well in a dozen unrelated lessons, it does not belong in this one. " +
+    "When the teacher has given instructions, they are the FIRST filter: an image that does not serve what they asked for is rejected no matter how well it matches the topic. " +
+    "Reject decorative photographs, portraits of unrelated people, logos, maps that show nothing the lesson mentions, and images whose caption you cannot connect to the lesson. " +
+    "Order your selection best-first: the image you would put on the board first comes first. " +
+    "It is far better to return five excellent images than twenty loose ones. If almost nothing fits, return only the few that do. " +
+    'Return ONLY valid JSON: {"keep": [<indices, best first>]}. No markdown, no explanation.';
+
+  const userContent =
+    `WHAT THIS LESSON TEACHES:\n${lessonSummary}\n` +
+    (instructions
+      ? `\nTEACHER'S INSTRUCTIONS — THE PRIMARY SELECTION CRITERION. Judge every candidate against this first, and only then against the lesson content:\n"${instructions}"\n`
+      : "") +
+    (previouslyShown?.length
+      ? `\nSHOWN ON THE PREVIOUS SCAN OF THIS MATERIAL:\n${previouslyShown.slice(0, 24).map(c => `- ${c.slice(0, MAX_CAPTION_CHARS)}`).join("\n")}\n` +
+        `The teacher scanned again because they want better visuals than these. Prefer candidates that illustrate the lesson more directly than what was shown before. ` +
+        `Keep one of the previous images only where it is genuinely among the best available — do not drop a strong image just because it appeared last time, and do not pick a weaker one merely to be different.\n`
+      : "") +
+    `\nAVAILABLE IMAGES:\n${numbered}\n\nReturn at most ${limit} indices.`;
+
+  let completion;
+  try {
+    completion = await openai.chat.completions.create({
+      model: AI_MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent },
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 400,
+      ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
+    });
+  } catch (err) {
+    console.error("[blackboard] Image relevance selection failed — keeping retrieval order:", err);
+    await recordAiUsage({
+      ...usage, userRole: "TEACHER",
+      feature: "BLACKBOARD_IMAGE_RANK" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+      requestType: "chat_completion", status: "FAILED",
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return null;
+  }
+
+  await recordAiUsage({
+    ...usage, userRole: "TEACHER",
+    feature: "BLACKBOARD_IMAGE_RANK" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
+    requestType: "chat_completion", status: "SUCCESS",
+    inputTokens: completion.usage?.prompt_tokens, outputTokens: completion.usage?.completion_tokens,
+    totalTokens: completion.usage?.total_tokens,
+  });
+
+  let keep: unknown;
+  try {
+    keep = (JSON.parse(completion.choices[0].message.content ?? "{}") as { keep?: unknown }).keep;
+  } catch {
+    console.error("[blackboard] Image relevance selection returned malformed JSON — keeping retrieval order");
+    return null;
+  }
+  if (!Array.isArray(keep)) return null;
+
+  // Indices are model output, so treat them as untrusted: drop anything that
+  // isn't a real position in the pool, and de-duplicate.
+  const seen = new Set<number>();
+  const chosen: { url: string; caption: string }[] = [];
+  for (const raw of keep) {
+    const i = typeof raw === "number" ? raw : Number.parseInt(String(raw), 10);
+    if (!Number.isInteger(i) || i < 0 || i >= candidates.length || seen.has(i)) continue;
+    seen.add(i);
+    chosen.push(candidates[i]);
+    if (chosen.length >= limit) break;
+  }
+  // An empty selection means the model rejected everything. That is a real
+  // signal on a pool of loosely-related images, but returning nothing would
+  // leave the teacher with a blank panel, so fall back rather than trust it.
+  if (chosen.length === 0) {
+    console.log("[blackboard] Image relevance selection kept nothing — falling back to retrieval order");
+    return null;
+  }
+  return chosen;
+}
+
+interface ConceptImageOptions {
+  limit: number;
+  rawText?: string;
+  instructions?: string;
+  /** The scan's own overview + key points — what relevance is judged against. */
+  lessonSummary?: string;
+  usage?: { institutionId: string; teacherId: string; userId: string };
+  /** Captions shown on the previous scan of this material, if any. */
+  previousImageCaptions?: string[];
+  /** Refinement pass number; >0 bypasses the image cache so results can improve. */
+  refinementPass?: number;
+}
+
 async function retrieveConceptImages(
   context: DocumentContext,
-  limit: number,
-  rawText?: string,
-  instructions?: string
+  options: ConceptImageOptions
 ): Promise<{ url: string; caption: string }[]> {
+  const { limit, rawText, instructions, lessonSummary, usage, previousImageCaptions, refinementPass } = options;
+  const isRefinement = (refinementPass ?? 0) > 0;
+  // Retrieval gathers a deliberately WIDE pool so the relevance step below has
+  // something to choose between; without it, "take the first N in article
+  // order" IS the selection, which is the whole problem.
+  const poolTarget = lessonSummary && usage ? Math.max(limit, IMAGE_POOL_SIZE) : limit;
   // Most specific first: explicit visual suggestions, then subtopics, then the
   // broad topic as a backstop. Deduped so a concept repeated across fields
   // doesn't consume two search slots.
@@ -1340,19 +1664,34 @@ async function retrieveConceptImages(
   // different queries or a different intent naturally miss and re-search.
   const imageCacheKey = `blackboard:imgs:${crypto
     .createHash("sha256")
-    .update(`${queries.join("|")}::${context.subject ?? "general"}::v2::${illustrationsOnly}::${instructions ?? ""}::${limit}`)
+    .update(
+      `${queries.join("|")}::${context.subject ?? "general"}::v3::${illustrationsOnly}::` +
+      `${instructions ?? ""}::${limit}::${lessonSummary ?? ""}`
+    )
     .digest("hex")
     .slice(0, 32)}`;
-  const cachedImages = await getCache<{ url: string; caption: string }[]>(imageCacheKey);
+  // A refinement pass must never be served from cache — returning the same
+  // images is precisely what the teacher re-scanned to get away from.
+  const cachedImages = isRefinement
+    ? null
+    : await getCache<{ url: string; caption: string }[]>(imageCacheKey);
   if (cachedImages) {
     console.log(`[blackboard] Image cache hit — ${cachedImages.length} image(s), no search performed`);
     return cachedImages;
   }
 
   const seenUrls = new Set<string>();
-  const webSearch = SERPER_API_KEY ? fetchSerperImages : fetchGoogleImages;
-  const webSearchAvailable = !!SERPER_API_KEY || !!GOOGLE_SEARCH_API_KEY;
-  const webProvider = SERPER_API_KEY ? "serper" : (GOOGLE_SEARCH_API_KEY ? "google-cse" : "none");
+  // Provider order: SerpAPI first (it reports image dimensions, so the
+  // minimum-width rule applies), Serper next, Google CSE last. Each is used
+  // only when its key is present, so the order degrades cleanly.
+  const serpApiUsable = isSerpApiUsable();
+  const webSearch = serpApiUsable
+    ? fetchSerpApiImages
+    : (SERPER_API_KEY ? fetchSerperImages : fetchGoogleImages);
+  const webSearchAvailable = serpApiUsable || !!SERPER_API_KEY || !!GOOGLE_SEARCH_API_KEY;
+  const webProvider = serpApiUsable
+    ? "serpapi"
+    : (SERPER_API_KEY ? "serper" : (GOOGLE_SEARCH_API_KEY ? "google-cse" : "none"));
   // An explicit photo request wins over the diagram-first default — but only
   // when diagrams weren't also asked for ("labelled photo of a real leaf").
   const wantsDiagrams = !!instructions && DIAGRAM_REQUEST_PATTERN.test(instructions);
@@ -1393,9 +1732,9 @@ async function retrieveConceptImages(
     if (!webSearchAvailable) return;
     let spent = 0;
     for (const query of queries) {
-      if (visualCount() >= limit || spent >= MAX_WEB_QUERIES_PER_SCAN) break;
+      if (visualCount() >= poolTarget || spent >= MAX_WEB_QUERIES_PER_SCAN) break;
       spent++;
-      sortInto(await webSearch(`${query} ${diagramQualifier}`, limit - visualCount(), seenUrls, illustrationsOnly));
+      sortInto(await webSearch(`${query} ${diagramQualifier}`, poolTarget - visualCount(), seenUrls, illustrationsOnly));
     }
   };
 
@@ -1468,7 +1807,12 @@ async function retrieveConceptImages(
   // teacher explicitly asked for diagrams — Commons turns out to cover most
   // school topics well, so paid search becomes the exception rather than the
   // rule.
-  sortInto(await fetchTopicImages(queries, MAX_IMAGES_PER_SCAN, seenUrls, illustrationsOnly));
+  // poolTarget, not `limit`: one media-list request already returns every image
+  // in the article, so taking more of them costs no extra HTTP call — it just
+  // stops throwing away candidates the relevance step could have chosen from.
+  // Commons and web search below stay bound by `limit`, so a wider pool never
+  // spends additional paid queries.
+  sortInto(await fetchTopicImages(queries, poolTarget, seenUrls, illustrationsOnly));
   if (!(wantsPhotos && !illustrationsOnly) && visualCount() < ENOUGH_DIAGRAMS_WITHOUT_WEB) {
     // Photos requested: article images are the better free source (Commons
     // search is qualified toward diagrams/paintings), so that pass is skipped.
@@ -1485,21 +1829,33 @@ async function retrieveConceptImages(
     console.log(`[blackboard] Animation search (free): found ${animations.length} animated visual(s)`);
   }
 
-  if (visualCount() < ENOUGH_DIAGRAMS_WITHOUT_WEB && allowWebSearch) {
+  // Web search now runs on EVERY scan a provider is configured for, not only
+  // when free sources fall short.
+  //
+  // The old shortfall rule made sense when the last image in the list was the
+  // one shown; it does not now that a relevance step chooses from a pool. Free
+  // sources were reaching the "enough" threshold with generic article images
+  // and suppressing the search that would have found the actual teaching
+  // diagram — Wikipedia articles are written for an encyclopedia, and Google
+  // Images has far better coverage of school-appropriate schematics. Feeding
+  // both into the pool lets the selector pick on merit.
+  //
+  // COST: bounded by MAX_WEB_QUERIES_PER_SCAN (3) per scan, but it is now
+  // spent on every scan rather than occasionally. To restore the old
+  // behaviour, gate this on `visualCount() < ENOUGH_DIAGRAMS_WITHOUT_WEB`.
+  if (allowWebSearch) {
     console.log(
       `[blackboard] Free sources gave ${diagrams.length} diagram(s), ${animations.length} animation(s), ` +
-      `${photos.length} photo(s) — topping up via ${webProvider} (max ${MAX_WEB_QUERIES_PER_SCAN} queries)`
+      `${photos.length} photo(s) — adding ${webProvider} results (max ${MAX_WEB_QUERIES_PER_SCAN} queries)`
     );
     await runWebSearch();
-  } else if (visualCount() >= ENOUGH_DIAGRAMS_WITHOUT_WEB) {
-    console.log(`[blackboard] ${visualCount()} visual(s) from free sources — skipping paid search`);
   }
 
   if (!webSearchAvailable) {
     // Surfaced explicitly because the symptom (only Wikipedia photos) looks
     // identical to a relevance bug, but the cause is a missing key — usually a
     // process started before SERPER_API_KEY was added to .env.
-    console.warn("[blackboard] No web image provider configured (SERPER_API_KEY / GOOGLE_SEARCH_API_KEY) — Wikipedia only.");
+    console.warn("[blackboard] No web image provider configured (SERPAPI_API_KEY / SERPER_API_KEY / GOOGLE_SEARCH_API_KEY) — Wikipedia only.");
   }
 
   // Diagrams lead by default because that's what teaching material usually
@@ -1524,11 +1880,35 @@ async function retrieveConceptImages(
   // still rank after the static visuals rather than being discarded.
   const leadAnimations = animations.slice(0, MAX_ANIMATIONS_PER_SCAN);
   const extraAnimations = animations.slice(MAX_ANIMATIONS_PER_SCAN);
-  const result = [...leadAnimations, ...first, ...second, ...extraAnimations].slice(0, limit);
+  const pool = [...leadAnimations, ...first, ...second, ...extraAnimations];
+
+  // ── The relevance step ──────────────────────────────────────────────────
+  // Everything above ranks by TYPE and by where an image sat in its source
+  // article. Neither has any idea what the teacher's pages actually say, which
+  // is why results kept being "about the topic" without being about the
+  // lesson. This is the only stage that compares a candidate against the
+  // material, so it decides the final order; retrieval order is the fallback.
+  let result = pool.slice(0, limit);
+  let selectionNote = "";
+  // No pool-size gate beyond selectRelevantImages' own (it skips pools of 3 or
+  // fewer). Even a small pool benefits: dropping two loosely-related images is
+  // worth more to a lesson than padding the panel out to the limit.
+  if (lessonSummary && usage) {
+    const selected = await selectRelevantImages(
+      pool.slice(0, IMAGE_POOL_SIZE), lessonSummary, instructions, limit, usage,
+      isRefinement ? previousImageCaptions : undefined
+    );
+    if (selected) {
+      result = selected;
+      selectionNote = ` — AI kept ${selected.length} of ${Math.min(pool.length, IMAGE_POOL_SIZE)} candidates as relevant to the lesson`;
+    }
+  }
+
   console.log(
-    `[blackboard] Returning ${result.length} image(s) — ${animations.length} animation(s), ` +
-    `${diagrams.length} diagram(s), ${photos.length} photo(s)` +
-    `${photosFirst ? ` (photos first: ${wantsPhotos ? "per instruction" : `${context.subject} subject`})` : ""}`
+    `[blackboard] Returning ${result.length} image(s) from a pool of ${pool.length} — ` +
+    `${animations.length} animation(s), ${diagrams.length} diagram(s), ${photos.length} photo(s)` +
+    `${photosFirst ? ` (photos first: ${wantsPhotos ? "per instruction" : `${context.subject} subject`})` : ""}` +
+    selectionNote
   );
   // Only cache a non-empty result: an empty one usually means a transient
   // failure (timeout, rate limit) and caching it would pin the emptiness for
@@ -1578,6 +1958,22 @@ function contextCacheKey(pageText: string): string {
 
 const CONTEXT_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60; // documents don't change
 
+// Shared by both stages that produce image search terms.
+//
+// Written after a real failure: a chapter on hydroelectric power generation
+// produced queries like "Energy conversion" and "Conversion of potential energy
+// to electrical energy", which resolve to the generic "Energy transformation"
+// article — so the lesson got abstract physics diagrams instead of dams,
+// turbines and power stations. Models reach for the underlying principle when
+// asked what a lesson is "about"; image search needs the concrete thing.
+const CONCRETE_QUERY_RULE =
+  'Each must be a real, lookup-able encyclopedia subject — the NAME OF A CONCRETE THING, not the abstract principle behind it. ' +
+  'Name the object, place, organism, device, structure or named event the material is actually about. ' +
+  'For a lesson on hydroelectric power that would be "Hydroelectric power station", "Water turbine", "Dam", "Penstock" — NEVER "Energy conversion", "Energy transformation" or "Conversion of potential energy to electrical energy", which return generic diagrams belonging to no particular lesson. ' +
+  'Avoid queries whose words are all general-purpose ("energy", "power", "system", "process", "types", "structure", "method") — such a query cannot identify a specific subject and will return unrelated images. ' +
+  'Prefer the most specific term the material itself uses. ' +
+  'Never use a descriptive phrase or a sentence, and never an acronym: write "Distributed file system", not "DFS".';
+
 const CONTEXT_SYSTEM_PROMPT =
   "You are analyzing classroom teaching material. You will be given the combined text of one or more selected pages from a document — treat it as a single unified context, not as separate pages. " +
   "Read it fully, then produce a structured understanding of what it teaches. Do not summarize for a reader; extract structure. " +
@@ -1589,7 +1985,7 @@ const CONTEXT_SYSTEM_PROMPT =
   '"definitions" (array of up to 5 objects {"term","meaning"} for terms the material actually defines), ' +
   '"conceptType" (short label such as "Biological Process", "Algorithm", "Historical Event", "Mathematical Theorem"), ' +
   `"subject" (the school subject this material belongs to, chosen from EXACTLY this list: ${MINDMAP_SUBJECTS.join(", ")}. Use "general" only if none of the others fit), ` +
-  '"suggestedVisuals" (array of 3-6 concrete, picturable subjects — imagine you are the teacher standing in front of the class deciding what to put on the board. Prefer: labelled diagrams that show structure, processes or cycles that show change over time and work well as an animation, and real-world examples students can connect to their own experience. Favour a visual that makes a student ask "why does that happen?" over a merely decorative one. Each must be phrased as a real encyclopedia subject someone could look up, e.g. "Chloroplast", "Calvin cycle", "Water cycle"; ALWAYS spell terms out in full rather than as acronyms, since acronyms are ambiguous — write "Distributed file system", never "DFS"), ' +
+  `"suggestedVisuals" (array of 3-6 concrete, picturable subjects — imagine you are the teacher standing in front of the class deciding what to put on the board. Prefer: labelled diagrams that show structure, processes or cycles that show change over time and work well as an animation, and real-world examples students can connect to their own experience. Favour a visual that makes a student ask "why does that happen?" over a merely decorative one. ${CONCRETE_QUERY_RULE}), ` +
   '"learningObjectives" (array of 2-4 strings describing what a student should be able to do after this material).';
 
 async function buildDocumentContext(
@@ -1693,6 +2089,186 @@ const MOCK_SCAN = {
   ],
 };
 
+// The model is asked for a specific JSON shape but isn't bound to it — it
+// will happily return detailedNotes as an array of paragraphs, or
+// keyPoints as a newline-joined string. Normalize here so the API contract
+// actually holds and clients can render the response without type-guarding
+// every field (an array reaching a `.split()` call is a hard crash).
+const asText = (v: unknown): string | undefined => {
+  if (typeof v === "string") return v.trim() || undefined;
+  if (Array.isArray(v)) {
+    const parts = v
+      .map(item => {
+        if (typeof item === "string") return item;
+        // Sectioned notes sometimes arrive as [{ heading, body }, ...].
+        if (item && typeof item === "object") {
+          return Object.values(item).filter((s): s is string => typeof s === "string").join("\n");
+        }
+        return "";
+      })
+      .map(s => s.trim())
+      .filter(Boolean);
+    return parts.length > 0 ? parts.join("\n\n") : undefined;
+  }
+  return undefined;
+};
+
+/**
+ * Best-effort recovery of a JSON object that was cut off at the token ceiling.
+ *
+ * Long documents in notes mode could exceed the output budget, and a truncated
+ * response is invalid JSON — so the teacher got "select fewer pages" and lost
+ * everything the model had already written. Closing the dangling string and
+ * brackets recovers the completed fields (topic, overview, keyPoints, and any
+ * finished note sections), which is far more useful than an error.
+ */
+function repairTruncatedJson(raw: string): Record<string, unknown> | null {
+  let text = raw.trimEnd();
+  // Drop a trailing partial token ("detailedNo) that can't be closed usefully.
+  text = text.replace(/,\s*"[^"]*$/, "").replace(/,\s*$/, "");
+
+  // Walk the text tracking string state so brackets inside strings are ignored.
+  let inString = false, escaped = false;
+  const stack: string[] = [];
+  for (const ch of text) {
+    if (escaped) { escaped = false; continue; }
+    if (ch === "\\") { escaped = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{" || ch === "[") stack.push(ch);
+    else if (ch === "}" || ch === "]") stack.pop();
+  }
+  if (inString) text += '"';
+  // A value may be mid-write ("key": ) — trim back to the last complete entry.
+  text = text.replace(/,?\s*"[^"]*"\s*:\s*$/, "");
+  while (stack.length > 0) text += stack.pop() === "{" ? "}" : "]";
+
+  try {
+    const parsed = JSON.parse(text);
+    return parsed && typeof parsed === "object" ? parsed as Record<string, unknown> : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Sectioned study notes, as produced by `noteSections`. */
+interface NoteSection { heading: string; body: string }
+
+const asSections = (v: unknown): NoteSection[] => {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map(item => {
+      if (!item || typeof item !== "object") return null;
+      const o = item as Record<string, unknown>;
+      const heading = typeof o.heading === "string" ? o.heading.trim() : "";
+      const body = typeof o.body === "string" ? o.body.trim() : asText(o.body) ?? "";
+      return heading || body ? { heading, body } : null;
+    })
+    .filter((x): x is NoteSection => x !== null);
+};
+
+const asBullets = (v: unknown): string[] => {
+  if (Array.isArray(v)) {
+    return v
+      .map(item => (typeof item === "string" ? item : asText(item) ?? ""))
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+  const text = asText(v);
+  return text ? text.split(/\n+/).map(s => s.trim()).filter(Boolean) : [];
+};
+
+// ── Duplicate-submit guard ────────────────────────────────────────────────────
+//
+// NOT a result cache. Caching Stage 3's output would make every repeat scan
+// return the identical answer, which is exactly what the refinement chain below
+// exists to prevent — the two are mutually exclusive.
+//
+// What this stops is accidental spend: a double-click, a resubmit, a component
+// remount, a flaky connection retried. Those arrive within seconds of each
+// other; a teacher deliberately asking for a better result does not. The window
+// is therefore deliberately short — long enough to catch a duplicate, far too
+// short to interfere with an intentional re-scan.
+const DUPLICATE_SCAN_WINDOW_SECONDS = 90;
+
+function duplicateScanKey(
+  teacherId: string,
+  pageText: string | undefined,
+  topic: string,
+  instructions: string | undefined,
+  mode: string,
+): string {
+  const basis = pageText?.trim() ? pageText : topic;
+  const hash = crypto
+    .createHash("sha256")
+    .update(`${teacherId}::${mode}::${instructions ?? ""}::${basis}`)
+    .digest("hex")
+    .slice(0, 32);
+  return `blackboard:scandup:v1:${hash}`;
+}
+
+// ── Iterative refinement across repeated scans ────────────────────────────────
+//
+// A teacher who scans the same pages a second time is not asking for the same
+// answer again — they are asking for a better one. Without memory of what it
+// produced last time the model cannot improve on it: stage 1 is cached, images
+// are cached, and only sampling noise separated one run from the next.
+//
+// Same mechanism the quiz already uses for question history (see
+// quizHistoryKey): content-addressed Redis, capped and TTL'd. Keyed by teacher
+// + page text + mode, deliberately NOT by instructions — a teacher steering the
+// next pass ("now focus on the diagrams") is refining, not starting over.
+const SCAN_HISTORY_TTL_SECONDS = 7 * 24 * 60 * 60;
+const SCAN_HISTORY_MAX_CAPTIONS = 24;
+
+interface ScanHistoryEntry {
+  /** Number of results produced for this material so far. */
+  attempt: number;
+  topic: string;
+  overview: string;
+  keyPoints: string[];
+  detailedNotes?: string;
+  /** Captions of the images last shown, so the next pass can better them. */
+  imageCaptions: string[];
+}
+
+function scanHistoryKey(teacherId: string, pageText: string | undefined, topic: string, mode: string): string {
+  const basis = pageText?.trim() ? pageText : topic;
+  const hash = crypto.createHash("sha256").update(`${teacherId}::${mode}::${basis}`).digest("hex").slice(0, 32);
+  return `blackboard:scanhist:v1:${hash}`;
+}
+
+/**
+ * The refinement brief. The anti-churn clause is the important half: told only
+ * to "improve", a model reliably rewrites correct sentences into different
+ * correct sentences, which reads as change without being improvement. Naming
+ * that failure explicitly, and directing effort at depth once breadth is
+ * covered, is what makes a second pass worth its tokens.
+ */
+function buildRefinementBlock(previous: ScanHistoryEntry, mode: string): string {
+  const previousOutput = [
+    `Topic: ${previous.topic}`,
+    previous.overview ? `Overview: ${previous.overview}` : "",
+    previous.keyPoints.length ? `Key points:\n${previous.keyPoints.map(k => `- ${k}`).join("\n")}` : "",
+    mode === "notes" && previous.detailedNotes ? `Detailed notes:\n${previous.detailedNotes}` : "",
+    previous.imageCaptions.length ? `Images shown:\n${previous.imageCaptions.map(c => `- ${c}`).join("\n")}` : "",
+  ].filter(Boolean).join("\n\n");
+
+  return (
+    `\nYOUR PREVIOUS ANSWER FOR THIS EXACT MATERIAL (refinement pass ${previous.attempt + 1}):\n"""\n${previousOutput}\n"""\n\n` +
+    `The teacher has scanned this material again, which means they want a BETTER answer than the one above — not the same one, and not a reworded one.\n` +
+    `Re-read the source material and improve on it by:\n` +
+    `- covering important points in the material that the previous answer missed or treated too briefly;\n` +
+    `- correcting anything the previous answer got wrong or stated imprecisely;\n` +
+    `- explaining the harder ideas more clearly for students;\n` +
+    `- removing repetition, filler and anything that does not help teach this material.\n` +
+    `CRITICAL: do NOT reword something merely to make it look different — a reworded correct sentence is worse than repeating it. ` +
+    `Whatever the previous answer got right should be KEPT and strengthened. ` +
+    `If it already covered the material broadly, add depth instead of breadth: worked detail, causes and consequences, common student misconceptions, or connections the material actually supports. ` +
+    `Every addition must still come from the source material.\n`
+  );
+}
+
 export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId, userId } = requireTeacher(req);
@@ -1704,6 +2280,26 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
 
     await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
+
+    // Previous result for this exact material, if the teacher has scanned it
+    // before. Drives the refinement brief below and lets image selection better
+    // what was shown last time.
+    // Checked before any AI call, so a duplicate submit costs nothing at all.
+    const dupKey = duplicateScanKey(
+      teacherId, data.pageText, data.topic, data.instructions, data.mode
+    );
+    const duplicate = await getCache<Record<string, unknown>>(dupKey);
+    if (duplicate) {
+      console.log(`[blackboard] Identical scan within ${DUPLICATE_SCAN_WINDOW_SECONDS}s — returning previous result, no tokens spent`);
+      res.json({ success: true, data: duplicate });
+      return;
+    }
+
+    const historyKey = scanHistoryKey(teacherId, data.pageText, data.topic, data.mode);
+    const previousScan = await getCache<ScanHistoryEntry>(historyKey);
+    if (previousScan) {
+      console.log(`[blackboard] Repeat scan of the same material — refinement pass ${previousScan.attempt + 1}`);
+    }
 
     // ── Stage 1+2: understand the document, once ─────────────────────────────
     // Cached by content hash, so repeat scans of the same pages (different
@@ -1724,8 +2320,14 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       "Rephrasing, organising and simplifying the material for students is expected and encouraged — introducing new content is not.";
     const instructionRule = "The teacher's instructions are REQUIRED reading, not optional flavor text — if given, they must visibly shape what you emphasize, how you format the output, or what you focus on (e.g. \"focus on the diagrams\" or \"summarize for a 5th grader\"). Instructions guide the output; they are never the topic.";
     const languageRule = "Respond only in English, regardless of the language of the source material or the teacher's instructions.";
+
+    // Sectioned rather than one prose block. A wall of paragraphs is hard to
+    // study from, and Stage 1 has already identified the material's subtopics —
+    // so the structure exists, it just wasn't being used.
     const notesField = data.mode === "notes"
-      ? ", detailedNotes (a thorough, well-organized written explanation of the material in multiple short paragraphs — not just a rephrasing of the bullet points, this should read like real study notes a student could learn from, covering definitions, how things work, and why they matter)"
+      ? ', noteSections (array of 3-8 objects {"heading","body"} forming real study notes a student could learn from. ' +
+        'Headings must follow the material\'s own structure — use its subtopics, in the order the material presents them — and be specific ("How chlorophyll traps light"), never generic ("Introduction", "Details", "Conclusion"). ' +
+        'Each body is 1-3 short paragraphs covering definitions, how the thing works, and why it matters. Do not merely rephrase the key points)'
       : "";
     // imageQueries is what finally lets the teacher's instructions steer the
     // visuals. The document context is built without ever seeing instructions
@@ -1738,7 +2340,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       "If the teacher's instructions name a particular aspect, focus, or sub-topic, the visuals MUST reflect that — their instruction outranks the document's general topic when deciding what to picture.";
     const outputShape =
       `Return a JSON object with: topic (short string), overview (1-2 sentence summary), keyPoints (array of 4-6 concise bullet strings)${notesField}, ` +
-      `imageQueries (array of 3-6 subjects to search for images of. ${visualSelectionRule} Each must be a real, lookup-able encyclopedia subject — e.g. "Chloroplast", "Water cycle" — never a descriptive phrase, and never an acronym: write "Distributed file system", not "DFS"), ` +
+      `imageQueries (array of 3-6 subjects to search for images of. ${visualSelectionRule} ${CONCRETE_QUERY_RULE}), ` +
       `imageCount (integer — ONLY include this key if the teacher's instructions explicitly ask for a specific number of images, e.g. "show me 3 diagrams"; otherwise omit it entirely so every available diagram is returned). ` +
       `Return ONLY valid JSON, no markdown.`;
 
@@ -1751,6 +2353,8 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     const scanInstructionBlock = data.instructions
       ? `\nTEACHER'S INSTRUCTIONS — binding. They must visibly shape what you emphasise, how you word the output, and which visuals you choose:\n"${data.instructions}"\n`
       : "";
+
+    const refinementBlock = previousScan ? buildRefinementBlock(previousScan, data.mode) : "";
 
     if (data.pageText) {
       // The verbatim pages are the source of truth. Previously this branch sent
@@ -1768,13 +2372,14 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
         (context
           ? `\nStructured analysis of that same material, for orientation only. Where it differs from the text above, the text wins:\n${JSON.stringify(context, null, 2)}\n`
           : "") +
-        scanInstructionBlock;
+        scanInstructionBlock +
+        refinementBlock;
     } else {
       // No page content (non-PDF/PPTX doc, extraction failed client-side, or
       // context extraction errored) — fall back to the previous behavior of
       // working from whatever label/instructions we have.
       systemPrompt = `You are a knowledgeable teacher's assistant. You'll be given a topic/document label and, optionally, the teacher's instructions. ${instructionRule} ${groundingRule} ${languageRule} ${outputShape}`;
-      userContent = `Topic: ${data.topic}\n${scanInstructionBlock}`;
+      userContent = `Topic: ${data.topic}\n${scanInstructionBlock}${refinementBlock}`;
     }
 
     let completion;
@@ -1788,7 +2393,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
         response_format: { type: "json_object" },
         // Notes mode asks for a much longer detailedNotes field on top of the
         // usual fields, so it needs a bigger budget than a quick summary.
-        max_tokens: data.mode === "notes" ? 3000 : 900,
+        max_tokens: data.mode === "notes" ? 4000 : 900,
         ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
       });
     } catch (err) {
@@ -1819,15 +2424,24 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       );
     }
 
+    const rawContent = completion.choices[0].message.content ?? "{}";
     let parsed: Record<string, unknown>;
+    let salvaged = false;
     try {
-      parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
+      parsed = JSON.parse(rawContent);
     } catch {
-      throw new BadRequestError(
-        finishReason === "length"
-          ? "The answer was too long to finish — try selecting fewer pages."
-          : "AI returned malformed JSON — please retry"
-      );
+      // Truncation is recoverable; genuinely malformed output is not.
+      const repaired = finishReason === "length" ? repairTruncatedJson(rawContent) : null;
+      if (!repaired) {
+        throw new BadRequestError(
+          finishReason === "length"
+            ? "The answer was too long to finish — try selecting fewer pages."
+            : "AI returned malformed JSON — please retry"
+        );
+      }
+      parsed = repaired;
+      salvaged = true;
+      console.warn("[blackboard] Recovered a truncated scan response — some sections may be missing");
     }
 
     // Default to "as many diagrams as exist" rather than a fixed count — a
@@ -1861,57 +2475,71 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     if (instructionQueries.length > 0) {
       console.log(`[blackboard] Instruction-derived image queries: ${JSON.stringify(instructionQueries)}`);
     }
-    const images = await retrieveConceptImages(searchContext, requestedImageCount, data.pageText, data.instructions);
+    // Relevance is judged against what the scan ITSELF just produced — the
+    // overview and key points are the most faithful statement of what these
+    // pages teach that exists at this point in the request, far better than the
+    // topic string or the cached context skeleton.
+    const lessonSummary = [
+      typeof parsed.topic === "string" ? parsed.topic : "",
+      asText(parsed.overview) ?? "",
+      ...asBullets(parsed.keyPoints),
+    ].filter(Boolean).join("\n").slice(0, 1500);
 
-    // The model is asked for a specific JSON shape but isn't bound to it — it
-    // will happily return detailedNotes as an array of paragraphs, or
-    // keyPoints as a newline-joined string. Normalize here so the API contract
-    // actually holds and clients can render the response without type-guarding
-    // every field (an array reaching a `.split()` call is a hard crash).
-    const asText = (v: unknown): string | undefined => {
-      if (typeof v === "string") return v.trim() || undefined;
-      if (Array.isArray(v)) {
-        const parts = v
-          .map(item => {
-            if (typeof item === "string") return item;
-            // Sectioned notes sometimes arrive as [{ heading, body }, ...].
-            if (item && typeof item === "object") {
-              return Object.values(item).filter((s): s is string => typeof s === "string").join("\n");
-            }
-            return "";
-          })
-          .map(s => s.trim())
-          .filter(Boolean);
-        return parts.length > 0 ? parts.join("\n\n") : undefined;
-      }
-      return undefined;
-    };
-
-    const asBullets = (v: unknown): string[] => {
-      if (Array.isArray(v)) {
-        return v
-          .map(item => (typeof item === "string" ? item : asText(item) ?? ""))
-          .map(s => s.trim())
-          .filter(Boolean);
-      }
-      const text = asText(v);
-      return text ? text.split(/\n+/).map(s => s.trim()).filter(Boolean) : [];
-    };
-
-    res.json({
-      success: true,
-      data: {
-        topic: (typeof parsed.topic === "string" && parsed.topic.trim()) || searchContext.topic || "",
-        overview: asText(parsed.overview) ?? "",
-        keyPoints: asBullets(parsed.keyPoints),
-        ...(asText(parsed.detailedNotes) ? { detailedNotes: asText(parsed.detailedNotes) } : {}),
-        images,
-        // Surfaced so the client can show what the AI actually understood, and
-        // so a future "regenerate with different instructions" flow can reuse
-        // it without re-deriving.
-        context,
-      },
+    const images = await retrieveConceptImages(searchContext, {
+      limit: requestedImageCount,
+      rawText: data.pageText,
+      instructions: data.instructions,
+      lessonSummary,
+      usage: { institutionId, teacherId, userId },
+      previousImageCaptions: previousScan?.imageCaptions,
+      refinementPass: previousScan ? previousScan.attempt : 0,
     });
+
+    const finalTopic = (typeof parsed.topic === "string" && parsed.topic.trim()) || searchContext.topic || "";
+    const finalOverview = asText(parsed.overview) ?? "";
+    const finalKeyPoints = asBullets(parsed.keyPoints);
+    const finalSections = asSections(parsed.noteSections);
+    // `detailedNotes` stays in the response as the flattened form so anything
+    // already consuming it keeps working; noteSections is the structured view.
+    // A model that ignored the new shape and returned prose still lands here.
+    const finalNotes = finalSections.length > 0
+      ? finalSections.map(sec => (sec.heading ? `${sec.heading}\n${sec.body}` : sec.body)).join("\n\n")
+      : asText(parsed.detailedNotes);
+
+    // Recorded so the NEXT scan of this material improves on this one rather
+    // than regenerating from zero. setCache is already best-effort (it no-ops
+    // when Redis is down and swallows write errors), so a Redis outage costs
+    // the refinement chain, never the scan the teacher just paid tokens for.
+    const historyEntry: ScanHistoryEntry = {
+      attempt: (previousScan?.attempt ?? 0) + 1,
+      topic: finalTopic,
+      overview: finalOverview,
+      keyPoints: finalKeyPoints,
+      ...(finalNotes ? { detailedNotes: finalNotes } : {}),
+      imageCaptions: images.map(i => i.caption).slice(0, SCAN_HISTORY_MAX_CAPTIONS),
+    };
+    await setCache(historyKey, historyEntry, SCAN_HISTORY_TTL_SECONDS);
+
+    const responseData = {
+      topic: finalTopic,
+      overview: finalOverview,
+      keyPoints: finalKeyPoints,
+      ...(finalNotes ? { detailedNotes: finalNotes } : {}),
+      ...(finalSections.length > 0 ? { noteSections: finalSections } : {}),
+      // Lets the client say so plainly rather than silently showing a
+      // half-finished set of notes as if it were complete.
+      ...(salvaged ? { truncated: true } : {}),
+      images,
+      // Surfaced so the client can show what the AI actually understood, and
+      // so a future "regenerate with different instructions" flow can reuse
+      // it without re-deriving.
+      context,
+    };
+
+    // Short window only — see duplicateScanKey.
+    await setCache(dupKey, responseData, DUPLICATE_SCAN_WINDOW_SECONDS);
+
+    res.json({ success: true, data: responseData });
   } catch (err) { next(err); }
 };
 

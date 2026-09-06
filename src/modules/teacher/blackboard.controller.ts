@@ -806,15 +806,81 @@ async function fetchWikipediaSummary(
 // find the closest real article title via Wikipedia's own search/suggestion
 // index, then retry — still an exact article lookup once resolved, just with
 // one extra hop to find which article that is.
+// Models like to write concept names with typographic punctuation — U+2011
+// non-breaking hyphens ("Five‑kingdom"), en dashes, curly quotes. Those never
+// appear in Wikipedia titles and only hurt search, so flatten them first.
+function normalizeSearchText(query: string): string {
+  return query
+    .replace(/[\u2010-\u2015\u2212]/g, "-")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u00A0\u2007\u202F]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function wikipediaOpenSearch(query: string): Promise<string | null> {
+  const res = await fetch(
+    `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=1&search=${encodeURIComponent(query)}`,
+    { headers: { "User-Agent": WIKI_USER_AGENT }, signal: AbortSignal.timeout(5000) }
+  );
+  if (!res.ok) return null;
+  const json = await res.json() as [string, string[], string[], string[]];
+  return json[1]?.[0] ?? null;
+}
+
+async function wikipediaFullTextSearch(query: string): Promise<string | null> {
+  const params = new URLSearchParams({
+    action: "query", format: "json", list: "search",
+    srnamespace: "0", srlimit: "1", srsearch: query,
+  });
+  const res = await fetch(`https://en.wikipedia.org/w/api.php?${params.toString()}`, {
+    headers: { "User-Agent": WIKI_USER_AGENT }, signal: AbortSignal.timeout(5000),
+  });
+  if (!res.ok) return null;
+  const json = await res.json() as { query?: { search?: Array<{ title: string }> } };
+  return json.query?.search?.[0]?.title ?? null;
+}
+
+/**
+ * Resolve a concept to a real Wikipedia article title.
+ *
+ * opensearch alone was the entire reason free images kept coming back empty:
+ * it is a PREFIX search over titles, so it only ever matches when the query is
+ * the literal beginning of an article name. The concepts a scan produces are
+ * descriptive phrases — "Vertebrate classes", "Chordate body plan",
+ * "Five kingdom classification" — none of which prefix any title. Measured
+ * against live Wikipedia, opensearch resolved 0 of 6 real scan queries while
+ * full-text search resolved 6 of 6, reaching 44 article images that were
+ * previously unreachable. Every scan was therefore falling through to paid
+ * web search for imagery Wikipedia had all along.
+ *
+ * Order matters: opensearch first because an exact title match is precise,
+ * then full-text as the fallback for descriptive phrasing.
+ */
 async function resolveWikipediaTitle(query: string): Promise<string | null> {
+  const normalized = normalizeSearchText(query);
   try {
-    const res = await fetch(
-      `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=1&search=${encodeURIComponent(query)}`,
-      { headers: { "User-Agent": WIKI_USER_AGENT }, signal: AbortSignal.timeout(5000) }
-    );
-    if (!res.ok) return null;
-    const json = await res.json() as [string, string[], string[], string[]];
-    return json[1]?.[0] ?? null;
+    const exact = await wikipediaOpenSearch(normalized);
+    if (exact) return exact;
+
+    const found = await wikipediaFullTextSearch(normalized);
+    if (!found) return null;
+
+    // Full-text search always returns its best guess, however weak — searching
+    // "Artificial classification versus natural classification" returns
+    // "Document classification", a completely different subject. Require the
+    // article title to share a meaningful word with the query, or a bad match
+    // injects an unrelated article's images into the lesson.
+    const queryWords = keywordsOf(normalized);
+    if (queryWords.length > 0) {
+      const titleHaystack = found.toLowerCase();
+      if (!queryWords.some(w => haystackContainsWord(titleHaystack, w))) {
+        console.log(`[blackboard] Full-text match "${found}" rejected as unrelated to "${normalized}"`);
+        return null;
+      }
+    }
+    return found;
   } catch (err) {
     console.error(`[blackboard] Wikipedia title resolution failed for "${query}":`, err);
     return null;
@@ -846,7 +912,13 @@ async function fetchArticleEmbeddedImages(
       headers: { "User-Agent": WIKI_USER_AGENT },
       signal: AbortSignal.timeout(5000),
     });
-    if (!res.ok) return [];
+    // Logged rather than silently swallowed: a 404 here means the title was
+    // never a real article, and the silence made "no free images" look like a
+    // network problem when it was a title-resolution problem.
+    if (!res.ok) {
+      console.log(`[blackboard] No Wikipedia article media for "${title}" (HTTP ${res.status})`);
+      return [];
+    }
 
     const json = await res.json() as {
       items?: Array<{
@@ -1435,15 +1507,24 @@ async function retrieveConceptImages(
   // otherwise subjects that legitimately have no diagrams (a monument, a
   // historical figure, a landscape) would come back nearly empty.
   // Animations lead: they are the scarcest and the most engaging, and there
-  // are at most MAX_ANIMATIONS_PER_SCAN of them so they can never crowd out
-  // the static visuals. After that the subject decides — a History or
+  // at most MAX_ANIMATIONS_PER_SCAN of them lead (see the cap below), so they
+  // can never crowd out the static visuals. After that the subject decides — a History or
   // Geography lesson wants the photograph first, a Biology lesson the diagram
   // — unless the teacher's own instruction overrides it.
   const photosFirst = wantsPhotos || (!wantsDiagrams && profile.photosAreTheGoal && !illustrationsOnly);
   const [first, second] = photosFirst ? [photos, diagrams] : [diagrams, photos];
   // Each bucket preserves fetchTopicImages' round-robin order, so the concepts
   // the scan identified stay interleaved rather than being re-sorted here.
-  const result = [...animations, ...first, ...second].slice(0, limit);
+  //
+  // The cap is applied HERE, not just in runAnimationSearch: article-embedded
+  // GIFs arrive through sortInto without passing that loop's bound, and some
+  // articles are animation-rich (the physics set measures 30 across four
+  // concepts). Since animations lead the result, an uncapped bucket would fill
+  // every slot and leave the lesson with no diagrams at all. The remainder
+  // still rank after the static visuals rather than being discarded.
+  const leadAnimations = animations.slice(0, MAX_ANIMATIONS_PER_SCAN);
+  const extraAnimations = animations.slice(MAX_ANIMATIONS_PER_SCAN);
+  const result = [...leadAnimations, ...first, ...second, ...extraAnimations].slice(0, limit);
   console.log(
     `[blackboard] Returning ${result.length} image(s) — ${animations.length} animation(s), ` +
     `${diagrams.length} diagram(s), ${photos.length} photo(s)` +

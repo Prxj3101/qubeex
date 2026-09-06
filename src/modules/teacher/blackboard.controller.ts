@@ -321,6 +321,115 @@ function haystackContainsWord(haystack: string, word: string): boolean {
   return new RegExp(`\\b${word}\\b`, "i").test(haystack);
 }
 
+// ── School subject taxonomy ───────────────────────────────────────────────────
+//
+// Shared by two consumers. The mindmap renderer picks its paper, palette and
+// handwriting from it (a biology map looks botanical, a history map looks like
+// parchment), and image retrieval picks its search strategy from it. Same
+// trick in both cases: the model chooses a name from a fixed list and we do
+// the rest, so a bad value can only ever fall back to "general".
+//
+// Declared here rather than beside the mindmap code because CONTEXT_SYSTEM_PROMPT
+// interpolates the list at module-evaluation time — defined later it would be
+// in the temporal dead zone and throw on import.
+const MINDMAP_SUBJECTS = [
+  "biology", "chemistry", "physics", "maths", "history",
+  "geography", "language", "computer", "general",
+] as const;
+type MindmapSubject = (typeof MINDMAP_SUBJECTS)[number];
+
+function normalizeSubject(raw: unknown): MindmapSubject {
+  if (typeof raw !== "string") return "general";
+  const v = raw.trim().toLowerCase();
+  return (MINDMAP_SUBJECTS as readonly string[]).includes(v) ? (v as MindmapSubject) : "general";
+}
+
+// What a good classroom visual actually IS depends entirely on the subject,
+// and the previous one-size-fits-all "<topic> labelled diagram" was actively
+// wrong for half of them: a History chapter searched that way returns generic
+// timeline schematics instead of the painting, portrait or period photograph
+// the lesson needs, and a Maths chapter returns anything but the graph.
+//
+//   commonsQualifiers — appended to each concept when searching Commons, tried
+//                       in order until enough images are found.
+//   webQualifier      — used for the (paid) web top-up query.
+//   photosAreTheGoal  — true for subjects where the real thing teaches better
+//                       than a drawing; flips diagram-first ranking off.
+//   wantsAnimation    — true for subjects built on change over time, where an
+//                       animated GIF is the single best classroom asset.
+interface SubjectVisualProfile {
+  commonsQualifiers: string[];
+  webQualifier: string;
+  photosAreTheGoal: boolean;
+  wantsAnimation: boolean;
+}
+
+const SUBJECT_VISUAL_PROFILE: Record<MindmapSubject, SubjectVisualProfile> = {
+  biology: {
+    commonsQualifiers: ["labelled diagram", "diagram", "anatomy"],
+    webQualifier: "labelled diagram",
+    photosAreTheGoal: false,
+    wantsAnimation: true,
+  },
+  chemistry: {
+    commonsQualifiers: ["structure diagram", "reaction diagram", "apparatus"],
+    webQualifier: "labelled diagram",
+    photosAreTheGoal: false,
+    wantsAnimation: true,
+  },
+  physics: {
+    commonsQualifiers: ["diagram", "schematic", "apparatus"],
+    webQualifier: "labelled diagram",
+    photosAreTheGoal: false,
+    wantsAnimation: true,
+  },
+  maths: {
+    // "diagram" is close to meaningless in maths; the useful assets are plots,
+    // geometric constructions and worked figures.
+    commonsQualifiers: ["graph", "geometric figure", "plot"],
+    webQualifier: "graph diagram",
+    photosAreTheGoal: false,
+    wantsAnimation: true,
+  },
+  history: {
+    // The single biggest source of "irrelevant diagram" complaints. History is
+    // taught from primary visual sources — paintings, portraits, photographs,
+    // period maps — not from schematics.
+    commonsQualifiers: ["painting", "portrait", "photograph", "historical map"],
+    webQualifier: "historical photograph painting",
+    photosAreTheGoal: true,
+    wantsAnimation: false,
+  },
+  geography: {
+    commonsQualifiers: ["map", "diagram", "satellite image"],
+    webQualifier: "map diagram",
+    photosAreTheGoal: true,
+    wantsAnimation: true,
+  },
+  language: {
+    commonsQualifiers: ["illustration", "portrait", "manuscript"],
+    webQualifier: "illustration",
+    photosAreTheGoal: true,
+    wantsAnimation: false,
+  },
+  computer: {
+    commonsQualifiers: ["diagram", "flowchart", "architecture diagram"],
+    webQualifier: "architecture diagram",
+    photosAreTheGoal: false,
+    wantsAnimation: true,
+  },
+  general: {
+    commonsQualifiers: ["diagram", "illustration"],
+    webQualifier: "labelled diagram",
+    photosAreTheGoal: false,
+    wantsAnimation: true,
+  },
+};
+
+// Below this, a raster image is an icon or a thumbnail rather than teaching
+// material — it will be blurry the moment it is projected.
+const MIN_IMAGE_WIDTH = 250;
+
 async function fetchWikimediaImages(
   query: string,
   limit = 4,
@@ -333,8 +442,12 @@ async function fetchWikimediaImages(
     generator: "search",
     gsrnamespace: "6",
     gsrsearch: query,
-    prop: "imageinfo",
-    iiprop: "url|extmetadata",
+    // Categories ride along in the same request — they're the reliable
+    // safety signal (see isClassroomSafe), and asking for them here costs
+    // no extra round trip.
+    prop: "imageinfo|categories",
+    iiprop: "url|extmetadata|size",
+    cllimit: "max",
     format: "json",
     gsrlimit: String(Math.min(limit * 2, 12)),
     origin: "*",
@@ -362,7 +475,13 @@ async function fetchWikimediaImages(
     query?: {
       pages?: Record<string, {
         title: string;
-        imageinfo?: Array<{ url: string; extmetadata?: { ImageDescription?: { value: string } } }>;
+        imageinfo?: Array<{
+          url: string;
+          width?: number;
+          height?: number;
+          extmetadata?: { ImageDescription?: { value: string } };
+        }>;
+        categories?: Array<{ title: string }>;
       }>;
     };
   };
@@ -392,6 +511,11 @@ async function fetchWikimediaImages(
     if (results.length >= limit) break;
     const info = page.imageinfo?.[0];
     if (!info?.url || !IMAGE_EXT.test(info.url)) continue;
+    // Commons is full of small raster assets — flag icons, thumbnails, badges —
+    // that match a topic query perfectly well and then look like mush on a
+    // classroom projector. SVGs are exempt: a vector's nominal size says
+    // nothing about how sharply it renders.
+    if (!/\.svg/i.test(info.url) && info.width && info.width < MIN_IMAGE_WIDTH) continue;
     const rawCaption = info.extmetadata?.ImageDescription?.value ?? "";
     const cleanTitle = page.title.replace(/^File:/i, "").replace(/\.[^.]+$/, "");
     const caption = rawCaption.replace(/<[^>]*>/g, "").trim() || cleanTitle;
@@ -408,7 +532,8 @@ async function fetchWikimediaImages(
     // the main scan path, not just the standalone search endpoint.
     if (WIKI_CHROME_FILENAME_PATTERN.test(page.title)) continue;
     if (illustrationsOnly && !isIllustration(page.title, info.url)) continue;
-    if (!isClassroomSafe(page.title, info.url)) continue;
+    const categories = (page.categories ?? []).map((c) => c.title);
+    if (!isClassroomSafe(page.title, info.url, categories, caption)) continue;
     if (exclude?.has(info.url)) continue;
     exclude?.add(info.url);
     results.push({ url: info.url, caption });
@@ -436,8 +561,38 @@ const WIKI_USER_AGENT = "QubeEx-Blackboard/1.0 (https://qubeex.app; contact@qube
 // a clinical photograph on a classroom projector. Note `reproduc\w*` not
 // `reproduct\w*`: the earlier form missed "Reproduce", and "How do Organisms
 // Reproduce?" is the standard chapter title for precisely this material.
-const SENSITIVE_SUBJECT_PATTERN =
-  /\b(reproduc\w*|genital\w*|penis|penile|vulva|vagin\w*|testis|testes|testicl\w*|scrotum|uterus|uterine|ovar\w*|ovum|ova|oocyte\w*|cervix|cervical|breast\w*|mammary|sperm\w*|semen|seminal|prostate|urethra\w*|menstrua\w*|menopause|puberty|pubert\w*|sexual\w*|intercourse|coitus|copulat\w*|pregnan\w*|gestation|fetus|foetus|fetal|foetal|embryo\w*|zygote|gamete\w*|fertilis\w*|fertiliz\w*|insemination|surrogac\w*|contracept\w*|condom|abortion|placenta\w*|umbilical|lactation|anatomy|anatomical|nude|naked|erotic)\b/i;
+// The second line is a widening for a product used with small children:
+// human-body chapters that never mention reproduction still pull clinical
+// photography out of open-web image search — "Life Processes" (excretion),
+// "Control and Coordination" (hormones, puberty), and anything touching
+// disease, surgery or dissection. A false positive here only means the class
+// gets a labelled diagram instead of a photograph, which is the better
+// classroom asset regardless.
+// Split into two tiers after a real false positive: a Class-4 history chapter
+// on Shivaji Maharaj's early life was flagged sensitive, which forced
+// diagrams-only, rejected every painting and portrait of him, disabled web
+// search and returned ZERO images for the lesson. The cause was the clinical
+// widening below being matched against the entire raw chapter text, where
+// ordinary historical prose ("wounded in battle", "adolescence", "pregnant")
+// trips it.
+//
+// CORE — body/reproductive vocabulary that implies human-body imagery no
+// matter what subject it appears in. Checked everywhere, including raw text.
+// Unchanged in strength: this is what actually protects the classroom.
+const SENSITIVE_CORE_PATTERN =
+  /\b(reproduc\w*|genital\w*|penis|penile|vulva|vagin\w*|testis|testes|testicl\w*|scrotum|uterus|uterine|ovar\w*|ovum|ova|oocyte\w*|cervix|cervical|breast\w*|mammary|sperm\w*|semen|seminal|prostate|urethra\w*|menstrua\w*|menopause|puberty|pubert\w*|sexual\w*|intercourse|coitus|copulat\w*|gestation|fetus|foetus|fetal|foetal|embryo\w*|zygote|gamete\w*|fertilis\w*|fertiliz\w*|insemination|surrogac\w*|contracept\w*|condom|abortion|placenta\w*|umbilical|lactation|anatomy|anatomical|nude|naked|erotic|dissect\w*|cadaver|autops\w*)\b/i;
+
+// CLINICAL — medical/physiological vocabulary that only implies clinical
+// photography when the lesson is actually about the human body. In a history,
+// geography, maths or literature chapter these words are just prose, and
+// treating them as sensitive silently empties the image panel.
+const SENSITIVE_CLINICAL_PATTERN =
+  /\b(pregnan\w*|excret\w*|urinar\w*|bladder|kidney\w*|endocrine|hormon\w*|adolescen\w*|surger\w*|surgical|wound\w*|lesion\w*|ulcer\w*|tumou?r\w*|cancer\w*|deformit\w*|amputat\w*|physiolog\w*)\b/i;
+
+// Subjects whose image space actually contains human bodies. For the others,
+// the clinical tier is skipped — a battle described as "wounding" a general
+// carries no risk of a clinical photograph reaching the board.
+const BODY_ADJACENT_SUBJECTS = new Set<MindmapSubject>(["biology", "chemistry", "general"]);
 
 // SVG is a vector format — a photograph cannot be one — so it's a reliable
 // "this is a drawn diagram" signal. Beyond that, recognise well-established
@@ -451,7 +606,7 @@ const SENSITIVE_SUBJECT_PATTERN =
 // Word-bounded on the risky terms: an unbounded "graph" matched "Graphite",
 // promoting a photograph of a reactor core to the top of the diagram list.
 const ILLUSTRATION_HINT =
-  /(diagram|illustration|schematic|scheme\b|illu[_ ]|blausen|gray\d{3,4}|sobo[_ ]|labell?ed|cross[_ -]?section|drawing|sketch|\bchart\b|\bgraph\b|\bcycle\b|pathway|\bstructure\b|anatomy|map-|-en\.(svg|png)|_en\.(svg|png)|infographic|flowchart|\bschema\b)/i;
+  /(diagram|illustration|schematic|scheme\b|illu[_ ]|blausen|gray\d{3,4}|sobo[_ ]|labell?ed|cross[_ -]?section|drawing|sketch|\bchart\b|\bgraph\b|\bcycle\b|pathway|\bstructure\b|map-|-en\.(svg|png)|_en\.(svg|png)|infographic|flowchart|\bschema\b)/i;
 
 // Names that mark an animated GIF as a teaching animation of a process rather
 // than incidental footage. Used only to admit GIFs on sensitive topics.
@@ -468,11 +623,81 @@ const PROCESS_ANIMATION_HINT =
 const EXPLICIT_ANATOMY_FILENAME_PATTERN =
   /(genital\w*|penis|penile|vulva|vagina|scrotum|testicle\w*|breast\w*|nipple\w*|nude|naked|erect\w*|flaccid|labia|clitoris|anus|anal|buttock\w*|pubic|topless|semen|ejaculat\w*|masturbat\w*|coitus|copulat\w*)/i;
 
-/** Final gate every image passes through before it can be returned to a classroom. */
-function isClassroomSafe(title: string, url: string): boolean {
+// Filenames on Commons are user-supplied and frequently say nothing about the
+// content ("IMG_2531.jpg", or a name in another language), so a filename-only
+// gate lets an explicit photograph through whenever it happens to be named
+// innocuously. Categories are curated by Commons editors and are the reliable
+// signal: explicit media is systematically filed under these regardless of
+// what the uploader called the file.
+const EXPLICIT_CATEGORY_PATTERN =
+  /(nudity|nude|naked|topless|genital|penis|penile|vulva|vagina|scrotum|testicl|nipple|erotic|pornograph|sexual intercourse|sexual activity|coitus|copulat|masturbat|ejaculat|semen|pubic|clitoris|labia|buttock|anus|human anus|fetish|bdsm|prostitut|erection|breastfeed|lactating)/i;
+
+// Real human anatomy must never reach a classroom board as a PHOTOGRAPH.
+// The explicit-filename and category patterns above only catch sexual/nude
+// content; they say nothing about a photograph of a dissected human heart, a
+// cadaver, a surgical field, a skin lesion or a preserved specimen — all of
+// which are legitimate encyclopedia images and all of which are wrong in front
+// of small children. Matching here forces the image to be a drawn diagram,
+// which is the better teaching asset anyway.
+//
+// Unambiguous anatomical vocabulary: these words are essentially only used
+// about bodies, so matching them outright is safe.
+const HUMAN_ANATOMY_PATTERN =
+  /\b(human anatomy|human body|anatomical|cadaver\w*|autops\w*|post[- ]?mortem|dissect\w*|viscera\w*|thorax|thoracic|abdomen|abdominal|larynx|pharynx|o?esophagus|trachea|bronch\w*|intestin\w*|duodenum|rectum|anus|urethra\w*|bladder|kidney\w*|hepatic|spleen|pancrea\w*|uterus|uterine|ovar(?:y|ies|ian)|testis|testes|testicl\w*|penis|penile|vulva|vagin\w*|scrotum|nipple\w*|areola|breast\w*|buttock\w*|groin|pubic|navel|umbilic\w*|axilla\w*|sternum|clavicle|femur|tibia|fibula|humerus|vertebra\w*|pelvis|pelvic|cranium|mandible|scapula|cerebrum|cerebell\w*|brainstem|spinal cord|meninges|aorta|aortic|myocardi\w*|retina\w*|cornea\w*|sclera|cochlea\w*|eardrum|tympanic|epidermis|dermis|mucosa|placenta\w*|embryo\w*|fetus|foetus|fetal|foetal|sperm\w*|ovum|zygote|nephron|alveol\w*|lesion\w*|surgical|surgery|amputat\w*|prosthe\w*|pubert\w*|menstrua\w*|menopaus\w*|lactat\w*|breastfeed\w*|circumcis\w*|topless|undress\w*)\b/i;
+
+// Generic body words ("heart", "skull", "skin") are far too common to block on
+// their own — "heart of the city", "Skull Rock", a dinosaur skeleton. They only
+// indicate human anatomy when a human subject is named alongside them.
+const GENERIC_BODY_PART_PATTERN =
+  /\b(skeleton|skull|torso|muscle\w*|organs?|bones?|skin|blood|brain|heart|lungs?|liver|stomach|eyeball|intestine|throat|thigh|limbs?|nerve\w*|artery|arteries|tissue)\b/i;
+const HUMAN_SUBJECT_PATTERN =
+  /\b(human|humans|man|men|woman|women|male|female|child|children|infant|baby|patient|corpse|body|person|adult|boy|girl)\b/i;
+
+// Deliberately narrower than ILLUSTRATION_HINT. Only signals that a real
+// photograph cannot plausibly carry: a vector format, an explicit "diagram"/
+// "illustration" naming, or one of the known medical-illustration libraries.
+// Weak hints ("cross-section", "structure", "cycle", "chart") are excluded —
+// a photograph of a sectioned cadaver is literally a cross-section.
+const ANATOMY_ILLUSTRATION_HINT =
+  /(diagram|illustration|schematic|labell?ed|blausen|gray\d{3,4}|sobo[_ ]|drawing|sketch|infographic|flowchart|\bscheme\b|\bschema\b|-en\.(svg|png)|_en\.(svg|png))/i;
+
+function isAnatomyIllustration(title: string, url: string): boolean {
   const haystack = `${title} ${url}`;
-  if (!EXPLICIT_ANATOMY_FILENAME_PATTERN.test(haystack)) return true;
-  return isIllustration(title, url);
+  if (/\.svg/i.test(haystack)) return true;
+  return ANATOMY_ILLUSTRATION_HINT.test(haystack);
+}
+
+function isHumanAnatomy(haystack: string): boolean {
+  if (HUMAN_ANATOMY_PATTERN.test(haystack)) return true;
+  return GENERIC_BODY_PART_PATTERN.test(haystack) && HUMAN_SUBJECT_PATTERN.test(haystack);
+}
+
+/**
+ * Final gate every image passes through before it can be returned to a
+ * classroom. Anything flagged by filename, description or Commons category is
+ * not hard-blocked but demoted to "diagram only" — a labelled illustration of
+ * human anatomy is exactly what a biology lesson needs; a clinical photograph
+ * of the same subject is not.
+ */
+function isClassroomSafe(
+  title: string,
+  url: string,
+  categories?: string[],
+  caption?: string,
+): boolean {
+  const haystack = `${title} ${url} ${caption ?? ""}`;
+  const flagged =
+    EXPLICIT_ANATOMY_FILENAME_PATTERN.test(haystack) ||
+    isHumanAnatomy(haystack) ||
+    (categories?.some((c) => EXPLICIT_CATEGORY_PATTERN.test(c)) ?? false) ||
+    (categories?.some((c) => isHumanAnatomy(c)) ?? false);
+  if (!flagged) return true;
+  // Diagrams and labelled illustrations still pass — that is precisely what a
+  // biology lesson needs. Only the photograph is refused. Note the STRICTER
+  // test: the general isIllustration heuristic accepts weak hints like
+  // "cross-section" or "structure" that a photograph of a real dissected organ
+  // satisfies just as well as a drawing does.
+  return isAnatomyIllustration(title, url);
 }
 
 /**
@@ -482,7 +707,7 @@ function isClassroomSafe(title: string, url: string): boolean {
  * still be entirely about reproduction — the page text gives that away even
  * when the derived topic doesn't.
  */
-function isSensitiveSubject(context: DocumentContext, rawText?: string): boolean {
+function isSensitiveSubject(context: DocumentContext, rawText?: string): string | null {
   const haystack = [
     context.topic,
     context.conceptType,
@@ -491,7 +716,30 @@ function isSensitiveSubject(context: DocumentContext, rawText?: string): boolean
     ...context.suggestedVisuals,
     rawText ?? "",
   ].join(" ");
-  return SENSITIVE_SUBJECT_PATTERN.test(haystack);
+
+  // Returns the matching term rather than a boolean: when this fires it
+  // empties the image panel, and without knowing WHICH word tripped it a
+  // false positive is undiagnosable from the logs.
+  const core = haystack.match(SENSITIVE_CORE_PATTERN);
+  if (core) return core[0];
+
+  if (BODY_ADJACENT_SUBJECTS.has(context.subject ?? "general")) {
+    const clinical = haystack.match(SENSITIVE_CLINICAL_PATTERN);
+    if (clinical) return clinical[0];
+  }
+  return null;
+}
+
+/**
+ * An animated GIF. Ranked as its own category rather than lumped in with
+ * photos: for anything that changes over time — mitosis, an engine cycle,
+ * wave motion, an orbit — an animation is the single best thing a teacher can
+ * put on the board, and the old code buried them. `isIllustration` stays the
+ * strict gate (a bare GIF still fails it), so sensitive-subject filtering is
+ * unaffected by this; this function only influences ordering.
+ */
+function isAnimation(title: string, url: string): boolean {
+  return /\.gif/i.test(`${title} ${url}`);
 }
 
 /**
@@ -641,15 +889,34 @@ async function fetchArticleEmbeddedImages(
   }
 }
 
+// How many concepts are worth resolving to a Wikipedia article per scan.
+// The scan asks the model for 3-6 imageQueries; beyond that we are into
+// backup subtopics whose articles add latency without adding relevance.
+const MAX_TOPICS_PER_LOOKUP = 6;
+// Floor on what each concept may contribute, so a concept late in the list
+// still gets a fair shot even when the limit divides small.
+const MIN_IMAGES_PER_TOPIC = 2;
+
 async function fetchTopicImages(
   topics: string[],
   limit = 5,
   seenUrls: Set<string> = new Set(),
   illustrationsOnly = false
 ): Promise<{ url: string; caption: string }[]> {
-  const results: { url: string; caption: string }[] = [];
-  for (const topic of topics) {
-    if (results.length >= limit) break;
+  const wanted = topics.slice(0, MAX_TOPICS_PER_LOOKUP);
+  if (wanted.length === 0) return [];
+
+  // Per-concept quota, not a shared pool. Previously this loop ran
+  // first-come-take-all against a single `limit`: a well-illustrated first
+  // article (20+ embedded images) consumed the entire budget and the loop
+  // broke before concepts 2..6 were searched at all — so the visuals the AI
+  // scan actually chose never appeared. Quota + round-robin means every
+  // concept the scan named is represented, in the scan's own priority order.
+  const perTopic = Math.max(MIN_IMAGES_PER_TOPIC, Math.ceil(limit / wanted.length));
+
+  const buckets: { url: string; caption: string }[][] = [];
+  for (const topic of wanted) {
+    const bucket: { url: string; caption: string }[] = [];
 
     // Resolve the article even when its lead image is rejected by the
     // illustration filter — the article body often still holds usable
@@ -668,17 +935,29 @@ async function fetchTopicImages(
 
     if (hit && !seenUrls.has(hit.url)) {
       seenUrls.add(hit.url);
-      results.push(hit);
+      bucket.push(hit);
     }
-    if (results.length >= limit) break;
+    if (bucket.length < perTopic) {
+      bucket.push(...await fetchArticleEmbeddedImages(
+        resolvedTitle,
+        perTopic - bucket.length,
+        seenUrls,
+        illustrationsOnly
+      ));
+    }
+    buckets.push(bucket);
+  }
 
-    const more = await fetchArticleEmbeddedImages(
-      resolvedTitle,
-      limit - results.length,
-      seenUrls,
-      illustrationsOnly
-    );
-    results.push(...more);
+  // Round-robin: one image from each concept, then a second from each, and so
+  // on. The teacher sees coverage of everything the scan identified before
+  // they see a third picture of the first concept.
+  const results: { url: string; caption: string }[] = [];
+  const depth = Math.max(0, ...buckets.map(b => b.length));
+  for (let i = 0; i < depth && results.length < limit; i++) {
+    for (const bucket of buckets) {
+      if (results.length >= limit) break;
+      if (i < bucket.length) results.push(bucket[i]);
+    }
   }
   return results;
 }
@@ -926,6 +1205,14 @@ const MAX_WEB_QUERIES_PER_SCAN = 3;
 // condition compares against the 24-image ceiling, which Wikipedia never
 // reaches — meaning every single scan would spend credits.
 const ENOUGH_DIAGRAMS_WITHOUT_WEB = 6;
+// Animations are the standout classroom asset but also the scarcest, so this
+// caps the effort spent hunting for them rather than the value of having them.
+const MAX_ANIMATIONS_PER_SCAN = 4;
+const MAX_ANIMATION_QUERIES = 3;
+// Commons is free but not instant (~0.3s a call, issued sequentially). The
+// subject pass multiplies qualifiers by concepts, so without a ceiling a
+// topic that finds nothing would spend 20+ round trips before giving up.
+const MAX_COMMONS_LOOKUPS = 8;
 // Image results are cached against the concept queries, so a teacher
 // re-scanning the same pages (tweaking instructions, switching summary/notes)
 // costs nothing further.
@@ -965,9 +1252,14 @@ async function retrieveConceptImages(
   // Anatomy/reproduction and similar subjects: diagrams only, no photographs.
   // Deliberately fails closed — if filtering leaves nothing, the scan returns
   // no images rather than falling back to unfiltered results.
-  const illustrationsOnly = isSensitiveSubject(context, rawText);
+  const sensitiveTerm = isSensitiveSubject(context, rawText);
+  const illustrationsOnly = sensitiveTerm !== null;
+  // What counts as a good visual is subject-dependent — see SUBJECT_VISUAL_PROFILE.
+  const profile = SUBJECT_VISUAL_PROFILE[context.subject ?? "general"] ?? SUBJECT_VISUAL_PROFILE.general;
   console.log(
-    `[blackboard] Image retrieval — topic="${context.topic}" sensitive=${illustrationsOnly} queries=${JSON.stringify(queries.slice(0, 6))}`
+    `[blackboard] Image retrieval — topic="${context.topic}" subject=${context.subject ?? "general"} ` +
+    `sensitive=${illustrationsOnly}${sensitiveTerm ? ` (matched "${sensitiveTerm}")` : ""} ` +
+    `queries=${JSON.stringify(queries.slice(0, 6))}`
   );
 
   // Keyed by the concepts searched plus the intent, so re-scanning the same
@@ -976,7 +1268,7 @@ async function retrieveConceptImages(
   // different queries or a different intent naturally miss and re-search.
   const imageCacheKey = `blackboard:imgs:${crypto
     .createHash("sha256")
-    .update(`${queries.join("|")}::${illustrationsOnly}::${instructions ?? ""}::${limit}`)
+    .update(`${queries.join("|")}::${context.subject ?? "general"}::v2::${illustrationsOnly}::${instructions ?? ""}::${limit}`)
     .digest("hex")
     .slice(0, 32)}`;
   const cachedImages = await getCache<{ url: string; caption: string }[]>(imageCacheKey);
@@ -994,6 +1286,7 @@ async function retrieveConceptImages(
   const wantsDiagrams = !!instructions && DIAGRAM_REQUEST_PATTERN.test(instructions);
   const wantsPhotos = !!instructions && !wantsDiagrams && PHOTO_REQUEST_PATTERN.test(instructions);
 
+  const animations: { url: string; caption: string }[] = [];
   const diagrams: { url: string; caption: string }[] = [];
   const photos: { url: string; caption: string }[] = [];
   const sortInto = (imgs: { url: string; caption: string }[]) => {
@@ -1007,22 +1300,30 @@ async function retrieveConceptImages(
       // dropped outright rather than kept as a lower-ranked photo — the
       // photos array is what later fills spare slots, so keeping it would
       // reintroduce exactly what the illustrations-only mode exists to prevent.
+      // Note this uses isIllustration, NOT isAnimation: a bare GIF still fails
+      // the strict gate here, so animations get no free pass on these topics.
       if (illustrationsOnly && !isDiagram) continue;
-      (isDiagram ? diagrams : photos).push(img);
+      if (isAnimation(img.caption, img.url)) animations.push(img);
+      else if (isDiagram) diagrams.push(img);
+      else photos.push(img);
     }
   };
+  // Counted together wherever the code asks "do we have enough teaching
+  // visuals yet" — an animation satisfies that need at least as well as a
+  // static diagram does.
+  const visualCount = () => animations.length + diagrams.length;
 
   // Reuse the teacher's own wording for the search when they asked for a
   // specific kind of visual — "schematic diagram of a nuclear power plant"
   // finds far better results than a generic "<topic> labelled diagram".
-  const diagramQualifier = wantsDiagrams || wantsPhotos ? instructions!.trim() : "labelled diagram";
+  const diagramQualifier = wantsDiagrams || wantsPhotos ? instructions!.trim() : profile.webQualifier;
   const runWebSearch = async () => {
     if (!webSearchAvailable) return;
     let spent = 0;
     for (const query of queries) {
-      if (diagrams.length >= limit || spent >= MAX_WEB_QUERIES_PER_SCAN) break;
+      if (visualCount() >= limit || spent >= MAX_WEB_QUERIES_PER_SCAN) break;
       spent++;
-      sortInto(await webSearch(`${query} ${diagramQualifier}`, limit - diagrams.length, seenUrls, illustrationsOnly));
+      sortInto(await webSearch(`${query} ${diagramQualifier}`, limit - visualCount(), seenUrls, illustrationsOnly));
     }
   };
 
@@ -1035,15 +1336,47 @@ async function retrieveConceptImages(
   // search otherwise matches words independently ("system" + "diagram"
   // surfacing an unrelated Cromemco block diagram).
   const runCommonsSearch = async () => {
-    for (const query of queries) {
-      if (diagrams.length >= limit) break;
-      sortInto(await fetchWikimediaImages(
-        `${query} diagram`,
-        limit - diagrams.length,
-        keywordsOf(query), // qualifier excluded, or "diagram" would be required in every title
+    // Qualifiers come from the subject profile and are tried in order: a
+    // History concept searches "painting", then "portrait", then "photograph",
+    // where the old code searched "<concept> diagram" for every subject alike
+    // and returned schematics nobody asked for.
+    let lookups = 0;
+    for (const qualifier of profile.commonsQualifiers) {
+      for (const query of queries) {
+        if (visualCount() >= limit || lookups >= MAX_COMMONS_LOOKUPS) break;
+        lookups++;
+        sortInto(await fetchWikimediaImages(
+          `${query} ${qualifier}`,
+          limit - visualCount(),
+          keywordsOf(query), // qualifier excluded, or it would be required in every title
+          illustrationsOnly,
+          seenUrls,
+        ));
+      }
+      if (visualCount() >= ENOUGH_DIAGRAMS_WITHOUT_WEB || lookups >= MAX_COMMONS_LOOKUPS) break;
+    }
+  };
+
+  // A dedicated pass for animated teaching assets. Without it a GIF was only
+  // ever found by accident — no query asked for one, and Commons ranks them
+  // below static files for a plain topic search. Free (Commons only), and
+  // skipped for subjects where an animation isn't the point.
+  const runAnimationSearch = async () => {
+    if (!profile.wantsAnimation) return;
+    for (const query of queries.slice(0, MAX_ANIMATION_QUERIES)) {
+      if (animations.length >= MAX_ANIMATIONS_PER_SCAN) break;
+      const found = await fetchWikimediaImages(
+        `${query} animation`,
+        MAX_ANIMATIONS_PER_SCAN - animations.length,
+        keywordsOf(query),
         illustrationsOnly,
         seenUrls,
-      ));
+      );
+      // Commons returns plenty of static files for an "animation" query too;
+      // keep only what is actually animated, and hand the rest back to the
+      // normal buckets rather than discarding a good diagram we already paid
+      // the round trip for.
+      sortInto(found);
     }
   };
 
@@ -1063,27 +1396,31 @@ async function retrieveConceptImages(
   // teacher explicitly asked for diagrams — Commons turns out to cover most
   // school topics well, so paid search becomes the exception rather than the
   // rule.
-  if (wantsPhotos && !illustrationsOnly) {
+  sortInto(await fetchTopicImages(queries, MAX_IMAGES_PER_SCAN, seenUrls, illustrationsOnly));
+  if (!(wantsPhotos && !illustrationsOnly) && visualCount() < ENOUGH_DIAGRAMS_WITHOUT_WEB) {
     // Photos requested: article images are the better free source (Commons
-    // search is qualified toward diagrams), so go straight there.
-    sortInto(await fetchTopicImages(queries, MAX_IMAGES_PER_SCAN, seenUrls, illustrationsOnly));
-  } else {
-    sortInto(await fetchTopicImages(queries, MAX_IMAGES_PER_SCAN, seenUrls, illustrationsOnly));
-    if (diagrams.length < ENOUGH_DIAGRAMS_WITHOUT_WEB) {
-      const beforeCommons = diagrams.length;
-      await runCommonsSearch();
-      console.log(`[blackboard] Commons search (free): ${beforeCommons} -> ${diagrams.length} diagram(s)`);
-    }
+    // search is qualified toward diagrams/paintings), so that pass is skipped.
+    const beforeCommons = visualCount();
+    await runCommonsSearch();
+    console.log(`[blackboard] Commons search (free): ${beforeCommons} -> ${visualCount()} visual(s)`);
   }
 
-  if (diagrams.length < ENOUGH_DIAGRAMS_WITHOUT_WEB && allowWebSearch) {
+  // Always worth a look, even when static visuals are already plentiful — an
+  // animation of the process is the asset students actually remember.
+  const beforeAnimations = animations.length;
+  await runAnimationSearch();
+  if (animations.length > beforeAnimations) {
+    console.log(`[blackboard] Animation search (free): found ${animations.length} animated visual(s)`);
+  }
+
+  if (visualCount() < ENOUGH_DIAGRAMS_WITHOUT_WEB && allowWebSearch) {
     console.log(
-      `[blackboard] Free sources gave ${diagrams.length} diagram(s), ${photos.length} photo(s) — ` +
-      `topping up via ${webProvider} (max ${MAX_WEB_QUERIES_PER_SCAN} queries)`
+      `[blackboard] Free sources gave ${diagrams.length} diagram(s), ${animations.length} animation(s), ` +
+      `${photos.length} photo(s) — topping up via ${webProvider} (max ${MAX_WEB_QUERIES_PER_SCAN} queries)`
     );
     await runWebSearch();
-  } else if (diagrams.length >= ENOUGH_DIAGRAMS_WITHOUT_WEB) {
-    console.log(`[blackboard] ${diagrams.length} diagram(s) from free sources — skipping paid search`);
+  } else if (visualCount() >= ENOUGH_DIAGRAMS_WITHOUT_WEB) {
+    console.log(`[blackboard] ${visualCount()} visual(s) from free sources — skipping paid search`);
   }
 
   if (!webSearchAvailable) {
@@ -1097,11 +1434,20 @@ async function retrieveConceptImages(
   // needs — but photos still fill the remaining slots rather than being capped,
   // otherwise subjects that legitimately have no diagrams (a monument, a
   // historical figure, a landscape) would come back nearly empty.
-  const [first, second] = wantsPhotos ? [photos, diagrams] : [diagrams, photos];
-  const result = [...first, ...second].slice(0, limit);
+  // Animations lead: they are the scarcest and the most engaging, and there
+  // are at most MAX_ANIMATIONS_PER_SCAN of them so they can never crowd out
+  // the static visuals. After that the subject decides — a History or
+  // Geography lesson wants the photograph first, a Biology lesson the diagram
+  // — unless the teacher's own instruction overrides it.
+  const photosFirst = wantsPhotos || (!wantsDiagrams && profile.photosAreTheGoal && !illustrationsOnly);
+  const [first, second] = photosFirst ? [photos, diagrams] : [diagrams, photos];
+  // Each bucket preserves fetchTopicImages' round-robin order, so the concepts
+  // the scan identified stay interleaved rather than being re-sorted here.
+  const result = [...animations, ...first, ...second].slice(0, limit);
   console.log(
-    `[blackboard] Returning ${result.length} image(s) — ${diagrams.length} diagram(s), ${photos.length} photo(s)` +
-    `${wantsPhotos ? " (photos first, per instruction)" : ""}`
+    `[blackboard] Returning ${result.length} image(s) — ${animations.length} animation(s), ` +
+    `${diagrams.length} diagram(s), ${photos.length} photo(s)` +
+    `${photosFirst ? ` (photos first: ${wantsPhotos ? "per instruction" : `${context.subject} subject`})` : ""}`
   );
   // Only cache a non-empty result: an empty one usually means a transient
   // failure (timeout, rate limit) and caching it would pin the emptiness for
@@ -1128,6 +1474,8 @@ export interface DocumentContext {
   keywords: string[];
   definitions: { term: string; meaning: string }[];
   conceptType: string;
+  /** School subject, from MINDMAP_SUBJECTS — selects the image-search strategy. */
+  subject: MindmapSubject;
   /** Concrete things worth picturing, phrased as real encyclopedia subjects — drives image search. */
   suggestedVisuals: string[];
   learningObjectives: string[];
@@ -1136,8 +1484,15 @@ export interface DocumentContext {
 // Content-addressed: keyed by the page text itself, not the document URL, so it
 // survives re-uploads, works for locally-opened files (blob: URLs have no
 // stable identity), and naturally varies with the page selection.
+// Bump whenever the SHAPE of DocumentContext changes. Without it a cached
+// context written by an older build is returned as-is for a week, silently
+// missing every field added since — which is how subject-aware image search
+// shipped and then did nothing for any document that had already been scanned.
+const CONTEXT_SCHEMA_VERSION = 2;
+
 function contextCacheKey(pageText: string): string {
-  return `blackboard:ctx:${crypto.createHash("sha256").update(pageText).digest("hex").slice(0, 32)}`;
+  const hash = crypto.createHash("sha256").update(pageText).digest("hex").slice(0, 32);
+  return `blackboard:ctx:v${CONTEXT_SCHEMA_VERSION}:${hash}`;
 }
 
 const CONTEXT_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60; // documents don't change
@@ -1152,6 +1507,7 @@ const CONTEXT_SYSTEM_PROMPT =
   '"keywords" (array of 5-12 important terms, scientific names, or symbols appearing in the material), ' +
   '"definitions" (array of up to 5 objects {"term","meaning"} for terms the material actually defines), ' +
   '"conceptType" (short label such as "Biological Process", "Algorithm", "Historical Event", "Mathematical Theorem"), ' +
+  `"subject" (the school subject this material belongs to, chosen from EXACTLY this list: ${MINDMAP_SUBJECTS.join(", ")}. Use "general" only if none of the others fit), ` +
   '"suggestedVisuals" (array of 3-6 concrete, picturable subjects — imagine you are the teacher standing in front of the class deciding what to put on the board. Prefer: labelled diagrams that show structure, processes or cycles that show change over time and work well as an animation, and real-world examples students can connect to their own experience. Favour a visual that makes a student ask "why does that happen?" over a merely decorative one. Each must be phrased as a real encyclopedia subject someone could look up, e.g. "Chloroplast", "Calvin cycle", "Water cycle"; ALWAYS spell terms out in full rather than as acronyms, since acronyms are ambiguous — write "Distributed file system", never "DFS"), ' +
   '"learningObjectives" (array of 2-4 strings describing what a student should be able to do after this material).';
 
@@ -1165,7 +1521,10 @@ async function buildDocumentContext(
 
   const cacheKey = contextCacheKey(pageText);
   const cached = await getCache<DocumentContext>(cacheKey);
-  if (cached) return cached;
+  // Belt-and-braces alongside the version bump: an entry missing `subject`
+  // predates subject-aware retrieval, and using it would quietly downgrade
+  // this scan to the generic strategy.
+  if (cached && cached.subject) return cached;
 
   let completion;
   try {
@@ -1224,6 +1583,7 @@ async function buildDocumentContext(
         ).slice(0, 5)
       : [],
     conceptType: typeof parsed.conceptType === "string" ? parsed.conceptType : "",
+    subject: normalizeSubject(parsed.subject),
     suggestedVisuals: asStrings(parsed.suggestedVisuals),
     learningObjectives: asStrings(parsed.learningObjectives),
   };
@@ -1272,7 +1632,15 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       : null;
 
     // ── Stage 3: interpret the instructions against that understanding ───────
-    const groundingRule = "Base your answer primarily on the given material. You may draw on your own knowledge to add helpful context or clarify a concept the material only mentions briefly, but anything you add must stay consistent with the material and must never contradict it.";
+    // Strict grounding. The previous rule ("you may draw on your own knowledge
+    // to add helpful context") combined with a Stage 3 that never saw the
+    // document meant the substance of every scan was generated from the model's
+    // training data rather than read from the teacher's pages.
+    const groundingRule =
+      "Every fact, definition, number, date, name and example in your output MUST come from the source material given below. " +
+      "Do NOT add information from your own knowledge, and do not generalise beyond what the material states. " +
+      "If the material does not cover something the instructions ask for, say so briefly instead of inventing it. " +
+      "Rephrasing, organising and simplifying the material for students is expected and encouraged — introducing new content is not.";
     const instructionRule = "The teacher's instructions are REQUIRED reading, not optional flavor text — if given, they must visibly shape what you emphasize, how you format the output, or what you focus on (e.g. \"focus on the diagrams\" or \"summarize for a 5th grader\"). Instructions guide the output; they are never the topic.";
     const languageRule = "Respond only in English, regardless of the language of the source material or the teacher's instructions.";
     const notesField = data.mode === "notes"
@@ -1303,12 +1671,23 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       ? `\nTEACHER'S INSTRUCTIONS — binding. They must visibly shape what you emphasise, how you word the output, and which visuals you choose:\n"${data.instructions}"\n`
       : "";
 
-    if (context) {
-      // Generate from the structured understanding rather than re-reading the
-      // raw page text: it's already been distilled, so this call stays small
-      // and focused on applying the instructions.
-      systemPrompt = `You are a knowledgeable teacher's assistant. You will be given a structured analysis of classroom material that has already been read and understood, plus the teacher's instructions. ${instructionRule} ${groundingRule} ${languageRule} ${outputShape}`;
-      userContent = `Document analysis:\n${JSON.stringify(context, null, 2)}\n${scanInstructionBlock}`;
+    if (data.pageText) {
+      // The verbatim pages are the source of truth. Previously this branch sent
+      // ONLY the distilled context — a ~250-word skeleton (topic, a few
+      // subtopics, keywords and definitions, capped at 900 tokens) standing in
+      // for a whole chapter — so keyPoints and detailedNotes were a summary of
+      // a summary, and the detail had to be invented. The structured analysis
+      // is still included, but as orientation, explicitly subordinate to the text.
+      systemPrompt =
+        `You are a knowledgeable teacher's assistant. You will be given the verbatim text of the pages a teacher selected, ` +
+        `a structured analysis of those same pages, and the teacher's instructions. ` +
+        `${instructionRule} ${groundingRule} ${languageRule} ${outputShape}`;
+      userContent =
+        `SOURCE MATERIAL — the selected pages, verbatim. This is the only permitted source of facts:\n"""\n${data.pageText}\n"""\n` +
+        (context
+          ? `\nStructured analysis of that same material, for orientation only. Where it differs from the text above, the text wins:\n${JSON.stringify(context, null, 2)}\n`
+          : "") +
+        scanInstructionBlock;
     } else {
       // No page content (non-PDF/PPTX doc, extraction failed client-side, or
       // context extraction errored) — fall back to the previous behavior of
@@ -1328,7 +1707,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
         response_format: { type: "json_object" },
         // Notes mode asks for a much longer detailedNotes field on top of the
         // usual fields, so it needs a bigger budget than a quick summary.
-        max_tokens: data.mode === "notes" ? 1400 : 650,
+        max_tokens: data.mode === "notes" ? 3000 : 900,
         ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
       });
     } catch (err) {
@@ -1348,11 +1727,26 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       totalTokens: completion.usage?.total_tokens,
     });
 
+    // A response cut off at the token ceiling is truncated mid-JSON, so the
+    // parse below fails and the teacher sees "malformed JSON — please retry",
+    // which retries into the same ceiling. Nothing checked this before.
+    const finishReason = completion.choices[0].finish_reason;
+    if (finishReason === "length") {
+      console.warn(
+        `[blackboard] Scan response hit the token ceiling (mode=${data.mode}) — output truncated. ` +
+        `Consider fewer pages or a shorter instruction.`
+      );
+    }
+
     let parsed: Record<string, unknown>;
     try {
       parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
     } catch {
-      throw new BadRequestError("AI returned malformed JSON — please retry");
+      throw new BadRequestError(
+        finishReason === "length"
+          ? "The answer was too long to finish — try selecting fewer pages."
+          : "AI returned malformed JSON — please retry"
+      );
     }
 
     // Default to "as many diagrams as exist" rather than a fixed count — a
@@ -1377,7 +1771,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
     const baseContext: DocumentContext = context ?? {
       topic: derivedTopic ?? "",
       subtopics: [], keywords: [], definitions: [],
-      conceptType: "", suggestedVisuals: [], learningObjectives: [],
+      conceptType: "", subject: "general", suggestedVisuals: [], learningObjectives: [],
     };
     const searchContext: DocumentContext = {
       ...baseContext,
@@ -1830,22 +2224,6 @@ const MAX_CHILDREN_PER_NODE = 8;
 // see the note in aiMindmapSchema.
 const MINDMAP_DEPTH = 2;
 
-// The renderer picks its paper, palette and handwriting from this, so a
-// biology map looks botanical and a history map looks like parchment. Same
-// trick as the emoji: the model chooses a name from a fixed list and we do
-// the drawing, so a bad value can only ever fall back to "general".
-const MINDMAP_SUBJECTS = [
-  "biology", "chemistry", "physics", "maths", "history",
-  "geography", "language", "computer", "general",
-] as const;
-type MindmapSubject = (typeof MINDMAP_SUBJECTS)[number];
-
-function normalizeSubject(raw: unknown): MindmapSubject {
-  if (typeof raw !== "string") return "general";
-  const v = raw.trim().toLowerCase();
-  return (MINDMAP_SUBJECTS as readonly string[]).includes(v) ? (v as MindmapSubject) : "general";
-}
-
 // A stray sentence in the emoji field would blow out the sticker layout, and
 // emoji are multi-codepoint (👨‍👩‍👧 is 5), so cap by codepoint count rather
 // than string length and drop anything that's clearly not an emoji.
@@ -2050,7 +2428,16 @@ export const searchImages = async (req: AuthRequest, res: Response, next: NextFu
     const q = (req.query.q as string ?? "").trim();
     if (!q || q.length < 2) throw new BadRequestError("Query must be at least 2 characters");
 
-    const images = await fetchWikimediaImages(q, 4);
+    // The AI-driven scan path decides this from the document's own subject,
+    // but a teacher typing here was previously getting photographs of
+    // anything they searched for, gated only by the filename check. Apply the
+    // same diagrams-only rule to a sensitive query typed by hand.
+    // Both tiers apply here: this is a short query a teacher typed, not a whole
+    // chapter of prose, so the clinical terms carry their literal meaning and
+    // the false-positive risk that split them apart doesn't exist.
+    const illustrationsOnly =
+      SENSITIVE_CORE_PATTERN.test(q) || SENSITIVE_CLINICAL_PATTERN.test(q);
+    const images = await fetchWikimediaImages(q, 4, undefined, illustrationsOnly);
     res.json({ success: true, data: images });
   } catch (err) { next(err); }
 };

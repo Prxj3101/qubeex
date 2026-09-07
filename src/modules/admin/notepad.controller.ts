@@ -113,10 +113,10 @@ export async function createTask(req: AuthRequest, res: Response, next: NextFunc
       res.status(400).json({ success: false, error: "No institution" });
       return;
     }
-    const { text } = createTaskSchema.parse(req.body);
+    const { text, dueAt } = createTaskSchema.parse(req.body);
 
     const task = await academicDb().adminTask.create({
-      data: { userId, institutionId, text },
+      data: { userId, institutionId, text, dueAt: dueAt ? new Date(dueAt) : undefined },
     });
     res.status(201).json({ success: true, data: task });
   } catch (err) {
@@ -131,7 +131,7 @@ export async function updateTask(req: AuthRequest, res: Response, next: NextFunc
       res.status(400).json({ success: false, error: "No institution" });
       return;
     }
-    const data = updateTaskSchema.parse(req.body);
+    const parsed = updateTaskSchema.parse(req.body);
     const id = req.params.id as string;
 
     const existing = await academicDb().adminTask.findFirst({ where: { id, userId, institutionId } });
@@ -140,6 +140,10 @@ export async function updateTask(req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
+    const data = {
+      ...parsed,
+      dueAt: parsed.dueAt === undefined ? undefined : parsed.dueAt === null ? null : new Date(parsed.dueAt),
+    };
     const task = await academicDb().adminTask.update({ where: { id }, data });
     res.json({ success: true, data: task });
   } catch (err) {

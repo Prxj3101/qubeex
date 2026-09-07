@@ -33,6 +33,8 @@ const SYSTEM_PROMPT =
   "Always call a tool to get real data before answering any question that depends on institution facts — never guess or make up names, numbers, or details. " +
   "You have several tools available for different domains (staff directory, class structure, a specific student, attendance, fees, fee defaulters by class, parent engagement, AI usage, holidays, the campus feed/announcements, and calendar events) — pick whichever ones the question actually needs, and call more than one at once if the question spans domains (e.g. 'who teaches my top-attendance class'). " +
   "Any 'who teaches X' / 'who's the teacher for Y' question is a staff-directory question, not a class-structure one — getClassStructure only lists which subjects a class has, it has no idea who teaches them. Always call getStaffDirectory for those, even if the question also names a class (e.g. 'who teaches history in 10-B' still needs getStaffDirectory, not just getClassStructure). " +
+  "You can also write to the admin's own personal To-Do List & Notepad widget on their dashboard — you are NOT limited to read-only lookups. If they ask you to remind them of something with a time attached ('remind me to call them tomorrow at 12pm', 'set a reminder for Friday'), call addReminderTask with a clear action description and the exact due date/time resolved from the current date/time given to you below — do not say you lack a reminder feature, you have one. If they ask you to note/remember/save something that ISN'T a timed action (an observation, context about someone, a discussion point, or 'save this as a note' about something already said in this chat), call addNote instead — write the note text yourself when it refers back to an earlier answer. Confirm briefly once done (e.g. 'Added to your to-do list, due tomorrow at 12:00 PM' or 'Noted 📝'). " +
+  "CRITICAL: if the admin corrects a note or task you just added or discussed earlier in this conversation ('its not 10-C its 10-A', 'actually make that Friday', 'no I meant...'), you MUST call updateNote or updateTask (identifying it by a short fragment of its original text) — NEVER call addNote/addReminderTask again for a correction, since that leaves the old, wrong one behind as a duplicate instead of fixing it. There is no delete capability yet, so if asked to delete/remove one, say so plainly rather than pretending to. " +
   "If a question needs data no tool provides, say plainly that you don't have access to that yet, rather than inventing an answer. " +
   "This also applies across turns: if an earlier question in this conversation never got a real, tool-backed answer (it errored, or no tool was called for it), do NOT retroactively answer it from memory or a guess later in the conversation, even if the current message doesn't call for a tool itself — only ever state institution facts you actually pulled via a tool in that same turn. " +
   "Lead with the headline number/fact, then back it up with structure — this is a chat panel, so favor scannable formatting over dense paragraphs. " +
@@ -72,6 +74,10 @@ const TOOL_KEYWORDS: Record<string, string[]> = {
   getUpcomingHolidays: ["holiday", "holidays", "vacation", "leave day"],
   getRecentCampusFeedPosts: ["feed", "post", "posts", "announcement", "notice", "notices"],
   getUpcomingCalendarEvents: ["calendar", "event", "events", "ptm", "exam schedule", "function", "upcoming"],
+  addReminderTask: ["remind", "reminder", "follow up", "follow-up", "set a task", "add a task", "to-do", "todo"],
+  addNote: ["note", "note down", "jot", "remember this", "save this", "keep in mind"],
+  updateNote: ["note", "actually", "correct", "wrong", "meant", "instead", "not that"],
+  updateTask: ["task", "reminder", "actually", "correct", "wrong", "meant", "instead", "not that"],
 };
 
 // Plain greetings/small talk never need a tool at all — matching them here
@@ -127,9 +133,17 @@ export async function askSchoolAssistant(
   const identityLine = requester?.name
     ? `\n\nThe person you're chatting with right now is ${requester.name}, this institution's admin — you already know this, no tool call needed if they ask about themselves (their own name/role).`
     : "";
+  // Needed to resolve relative times ("tomorrow at 12pm", "in an hour",
+  // "Friday") into an exact ISO datetime for addReminderTask — without this
+  // the model has no idea what day "today" actually is. Indian schools, so
+  // IST is the assumed local time unless the admin says otherwise.
+  const nowIst = new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata", weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: true,
+  });
+  const dateLine = `\n\nThe current date and time is ${nowIst} (IST, UTC+5:30). Resolve any relative time the admin gives you ("tomorrow", "Friday", "in an hour") against this before calling addReminderTask, and pass dueAt as a full ISO 8601 datetime with the +05:30 offset.`;
 
   const chatMessages: Array<{ role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string; tool_calls?: unknown[] }> = [
-    { role: "system", content: SYSTEM_PROMPT + identityLine },
+    { role: "system", content: SYSTEM_PROMPT + identityLine + dateLine },
     ...messages,
   ];
 
@@ -178,7 +192,7 @@ export async function askSchoolAssistant(
       try {
         let args: Record<string, unknown> = {};
         try { args = call.function.arguments ? JSON.parse(call.function.arguments) : {}; } catch { /* malformed args from the model — proceed with none */ }
-        const result = executor ? await executor(ctx.institutionId, args) : { error: "Unknown tool" };
+        const result = executor ? await executor(ctx.institutionId, args, { userId: ctx.userId }) : { error: "Unknown tool" };
         resultJson = JSON.stringify(result);
       } catch (err) {
         resultJson = JSON.stringify({ error: err instanceof Error ? err.message : "Tool execution failed" });

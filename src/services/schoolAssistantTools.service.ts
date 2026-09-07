@@ -17,6 +17,7 @@ import { academicDb } from "../utils/academicContext";
 import { prisma } from "../utils/prisma";
 import { resolveUsers } from "./userLookup.service";
 import { computeInstitutionFeeStats } from "./feeInsights.service";
+import { NOTE_COLORS } from "../modules/admin/notepad.schema";
 import { getInstitutionTeacherBreakdown } from "./ai-usage.service";
 
 export interface ToolDefinition {
@@ -103,6 +104,58 @@ export const SCHOOL_ASSISTANT_TOOLS: ToolDefinition[] = [
       required: ["className"],
     },
   },
+  {
+    name: "addReminderTask",
+    description:
+      "Add a task to the admin's personal to-do list for something they need to DO by a specific time — e.g. 'remind me to call these parents tomorrow at 12pm', 'set a reminder to follow up on Friday'. Use this ONLY when the request names both an action and a deadline/time. The task shows up in the admin's To-Do & Notepad widget with the due time displayed. You are told the current date and time — always resolve relative phrases ('tomorrow', 'in an hour', 'Friday') against that, and pass an exact ISO 8601 datetime.",
+    parameters: {
+      type: "object",
+      properties: {
+        text: { type: "string", description: "A short, clear description of the action to do, e.g. \"Call Sanju Samson and Kuldeep Yadav's parents about pending fees\"." },
+        dueAt: { type: "string", description: "The exact due date/time as an ISO 8601 datetime string (e.g. '2026-09-08T12:00:00+05:30'), resolved from the current date/time you were given plus whatever the admin said." },
+      },
+      required: ["text", "dueAt"],
+    },
+  },
+  {
+    name: "addNote",
+    description:
+      "Save a note to the admin's personal notepad — for something to remember or keep in mind that is NOT a specific action with a deadline: an observation, context about a student/parent/staff member, a discussion point for a later meeting, or 'save this as a note' referring to something already discussed in this conversation (in which case write the note text yourself from that earlier answer). Do NOT use this for anything the admin needs to DO by a certain time — use addReminderTask for those instead.",
+    parameters: {
+      type: "object",
+      properties: {
+        text: { type: "string", description: "The note's content, written clearly and concisely." },
+      },
+      required: ["text"],
+    },
+  },
+  {
+    name: "updateNote",
+    description:
+      "Correct or rewrite an EXISTING note in the admin's notepad — use this whenever the admin corrects something they just told you to note ('its not 10-C its 10-A', 'actually make that Friday not Thursday'), rather than calling addNote again, which would leave a duplicate, wrong note behind. Identify the note with a short fragment of its original wording that you can recall from this conversation.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "A short fragment of the existing note's text, used to find it (e.g. '10-C' or 'attendance is notably low')." },
+        newText: { type: "string", description: "The corrected, full note text to replace it with." },
+      },
+      required: ["query", "newText"],
+    },
+  },
+  {
+    name: "updateTask",
+    description:
+      "Correct or rewrite an EXISTING task on the admin's to-do list — use this whenever they correct something they just had you add ('its not 10-C its 10-A', 'actually make that 5pm not 12pm'), rather than calling addReminderTask again, which would leave a duplicate, wrong task behind. Identify the task with a short fragment of its original wording that you can recall from this conversation. You can update just the text, just the due time, or both — omit whichever didn't change.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "A short fragment of the existing task's text, used to find it (e.g. '10-C' or 'call the parents')." },
+        newText: { type: "string", description: "The corrected task text, if it changed. Omit if only the time changed." },
+        newDueAt: { type: "string", description: "The corrected due date/time as an ISO 8601 datetime string, if it changed. Omit if only the text changed." },
+      },
+      required: ["query"],
+    },
+  },
 ];
 
 function round1(n: number): number {
@@ -113,6 +166,13 @@ export async function getAttendanceOverview(institutionId: string) {
   const db = academicDb();
   const now = new Date();
   const monthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  // Same academic-session window (June–May) the Analytics dashboard scopes
+  // "overall" attendance to — without this, this tool was pulling every
+  // attendance row ever recorded (including past sessions), which is why its
+  // "overall" number didn't match the dashboard's.
+  const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear() - 1;
+  const sessionStart = `${startYear}-06-01`;
+  const sessionEnd = `${startYear + 1}-05-31`;
 
   const divisions = await db.division.findMany({
     where: { institutionId },
@@ -129,10 +189,10 @@ export async function getAttendanceOverview(institutionId: string) {
 
   const [rows, holidays] = await Promise.all([
     db.attendance.findMany({
-      where: { institutionId },
+      where: { institutionId, date: { gte: sessionStart, lte: sessionEnd } },
       select: { studentId: true, divisionId: true, date: true, status: true },
     }),
-    db.schoolHoliday.findMany({ where: { institutionId }, select: { date: true } }),
+    db.schoolHoliday.findMany({ where: { institutionId, date: { gte: sessionStart, lte: sessionEnd } }, select: { date: true } }),
   ]);
   const holidayDates = new Set(holidays.map((h) => h.date));
 
@@ -146,15 +206,37 @@ export async function getAttendanceOverview(institutionId: string) {
     byStudent.set(r.studentId, arr);
   }
 
+  // "Overall" is a mean of each calendar month's own rate, not a flat ratio
+  // over every raw record — matching the Analytics dashboard exactly (see
+  // getAttendanceInsights in insights.controller.ts). A flat ratio silently
+  // over/under-weights whichever months happened to have more days recorded,
+  // which is what made this tool's number diverge from the dashboard's.
   function studentPcts(studentId: string): { overallPct: number | null; monthPct: number | null } {
     const recs = byStudent.get(studentId) ?? [];
     const monthRecs = recs.filter((r) => r.date.startsWith(monthPrefix));
     const monthPct = monthRecs.length > 0
       ? round1((monthRecs.filter((r) => r.status === "P" || r.status === "L").length / monthRecs.length) * 100)
       : null;
-    const overallPct = recs.length > 0
-      ? round1((recs.filter((r) => r.status === "P" || r.status === "L").length / recs.length) * 100)
-      : null;
+
+    const byMonth = new Map<string, { p: number; a: number; l: number }>();
+    for (const r of recs) {
+      const mk = r.date.slice(0, 7);
+      const cur = byMonth.get(mk) ?? { p: 0, a: 0, l: 0 };
+      if (r.status === "P") cur.p++;
+      else if (r.status === "A") cur.a++;
+      else if (r.status === "L") cur.l++;
+      byMonth.set(mk, cur);
+    }
+    let pctSum = 0;
+    let pctCount = 0;
+    let overallPct: number | null = null;
+    for (const mk of Array.from(byMonth.keys()).sort()) {
+      const counts = byMonth.get(mk)!;
+      const total = counts.p + counts.a + counts.l;
+      const pct = total > 0 ? round1(((counts.p + counts.l) / total) * 100) : null;
+      if (pct !== null) { pctSum += pct; pctCount++; }
+      overallPct = pctCount > 0 ? round1(pctSum / pctCount) : null;
+    }
     return { overallPct, monthPct };
   }
 
@@ -659,7 +741,119 @@ export async function getFeeDefaultersByClass(institutionId: string, args: { cla
   };
 }
 
-export const SCHOOL_ASSISTANT_EXECUTORS: Record<string, (institutionId: string, args?: Record<string, unknown>) => Promise<unknown>> = {
+// These two write to the ADMIN'S OWN to-do list/notepad (never a shared or
+// institution-wide surface), so — unlike every read-only tool above — they
+// need to know WHO is asking, not just which institution. `ctx.userId` is
+// the server-verified requester from the chat session, never anything the
+// model supplies.
+export async function addReminderTask(
+  institutionId: string,
+  args: Record<string, unknown> | undefined,
+  ctx?: { userId: string }
+) {
+  if (!ctx?.userId) return { error: "Could not identify the requesting admin." };
+  const text = typeof args?.text === "string" ? args.text.trim().slice(0, 300) : "";
+  if (!text) return { error: "No task text provided." };
+
+  const dueAtRaw = typeof args?.dueAt === "string" ? args.dueAt : undefined;
+  const dueAt = dueAtRaw ? new Date(dueAtRaw) : undefined;
+  if (dueAtRaw && Number.isNaN(dueAt?.getTime())) {
+    return { error: "dueAt was not a valid date/time — ask the admin to clarify when." };
+  }
+
+  const task = await academicDb().adminTask.create({
+    data: { userId: ctx.userId, institutionId, text, dueAt },
+  });
+  return { success: true, task: { id: task.id, text: task.text, dueAt: task.dueAt } };
+}
+
+export async function addNote(
+  institutionId: string,
+  args: Record<string, unknown> | undefined,
+  ctx?: { userId: string }
+) {
+  if (!ctx?.userId) return { error: "Could not identify the requesting admin." };
+  const text = typeof args?.text === "string" ? args.text.trim().slice(0, 500) : "";
+  if (!text) return { error: "No note text provided." };
+
+  // Rotate through the same 5 colors the manual "+" note picker offers,
+  // keyed off how many notes this admin already has — just gives Jarvis's
+  // notes some visual variety instead of always landing on the first color.
+  const existingCount = await academicDb().adminNote.count({ where: { userId: ctx.userId, institutionId } });
+  const color = NOTE_COLORS[existingCount % NOTE_COLORS.length];
+
+  const note = await academicDb().adminNote.create({
+    data: { userId: ctx.userId, institutionId, text, color },
+  });
+  return { success: true, note: { id: note.id, text: note.text } };
+}
+
+// Notes have no stable ID the model can reliably recall turn-to-turn (tool
+// results aren't part of the persisted chat history), so both of these find
+// the target note the same way a human would describe it back — by a
+// fragment of its text — rather than by ID. Most-recent match wins when a
+// fragment could plausibly match more than one note.
+export async function updateNote(
+  institutionId: string,
+  args: Record<string, unknown> | undefined,
+  ctx?: { userId: string }
+) {
+  if (!ctx?.userId) return { error: "Could not identify the requesting admin." };
+  const query = typeof args?.query === "string" ? args.query.trim() : "";
+  const newText = typeof args?.newText === "string" ? args.newText.trim().slice(0, 500) : "";
+  if (!query || !newText) return { error: "Need both a query to find the note and the corrected text." };
+
+  const existing = await academicDb().adminNote.findFirst({
+    where: { userId: ctx.userId, institutionId, text: { contains: query, mode: "insensitive" } },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!existing) return { error: `Couldn't find an existing note matching "${query}" to update.` };
+
+  const note = await academicDb().adminNote.update({ where: { id: existing.id }, data: { text: newText } });
+  return { success: true, note: { id: note.id, text: note.text } };
+}
+
+// Same by-text-fragment matching as updateNote, for the same reason (no
+// stable ID survives across turns).
+export async function updateTask(
+  institutionId: string,
+  args: Record<string, unknown> | undefined,
+  ctx?: { userId: string }
+) {
+  if (!ctx?.userId) return { error: "Could not identify the requesting admin." };
+  const query = typeof args?.query === "string" ? args.query.trim() : "";
+  if (!query) return { error: "Need a query to find which task to update." };
+
+  const newTextRaw = typeof args?.newText === "string" ? args.newText.trim().slice(0, 300) : "";
+  const newDueAtRaw = typeof args?.newDueAt === "string" ? args.newDueAt : undefined;
+  if (!newTextRaw && !newDueAtRaw) return { error: "Need a corrected text or due time — nothing to update." };
+
+  let newDueAt: Date | undefined;
+  if (newDueAtRaw) {
+    newDueAt = new Date(newDueAtRaw);
+    if (Number.isNaN(newDueAt.getTime())) return { error: "newDueAt was not a valid date/time." };
+  }
+
+  const existing = await academicDb().adminTask.findFirst({
+    where: { userId: ctx.userId, institutionId, text: { contains: query, mode: "insensitive" } },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!existing) return { error: `Couldn't find an existing task matching "${query}" to update.` };
+
+  const task = await academicDb().adminTask.update({
+    where: { id: existing.id },
+    data: {
+      ...(newTextRaw ? { text: newTextRaw } : {}),
+      ...(newDueAt ? { dueAt: newDueAt } : {}),
+    },
+  });
+  return { success: true, task: { id: task.id, text: task.text, dueAt: task.dueAt } };
+}
+
+export const SCHOOL_ASSISTANT_EXECUTORS: Record<
+  string,
+  (institutionId: string, args?: Record<string, unknown>, ctx?: { userId: string }) => Promise<unknown>
+> = {
   getAttendanceOverview,
   getFeeOverview,
   getDisengagedParents,
@@ -672,4 +866,8 @@ export const SCHOOL_ASSISTANT_EXECUTORS: Record<string, (institutionId: string, 
   getFeeDefaultersByClass,
   getRecentCampusFeedPosts,
   getUpcomingCalendarEvents,
+  addReminderTask,
+  addNote,
+  updateNote,
+  updateTask,
 };

@@ -429,6 +429,13 @@ const SUBJECT_VISUAL_PROFILE: Record<MindmapSubject, SubjectVisualProfile> = {
 // Below this, a raster image is an icon or a thumbnail rather than teaching
 // material — it will be blurry the moment it is projected.
 const MIN_IMAGE_WIDTH = 250;
+// Web results get a much higher floor than Commons. Commons hosts vector SVGs
+// whose nominal size means nothing, whereas a raster pulled off the open web at
+// 300px is simply a thumbnail. Safe to set this high because the search itself
+// now asks Google for large images only (see SERPAPI_TBS_FILTERS): measured on
+// a live query, 99 of 100 results come back at 800px or more, so raising the
+// floor costs essentially no candidates.
+const MIN_WEB_IMAGE_WIDTH = 500;
 
 async function fetchWikimediaImages(
   query: string,
@@ -579,8 +586,29 @@ const WIKI_USER_AGENT = "QubeEx-Blackboard/1.0 (https://qubeex.app; contact@qube
 // CORE — body/reproductive vocabulary that implies human-body imagery no
 // matter what subject it appears in. Checked everywhere, including raw text.
 // Unchanged in strength: this is what actually protects the classroom.
-const SENSITIVE_CORE_PATTERN =
-  /\b(reproduc\w*|genital\w*|penis|penile|vulva|vagin\w*|testis|testes|testicl\w*|scrotum|uterus|uterine|ovar\w*|ovum|ova|oocyte\w*|cervix|cervical|breast\w*|mammary|sperm\w*|semen|seminal|prostate|urethra\w*|menstrua\w*|menopause|puberty|pubert\w*|sexual\w*|intercourse|coitus|copulat\w*|gestation|fetus|foetus|fetal|foetal|embryo\w*|zygote|gamete\w*|fertilis\w*|fertiliz\w*|insemination|surrogac\w*|contracept\w*|condom|abortion|placenta\w*|umbilical|lactation|anatomy|anatomical|nude|naked|erotic|dissect\w*|cadaver|autops\w*)\b/i;
+// UNCONDITIONAL — vocabulary that only ever describes human sexual anatomy or
+// explicit material. Sensitive wherever it appears, in any subject.
+const SENSITIVE_EXPLICIT_PATTERN =
+  /\b(genital\w*|penis|penile|vulva|vagin\w*|testis|testes|testicl\w*|scrotum|uterus|uterine|cervix|cervical|clitoris|labia|nipple\w*|areola|breast\w*|mammary|prostate|urethra\w*|menstrua\w*|menopause|puberty|pubert\w*|intercourse|coitus|copulat\w*|masturbat\w*|ejaculat\w*|semen|seminal|condom|contracept\w*|abortion|nude|naked|erotic|dissect\w*|cadaver|autops\w*)\b/i;
+
+// CONDITIONAL — general BIOLOGY vocabulary. "Ovary", "gamete", "embryo",
+// "sexual reproduction" and "anatomy" describe sponges, jellyfish and flowers
+// just as much as people, so on their own they say nothing about whether human
+// imagery is at risk.
+//
+// Written after a Class-9 zoology scan on sponges and cnidarians was flagged
+// sensitive on the single word "Ovary". That disabled web search, restricted
+// results to Wikimedia diagrams, and — with Commons unreachable — returned
+// ZERO images for the lesson. The same false positive hits every flowering-
+// plant chapter, since plants have ovaries too.
+const SENSITIVE_BIOLOGICAL_PATTERN =
+  /\b(reproduc\w*|sexual\w*|ovar(?:y|ies|ian)|ovum|ova|oocyte\w*|sperm\w*|gamete\w*|zygote|embryo\w*|fetus|foetus|fetal|foetal|fertilis\w*|fertiliz\w*|gestation|placenta\w*|umbilical|lactation|insemination|surrogac\w*|anatomy|anatomical)\b/i;
+
+// What turns the conditional tier on: an indication the material is about
+// PEOPLE. Deliberately excludes "man"/"men"/"male"/"female" — "male and female
+// gametes" is ordinary botany, and "Portuguese man o' war" is a jellyfish.
+const HUMAN_CONTEXT_PATTERN =
+  /\b(human|humans|humanity|woman|women|boy|boys|girl|girls|child|children|infant|baby|babies|adolescen\w*|puberty|pubert\w*|menstrua\w*|homo sapiens|mother|father|pregnan\w*|patient)\b/i;
 
 // CLINICAL — medical/physiological vocabulary that only implies clinical
 // photography when the lesson is actually about the human body. In a history,
@@ -720,8 +748,17 @@ function isSensitiveSubject(context: DocumentContext, rawText?: string): string 
   // Returns the matching term rather than a boolean: when this fires it
   // empties the image panel, and without knowing WHICH word tripped it a
   // false positive is undiagnosable from the logs.
-  const core = haystack.match(SENSITIVE_CORE_PATTERN);
-  if (core) return core[0];
+  const explicit = haystack.match(SENSITIVE_EXPLICIT_PATTERN);
+  if (explicit) return explicit[0];
+
+  // General biology vocabulary only counts when the material is about people.
+  // A human-reproduction chapter names humans constantly (and trips the
+  // explicit tier anyway); a sponge or a flower chapter does not.
+  const humanContext = HUMAN_CONTEXT_PATTERN.test(haystack);
+  if (humanContext) {
+    const biological = haystack.match(SENSITIVE_BIOLOGICAL_PATTERN);
+    if (biological) return `${biological[0]} (human context)`;
+  }
 
   if (BODY_ADJACENT_SUBJECTS.has(context.subject ?? "general")) {
     const clinical = haystack.match(SENSITIVE_CLINICAL_PATTERN);
@@ -881,6 +918,58 @@ function titleMatchesQuery(title: string, query: string): boolean {
   return terms.some(t => termMatchesTitle(t, title));
 }
 
+// Wikipedia titles are subjects ("Nuclear power plant"), never descriptions
+// ("Schematic diagram of a nuclear power plant showing reactor, turbine,
+// generator and cooling system"). The model writes the latter however firmly
+// it is told not to, and every one of them 404s — so strip the scaffolding
+// before looking a query up. The ORIGINAL query is still what web search sees,
+// since Google handles descriptive phrasing well.
+const QUERY_SCAFFOLD_PREFIX =
+  /^(?:a |an |the )?(?:labell?ed |simple |detailed |annotated |basic )*(?:schematic |cross[- ]?sectional? |line )?(?:comparison chart|flow ?chart|infographic|schematic|diagram|illustration|drawing|sketch|chart|graph|map|photograph|photo|image|picture|figure|layout)s?\s+(?:of|showing|for|depicting)\s+(?:the |a |an )?/i;
+
+const QUERY_SCAFFOLD_SUFFIX =
+  /\s+(?:schematic|diagram|illustration|drawing|sketch|chart|graph|layout|figure|infographic|flow ?chart|labell?ed)s?$/i;
+
+// Everything after these reads as elaboration, not subject.
+const QUERY_TAIL_CLAUSE =
+  /\s+(?:showing|indicating|depicting|illustrating|including|containing|with|versus|vs\.?|and their|that |which |where |labell?ed with)\b.*$/i;
+
+/**
+ * The searchable subject inside a descriptive image query.
+ *   "Nuclear power plant schematic diagram"                    -> "Nuclear power plant"
+ *   "Diagram of the uranium-235 fission chain reaction with..." -> "uranium-235 fission chain reaction"
+ *   "Map of India indicating ... of major nuclear power plants" -> "major nuclear power plants"
+ */
+function coreSubject(query: string): string {
+  let text = normalizeSearchText(query);
+
+  let previous = "";
+  while (previous !== text) {
+    previous = text;
+    text = text.replace(QUERY_SCAFFOLD_PREFIX, "").trim();
+  }
+
+  const withoutTail = text.replace(QUERY_TAIL_CLAUSE, "").trim();
+  // A tail cut that leaves a single bare word ("India") has thrown away the
+  // real subject, which in these phrasings sits after the LAST "of".
+  if (withoutTail.split(/\s+/).length < 2) {
+    const afterLastOf = text.split(/\s+of\s+/i).pop()?.trim() ?? "";
+    text = afterLastOf.split(/\s+/).length >= 2 ? afterLastOf : (withoutTail || text);
+  } else {
+    text = withoutTail;
+  }
+
+  previous = "";
+  while (previous !== text) {
+    previous = text;
+    text = text.replace(QUERY_SCAFFOLD_SUFFIX, "").trim();
+  }
+
+  text = text.replace(/[,;:]+$/, "").trim();
+  // Never return something too small to search with.
+  return text.length >= 3 ? text : normalizeSearchText(query);
+}
+
 async function wikipediaOpenSearch(query: string): Promise<string | null> {
   const res = await fetch(
     `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&namespace=0&limit=1&search=${encodeURIComponent(query)}`,
@@ -891,7 +980,9 @@ async function wikipediaOpenSearch(query: string): Promise<string | null> {
   return json[1]?.[0] ?? null;
 }
 
-async function wikipediaFullTextSearch(query: string): Promise<string | null> {
+async function wikipediaFullTextSearch(
+  query: string
+): Promise<{ title: string; snippet: string } | null> {
   const params = new URLSearchParams({
     action: "query", format: "json", list: "search",
     srnamespace: "0", srlimit: "1", srsearch: query,
@@ -900,8 +991,14 @@ async function wikipediaFullTextSearch(query: string): Promise<string | null> {
     headers: { "User-Agent": WIKI_USER_AGENT }, signal: AbortSignal.timeout(5000),
   });
   if (!res.ok) return null;
-  const json = await res.json() as { query?: { search?: Array<{ title: string }> } };
-  return json.query?.search?.[0]?.title ?? null;
+  const json = await res.json() as {
+    query?: { search?: Array<{ title: string; snippet?: string }> };
+  };
+  const hit = json.query?.search?.[0];
+  if (!hit) return null;
+  // The snippet is the reason the guard can accept a correctly-matched article
+  // whose TITLE shares no word with the query — see resolveWikipediaTitle.
+  return { title: hit.title, snippet: (hit.snippet ?? "").replace(/<[^>]*>/g, "") };
 }
 
 /**
@@ -921,7 +1018,7 @@ async function wikipediaFullTextSearch(query: string): Promise<string | null> {
  * then full-text as the fallback for descriptive phrasing.
  */
 async function resolveWikipediaTitle(query: string): Promise<string | null> {
-  const normalized = normalizeSearchText(query);
+  const normalized = coreSubject(query);
   try {
     const exact = await wikipediaOpenSearch(normalized);
     if (exact) return exact;
@@ -942,11 +1039,18 @@ async function resolveWikipediaTitle(query: string): Promise<string | null> {
     // which is exactly the reported symptom: a lesson on hydroelectric power
     // showing generic "energy conversion" diagrams. So: match on DISTINCTIVE
     // terms only, and match them by stem rather than whole word.
-    if (!titleMatchesQuery(found, normalized)) {
-      console.log(`[blackboard] Full-text match "${found}" rejected as too generic for "${normalized}"`);
+    // Match against title AND snippet. Wikipedia titles species by COMMON name
+    // while a scan queries by scientific name, so a title-only check rejected
+    // correct articles outright: "Euplectella glass sponge" resolves to
+    // "Venus' flower basket" and "Physalia physalis" to "Portuguese man o' war",
+    // neither sharing a word with the query — yet both snippets name the
+    // species explicitly. That rejection is why a sponges-and-cnidarians scan
+    // came back with nothing.
+    if (!titleMatchesQuery(`${found.title} ${found.snippet}`, normalized)) {
+      console.log(`[blackboard] Full-text match "${found.title}" rejected as unrelated to "${normalized}"`);
       return null;
     }
-    return found;
+    return found.title;
   } catch (err) {
     console.error(`[blackboard] Wikipedia title resolution failed for "${query}":`, err);
     return null;
@@ -1030,7 +1134,7 @@ async function fetchArticleEmbeddedImages(
 // How many concepts are worth resolving to a Wikipedia article per scan.
 // The scan asks the model for 3-6 imageQueries; beyond that we are into
 // backup subtopics whose articles add latency without adding relevance.
-const MAX_TOPICS_PER_LOOKUP = 6;
+const MAX_TOPICS_PER_LOOKUP = 8;
 // Floor on what each concept may contribute, so a concept late in the list
 // still gets a fair shot even when the limit divides small.
 const MIN_IMAGES_PER_TOPIC = 2;
@@ -1060,15 +1164,21 @@ async function fetchTopicImages(
     // illustration filter — the article body often still holds usable
     // diagrams, which is exactly the case for anatomy topics.
     let hit = await fetchWikipediaSummary(topic, illustrationsOnly);
-    let resolvedTitle = hit?.caption ?? topic;
+    let resolvedTitle: string | null = hit?.caption ?? null;
     if (!hit) {
       const alt = await resolveWikipediaTitle(topic);
-      if (alt && alt.toLowerCase() !== topic.toLowerCase()) {
+      if (alt) {
         hit = await fetchWikipediaSummary(alt, illustrationsOnly);
         resolvedTitle = hit?.caption ?? alt;
-      } else if (alt) {
-        resolvedTitle = alt;
       }
+    }
+    // Only ever ask for media by a title that actually resolved. Previously
+    // this fell back to the raw query, so a descriptive phrase went straight to
+    // the media-list endpoint and 404'd — which is what filled the log with
+    // "No Wikipedia article media for 'Nuclear power plant schematic diagram'".
+    if (!resolvedTitle) {
+      buckets.push([]);
+      continue;
     }
 
     if (hit && !seenUrls.has(hit.url)) {
@@ -1152,10 +1262,18 @@ const BLOCKED_IMAGE_DOMAINS = [
   "shutterstock.com", "gettyimages.com", "istockphoto.com", "alamy.com",
   "dreamstime.com", "depositphotos.com", "123rf.com", "vectorstock.com",
   "freepik.com", "stock.adobe.com", "canstockphoto.com",
-  "pinterest.com", "pinimg.com", "facebook.com", "fbcdn.net", "instagram.com",
+  "pinterest.com", "pinimg.com", "facebook.com", "fbcdn.net", "fbsbx.com", "instagram.com",
   "twitter.com", "x.com", "twimg.com", "tiktok.com", "licdn.com", "redd.it",
   "ytimg.com", "youtube.com", "vimeocdn.com",
   "easy-peasy.ai", "midjourney.com", "openai.com", "leonardo.ai", "civitai.com",
+  // Found in live SerpAPI results for a nuclear-power query and previously
+  // unblocked. AI-generated diagrams are the worst possible classroom asset:
+  // they look authoritative and are confidently wrong.
+  "craiyon.com", "stablediffusionweb.com", "lexica.art", "nightcafe.studio",
+  "deepai.org", "artbreeder.com", "playground.com", "openart.ai",
+  // Stock marketplaces that slipped past the existing list.
+  "vecteezy.com", "vectorstock.com", "shutterstock.net", "storyblocks.com",
+  "pngtree.com", "cleanpng.com", "kisspng.com", "seekpng.com", "pngwing.com",
 ];
 
 function hostOf(rawUrl: string): string | null {
@@ -1187,6 +1305,22 @@ function isPreferredImageSource(rawUrl: string): boolean {
   return hostMatches(host, PREFERRED_IMAGE_DOMAINS);
 }
 
+// Web search providers return the IMAGE url, not a page url — so requiring a
+// file extension there only discards images served from CDNs that don't use
+// one. Measured against a live SerpAPI response for "Nuclear power plant
+// schematic diagram", the extension test dropped 10 of 100 results, and four
+// of those were exactly the material a teacher wants: a HowStuffWorks cutaway,
+// a ResearchGate figure, a RevisionDojo revision diagram and a Cloudinary-hosted
+// KROHNE illustration. The other six were Facebook/Instagram crawler re-hosts,
+// now blocked by domain instead (fbsbx.com added above), which is where that
+// judgement belongs.
+//
+// Wikimedia keeps its extension check: there the URL is the original filename
+// and the extension carries real meaning (.svg proves a vector diagram).
+function isUsableWebImageUrl(rawUrl: string): boolean {
+  return /^https?:\/\//i.test(rawUrl);
+}
+
 // ── SerpAPI (optional, paid, preferred provider) ─────────────────────────────
 //
 // serpapi.com's google_images engine, distinct from serper.dev below. Preferred
@@ -1206,6 +1340,8 @@ const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY ?? "";
 // scan simply got no web images, despite a working Serper key sitting right
 // there. Tripping this cooldown makes provider selection fall through to the
 // next configured provider until SerpAPI is worth trying again.
+const SERPAPI_TBS_FILTERS = "isz:l";
+
 const SERPAPI_COOLDOWN_MS = 5 * 60 * 1000;
 let serpApiUnavailableUntil = 0;
 
@@ -1238,6 +1374,17 @@ async function fetchSerpApiImages(
     // goes through isClassroomSafe below.
     safe: "active",
     ijn: "0",
+    // Google's own "large images" filter. This is the highest-leverage quality
+    // change available: measured on "nuclear power plant schematic diagram",
+    // results at 800px or wider went from 44/100 to 99/100 — and because the
+    // filter runs at Google's end, we still receive a full 100 candidates, so
+    // quality rises without costing quantity.
+    //
+    // Deliberately NOT using itp:lineart alongside it. It sounds ideal for
+    // "give me diagrams", but measured worse: images shrank to ~450px and it
+    // surfaced Craiyon AI art. Google's line-art classifier is not selecting
+    // for teaching diagrams.
+    tbs: SERPAPI_TBS_FILTERS,
   });
 
   try {
@@ -1260,8 +1407,12 @@ async function fetchSerpApiImages(
         original?: string;
         original_width?: number;
         original_height?: number;
+        /** Publisher name, e.g. "Britannica" — better provenance than the CDN host. */
         source?: string;
+        /** The PAGE the image sits on, which the image host often hides behind a CDN. */
         link?: string;
+        /** Shopping results: product photography, never teaching material. */
+        is_product?: boolean;
       }>;
     };
     if (json.error) {
@@ -1274,7 +1425,6 @@ async function fetchSerpApiImages(
       return [];
     }
 
-    const IMAGE_EXT = /\.(jpg|jpeg|png|svg|gif|webp)(?:\?.*)?$/i;
     const preferred: { url: string; caption: string }[] = [];
     const other: { url: string; caption: string }[] = [];
 
@@ -1282,17 +1432,30 @@ async function fetchSerpApiImages(
       if (preferred.length + other.length >= limit * 3) break;
       const url = item.original;
       if (!url || seenUrls.has(url)) continue;
-      if (!IMAGE_EXT.test(url)) continue;
+      if (!isUsableWebImageUrl(url)) continue;
+      // Shopping results are product photography — never a teaching visual.
+      if (item.is_product) continue;
       // Dimensions are the reason this provider is preferred — use them.
-      if (item.original_width && item.original_width < MIN_IMAGE_WIDTH) continue;
-      // Judge the image's own host, not the page it was found on.
+      if (item.original_width && item.original_width < MIN_WEB_IMAGE_WIDTH) continue;
+      // Check BOTH the image host and the page it came from. A CDN host
+      // (media.hswstatic.com, lookaside.fbsbx.com) hides who actually published
+      // it, so blocking on the image URL alone missed re-hosts and ranking on
+      // it alone missed genuine educational publishers behind a CDN.
       if (isBlockedImageSource(url)) continue;
+      if (item.link && isBlockedImageSource(item.link)) continue;
       const title = item.title ?? "";
       if (illustrationsOnly && !isIllustration(title, url)) continue;
       if (!isClassroomSafe(title, url)) continue;
-      (isPreferredImageSource(url) ? preferred : other).push({
+      const fromPreferredSource =
+        isPreferredImageSource(url) || (!!item.link && isPreferredImageSource(item.link));
+      // The publisher name rides along in the caption. It costs almost nothing
+      // and gives the relevance step real provenance to weigh — "Britannica"
+      // and "Vedantu" mean something that a bare CDN filename does not.
+      const publisher = item.source?.trim();
+      const caption = title.trim() || query;
+      (fromPreferredSource ? preferred : other).push({
         url,
-        caption: title.trim() || query,
+        caption: publisher && !caption.includes(publisher) ? `${caption} — ${publisher}` : caption,
       });
     }
 
@@ -1331,8 +1494,6 @@ async function fetchSerperImages(
     const json = (await res.json()) as {
       images?: Array<{ title?: string; imageUrl?: string; link?: string; domain?: string }>;
     };
-    const IMAGE_EXT = /\.(jpg|jpeg|png|svg|gif|webp)(?:\?.*)?$/i;
-
     // Two passes: collect everything acceptable, tagging whether it came from a
     // preferred educational source, then emit preferred first. Ranking rather
     // than filtering means a Britannica or Wikimedia diagram outranks a random
@@ -1345,7 +1506,7 @@ async function fetchSerperImages(
       if (preferred.length + other.length >= limit * 3) break;
       const url = item.imageUrl;
       if (!url || seenUrls.has(url)) continue;
-      if (!IMAGE_EXT.test(url)) continue;
+      if (!isUsableWebImageUrl(url)) continue;
       // Judge the image's own host, not the `domain` field — that describes the
       // page the image was found on, and an untrusted site can hot-link a
       // trusted image (or the reverse).
@@ -1402,6 +1563,9 @@ async function fetchGoogleImages(
       // Drop "photo" for sensitive subjects so the API itself excludes
       // photographic results, rather than relying only on our own filtering.
       imgType: illustrationsOnly ? "clipart|lineart" : "clipart|lineart|photo",
+      // Same reasoning as SERPAPI_TBS_FILTERS — filter for size at the API,
+      // where it costs no candidates, rather than discarding small results here.
+      imgSize: "large",
       safe: "active",
       rights: GOOGLE_IMAGE_LICENSE_FILTER,
       num: String(Math.min(limit * 2, 10)),
@@ -1453,9 +1617,9 @@ async function fetchGoogleImages(
 // Teaching material benefits from breadth — a teacher wants every usable
 // schematic, not an arbitrary five. Bounded only by what's sane to send in one
 // response and render in a side panel.
-const MAX_IMAGES_PER_SCAN = 24;
+const MAX_IMAGES_PER_SCAN = 40;
 // Hard ceiling on paid queries per scan, independent of the image target.
-const MAX_WEB_QUERIES_PER_SCAN = 3;
+const MAX_WEB_QUERIES_PER_SCAN = 5;
 // Once Wikipedia has produced this many diagrams the result is already good
 // enough to teach from, so paid search is skipped. Without this the top-up
 // condition compares against the 24-image ceiling, which Wikipedia never
@@ -1463,12 +1627,12 @@ const MAX_WEB_QUERIES_PER_SCAN = 3;
 const ENOUGH_DIAGRAMS_WITHOUT_WEB = 6;
 // Animations are the standout classroom asset but also the scarcest, so this
 // caps the effort spent hunting for them rather than the value of having them.
-const MAX_ANIMATIONS_PER_SCAN = 4;
-const MAX_ANIMATION_QUERIES = 3;
+const MAX_ANIMATIONS_PER_SCAN = 6;
+const MAX_ANIMATION_QUERIES = 4;
 // Commons is free but not instant (~0.3s a call, issued sequentially). The
 // subject pass multiplies qualifiers by concepts, so without a ceiling a
 // topic that finds nothing would spend 20+ round trips before giving up.
-const MAX_COMMONS_LOOKUPS = 8;
+const MAX_COMMONS_LOOKUPS = 10;
 // Image results are cached against the concept queries, so a teacher
 // re-scanning the same pages (tweaking instructions, switching summary/notes)
 // costs nothing further.
@@ -1507,8 +1671,22 @@ const PHOTO_REQUEST_PATTERN =
 //
 // Fails open: any error, refusal or unusable response leaves the original
 // ordering untouched. Image relevance must never be able to fail a scan.
-const IMAGE_POOL_SIZE = 48;
-const MAX_CAPTION_CHARS = 110;
+// Deliberately far larger than MAX_IMAGES_PER_SCAN. Relevance comes from the
+// RATIO, not the raw count: picking 24 of 48 filters half, picking 40 of 48
+// filters almost nothing. At 120 the selector still discards two of every
+// three candidates even while returning 40, so raising the number of images a
+// teacher sees does not cost relevance.
+const IMAGE_POOL_SIZE = 120;
+// Fraction of the pool Wikipedia articles may fill; the remainder is held for
+// web search, Commons and animations.
+const ARTICLE_POOL_SHARE = 0.55;
+// Trimmed for the pool size: 120 captions at 110 chars is ~3.5k input tokens
+// per scan, and the tail of a long caption rarely changes the judgement.
+const MAX_CAPTION_CHARS = 85;
+// How many candidates the one retry falls back to after a completion-budget
+// failure. Fewer captions means less to reason about, so the same budget goes
+// much further.
+const SELECTOR_RETRY_CANDIDATES = 60;
 
 async function selectRelevantImages(
   candidates: { url: string; caption: string }[],
@@ -1517,6 +1695,8 @@ async function selectRelevantImages(
   limit: number,
   usage: { institutionId: string; teacherId: string; userId: string },
   previouslyShown?: string[],
+  /** Retry depth — bounds the single shorter-list retry below. */
+  depth = 0,
 ): Promise<{ url: string; caption: string }[] | null> {
   if (!openai) return null;
   // Nothing to choose between — ranking would cost a call and change nothing.
@@ -1534,9 +1714,12 @@ async function selectRelevantImages(
     "Reject GENERIC images in particular: a lesson about hydroelectric power stations needs dams, turbines and generators, NOT abstract 'energy conversion' or 'energy transformation' diagrams that would suit any physics lesson at all. " +
     "If a caption would fit equally well in a dozen unrelated lessons, it does not belong in this one. " +
     "When the teacher has given instructions, they are the FIRST filter: an image that does not serve what they asked for is rejected no matter how well it matches the topic. " +
+    "Some captions end with the publisher after a dash (e.g. \"... — Britannica\"). Treat that as a quality signal: an established reference, textbook or academic publisher is more likely to be an accurate, clearly-drawn teaching visual than an unknown blog, though a good image from an unknown source still beats a poor one from a known publisher. " +
     "Reject decorative photographs, portraits of unrelated people, logos, maps that show nothing the lesson mentions, and images whose caption you cannot connect to the lesson. " +
     "Order your selection best-first: the image you would put on the board first comes first. " +
-    "It is far better to return five excellent images than twenty loose ones. If almost nothing fits, return only the few that do. " +
+    "KEEP EVERY image that genuinely illustrates the lesson — a teacher wants the full set of usable visuals, so do not stop at a handful when twenty are genuinely good. " +
+    "But never pad: there is no target number, and an image you cannot confidently connect to this lesson must be rejected even if that leaves only three. " +
+    "Judge each candidate on its own merit, not against a quota. " +
     'Return ONLY valid JSON: {"keep": [<indices, best first>]}. No markdown, no explanation.';
 
   const userContent =
@@ -1560,17 +1743,40 @@ async function selectRelevantImages(
         { role: "user", content: userContent },
       ],
       response_format: { type: "json_object" },
-      max_tokens: 400,
+      // Sized for REASONING, not for the answer. The answer is ~40 integers
+      // (a couple of hundred tokens), but Groq's gpt-oss models emit hidden
+      // reasoning tokens first and those count against this budget — at 700
+      // the model ran out mid-JSON and Groq rejected the whole call with
+      // `json_validate_failed: max completion tokens reached before generating
+      // a valid document`, losing relevance selection for the entire scan.
+      max_tokens: 2500,
       ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
     });
   } catch (err) {
-    console.error("[blackboard] Image relevance selection failed — keeping retrieval order:", err);
     await recordAiUsage({
       ...usage, userRole: "TEACHER",
       feature: "BLACKBOARD_IMAGE_RANK" as AiFeature, provider: AI_PROVIDER, model: AI_MODEL,
       requestType: "chat_completion", status: "FAILED",
       error: err instanceof Error ? err.message : String(err),
     });
+
+    // A budget/validation failure scales with how many captions the model had
+    // to weigh, so retry once on a shorter list rather than dropping relevance
+    // selection for the whole scan. Anything else (auth, rate limit, network)
+    // will fail again identically, so only this case is retried.
+    const message = err instanceof Error ? err.message : String(err);
+    const isBudgetFailure = /json_validate_failed|max completion tokens|Failed to generate JSON/i.test(message);
+    if (isBudgetFailure && candidates.length > SELECTOR_RETRY_CANDIDATES && depth === 0) {
+      console.warn(
+        `[blackboard] Relevance selection hit the completion budget on ${candidates.length} candidates — ` +
+        `retrying with ${SELECTOR_RETRY_CANDIDATES}`
+      );
+      return selectRelevantImages(
+        candidates.slice(0, SELECTOR_RETRY_CANDIDATES),
+        lessonSummary, instructions, limit, usage, previouslyShown, depth + 1
+      );
+    }
+    console.error("[blackboard] Image relevance selection failed — keeping retrieval order:", message);
     return null;
   }
 
@@ -1728,8 +1934,11 @@ async function retrieveConceptImages(
   // specific kind of visual — "schematic diagram of a nuclear power plant"
   // finds far better results than a generic "<topic> labelled diagram".
   const diagramQualifier = wantsDiagrams || wantsPhotos ? instructions!.trim() : profile.webQualifier;
+  // Guarded so the two call sites below can never double-spend the budget.
+  let webSearchRan = false;
   const runWebSearch = async () => {
-    if (!webSearchAvailable) return;
+    if (!webSearchAvailable || webSearchRan) return;
+    webSearchRan = true;
     let spent = 0;
     for (const query of queries) {
       if (visualCount() >= poolTarget || spent >= MAX_WEB_QUERIES_PER_SCAN) break;
@@ -1812,7 +2021,26 @@ async function retrieveConceptImages(
   // stops throwing away candidates the relevance step could have chosen from.
   // Commons and web search below stay bound by `limit`, so a wider pool never
   // spends additional paid queries.
-  sortInto(await fetchTopicImages(queries, poolTarget, seenUrls, illustrationsOnly));
+  // When the teacher explicitly asked for a diagram or schematic, web search
+  // LEADS rather than tops up. Wikipedia articles are photo-heavy and their
+  // titles are subjects, not schematics — asking it for "a schematic diagram of
+  // a nuclear power plant" returns the Nuclear power plant article's
+  // photographs of cooling towers. Google Images is far better at this exact
+  // job. The comment on DIAGRAM_REQUEST_PATTERN has claimed this behaviour for
+  // a while; it was never actually wired up.
+  if (wantsDiagrams && allowWebSearch) {
+    console.log(`[blackboard] Instruction asks for diagrams — leading with ${webProvider} rather than Wikipedia`);
+    await runWebSearch();
+  }
+
+  // Capped share, not the whole pool. Wikipedia articles are image-rich (the
+  // Nuclear power plant article alone has 17), so letting them fill all 120
+  // slots would starve the sources that are actually on-target for a specific
+  // lesson. Reserving the rest guarantees web and Commons results reach the
+  // selector rather than arriving after the pool is already full.
+  sortInto(await fetchTopicImages(
+    queries, Math.round(poolTarget * ARTICLE_POOL_SHARE), seenUrls, illustrationsOnly
+  ));
   if (!(wantsPhotos && !illustrationsOnly) && visualCount() < ENOUGH_DIAGRAMS_WITHOUT_WEB) {
     // Photos requested: article images are the better free source (Commons
     // search is qualified toward diagrams/paintings), so that pass is skipped.
@@ -1945,11 +2173,14 @@ export interface DocumentContext {
 // Content-addressed: keyed by the page text itself, not the document URL, so it
 // survives re-uploads, works for locally-opened files (blob: URLs have no
 // stable identity), and naturally varies with the page selection.
-// Bump whenever the SHAPE of DocumentContext changes. Without it a cached
+// Bump whenever the shape of DocumentContext changes OR the prompt that
+// produces it changes meaningfully — v3 is the latter: CONCRETE_QUERY_RULE
+// rewrote how suggestedVisuals are phrased, and without a bump every already-
+// scanned document kept serving the old descriptive sentences for a week. Without it a cached
 // context written by an older build is returned as-is for a week, silently
 // missing every field added since — which is how subject-aware image search
 // shipped and then did nothing for any document that had already been scanned.
-const CONTEXT_SCHEMA_VERSION = 2;
+const CONTEXT_SCHEMA_VERSION = 3;
 
 function contextCacheKey(pageText: string): string {
   const hash = crypto.createHash("sha256").update(pageText).digest("hex").slice(0, 32);
@@ -3145,7 +3376,9 @@ export const searchImages = async (req: AuthRequest, res: Response, next: NextFu
     // chapter of prose, so the clinical terms carry their literal meaning and
     // the false-positive risk that split them apart doesn't exist.
     const illustrationsOnly =
-      SENSITIVE_CORE_PATTERN.test(q) || SENSITIVE_CLINICAL_PATTERN.test(q);
+      SENSITIVE_EXPLICIT_PATTERN.test(q) ||
+      SENSITIVE_BIOLOGICAL_PATTERN.test(q) ||
+      SENSITIVE_CLINICAL_PATTERN.test(q);
     const images = await fetchWikimediaImages(q, 4, undefined, illustrationsOnly);
     res.json({ success: true, data: images });
   } catch (err) { next(err); }

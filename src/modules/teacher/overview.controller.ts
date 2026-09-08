@@ -39,10 +39,11 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
     // Teacher may live in a tenant DB under BYOD with no User/Institution table.
     const [teacherUserMap, institutionRow] = await Promise.all([
       resolveUsers([teacher.userId], { id: true, name: true }),
-      prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true } }),
+      prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true, logoUrl: true } }),
     ]);
     const teacherName = teacherUserMap.get(teacher.userId)?.name ?? "";
     const institutionName = institutionRow?.name ?? "";
+    const institutionLogoUrl = institutionRow?.logoUrl ?? null;
 
     const [assignmentRows, testsConducted, classTeacherDivision, auditLogRows] = await Promise.all([
       academicDb().divisionAssignment.findMany({
@@ -149,6 +150,7 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
           name: teacherName,
           prefix: teacherPrefix,
           institutionName,
+          institutionLogoUrl,
           classTeacherDivisionName: classTeacherDivision
             ? `${classTeacherDivision.standard.name} - ${classTeacherDivision.name}`
             : null,

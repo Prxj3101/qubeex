@@ -611,7 +611,12 @@ export const markBillPaid = async (
     await prisma.$transaction([
       prisma.subscription.update({
         where: { institutionId: bill.institutionId },
-        data: { status: "ACTIVE", paymentStatus: "PAID", lastResumedAt: new Date() },
+        // Don't touch lastResumedAt here — this is recovery from a non-payment
+        // auto-suspend, not a voluntary billing pause. The institution was in
+        // active use all month; resetting lastResumedAt would wrongly make
+        // getBillingReferenceDate() prorate this month's bill from today
+        // instead of billing the full month.
+        data: { status: "ACTIVE", paymentStatus: "PAID" },
       }),
       prisma.institution.update({
         where: { id: bill.institutionId },

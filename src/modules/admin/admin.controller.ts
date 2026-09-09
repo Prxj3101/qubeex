@@ -15,6 +15,8 @@ import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 import { THEME_COLORS, isThemeCustomizationEligible } from "../../services/themeColor.service";
 import { invalidateBrandingCache } from "../../services/whiteLabel.service";
 import { decryptFieldSafe, buildStudentPIIUpdate, decryptStudentPII } from "../../services/fieldEncryption.service";
+import { delCache } from "../../utils/cache";
+import { istMonthKey } from "../../services/ai-usage.service";
 import { z } from "zod";
 
 const updateInstitutionSchema = z.object({
@@ -798,6 +800,12 @@ export const updateTeacherAiSoftLimit = async (
       where: { id },
       data: { aiSoftLimitTokens: softLimitTokens },
     });
+
+    // The Analytics page's per-teacher AI usage list (isOverSoftLimit, the
+    // limit value itself) is cached for 5 minutes under this key — without
+    // busting it here, a just-changed limit silently shows stale data on
+    // that page until the cache naturally expires.
+    await delCache(`insights:ai-usage:v5:${institutionId}:${istMonthKey(new Date())}`);
 
     res.json({ success: true, data: { aiSoftLimitTokens: updated.aiSoftLimitTokens } });
   } catch (error) {

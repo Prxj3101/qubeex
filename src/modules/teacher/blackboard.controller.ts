@@ -4,14 +4,14 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { uploadAttachmentToR2, scheduleR2FileDeletion, r2KeyFromUrl } from "../../services/storage.service";
 import { normalizePdfIfNeeded } from "../../services/pdfNormalize.service";
-import { BadRequestError, NotFoundError } from "../../utils/errors";
+import { BadRequestError, NotFoundError, TooManyRequestsError } from "../../utils/errors";
 import { createFolderSchema, aiScanSchema, aiChatSchema, aiQuizSchema, aiMindmapSchema } from "./blackboard.schema";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 import { redis, isRedisReady } from "../../utils/redis";
 import { getCache, setCache } from "../../utils/cache";
 import { getAiTokenLimit } from "../../services/billing.service";
-import { recordAiUsage, type AiFeature, institutionUsageRedisKey } from "../../services/ai-usage.service";
+import { recordAiUsage, type AiFeature, institutionUsageRedisKey, checkTeacherSoftLimit } from "../../services/ai-usage.service";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const OpenAIModule = (process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY) ? require("openai") : null;
@@ -28,7 +28,7 @@ const openai: import("openai").OpenAI | null = OpenAIModule
 const AI_MODEL = process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "openai/gpt-oss-120b";
 const AI_PROVIDER: "openai" | "groq" = process.env.OPENAI_API_KEY ? "openai" : "groq";
 
-async function checkTokenPool(institutionId: string): Promise<void> {
+async function checkTokenPool(institutionId: string, teacherId?: string): Promise<void> {
   if (!openai) return;
   if (!redis || !isRedisReady) {
     if (redis) console.warn("[blackboard] Redis configured but not ready — token pool check skipped");
@@ -50,7 +50,17 @@ async function checkTokenPool(institutionId: string): Promise<void> {
   ]);
   const usedN = Number(used ?? 0);
   if (limitN > 0 && usedN >= limitN) {
-    throw Object.assign(new Error("Token limit reached"), { statusCode: 429 });
+    // Must be an AppError subclass — a plain Error with a bolted-on
+    // statusCode is invisible to the central error handler and previously
+    // fell through to a generic 500 instead of a real 429.
+    throw new TooManyRequestsError("Token limit reached");
+  }
+  // Per-teacher soft limit — checked after the institution hard stop so an
+  // institution that's already fully out of tokens fails on the cheaper
+  // check first. See checkTeacherSoftLimit for why this actually blocks
+  // despite the "soft" name.
+  if (teacherId) {
+    await checkTeacherSoftLimit(institutionId, teacherId);
   }
 }
 
@@ -2509,8 +2519,8 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       return res.json({ success: true, data: MOCK_SCAN });
     }
 
-    await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
+    await checkTokenPool(institutionId, teacherId);
 
     // Previous result for this exact material, if the teacher has scanned it
     // before. Drives the refinement brief below and lets image selection better
@@ -2785,8 +2795,8 @@ export const aiChat = async (req: AuthRequest, res: Response, next: NextFunction
       return res.json({ success: true, data: { reply: MOCK_CHAT_REPLY } });
     }
 
-    await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
+    await checkTokenPool(institutionId, teacherId);
 
     // Ground the conversation in the pages actually open on the board. Reuses
     // aiScan's cached context, so this is free when those pages were already
@@ -2916,8 +2926,8 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
       return res.json({ success: true, data: { questions: MOCK_QUIZ.slice(0, data.count) } });
     }
 
-    await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
+    await checkTokenPool(institutionId, teacherId);
 
     // Same cached extraction aiScan uses — free when these pages were already
     // scanned, and gives the generator a real understanding of the material
@@ -3215,8 +3225,8 @@ export const aiMindmap = async (req: AuthRequest, res: Response, next: NextFunct
       return res.json({ success: true, data: { mindmap: mock, saved: false } });
     }
 
-    await checkTokenPool(institutionId);
     const teacherId = await getTeacherId(userId, institutionId);
+    await checkTokenPool(institutionId, teacherId);
 
     // Without a varying token the model converges on near-identical
     // breakdowns for the same topic/pages — a teacher regenerating expects a

@@ -7,7 +7,7 @@ import { academicDb } from "../../utils/academicContext";
 import { prisma } from "../../utils/prisma";
 import { resolveUsers } from "../../services/userLookup.service";
 import type { TaskQuestion } from "../../generated/prisma/client";
-import { BadRequestError, NotFoundError } from "../../utils/errors";
+import { BadRequestError, NotFoundError, TooManyRequestsError } from "../../utils/errors";
 import {
   generateQuestionsSchema,
   editQuestionSchema,
@@ -31,7 +31,7 @@ import {
 } from "./tasks.schema";
 import { redis, isRedisReady } from "../../utils/redis";
 import { getAiTokenLimit } from "../../services/billing.service";
-import { recordAiUsage, type AiFeature, institutionUsageRedisKey } from "../../services/ai-usage.service";
+import { recordAiUsage, type AiFeature, institutionUsageRedisKey, checkTeacherSoftLimit } from "../../services/ai-usage.service";
 import { generateTestResultPdf } from "../../services/testResultPdf.service";
 import { uploadImageToR2, deleteFromR2 } from "../../services/storage.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -83,7 +83,7 @@ export const taskImageUpload = multer({
 });
 
 // ── Token pool ────────────────────────────────────────────────────────────────
-async function checkTokenPool(institutionId: string): Promise<void> {
+async function checkTokenPool(institutionId: string, teacherId?: string): Promise<void> {
   if (!openai) return;
   if (!redis || !isRedisReady) {
     if (redis) console.warn("[tasks] Redis configured but not ready — token pool check skipped");
@@ -100,7 +100,13 @@ async function checkTokenPool(institutionId: string): Promise<void> {
   ]);
   const usedN = Number(used ?? 0);
   if (limitN > 0 && usedN >= limitN) {
-    throw Object.assign(new Error("Token limit reached"), { statusCode: 429 });
+    // Must be an AppError subclass — see blackboard.controller.ts#checkTokenPool
+    // for why the old plain-Error-plus-statusCode pattern silently became a 500.
+    throw new TooManyRequestsError("Token limit reached");
+  }
+  // Per-teacher soft limit — see blackboard.controller.ts#checkTokenPool.
+  if (teacherId) {
+    await checkTeacherSoftLimit(institutionId, teacherId);
   }
 }
 
@@ -425,7 +431,7 @@ async function processPdfInBackground(
       return;
     }
 
-    await checkTokenPool(institutionId);
+    await checkTokenPool(institutionId, teacherId);
 
     const chunks = chunkText(text);
     const processChunk = chunks.slice(0, 3); // max 3 chunks per upload

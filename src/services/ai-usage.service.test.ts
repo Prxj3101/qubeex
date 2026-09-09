@@ -4,6 +4,7 @@ import { recordAiUsage, institutionUsageRedisKey, teacherUsageRedisKey } from ".
 import {
   rangeToFromDate, bucketGranularity, bucketEvents, computeSoftLimitDefault,
   getTeacherUsageSummary, getInstitutionTeacherBreakdown, getInstitutionUsageSummary, getPlatformUsageSummary,
+  checkTeacherSoftLimit, getEffectiveTeacherSoftLimit,
 } from "./ai-usage.service";
 
 describe("recordAiUsage", () => {
@@ -272,5 +273,96 @@ describe("aggregation queries", () => {
     expect(row?.totalTokens).toBe(1500);
     // No teacher identifiers should exist anywhere on the platform summary shape.
     expect(JSON.stringify(summary)).not.toContain(teacherAId);
+  });
+});
+
+describe("checkTeacherSoftLimit — request-time enforcement", () => {
+  const suffix = `${Date.now()}-softlimit-enforce`;
+  let institutionId: string;
+  let teacherAId: string;
+  let teacherBId: string;
+  let otherInstitutionId: string;
+  let otherTeacherId: string;
+
+  beforeAll(async () => {
+    const institution = await prisma.institution.create({
+      data: {
+        name: `Soft Limit Enforce Test ${suffix}`, email: `soft-limit-enforce-${suffix}@example.com`,
+        type: "SCHOOL", institutionCode: `SLEF-${suffix.slice(-6)}`, userIdPrefix: "SLEF", status: "ACTIVE",
+      },
+    });
+    institutionId = institution.id;
+    const userA = await prisma.user.create({
+      data: { name: "Soft Limit Teacher A", email: `sl-user-a-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
+    });
+    const teacherA = await prisma.teacher.create({ data: { teacherId: `SLA-${suffix}`, userId: userA.id, institutionId, aiSoftLimitTokens: 1000 } });
+    teacherAId = teacherA.id;
+    const userB = await prisma.user.create({
+      data: { name: "Soft Limit Teacher B", email: `sl-user-b-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
+    });
+    const teacherB = await prisma.teacher.create({ data: { teacherId: `SLB-${suffix}`, userId: userB.id, institutionId, aiSoftLimitTokens: 1000 } });
+    teacherBId = teacherB.id;
+
+    // A second institution entirely, to prove one institution's teacher
+    // hitting their limit can never affect another institution's teacher.
+    const otherInstitution = await prisma.institution.create({
+      data: {
+        name: `Soft Limit Enforce Other ${suffix}`, email: `soft-limit-enforce-other-${suffix}@example.com`,
+        type: "SCHOOL", institutionCode: `SLEO-${suffix.slice(-6)}`, userIdPrefix: "SLEO", status: "ACTIVE",
+      },
+    });
+    otherInstitutionId = otherInstitution.id;
+    const otherUser = await prisma.user.create({
+      data: { name: "Soft Limit Other Teacher", email: `sl-user-other-${suffix}@example.com`, role: "TEACHER", institutionId: otherInstitutionId, isActive: true },
+    });
+    const otherTeacher = await prisma.teacher.create({ data: { teacherId: `SLO-${suffix}`, userId: otherUser.id, institutionId: otherInstitutionId, aiSoftLimitTokens: 1000 } });
+    otherTeacherId = otherTeacher.id;
+  });
+
+  afterAll(async () => {
+    for (const id of [teacherAId, teacherBId, otherTeacherId]) {
+      await redis?.del(teacherUsageRedisKey(id));
+    }
+    await prisma.teacher.deleteMany({ where: { institutionId: { in: [institutionId, otherInstitutionId] } } });
+    await prisma.user.deleteMany({ where: { institutionId: { in: [institutionId, otherInstitutionId] } } });
+    await prisma.institution.deleteMany({ where: { id: { in: [institutionId, otherInstitutionId] } } });
+    await prisma.$disconnect();
+  });
+
+  it("getEffectiveTeacherSoftLimit reports the admin override verbatim", async () => {
+    expect(await getEffectiveTeacherSoftLimit(institutionId, teacherAId)).toBe(1000);
+  });
+
+  it("allows the request when usage is below the limit", async () => {
+    await redis?.set(teacherUsageRedisKey(teacherAId), "500");
+    await expect(checkTeacherSoftLimit(institutionId, teacherAId)).resolves.toBeUndefined();
+  });
+
+  it("blocks the request once usage is exactly at the limit", async () => {
+    await redis?.set(teacherUsageRedisKey(teacherAId), "1000");
+    await expect(checkTeacherSoftLimit(institutionId, teacherAId)).rejects.toMatchObject({
+      statusCode: 429,
+    });
+  });
+
+  it("blocks the request once usage is above the limit", async () => {
+    await redis?.set(teacherUsageRedisKey(teacherAId), "1500");
+    await expect(checkTeacherSoftLimit(institutionId, teacherAId)).rejects.toMatchObject({
+      statusCode: 429,
+    });
+  });
+
+  it("one teacher being over their limit never blocks another teacher in the same institution", async () => {
+    await redis?.set(teacherUsageRedisKey(teacherAId), "5000"); // teacher A way over
+    await redis?.set(teacherUsageRedisKey(teacherBId), "10");   // teacher B barely used
+    await expect(checkTeacherSoftLimit(institutionId, teacherAId)).rejects.toMatchObject({ statusCode: 429 });
+    await expect(checkTeacherSoftLimit(institutionId, teacherBId)).resolves.toBeUndefined();
+  });
+
+  it("one institution's over-limit teacher never blocks a teacher in a different institution", async () => {
+    await redis?.set(teacherUsageRedisKey(teacherAId), "5000"); // over limit, institution A
+    await redis?.set(teacherUsageRedisKey(otherTeacherId), "10"); // under limit, institution B
+    await expect(checkTeacherSoftLimit(institutionId, teacherAId)).rejects.toMatchObject({ statusCode: 429 });
+    await expect(checkTeacherSoftLimit(otherInstitutionId, otherTeacherId)).resolves.toBeUndefined();
   });
 });

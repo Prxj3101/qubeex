@@ -1,5 +1,6 @@
 import { prisma } from "../utils/prisma";
 import { redis, isRedisReady } from "../utils/redis";
+import { TooManyRequestsError } from "../utils/errors";
 
 export type AiFeature =
   | "BLACKBOARD_CONTEXT"
@@ -335,6 +336,44 @@ function summarizeEvents(events: { feature: string; status: string; totalTokens:
 export function computeSoftLimitDefault(institutionAiTokenLimit: number, teacherCount: number): number {
   if (teacherCount <= 0) return 0;
   return Math.round(institutionAiTokenLimit / teacherCount);
+}
+
+// The limit actually in force for this teacher right now: their explicit
+// admin override if set, otherwise the even-split default. Cheap (two
+// indexed lookups, no event-table scan) so it's safe to call on every AI
+// request, not just when rendering a dashboard.
+export async function getEffectiveTeacherSoftLimit(institutionId: string, teacherId: string): Promise<number> {
+  const [teacher, institutionLimit, teacherCount] = await Promise.all([
+    prisma.teacher.findFirst({ where: { id: teacherId, institutionId }, select: { aiSoftLimitTokens: true } }),
+    getInstitutionAiTokenLimit(institutionId),
+    prisma.teacher.count({ where: { institutionId } }),
+  ]);
+  const override = teacher?.aiSoftLimitTokens ?? null;
+  return override ?? computeSoftLimitDefault(institutionLimit, teacherCount);
+}
+
+// Request-time enforcement of the per-teacher soft limit — the counterpart to
+// checkTokenPool's institution-wide hard stop, but scoped to one teacher.
+// Reads the same Redis counter recordAiUsage() already increments
+// (teacherUsageRedisKey), so this is a cheap read on the hot path, not a
+// DB aggregation. Despite the name "soft limit" (distinguishing it from the
+// institution's always-on hard stop, and matching the UI label), once a
+// teacher is at/over their configured limit this DOES block further
+// requests — per explicit product decision, not a display-only figure.
+export async function checkTeacherSoftLimit(institutionId: string, teacherId: string): Promise<void> {
+  if (!redis || !isRedisReady) return; // fail-open, matching checkTokenPool's posture on a Redis outage
+  const [usedRaw, limit] = await Promise.all([
+    redis.get(teacherUsageRedisKey(teacherId)).catch(() => null),
+    getEffectiveTeacherSoftLimit(institutionId, teacherId),
+  ]);
+  const used = Number(usedRaw ?? 0);
+  if (limit > 0 && used >= limit) {
+    // Must be an AppError subclass, not a plain Error with a bolted-on
+    // statusCode — the central error handler only special-cases
+    // `instanceof AppError`; anything else falls through to a generic 500,
+    // which is exactly the bug this whole fix is closing.
+    throw new TooManyRequestsError("Your monthly AI usage limit has been reached. Ask your admin to raise it.");
+  }
 }
 
 export interface TeacherUsageSummary {

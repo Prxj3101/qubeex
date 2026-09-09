@@ -14,6 +14,7 @@ import { generateUserId } from "../../utils/userId";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 import { THEME_COLORS, isThemeCustomizationEligible } from "../../services/themeColor.service";
 import { invalidateBrandingCache } from "../../services/whiteLabel.service";
+import { decryptFieldSafe, buildStudentPIIUpdate, decryptStudentPII } from "../../services/fieldEncryption.service";
 import { z } from "zod";
 
 const updateInstitutionSchema = z.object({
@@ -939,7 +940,7 @@ export const listStudents = async (req: AuthRequest, res: Response, next: NextFu
         studentId: s.studentId,
         name: listStudentUserMap.get(s.userId)?.name,
         email: listStudentUserMap.get(s.userId)?.email,
-        phone: s.phone,
+        phone: decryptFieldSafe(s.phone),
         avatarUrl: s.avatarUrl,
         status: s.status,
         joinedAt: s.joinedAt.toISOString(),
@@ -1038,20 +1039,24 @@ export const addStudent = async (req: AuthRequest, res: Response, next: NextFunc
     // itself may live in the tenant DB (BYOD), so the creates can't share one
     // transaction across databases. Managed institutions still get a single
     // atomic transaction since academicDb() === prisma there.
+    // Encrypted at rest — phone/address/city/pincode never get stored in plaintext.
+    const piiCreate = buildStudentPIIUpdate({
+      phone: data.phone,
+      address: data.address,
+      city: data.city,
+      pincode: data.pincode,
+    });
     const studentCreateData2 = (newUserId: string, studentId: string) => ({
       studentId,
       userId: newUserId,
       institutionId,
       standardId: data.standardId,
       divisionId: data.divisionId,
-      phone: data.phone,
       dob: data.dob,
       gender: data.gender,
-      address: data.address,
-      city: data.city,
       state: data.state,
-      pincode: data.pincode,
       country: data.country ?? "India",
+      ...piiCreate,
     });
     const studentInclude2 = { standard: { select: { id: true, name: true } }, division: { select: { id: true, name: true } } } as const;
 
@@ -1090,7 +1095,7 @@ export const addStudent = async (req: AuthRequest, res: Response, next: NextFunc
       severity: "INFO",
     });
 
-    res.status(201).json({ success: true, data: { ...student, user: addedStudentUser ?? null } });
+    res.status(201).json({ success: true, data: { ...student, ...decryptStudentPII(student), user: addedStudentUser ?? null } });
   } catch (error) {
     next(error);
   }
@@ -1112,7 +1117,7 @@ export const getStudent = async (req: AuthRequest, res: Response, next: NextFunc
     if (!student) throw new NotFoundError("Student not found");
     const getStudentUser = (await resolveUsers([student.userId], { id: true, name: true, email: true })).get(student.userId);
 
-    res.json({ success: true, data: { ...student, user: getStudentUser ?? null } });
+    res.json({ success: true, data: { ...student, ...decryptStudentPII(student), user: getStudentUser ?? null } });
   } catch (error) {
     next(error);
   }
@@ -1146,12 +1151,14 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
       if (!standard) throw new NotFoundError("Standard not found");
     }
 
-    const { name, status, ...profileFields } = data;
+    const { name, status, phone, address, city, pincode, ...profileFields } = data;
     const userChanges: { isActive?: boolean; name?: string } = {};
     if (status !== undefined) userChanges.isActive = status === "ACTIVE";
     if (name !== undefined) userChanges.name = name;
 
-    const studentUpdateData2 = { ...profileFields, ...(status !== undefined ? { status } : {}) };
+    // Encrypted at rest — phone/address/city/pincode never get stored in plaintext.
+    const piiUpdate = buildStudentPIIUpdate({ phone, address, city, pincode });
+    const studentUpdateData2 = { ...profileFields, ...piiUpdate, ...(status !== undefined ? { status } : {}) };
     const studentInclude3 = { standard: { select: { id: true, name: true } }, division: { select: { id: true, name: true } } } as const;
 
     const acadUpdStudent = academicDb();
@@ -1204,7 +1211,7 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
       });
     }
 
-    res.json({ success: true, data: { ...student, user: updateStudentUser ?? null } });
+    res.json({ success: true, data: { ...student, ...decryptStudentPII(student), user: updateStudentUser ?? null } });
   } catch (error) {
     next(error);
   }

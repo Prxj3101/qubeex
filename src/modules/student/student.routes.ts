@@ -16,6 +16,7 @@ import { delCache } from "../../utils/cache";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
+import { buildStudentPIIUpdate, decryptStudentPII } from "../../services/fieldEncryption.service";
 // Notifications are institution-scoped (per NotificationRecipient.institutionId),
 // so the same handlers serve every role within an institution.
 import {
@@ -107,7 +108,16 @@ router.get("/me", ...S, async (req: AuthRequest, res: Response, next: NextFuncti
       ? { ...user, email: null }
       : user;
 
-    res.json({ success: true, data: { ...student, user: userForResponse, institution, avatarUrl } });
+    res.json({
+      success: true,
+      data: {
+        ...student,
+        ...decryptStudentPII(student),
+        user: userForResponse,
+        institution,
+        avatarUrl,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -161,7 +171,10 @@ router.patch("/profile", ...S, async (req: AuthRequest, res: Response, next: Nex
     }
 
     const data = updateProfileSchema.parse(req.body);
-    const { name, email, guardians, ...studentFields } = data;
+    const { name, email, guardians, aadharNo, phone, address, city, pincode, panNo, emergencyContact, ...studentFields } = data;
+    // Encrypted at rest — phone, address, city, pincode, aadharNo, panNo,
+    // emergencyContact, and guardians[].number never get stored in plaintext.
+    const piiUpdate = buildStudentPIIUpdate({ phone, address, city, pincode, aadharNo, panNo, emergencyContact, guardians });
 
     const userChanges: { name?: string; email?: string } = {};
     if (name) userChanges.name = name;
@@ -190,10 +203,7 @@ router.patch("/profile", ...S, async (req: AuthRequest, res: Response, next: Nex
       where: { id: student.id },
       data: {
         ...studentFields,
-        ...(guardians !== undefined
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ? { guardians: guardians === null ? null : (guardians as any) }
-          : {}),
+        ...piiUpdate,
       },
     };
 
@@ -223,7 +233,14 @@ router.patch("/profile", ...S, async (req: AuthRequest, res: Response, next: Nex
     });
     const updatedUserMap = await resolveUsers([userId], { id: true, name: true, email: true, mustChangePassword: true });
 
-    res.json({ success: true, data: { ...updatedStudent, user: updatedUserMap.get(userId) ?? null } });
+    res.json({
+      success: true,
+      data: {
+        ...updatedStudent,
+        ...(updatedStudent ? decryptStudentPII(updatedStudent) : {}),
+        user: updatedUserMap.get(userId) ?? null,
+      },
+    });
   } catch (err) {
     if (err instanceof Error && err.message === "EMAIL_TAKEN") {
       res.status(400).json({ success: false, error: "This email is already in use by another account" });

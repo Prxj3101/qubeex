@@ -96,6 +96,7 @@ const updateStudentSchema = z.object({
     .nullable(),
 });
 import { setPresence } from "../../services/presence.service";
+import { buildStudentPIIUpdate, decryptStudentPII } from "../../services/fieldEncryption.service";
 import {
   upload,
   listFolders,
@@ -548,6 +549,7 @@ router.get(
       const signedMap = await generateSignedAvatarUrlsBatch(students.map(s => s.avatarUrl));
       const data = students.map(s => ({
         ...s,
+        ...decryptStudentPII(s),
         user: listStudentUserMap.get(s.userId) ?? null,
         avatarUrl: s.avatarUrl ? (signedMap[s.avatarUrl] ?? s.avatarUrl) : null,
       }));
@@ -640,13 +642,22 @@ router.post(
       // Student itself may live in the tenant DB (BYOD), so the two creates can't
       // share one transaction across databases. Managed institutions still get a
       // single atomic transaction since academicDb() === prisma there.
+      // Encrypted at rest — phone, address, city, pincode, and guardians[].number
+      // never get stored in plaintext.
+      const piiCreate = buildStudentPIIUpdate({
+        phone: data.phone,
+        address: data.address,
+        city: data.city,
+        pincode: data.pincode,
+        guardians: data.guardians,
+      });
+
       const studentCreateData = (newUserId: string) => ({
         studentId,
         userId: newUserId,
         institutionId,
         standardId: division.standardId,
         divisionId,
-        phone: data.phone,
         dob: data.dob,
         gender: data.gender,
         rollNo: data.rollNo,
@@ -654,14 +665,11 @@ router.post(
         bloodGroup: data.bloodGroup,
         religion: data.religion,
         category: data.category,
-        address: data.address,
-        city: data.city,
         state: data.state,
-        pincode: data.pincode,
         country: data.country ?? "India",
-        guardians: data.guardians ?? undefined,
         tempPassword: plainPassword,
         joinedAt: data.admissionDate ? new Date(data.admissionDate) : new Date(),
+        ...piiCreate,
       });
 
       const acad = academicDb();
@@ -685,7 +693,7 @@ router.post(
         student = await acad.student.create({ data: studentCreateData(newUser.id) });
       }
       const createdStudentUserMap = await resolveUsers([student.userId], { id: true, name: true, email: true, mustChangePassword: true });
-      student = { ...student, user: createdStudentUserMap.get(student.userId) ?? null };
+      student = { ...student, ...decryptStudentPII(student), user: createdStudentUserMap.get(student.userId) ?? null };
 
       logAudit("STUDENT_ADDED", {
         userId,
@@ -884,7 +892,10 @@ router.patch(
       }
 
       const data = updateStudentSchema.parse(req.body);
-      const { name, email, guardians, ...studentFields } = data;
+      const { name, email, guardians, aadharNo, phone, address, city, pincode, panNo, emergencyContact, ...studentFields } = data;
+      // Encrypted at rest — phone, address, city, pincode, aadharNo, panNo,
+      // emergencyContact, and guardians[].number never get stored in plaintext.
+      const piiUpdate = buildStudentPIIUpdate({ phone, address, city, pincode, aadharNo, panNo, emergencyContact, guardians });
 
       if (data.rollNo && data.rollNo.trim()) {
         const rollNoConflict = await academicDb().student.findFirst({
@@ -916,10 +927,7 @@ router.patch(
 
       const studentUpdateData = {
         ...studentFields,
-        ...(guardians !== undefined
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ? { guardians: guardians === null ? null : (guardians as any) }
-          : {}),
+        ...piiUpdate,
       };
       const acadUpd = academicDb();
       if (acadUpd === prisma) {
@@ -936,7 +944,9 @@ router.patch(
 
       const updatedRow = await academicDb().student.findFirst({ where: { id: studentId as string } });
       const updatedUserMap = updatedRow ? await resolveUsers([updatedRow.userId], { id: true, name: true, email: true, mustChangePassword: true }) : new Map();
-      const updated = updatedRow ? { ...updatedRow, user: updatedUserMap.get(updatedRow.userId) ?? null } : null;
+      const updated = updatedRow
+        ? { ...updatedRow, ...decryptStudentPII(updatedRow), user: updatedUserMap.get(updatedRow.userId) ?? null }
+        : null;
 
       logAudit("STUDENT_UPDATED", {
         userId,

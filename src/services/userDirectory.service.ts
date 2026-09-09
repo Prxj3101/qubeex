@@ -2,6 +2,7 @@ import { prisma } from "../utils/prisma";
 import { getAcademicClient } from "./tenantDb.service";
 import { resolveUsers } from "./userLookup.service";
 import { generateSignedAvatarUrlsBatch } from "./storage.service";
+import { decryptFieldSafe } from "./fieldEncryption.service";
 
 export type DirectoryRole = "ADMIN" | "SUB_ADMIN" | "TEACHER" | "STUDENT";
 
@@ -219,7 +220,7 @@ export async function getInstitutionUsersForMonth(
     const displayEmail = u.email.endsWith("@students.qubeex.local") ? "" : u.email;
     pushIfExisted({
       userId: u.id, name: u.name, email: displayEmail, createdAt: u.createdAt, isActive: u.isActive,
-      role: "STUDENT", businessId: s.studentId, phone: s.phone,
+      role: "STUDENT", businessId: s.studentId, phone: decryptFieldSafe(s.phone) ?? null,
       classLabel, addedBy: addedByEmail.get(u.email) ?? null,
       avatarUrl: signAvatar(s.avatarUrl),
       neverLoggedIn: !s.hasLoggedIn, // one-way flag, unaffected by later password resets

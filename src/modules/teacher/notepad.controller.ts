@@ -43,7 +43,7 @@ export async function getNotepad(req: AuthRequest, res: Response, next: NextFunc
       }),
       academicDb().teacherTask.findMany({
         where: { teacherId, institutionId },
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: "desc" },
       }),
     ]);
 

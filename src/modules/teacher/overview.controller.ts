@@ -70,6 +70,25 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
       assignmentRows.filter((a) => a.subjectId).map((a) => a.subjectId)
     ).size;
 
+    // Latest announcement — institution-wide (divisionId: null) OR scoped to
+    // any division this teacher actually teaches/class-teaches, same feed the
+    // student overview reads from, just widened to every division the
+    // teacher touches instead of one student's single division.
+    const teacherDivisionIds = Array.from(
+      new Set([
+        ...assignmentRows.map((a) => a.divisionId),
+        ...(classTeacherDivision ? [classTeacherDivision.id] : []),
+      ])
+    );
+    const latestPost = await academicDb().campusFeedPost.findFirst({
+      where: {
+        institutionId,
+        OR: [{ divisionId: null }, ...(teacherDivisionIds.length > 0 ? [{ divisionId: { in: teacherDivisionIds } }] : [])],
+      },
+      orderBy: { createdAt: "desc" },
+      select: { title: true, type: true },
+    });
+
     let avgAttendancePct: number | null = null;
     let attendanceTrend: { month: string; attendance: number; students: number }[] = [];
     let shortAttendance: { name: string; rollNo: string; pct: number; avatarUrl: string | null }[] = [];
@@ -164,6 +183,7 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
         attendanceTrend,
         shortAttendance,
         auditLogs: auditLogRows.map((l) => ({ ...l, createdAt: l.createdAt.toISOString() })),
+        latestPost: latestPost ? { title: latestPost.title, type: latestPost.type.toLowerCase() } : null,
       },
     });
   } catch (err) {

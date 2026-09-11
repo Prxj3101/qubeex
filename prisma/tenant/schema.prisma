@@ -541,10 +541,12 @@ model StaffPost {
   institutionId String
   authorId      String
 
-  text           String
-  attachmentUrl  String?
-  attachmentType String?
-  attachmentName String?
+  text String
+
+  // Multiple attachments per post — array of {url, type, name} objects,
+  // same Json-array pattern already used by TaskQuestion.images. Replaces
+  // the old single attachmentUrl/attachmentType/attachmentName scalars.
+  attachments Json?
 
   createdAt DateTime @default(now())
 

@@ -7,14 +7,1566 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Enums ────────────────────────────────────────────────────────────────────
+model Institution {
+  id                               String                            @id @default(uuid())
+  institutionCode                  String                            @unique
+  name                             String
+  email                            String                            @unique
+  type                             InstitutionType
+  status                           InstitutionStatus                 @default(PENDING)
+  phone                            String?
+  city                             String?
+  state                            String?
+  address                          String?
+  pincode                          String?
+  country                          String?                           @default("India")
+  board                            String?
+  medium                           String?
+  logoUrl                          String?
+  createdAt                        DateTime                          @default(now())
+  updatedAt                        DateTime                          @updatedAt
+  adminDob                         String?
+  adminGender                      String?
+  adminPhone                       String?
+  adminPrefix                      String?
+  adminTitle                       String?
+  establishedOn                    String?
+  adminAvatarUrl                   String?
+  nextAdminSeq                     Int                               @default(0)
+  nextStudentSeq                   Int                               @default(0)
+  nextTeacherSeq                   Int                               @default(0)
+  userIdDisambiguator              String?
+  userIdPrefix                     String?
+  isDemo                           Boolean                           @default(false)
+  themeColor                       String                            @default("purple")
+  adminNotes                       AdminNote[]
+  adminTasks                       AdminTask[]
+  aiUsageEvents                    AiUsageEvent[]
+  attendances                      Attendance[]
+  attendanceDayNotes               AttendanceDayNote[]
+  auditLogs                        AuditLog[]
+  bills                            Bill[]
+  blackboardFolders                BlackboardFolder[]
+  blackboardMaterials              BlackboardMaterial[]
+  calendarEvents                   CalendarEvent[]
+  campusPosts                      CampusFeedPost[]
+  divisions                        Division[]
+  assignments                      DivisionAssignment[]
+  feeStructures                    DivisionFeeStructure[]
+  dbConfig                         InstitutionDbConfig?
+  invites                          Invite[]
+  marksheets                       Marksheet[]
+  mindmaps                         Mindmap[]
+  notifications                    NotificationRecipient[]
+  ptmNotes                         PTMNote[]
+  PayrollRun                       PayrollRun[]
+  Payslip                          Payslip[]
+  promotionBatches                 PromotionBatch[]
+  questionShareTokens              QuestionShareToken[]
+  reviews                          Review[]
+  SalaryTemplate                   SalaryTemplate[]
+  holidays                         SchoolHoliday[]
+  Staff                            Staff[]
+  staffPosts                       StaffPost[]
+  StaffSalaryStructure             StaffSalaryStructure[]
+  standards                        Standard[]
+  students                         Student[]
+  studentFeePayments               StudentFeePayment[]
+  studentPromotionOutcomes         StudentPromotionOutcome[]
+  studentRemarks                   StudentRemark[]
+  subAdmins                        SubAdmin[]
+  subjects                         Subject[]
+  subscription                     Subscription?
+  tickets                          SupportTicket[]
+  taskAssignments                  TaskAssignment[]
+  taskAssignmentSubmissions        TaskAssignmentSubmission[]
+  taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
+  taskContainers                   TaskContainer[]
+  taskModules                      TaskModule[]
+  taskPdfUploads                   TaskPdfUpload[]
+  taskQuestions                    TaskQuestion[]
+  taskTests                        TaskTest[]
+  teachers                         Teacher[]
+  teacherNotes                     TeacherNote[]
+  teacherTasks                     TeacherTask[]
+  users                            User[]
+  whiteLabelConfig                 WhiteLabelConfig?
+}
+
+model User {
+  id                     String                  @id @default(uuid())
+  name                   String?
+  email                  String                  @unique
+  password               String?
+  role                   Role
+  isActive               Boolean                 @default(false)
+  institutionId          String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  mustChangePassword     Boolean                 @default(false)
+  displayId              String?
+  adminNotes             AdminNote[]
+  adminTasks             AdminTask[]
+  aiChatMessages         AiChatMessage[]
+  aiUsageEvents          AiUsageEvent[]
+  auditLogs              AuditLog[]
+  calendarEventsCreated  CalendarEvent[]         @relation("CalendarEventCreator")
+  campusPostsAuthored    CampusFeedPost[]        @relation("CampusFeedPostAuthor")
+  NotificationRecipient  NotificationRecipient[]
+  ptmNotesCreated        PTMNote[]               @relation("PTMNoteCreator")
+  Staff                  Staff?
+  staffMessagesReceived  StaffMessage[]          @relation("StaffMessageReceiver")
+  staffMessagesSent      StaffMessage[]          @relation("StaffMessageSender")
+  staffPostsAuthored     StaffPost[]             @relation("StaffPostAuthor")
+  staffCommentsAuthored  StaffPostComment[]      @relation("StaffPostCommentAuthor")
+  staffReactions         StaffPostReaction[]     @relation("StaffPostReactionUser")
+  student                Student?
+  studentRemarksAssigned StudentRemark[]         @relation("StudentRemarkAssignee")
+  studentRemarksReported StudentRemark[]         @relation("StudentRemarkReporter")
+  studentRemarksReviewed StudentRemark[]         @relation("StudentRemarkReviewer")
+  subAdmin               SubAdmin?
+  teacher                Teacher?
+  institution            Institution?            @relation(fields: [institutionId], references: [id])
+  statusEvents           UserStatusEvent[]
+}
+
+model Plan {
+  id              String         @id @default(uuid())
+  name            String         @unique
+  basePrice       Float
+  perStudentPrice Float
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  subscriptions   Subscription[]
+}
+
+model Subscription {
+  id                  String             @id @default(uuid())
+  institutionId       String             @unique
+  planId              String
+  trialDays           Int?
+  trialOutcome        TrialOutcome?
+  trialWarningSent    Boolean            @default(false)
+  trialExpiryNotified Boolean            @default(false)
+  status              SubscriptionStatus @default(TRIAL)
+  paymentStatus       PaymentStatus      @default(PENDING)
+  discount            Float              @default(0)
+  features            Json?
+  activationDate      DateTime?
+  pausedAt            DateTime?
+  pauseMonthsUsed     Int                @default(0)
+  addons              Json?
+  startDate           DateTime?
+  endDate             DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  commitmentEndDate   DateTime?
+  planOption          PlanOption         @default(NORMAL)
+  lastResumedAt       DateTime?
+  institution         Institution        @relation(fields: [institutionId], references: [id])
+  plan                Plan               @relation(fields: [planId], references: [id])
+}
+
+model Bill {
+  id                String        @id @default(uuid())
+  institutionId     String
+  type              String
+  billingMonth      String?
+  userCount         Int           @default(0)
+  baseAmount        Float         @default(0)
+  addonAmount       Float         @default(0)
+  discountAmount    Float         @default(0)
+  totalAmount       Float
+  status            PaymentStatus @default(PENDING)
+  items             Json
+  generatedAt       DateTime      @default(now())
+  dueDate           DateTime?
+  paidAt            DateTime?
+  razorpayLinkId    String?
+  razorpayLinkUrl   String?
+  razorpayPaymentId String?
+  paymentMethod     String?
+  institution       Institution   @relation(fields: [institutionId], references: [id])
+}
+
+model Invite {
+  id            String      @id @default(uuid())
+  email         String
+  tokenHash     String      @unique
+  role          Role
+  institutionId String
+  expiresAt     DateTime
+  isUsed        Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  permissions   String[]    @default([])
+  institution   Institution @relation(fields: [institutionId], references: [id])
+}
+
+model Teacher {
+  id                  String               @id @default(uuid())
+  teacherId           String
+  userId              String               @unique
+  institutionId       String
+  phone               String?
+  avatarUrl           String?
+  dob                 String?
+  gender              String?
+  address             String?
+  city                String?
+  state               String?
+  pincode             String?
+  country             String?              @default("India")
+  qualification       String?
+  experience          String?
+  status              TeacherStatus        @default(ACTIVE)
+  joinedAt            DateTime             @default(now())
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  prefix              String?
+  title               String?              @default("Teacher")
+  aiSoftLimitTokens   Int?
+  blackboardFolders   BlackboardFolder[]
+  blackboardMaterials BlackboardMaterial[]
+  classDivisions      Division[]           @relation("ClassTeacherDivisions")
+  assignments         DivisionAssignment[]
+  createdMarksheets   Marksheet[]          @relation("MarksheetCreator")
+  mindmaps            Mindmap[]
+  questionShareTokens QuestionShareToken[]
+  taskAssignments     TaskAssignment[]
+  taskContainers      TaskContainer[]
+  taskModules         TaskModule[]
+  taskPdfUploads      TaskPdfUpload[]
+  taskQuestions       TaskQuestion[]
+  taskTests           TaskTest[]
+  institution         Institution          @relation(fields: [institutionId], references: [id])
+  user                User                 @relation(fields: [userId], references: [id])
+  teacherNotes        TeacherNote[]
+  teacherTasks        TeacherTask[]
+
+  @@unique([teacherId, institutionId])
+  @@index([institutionId])
+}
+
+model TeacherNote {
+  id            String      @id @default(uuid())
+  teacherId     String
+  institutionId String
+  text          String
+  color         String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+
+  @@index([teacherId])
+}
+
+model TeacherTask {
+  id            String      @id @default(uuid())
+  teacherId     String
+  institutionId String
+  text          String
+  done          Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+
+  @@index([teacherId])
+}
+
+model AdminNote {
+  id            String      @id @default(uuid())
+  userId        String
+  institutionId String
+  text          String
+  color         String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model AdminTask {
+  id            String      @id @default(uuid())
+  userId        String
+  institutionId String
+  text          String
+  done          Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  dueAt         DateTime?
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model SubAdmin {
+  id            String      @id @default(uuid())
+  userId        String      @unique
+  institutionId String
+  permissions   String[]
+  createdById   String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  designation   String?
+  phone         String?
+  dob           String?
+  gender        String?
+  address       String?
+  city          String?
+  state         String?
+  pincode       String?
+  country       String?     @default("India")
+  qualification String?
+  experience    String?
+  avatarUrl     String?
+  prefix        String?
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+
+  @@index([institutionId])
+}
+
+model AuditLog {
+  id            String        @id @default(uuid())
+  action        String
+  userId        String?
+  actorRole     String?
+  institutionId String?
+  details       String?
+  ip            String?
+  metadata      Json?
+  createdAt     DateTime      @default(now())
+  category      AuditCategory @default(ADMIN_ACTION)
+  severity      AuditSeverity @default(INFO)
+  institution   Institution?  @relation(fields: [institutionId], references: [id])
+  user          User?         @relation(fields: [userId], references: [id])
+
+  @@index([institutionId, category, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([action])
+  @@index([actorRole])
+  @@index([institutionId])
+}
+
+model UserStatusEvent {
+  id            String   @id @default(uuid())
+  userId        String
+  institutionId String?
+  isActive      Boolean
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([institutionId])
+}
+
+model Notification {
+  id            String                  @id @default(uuid())
+  title         String
+  message       String
+  tag           String
+  recipientType String
+  deliveredTo   Int                     @default(0)
+  sentById      String?
+  createdAt     DateTime                @default(now())
+  recipients    NotificationRecipient[]
+}
+
+model NotificationRecipient {
+  id             String       @id @default(uuid())
+  notificationId String
+  institutionId  String
+  dismissedAt    DateTime?
+  readAt         DateTime?
+  userId         String?
+  institution    Institution  @relation(fields: [institutionId], references: [id])
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  User           User?        @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([institutionId, readAt])
+  @@index([institutionId, dismissedAt])
+  @@index([institutionId, userId])
+}
+
+model SupportTicket {
+  id            String        @id @default(uuid())
+  title         String
+  description   String
+  category      String
+  priority      String
+  status        String        @default("OPEN")
+  institutionId String
+  adminEmail    String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  attachments   Json?
+  institution   Institution   @relation(fields: [institutionId], references: [id])
+  replies       TicketReply[]
+}
+
+model DemoRequest {
+  id              String            @id @default(uuid())
+  name            String
+  email           String
+  phone           String
+  institutionName String
+  institutionType InstitutionType
+  studentCount    Int?
+  message         String?
+  status          DemoRequestStatus @default(NEW)
+  emailSent       Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([email, createdAt])
+}
+
+model TicketReply {
+  id          String        @id @default(uuid())
+  ticketId    String
+  author      String
+  role        String
+  message     String
+  createdAt   DateTime      @default(now())
+  attachments Json?
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id])
+}
+
+model Review {
+  id            String      @id @default(uuid())
+  institutionId String
+  adminName     String
+  adminEmail    String
+  rating        Int
+  title         String
+  body          String
+  likes         Int         @default(0)
+  replyMessage  String?
+  repliedAt     DateTime?
+  createdAt     DateTime    @default(now())
+  institution   Institution @relation(fields: [institutionId], references: [id])
+}
+
+model Standard {
+  id            String      @id @default(uuid())
+  institutionId String
+  name          String
+  order         Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  divisions     Division[]
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  students      Student[]
+  subjects      Subject[]
+
+  @@unique([institutionId, name])
+  @@index([institutionId])
+}
+
+model Division {
+  id                 String                @id @default(uuid())
+  standardId         String
+  institutionId      String
+  name               String
+  capacity           Int?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  classTeacherId     String?
+  timetableUrl       String?
+  attendances        Attendance[]
+  attendanceDayNotes AttendanceDayNote[]
+  calendarEvents     CalendarEvent[]
+  campusPosts        CampusFeedPost[]
+  classTeacher       Teacher?              @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
+  institution        Institution           @relation(fields: [institutionId], references: [id])
+  standard           Standard              @relation(fields: [standardId], references: [id])
+  assignments        DivisionAssignment[]
+  feeStructure       DivisionFeeStructure?
+  divisionSubjects   DivisionSubject[]
+  marksheets         Marksheet[]
+  students           Student[]
+  taskAssignments    TaskAssignment[]
+  taskContainers     TaskContainer[]
+  taskTests          TaskTest[]
+
+  @@unique([standardId, name])
+  @@index([institutionId])
+  @@index([standardId])
+}
+
+model Subject {
+  id               String                   @id @default(uuid())
+  institutionId    String
+  name             String
+  code             String?
+  color            String?
+  order            Int
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  standardId       String
+  campusFeedPosts  CampusFeedPost[]
+  assignments      DivisionAssignment[]
+  divisionSubjects DivisionSubject[]
+  marksheetColumns MarksheetExamColumn[]
+  marksheetConfigs MarksheetSubjectConfig[]
+  institution      Institution              @relation(fields: [institutionId], references: [id])
+  standard         Standard                 @relation(fields: [standardId], references: [id])
+  taskAssignments  TaskAssignment[]
+  taskContainers   TaskContainer[]
+  taskModules      TaskModule[]
+  taskQuestions    TaskQuestion[]
+  taskTests        TaskTest[]
+
+  @@unique([standardId, name])
+  @@index([standardId])
+  @@index([institutionId])
+}
+
+model DivisionSubject {
+  id            String   @id @default(uuid())
+  divisionId    String
+  subjectId     String
+  institutionId String
+  division      Division @relation(fields: [divisionId], references: [id])
+  subject       Subject  @relation(fields: [subjectId], references: [id])
+
+  @@unique([divisionId, subjectId])
+  @@index([divisionId])
+}
+
+model DivisionAssignment {
+  id            String      @id @default(uuid())
+  divisionId    String
+  subjectId     String?
+  teacherId     String
+  institutionId String
+  createdAt     DateTime    @default(now())
+  division      Division    @relation(fields: [divisionId], references: [id])
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  subject       Subject?    @relation(fields: [subjectId], references: [id])
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+
+  @@index([divisionId])
+  @@index([teacherId])
+  @@index([institutionId])
+}
+
+model Student {
+  id                               String                            @id @default(uuid())
+  studentId                        String
+  userId                           String                            @unique
+  institutionId                    String
+  standardId                       String?
+  divisionId                       String?
+  phone                            String?
+  avatarUrl                        String?
+  dob                              String?
+  gender                           String?
+  address                          String?
+  city                             String?
+  state                            String?
+  pincode                          String?
+  country                          String?                           @default("India")
+  status                           StudentStatus                     @default(ACTIVE)
+  joinedAt                         DateTime                          @default(now())
+  createdAt                        DateTime                          @default(now())
+  updatedAt                        DateTime                          @updatedAt
+  aadharNo                         String?
+  bloodGroup                       String?
+  category                         String?
+  emergencyContact                 String?
+  guardians                        Json?
+  houseColor                       String?
+  panNo                            String?
+  religion                         String?
+  rollNo                           String?
+  tempPassword                     String?
+  admissionYear                    String?
+  nationality                      String?
+  hasLoggedIn                      Boolean                           @default(false)
+  extraDetailFields                Json?
+  attendances                      Attendance[]
+  marksheetGradedScores            MarksheetGradedScore[]
+  marksheetRemarks                 MarksheetRemark[]
+  marksheetScores                  MarksheetScore[]
+  ptmNotes                         PTMNote[]
+  parentModeEvents                 ParentModeEvent[]
+  division                         Division?                         @relation(fields: [divisionId], references: [id])
+  institution                      Institution                       @relation(fields: [institutionId], references: [id])
+  standard                         Standard?                         @relation(fields: [standardId], references: [id])
+  user                             User                              @relation(fields: [userId], references: [id])
+  feePayments                      StudentFeePayment[]
+  promotionOutcomes                StudentPromotionOutcome[]
+  remarks                          StudentRemark[]
+  taskAssignmentSubmissions        TaskAssignmentSubmission[]
+  taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
+  taskTestAttempts                 TaskTestAttempt[]
+
+  @@unique([studentId, institutionId])
+  @@index([institutionId])
+}
+
+model ParentModeEvent {
+  id            String   @id @default(uuid())
+  studentId     String
+  institutionId String
+  openedAt      DateTime @default(now())
+  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId, openedAt])
+  @@index([studentId, openedAt])
+}
+
+model PromotionBatch {
+  id              String                    @id @default(uuid())
+  institutionId   String
+  fromStandardId  String
+  fromDivisionId  String
+  toDivisionId    String?
+  academicYear    String
+  triggeredById   String
+  triggeredByRole String
+  undoneAt        DateTime?
+  createdAt       DateTime                  @default(now())
+  institution     Institution               @relation(fields: [institutionId], references: [id])
+  outcomes        StudentPromotionOutcome[]
+
+  @@index([institutionId, createdAt])
+  @@index([fromDivisionId])
+}
+
+model StudentPromotionOutcome {
+  id                 String           @id @default(uuid())
+  batchId            String
+  studentId          String
+  institutionId      String
+  outcome            PromotionOutcome
+  previousStandardId String
+  previousDivisionId String
+  previousStatus     StudentStatus
+  createdAt          DateTime         @default(now())
+  batch              PromotionBatch   @relation(fields: [batchId], references: [id])
+  institution        Institution      @relation(fields: [institutionId], references: [id])
+  student            Student          @relation(fields: [studentId], references: [id])
+
+  @@index([batchId])
+  @@index([studentId])
+}
+
+model StudentRemark {
+  id               String         @id @default(uuid())
+  institutionId    String
+  studentId        String
+  type             RemarkCardType
+  category         String
+  title            String
+  detail           String
+  subject          String?
+  actionTaken      String?
+  status           RemarkStatus   @default(ACTIVE)
+  reportedByUserId String
+  reportedByRole   String
+  createdAt        DateTime       @default(now())
+  assignedToUserId String?
+  reviewRemark     String?
+  reviewedAt       DateTime?
+  reviewedByUserId String?
+  severity         RemarkSeverity @default(MEDIUM)
+  attachments      Json           @default("[]")
+  assignedTo       User?          @relation("StudentRemarkAssignee", fields: [assignedToUserId], references: [id])
+  institution      Institution    @relation(fields: [institutionId], references: [id])
+  reportedByUser   User           @relation("StudentRemarkReporter", fields: [reportedByUserId], references: [id])
+  reviewedBy       User?          @relation("StudentRemarkReviewer", fields: [reviewedByUserId], references: [id])
+  student          Student        @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@index([institutionId])
+  @@index([assignedToUserId, status])
+}
+
+model PTMNote {
+  id              String      @id @default(uuid())
+  institutionId   String
+  studentId       String
+  note            String
+  createdByUserId String
+  createdByName   String?
+  createdByRole   String
+  acknowledgedAt  DateTime?
+  createdAt       DateTime    @default(now())
+  createdByUser   User        @relation("PTMNoteCreator", fields: [createdByUserId], references: [id])
+  institution     Institution @relation(fields: [institutionId], references: [id])
+  student         Student     @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@index([institutionId])
+}
+
+model Attendance {
+  id            String      @id @default(uuid())
+  institutionId String
+  divisionId    String
+  studentId     String
+  date          String
+  status        String
+  remark        String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  division      Division    @relation(fields: [divisionId], references: [id])
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  student       Student     @relation(fields: [studentId], references: [id])
+
+  @@unique([divisionId, studentId, date])
+  @@index([divisionId, date])
+  @@index([studentId])
+  @@index([institutionId])
+}
+
+model SchoolHoliday {
+  id            String      @id @default(uuid())
+  institutionId String
+  date          String
+  name          String
+  createdAt     DateTime    @default(now())
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([institutionId, date])
+  @@index([institutionId])
+}
+
+model AttendanceDayNote {
+  id            String      @id @default(uuid())
+  institutionId String
+  divisionId    String
+  date          String
+  note          String
+  division      Division    @relation(fields: [divisionId], references: [id])
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([divisionId, date])
+  @@index([divisionId])
+}
+
+model StaffPost {
+  id             String              @id @default(uuid())
+  institutionId  String
+  authorId       String
+  text        String
+  // Multiple attachments per post — array of {url, type, name} objects,
+  // replaces the old single attachmentUrl/attachmentType/attachmentName
+  // scalars.
+  attachments Json?
+  createdAt   DateTime            @default(now())
+  author      User                @relation("StaffPostAuthor", fields: [authorId], references: [id])
+  institution    Institution         @relation(fields: [institutionId], references: [id])
+  comments       StaffPostComment[]
+  reactions      StaffPostReaction[]
+
+  @@index([institutionId])
+}
+
+model StaffPostReaction {
+  id            String    @id @default(uuid())
+  postId        String
+  userId        String
+  institutionId String
+  post          StaffPost @relation(fields: [postId], references: [id])
+  user          User      @relation("StaffPostReactionUser", fields: [userId], references: [id])
+
+  @@unique([postId, userId])
+}
+
+model StaffPostComment {
+  id            String    @id @default(uuid())
+  postId        String
+  authorId      String
+  institutionId String
+  text          String
+  createdAt     DateTime  @default(now())
+  author        User      @relation("StaffPostCommentAuthor", fields: [authorId], references: [id])
+  post          StaffPost @relation(fields: [postId], references: [id])
+
+  @@index([postId])
+}
+
+model StaffMessage {
+  id             String    @id @default(uuid())
+  institutionId  String
+  senderId       String
+  receiverId     String
+  text           String?
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+  readAt         DateTime?
+  createdAt      DateTime  @default(now())
+  receiver       User      @relation("StaffMessageReceiver", fields: [receiverId], references: [id])
+  sender         User      @relation("StaffMessageSender", fields: [senderId], references: [id])
+
+  @@index([institutionId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+model CampusFeedPost {
+  id             String         @id @default(uuid())
+  institutionId  String
+  authorId       String
+  type           CampusPostType
+  title          String
+  body           String
+  subject        String?
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
+  createdAt      DateTime       @default(now())
+  divisionId     String?
+  subjectId      String?
+  author         User           @relation("CampusFeedPostAuthor", fields: [authorId], references: [id])
+  division       Division?      @relation(fields: [divisionId], references: [id])
+  institution    Institution    @relation(fields: [institutionId], references: [id])
+  subjectRef     Subject?       @relation(fields: [subjectId], references: [id])
+
+  @@index([institutionId])
+  @@index([divisionId])
+  @@index([subjectId])
+}
+
+model CalendarEvent {
+  id            String            @id @default(uuid())
+  institutionId String
+  createdById   String
+  type          CalendarEventType
+  label         String
+  date          DateTime
+  divisionId    String?
+  createdBy     User              @relation("CalendarEventCreator", fields: [createdById], references: [id])
+  division      Division?         @relation(fields: [divisionId], references: [id])
+  institution   Institution       @relation(fields: [institutionId], references: [id])
+
+  @@index([institutionId])
+  @@index([divisionId])
+}
+
+model DivisionFeeStructure {
+  id                 String      @id @default(uuid())
+  divisionId         String      @unique
+  institutionId      String
+  feeMonths          Json
+  bankDetails        Json?
+  qrImageUrl         String?
+  extraColumns       Json
+  extraStudentFields Json
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  feeStructures      Json
+  generalRemark      String?
+  feeCardTheme       String?
+  schoolLogoUrl      String?
+  schoolName         String?
+  rulesAndRegs       Json?
+  division           Division    @relation(fields: [divisionId], references: [id])
+  institution        Institution @relation(fields: [institutionId], references: [id])
+
+  @@index([institutionId])
+}
+
+model StudentFeePayment {
+  id                String      @id @default(uuid())
+  institutionId     String
+  studentId         String
+  feeMonthId        String
+  status            String      @default("PENDING")
+  paidDate          String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  remark            String?
+  extraFields       Json?
+  extraStructureIds Json?
+  institution       Institution @relation(fields: [institutionId], references: [id])
+  student           Student     @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, feeMonthId])
+  @@index([institutionId])
+}
+
+model PendingFileDeletion {
+  id          String   @id @default(uuid())
+  r2Key       String
+  scheduledAt DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([scheduledAt])
+}
+
+model BlackboardFolder {
+  id            String               @id @default(uuid())
+  institutionId String
+  teacherId     String
+  name          String
+  parentId      String?
+  createdAt     DateTime             @default(now())
+  institution   Institution          @relation(fields: [institutionId], references: [id])
+  parent        BlackboardFolder?    @relation("FolderChildren", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children      BlackboardFolder[]   @relation("FolderChildren")
+  teacher       Teacher              @relation(fields: [teacherId], references: [id])
+  files         BlackboardMaterial[]
+
+  @@index([institutionId, teacherId])
+  @@index([teacherId])
+  @@index([institutionId])
+}
+
+model BlackboardMaterial {
+  id            String           @id @default(uuid())
+  institutionId String
+  teacherId     String
+  folderId      String
+  name          String
+  fileUrl       String
+  r2Key         String
+  mimeType      String
+  size          Int
+  createdAt     DateTime         @default(now())
+  folder        BlackboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  institution   Institution      @relation(fields: [institutionId], references: [id])
+  teacher       Teacher          @relation(fields: [teacherId], references: [id])
+
+  @@index([institutionId, teacherId])
+  @@index([folderId])
+  @@index([teacherId])
+}
+
+model Mindmap {
+  id            String      @id @default(uuid())
+  institutionId String
+  teacherId     String
+  title         String
+  data          Json
+  createdAt     DateTime    @default(now())
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+
+  @@index([institutionId, teacherId])
+}
+
+model TaskContainer {
+  id            String         @id @default(uuid())
+  institutionId String
+  teacherId     String
+  subjectId     String
+  divisionId    String
+  name          String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  division      Division       @relation(fields: [divisionId], references: [id])
+  institution   Institution    @relation(fields: [institutionId], references: [id])
+  subject       Subject        @relation(fields: [subjectId], references: [id])
+  teacher       Teacher        @relation(fields: [teacherId], references: [id])
+  questions     TaskQuestion[]
+
+  @@index([teacherId, subjectId, divisionId])
+  @@index([institutionId])
+}
+
+model TaskQuestion {
+  id               String              @id @default(uuid())
+  institutionId    String
+  teacherId        String
+  subjectId        String
+  type             TaskQuestionType
+  question         String
+  options          Json?
+  answer           String
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  category         String?
+  details          Json?
+  questionTemplate String?
+  status           TaskQuestionStatus  @default(APPROVED)
+  containerId      String
+  source           TaskQuestionSource  @default(AI)
+  sourceFile       String?
+  uploadBatchId    String?
+  images           Json?
+  moduleAssignment TaskModuleQuestion?
+  container        TaskContainer       @relation(fields: [containerId], references: [id], onDelete: Cascade)
+  institution      Institution         @relation(fields: [institutionId], references: [id])
+  subject          Subject             @relation(fields: [subjectId], references: [id])
+  teacher          Teacher             @relation(fields: [teacherId], references: [id])
+  studentAnswers   TaskStudentAnswer[]
+  testQuestions    TaskTestQuestion[]
+
+  @@index([teacherId, subjectId])
+  @@index([institutionId])
+  @@index([status])
+}
+
+model TaskModule {
+  id            String               @id @default(uuid())
+  institutionId String
+  teacherId     String
+  subjectId     String
+  name          String
+  description   String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  order         Int                  @default(0)
+  institution   Institution          @relation(fields: [institutionId], references: [id])
+  subject       Subject              @relation(fields: [subjectId], references: [id])
+  teacher       Teacher              @relation(fields: [teacherId], references: [id])
+  questions     TaskModuleQuestion[]
+
+  @@index([teacherId, subjectId])
+  @@index([institutionId])
+}
+
+model TaskModuleQuestion {
+  id         String       @id @default(uuid())
+  moduleId   String
+  questionId String       @unique
+  assignedAt DateTime     @default(now())
+  order      Int          @default(0)
+  module     TaskModule   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  question   TaskQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([moduleId])
+}
+
+model TaskTest {
+  id                String             @id @default(uuid())
+  institutionId     String
+  teacherId         String
+  subjectId         String
+  divisionId        String
+  title             String
+  description       String?
+  testLink          String             @unique
+  status            TaskTestStatus     @default(DRAFT)
+  durationMinutes   Int                @default(60)
+  numberOfQuestions Int
+  maxAttempts       Int                @default(1)
+  validUntil        DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  isRandomized      Boolean            @default(false)
+  paperType         String             @default("TEST")
+  sections          Json?
+  totalMarks        Int                @default(100)
+  answerSpace       Boolean            @default(true)
+  startDate         DateTime?
+  division          Division           @relation(fields: [divisionId], references: [id])
+  institution       Institution        @relation(fields: [institutionId], references: [id])
+  subject           Subject            @relation(fields: [subjectId], references: [id])
+  teacher           Teacher            @relation(fields: [teacherId], references: [id])
+  attempts          TaskTestAttempt[]
+  questions         TaskTestQuestion[]
+
+  @@index([teacherId])
+  @@index([institutionId])
+  @@index([divisionId])
+}
+
+model TaskTestQuestion {
+  id           String       @id @default(uuid())
+  testId       String
+  questionId   String
+  isCompulsory Boolean      @default(false)
+  marks        Int?
+  order        Int          @default(0)
+  sectionId    String?
+  question     TaskQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  test         TaskTest     @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@unique([testId, questionId])
+  @@index([testId])
+}
+
+model TaskTestAttempt {
+  id              String              @id @default(uuid())
+  testId          String
+  studentId       String?
+  studentName     String
+  rollNo          String
+  attemptNumber   Int                 @default(1)
+  startTime       DateTime            @default(now())
+  endTime         DateTime?
+  totalScore      Int                 @default(0)
+  maxScore        Int                 @default(0)
+  status          String              @default("in_progress")
+  tabChangeCount  Int                 @default(0)
+  malpracticeFlag Boolean             @default(false)
+  activeClientAt  DateTime?
+  activeClientId  String?
+  answers         TaskStudentAnswer[]
+  student         Student?            @relation(fields: [studentId], references: [id])
+  test            TaskTest            @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@index([testId])
+  @@index([studentId])
+}
+
+model TaskStudentAnswer {
+  id                String          @id @default(uuid())
+  attemptId         String
+  questionId        String
+  generatedQuestion String
+  generatedOptions  Json?
+  studentAnswer     String?
+  correctAnswer     String
+  isCorrect         Boolean
+  createdAt         DateTime        @default(now())
+  order             Int             @default(0)
+  attempt           TaskTestAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question          TaskQuestion    @relation(fields: [questionId], references: [id])
+
+  @@index([attemptId])
+}
+
+model TaskPdfUpload {
+  id            String      @id @default(uuid())
+  institutionId String
+  teacherId     String
+  divisionId    String
+  displayName   String
+  originalName  String
+  status        String      @default("processing")
+  questionCount Int?
+  errorMessage  String?
+  createdAt     DateTime    @default(now())
+  containerId   String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+
+  @@index([teacherId])
+  @@index([institutionId])
+}
+
+model QuestionShareToken {
+  id                String      @id @default(uuid())
+  institutionId     String
+  teacherId         String
+  sourceContainerId String
+  questionIds       Json
+  expiresAt         DateTime
+  createdAt         DateTime    @default(now())
+  institution       Institution @relation(fields: [institutionId], references: [id])
+  teacher           Teacher     @relation(fields: [teacherId], references: [id])
+
+  @@index([institutionId])
+}
+
+model TaskAssignment {
+  id                 String                            @id @default(uuid())
+  institutionId      String
+  teacherId          String
+  subjectId          String
+  divisionId         String
+  title              String
+  description        String?
+  totalMarks         Int                               @default(10)
+  dueDate            DateTime?
+  status             TaskAssignmentStatus              @default(DRAFT)
+  createdAt          DateTime                          @default(now())
+  updatedAt          DateTime                          @updatedAt
+  answerSpace        Boolean                           @default(true)
+  isRandomized       Boolean                           @default(false)
+  numberOfQuestions  Int                               @default(0)
+  questions          Json?
+  sections           Json?
+  submissionType     String                            @default("OFFLINE")
+  completedAt        DateTime?
+  division           Division                          @relation(fields: [divisionId], references: [id])
+  institution        Institution                       @relation(fields: [institutionId], references: [id])
+  subject            Subject                           @relation(fields: [subjectId], references: [id])
+  teacher            Teacher                           @relation(fields: [teacherId], references: [id])
+  submissions        TaskAssignmentSubmission[]
+  submissionAttempts TaskAssignmentSubmissionAttempt[]
+
+  @@index([teacherId, divisionId])
+  @@index([institutionId])
+}
+
+model TaskAssignmentSubmission {
+  id                       String                            @id @default(uuid())
+  assignmentId             String
+  studentId                String
+  institutionId            String
+  fileKey                  String?
+  fileUrl                  String?
+  submittedAt              DateTime?
+  resubmitCount            Int                               @default(0)
+  reviewStatus             String?
+  reviewNote               String?
+  reviewedAt               DateTime?
+  reviewedByTeacherId      String?
+  offlineSubmittedAt       DateTime?
+  offlineMarkedByTeacherId String?
+  createdAt                DateTime                          @default(now())
+  updatedAt                DateTime                          @updatedAt
+  offlineMarkedLate        Boolean                           @default(false)
+  assignment               TaskAssignment                    @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  institution              Institution                       @relation(fields: [institutionId], references: [id])
+  student                  Student                           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  attempts                 TaskAssignmentSubmissionAttempt[]
+
+  @@unique([assignmentId, studentId])
+  @@index([assignmentId])
+  @@index([studentId])
+  @@index([institutionId])
+}
+
+model TaskAssignmentSubmissionAttempt {
+  id                  String                   @id @default(uuid())
+  submissionId        String
+  assignmentId        String
+  studentId           String
+  institutionId       String
+  attemptNumber       Int
+  fileKey             String?
+  fileUrl             String?
+  submittedAt         DateTime                 @default(now())
+  reviewStatus        String?
+  reviewNote          String?
+  reviewedAt          DateTime?
+  reviewedByTeacherId String?
+  createdAt           DateTime                 @default(now())
+  assignment          TaskAssignment           @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  institution         Institution              @relation(fields: [institutionId], references: [id])
+  student             Student                  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  submission          TaskAssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@index([assignmentId])
+  @@index([studentId])
+  @@index([institutionId])
+}
+
+model Marksheet {
+  id                    String                   @id @default(uuid())
+  institutionId         String
+  divisionId            String
+  createdByTeacherId    String
+  academicYear          String
+  status                MarksheetStatus          @default(DRAFT)
+  pdfR2Key              String?
+  shareToken            String                   @unique
+  gradedSectionTitle    String                   @default("Graded Subjects")
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  gradeScale            Json                     @default("[]")
+  publishedAt           DateTime?
+  publishedSnapshot     Json?
+  hasUnpublishedChanges Boolean                  @default(false)
+  createdBy             Teacher                  @relation("MarksheetCreator", fields: [createdByTeacherId], references: [id])
+  division              Division                 @relation(fields: [divisionId], references: [id])
+  institution           Institution              @relation(fields: [institutionId], references: [id])
+  examColumns           MarksheetExamColumn[]
+  gradedScores          MarksheetGradedScore[]
+  gradedSubjects        MarksheetGradedSubject[]
+  remarks               MarksheetRemark[]
+  scores                MarksheetScore[]
+  subjectConfigs        MarksheetSubjectConfig[]
+
+  @@unique([divisionId, academicYear])
+  @@index([institutionId])
+  @@index([divisionId])
+}
+
+model MarksheetSubjectConfig {
+  id            String    @id @default(uuid())
+  marksheetId   String
+  subjectId     String
+  institutionId String
+  passingMarks  Float     @default(0)
+  gradeScale    Json      @default("[]")
+  marksheet     Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  subject       Subject   @relation(fields: [subjectId], references: [id])
+
+  @@unique([marksheetId, subjectId])
+  @@index([marksheetId])
+}
+
+model MarksheetExamColumn {
+  id                 String           @id @default(uuid())
+  marksheetId        String
+  subjectId          String
+  institutionId      String
+  name               String
+  maxMarks           Float
+  examDate           DateTime?
+  order              Int              @default(0)
+  createdByTeacherId String
+  marksheet          Marksheet        @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  subject            Subject          @relation(fields: [subjectId], references: [id])
+  scores             MarksheetScore[]
+
+  @@index([marksheetId, subjectId])
+  @@index([marksheetId])
+}
+
+model MarksheetScore {
+  id                 String              @id @default(uuid())
+  marksheetId        String
+  examColumnId       String
+  studentId          String
+  institutionId      String
+  score              Float?
+  isAbsent           Boolean             @default(false)
+  enteredByTeacherId String
+  updatedAt          DateTime            @updatedAt
+  examColumn         MarksheetExamColumn @relation(fields: [examColumnId], references: [id], onDelete: Cascade)
+  marksheet          Marksheet           @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  student            Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([examColumnId, studentId])
+  @@index([marksheetId])
+  @@index([examColumnId])
+}
+
+model MarksheetGradedSubject {
+  id            String                 @id @default(uuid())
+  marksheetId   String
+  institutionId String
+  name          String
+  order         Int                    @default(0)
+  gradedScores  MarksheetGradedScore[]
+  marksheet     Marksheet              @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+
+  @@index([marksheetId])
+}
+
+model MarksheetGradedScore {
+  id              String                 @id @default(uuid())
+  marksheetId     String
+  gradedSubjectId String
+  studentId       String
+  institutionId   String
+  term1Grade      String?
+  term2Grade      String?
+  updatedAt       DateTime               @updatedAt
+  gradedSubject   MarksheetGradedSubject @relation(fields: [gradedSubjectId], references: [id], onDelete: Cascade)
+  marksheet       Marksheet              @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  student         Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([gradedSubjectId, studentId])
+  @@index([marksheetId])
+}
+
+model AiUsageEvent {
+  id            String      @id @default(uuid())
+  institutionId String
+  teacherId     String?
+  userId        String
+  userRole      String
+  feature       String
+  provider      String
+  model         String
+  requestType   String
+  inputTokens   Int?
+  outputTokens  Int?
+  totalTokens   Int?
+  status        String
+  error         String?
+  createdAt     DateTime    @default(now())
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+
+  @@index([institutionId, createdAt])
+  @@index([teacherId, createdAt])
+  @@index([institutionId, feature, createdAt])
+}
+
+model AiChatMessage {
+  id            String   @id @default(uuid())
+  userId        String
+  institutionId String
+  role          String
+  content       String
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+}
+
+model MarksheetRemark {
+  id                 String    @id @default(uuid())
+  marksheetId        String
+  studentId          String
+  institutionId      String
+  conduct            String?
+  remarks            String?
+  updatedByTeacherId String?
+  updatedAt          DateTime  @updatedAt
+  marksheet          Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
+  student            Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([marksheetId, studentId])
+  @@index([marksheetId])
+}
+
+model TranslationCache {
+  id             String   @id @default(uuid())
+  sourceTextHash String
+  targetLang     String
+  translatedText String
+  createdAt      DateTime @default(now())
+
+  @@unique([sourceTextHash, targetLang])
+}
+
+model PlatformSettings {
+  id                String   @id @default("platform")
+  bankAccountName   String?
+  bankAccountNumber String?
+  bankIfsc          String?
+  bankName          String?
+  upiId             String?
+  updatedAt         DateTime @updatedAt
+  updatedBy         String?
+}
+
+model InstitutionDbConfig {
+  id             String      @id @default(uuid())
+  institutionId  String      @unique
+  mode           String      @default("MANAGED")
+  engine         String?
+  host           String?
+  port           Int?
+  databaseName   String?
+  username       String?
+  passwordCipher String?
+  passwordIv     String?
+  passwordTag    String?
+  sslMode        String?     @default("require")
+  sslCaCert      String?
+  status         String      @default("PENDING")
+  lastTestedAt   DateTime?
+  lastError      String?
+  provisionedAt  DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  institution    Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+}
+
+model WhiteLabelConfig {
+  id            String      @id @default(uuid())
+  institutionId String      @unique
+  enabled       Boolean     @default(false)
+  brandName     String?
+  logoUrl       String?
+  faviconUrl    String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+}
+
+model PayrollRun {
+  id            String      @id
+  institutionId String
+  month         String
+  status        String      @default("DRAFT")
+  publishedAt   DateTime?
+  publishedBy   String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime
+  Institution   Institution @relation(fields: [institutionId], references: [id])
+  Payslip       Payslip[]
+
+  @@unique([institutionId, month])
+  @@index([institutionId])
+}
+
+model Payslip {
+  id            String      @id
+  payrollRunId  String
+  institutionId String
+  earnings      Json
+  deductions    Json
+  grossPay      Float
+  netPay        Float
+  status        String      @default("PENDING")
+  paidAt        DateTime?
+  paymentMethod String?
+  paymentRef    String?
+  pdfUrl        String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime
+  staffId       String
+  staffName     String
+  staffEmail    String
+  Institution   Institution @relation(fields: [institutionId], references: [id])
+  PayrollRun    PayrollRun  @relation(fields: [payrollRunId], references: [id])
+  Staff         Staff       @relation(fields: [staffId], references: [id])
+
+  @@unique([payrollRunId, staffId])
+  @@index([institutionId])
+  @@index([staffId])
+}
+
+model SalaryTemplate {
+  id            String      @id
+  institutionId String
+  name          String
+  earnings      Json
+  deductions    Json
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime
+  Institution   Institution @relation(fields: [institutionId], references: [id])
+
+  @@unique([institutionId, name])
+  @@index([institutionId])
+}
+
+model Staff {
+  id                   String                @id
+  institutionId        String
+  name                 String
+  email                String
+  phone                String?
+  designation          String?
+  staffType            String
+  status               String                @default("ACTIVE")
+  joinedAt             DateTime              @default(now())
+  userId               String?               @unique
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @default(now())
+  Payslip              Payslip[]
+  Institution          Institution           @relation(fields: [institutionId], references: [id])
+  User                 User?                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  StaffSalaryStructure StaffSalaryStructure?
+
+  @@index([institutionId])
+}
+
+model StaffSalaryStructure {
+  id            String      @id
+  staffId       String      @unique
+  institutionId String
+  templateId    String?
+  earnings      Json
+  deductions    Json
+  bankDetails   Json?
+  effectiveFrom DateTime
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
+  Institution   Institution @relation(fields: [institutionId], references: [id])
+  Staff         Staff       @relation(fields: [staffId], references: [id])
+
+  @@index([institutionId])
+}
 
 enum Role {
   SUPER_ADMIN
   ADMIN
-  SUB_ADMIN
   TEACHER
   STUDENT
+  SUB_ADMIN
 }
 
 enum StudentStatus {
@@ -51,10 +1603,6 @@ enum SubscriptionStatus {
   LOCKED
 }
 
-// NORMAL: pay-as-you-go, can be voluntarily deactivated (no billing while off).
-// COMMITTED: fixed term (12 months) at a discounted rate — cannot voluntarily
-// deactivate to skip billing; only non-payment triggers auto-deactivation, and
-// the commitment is still owed regardless of access state.
 enum PlanOption {
   NORMAL
   COMMITTED
@@ -96,11 +1644,11 @@ enum RemarkCardType {
 }
 
 enum RemarkStatus {
-  ACTIVE // displayed as "Open"
-  UNDER_REVIEW
+  ACTIVE
   RESOLVED
-  REJECTED
   APPEALED
+  UNDER_REVIEW
+  REJECTED
 }
 
 enum RemarkSeverity {
@@ -109,476 +1657,10 @@ enum RemarkSeverity {
   HIGH
 }
 
-// ─── Models ───────────────────────────────────────────────────────────────────
-
-model Institution {
-  id              String            @id @default(uuid())
-  institutionCode String            @unique // e.g. QX-DEHS-SC26-0001
-  name            String
-  email           String            @unique
-  type            InstitutionType
-  isDemo          Boolean           @default(false) // excluded from institute-code sequence and dashboard totals
-
-  // ── User ID scheme (XXXX-XXXXX-XXXX) ──────────────────────────────────────
-  userIdPrefix         String? // 4-letter code from school initials, e.g. "SXHS"
-  userIdDisambiguator  String? // 2-char alphanumeric, disambiguates institutions sharing a prefix
-  nextAdminSeq         Int     @default(0) // never resets; shared by ADMIN + SUB_ADMIN
-  nextTeacherSeq       Int     @default(0)
-  nextStudentSeq       Int     @default(0)
-  status          InstitutionStatus @default(PENDING)
-
-  // Contact & Location
-  phone   String?
-  city    String?
-  state   String?
-  address String?
-  pincode String?
-  country String? @default("India")
-
-  // Academic Info
-  board   String?
-  medium  String?
-  logoUrl String?
-
-  // Self-service accent color family for the admin/teacher/student UI —
-  // PRO + TRIAL eligible, BASIC stays locked to "purple" (see
-  // themeColor.service.ts for the eligibility check, re-validated server-side
-  // on every write so a lapsed Pro subscription can't keep a custom theme).
-  themeColor String @default("purple")
-
-  // Admin personal info (one admin per institution)
-  adminPrefix       String?
-  adminTitle        String?
-  adminPhone        String?
-  adminDob          String?
-  adminGender       String?
-  adminAvatarUrl    String?
-  establishedOn     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  users              User[]
-  subscription       Subscription?
-  dbConfig           InstitutionDbConfig?
-  whiteLabelConfig   WhiteLabelConfig?
-  bills              Bill[]
-  invites            Invite[]
-  auditLogs          AuditLog[]
-  notifications      NotificationRecipient[]
-  tickets            SupportTicket[]
-  reviews            Review[]
-  teachers           Teacher[]
-  students           Student[]
-  standards          Standard[]
-  divisions          Division[]
-  subjects           Subject[]
-  assignments        DivisionAssignment[]
-  staffPosts         StaffPost[]
-  campusPosts        CampusFeedPost[]
-  calendarEvents     CalendarEvent[]
-  feeStructures      DivisionFeeStructure[]
-  blackboardFolders  BlackboardFolder[]
-  blackboardMaterials BlackboardMaterial[]
-  mindmaps           Mindmap[]
-  taskQuestions      TaskQuestion[]
-  taskContainers     TaskContainer[]
-  taskModules        TaskModule[]
-  taskTests          TaskTest[]
-  taskAssignments    TaskAssignment[]
-  taskAssignmentSubmissions TaskAssignmentSubmission[]
-  taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
-  questionShareTokens QuestionShareToken[]
-  taskPdfUploads     TaskPdfUpload[]
-  attendances        Attendance[]
-  holidays           SchoolHoliday[]
-  attendanceDayNotes AttendanceDayNote[]
-  subAdmins     SubAdmin[]
-  marksheets    Marksheet[]
-  teacherNotes  TeacherNote[]
-  teacherTasks  TeacherTask[]
-  adminNotes    AdminNote[]
-  adminTasks    AdminTask[]
-  studentRemarks     StudentRemark[]
-  ptmNotes           PTMNote[]
-  studentFeePayments StudentFeePayment[]
-  promotionBatches         PromotionBatch[]
-  studentPromotionOutcomes StudentPromotionOutcome[]
-  aiUsageEvents            AiUsageEvent[]
-}
-
-model User {
-  id       String  @id @default(uuid())
-  name     String?
-  email    String  @unique
-  password String?
-  role     Role
-  isActive           Boolean @default(false)
-  mustChangePassword Boolean @default(false)
-  displayId          String? // human-readable ID (XXXX-XXXXX-XXXX) — populated for ADMIN/SUB_ADMIN
-
-  institutionId String?
-  institution   Institution? @relation(fields: [institutionId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  auditLogs AuditLog[]
-  statusEvents UserStatusEvent[]
-  teacher   Teacher?
-  student   Student?
-  subAdmin      SubAdmin?
-
-  staffPostsAuthored    StaffPost[]          @relation("StaffPostAuthor")
-  staffReactions        StaffPostReaction[]  @relation("StaffPostReactionUser")
-  staffCommentsAuthored StaffPostComment[]   @relation("StaffPostCommentAuthor")
-  staffMessagesSent     StaffMessage[]       @relation("StaffMessageSender")
-  staffMessagesReceived StaffMessage[]       @relation("StaffMessageReceiver")
-  campusPostsAuthored   CampusFeedPost[]     @relation("CampusFeedPostAuthor")
-  calendarEventsCreated CalendarEvent[]      @relation("CalendarEventCreator")
-  studentRemarksReported  StudentRemark[] @relation("StudentRemarkReporter")
-  studentRemarksAssigned  StudentRemark[] @relation("StudentRemarkAssignee")
-  studentRemarksReviewed  StudentRemark[] @relation("StudentRemarkReviewer")
-  ptmNotesCreated         PTMNote[]       @relation("PTMNoteCreator")
-  aiUsageEvents           AiUsageEvent[]
-  adminNotes              AdminNote[]
-  adminTasks              AdminTask[]
-  aiChatMessages          AiChatMessage[]
-}
-
 enum TrialOutcome {
   EXTENDED
   ACTIVATED
   CHURNED
-}
-
-model Plan {
-  id              String @id @default(uuid())
-  name            String @unique
-  basePrice       Float
-  perStudentPrice Float
-
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  subscriptions Subscription[]
-}
-
-model Subscription {
-  id String @id @default(uuid())
-
-  institutionId String      @unique
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  planId String
-  plan   Plan   @relation(fields: [planId], references: [id])
-
-  // Trial tracking
-  trialDays           Int? // number of trial days set by superadmin
-  trialOutcome        TrialOutcome? // what happened after trial ended
-  trialWarningSent    Boolean       @default(false)
-  trialExpiryNotified Boolean       @default(false)
-
-  status        SubscriptionStatus @default(TRIAL)
-  paymentStatus PaymentStatus      @default(PENDING)
-  discount      Float              @default(0)
-  features      Json?
-
-  // NORMAL (pay-as-you-go, voluntary deactivation, no billing while off) vs
-  // COMMITTED (discounted rate, fixed term, billed through deactivation).
-  planOption        PlanOption @default(NORMAL)
-  commitmentEndDate DateTime? // set when planOption=COMMITTED — term end (activationDate + 12mo)
-
-  activationDate  DateTime? // billing anchor — set when plan transitions from TRIAL to ACTIVE
-  pausedAt        DateTime? // set when a NORMAL-plan institution is voluntarily deactivated
-  pauseMonthsUsed Int       @default(0) // cumulative months spent deactivated (reporting)
-  // Set whenever the subscription returns to ACTIVE from PAUSED/LOCKED/EXPIRED
-  // (never on the original TRIAL->ACTIVE activation, which uses activationDate
-  // instead). Lets billing prorate the remainder of the month the institution
-  // was actually reactivated in, instead of billing the full month for time
-  // they were inaccessible.
-  lastResumedAt DateTime?
-  addons          Json?
-
-  startDate DateTime? // null = trial created but not yet activated
-  endDate   DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Bill {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  type         String
-  billingMonth String?
-
-  userCount      Int   @default(0)
-  baseAmount     Float @default(0)
-  addonAmount    Float @default(0)
-  discountAmount Float @default(0)
-  totalAmount    Float
-
-  status PaymentStatus @default(PENDING)
-  items  Json // BillItem[]
-
-  generatedAt DateTime  @default(now())
-  dueDate     DateTime?
-  paidAt      DateTime?
-
-  razorpayLinkId    String? // Razorpay payment link ID (plink_...)
-  razorpayLinkUrl   String? // Short URL for the hosted payment page
-  razorpayPaymentId String? // Set after payment confirmed via webhook
-  paymentMethod     String? // card / upi / netbanking / wallet — from Razorpay webhook payment entity
-}
-
-model Invite {
-  id String @id @default(uuid())
-
-  email     String
-  tokenHash String @unique
-  role      Role
-  permissions String[] @default([])
-
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  expiresAt DateTime
-  isUsed    Boolean  @default(false)
-
-  createdAt DateTime @default(now())
-}
-
-model Teacher {
-  id        String @id @default(uuid())
-  teacherId String
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  phone         String?
-  avatarUrl     String?
-  dob           String?
-  gender        String?
-  address       String?
-  city          String?
-  state         String?
-  pincode       String?
-  country       String? @default("India")
-  qualification String?
-  experience    String?
-  prefix        String?
-  title         String? @default("Teacher")
-  aiSoftLimitTokens Int? // admin-set monthly override; null = use computed default (pool ÷ teachers ÷ 26 days)
-
-  status   TeacherStatus @default(ACTIVE)
-  joinedAt DateTime      @default(now())
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  assignments DivisionAssignment[]
-  classDivisions      Division[]           @relation("ClassTeacherDivisions")
-  createdMarksheets   Marksheet[]          @relation("MarksheetCreator")
-  blackboardFolders   BlackboardFolder[]
-  blackboardMaterials BlackboardMaterial[]
-  mindmaps            Mindmap[]
-  taskQuestions       TaskQuestion[]
-  taskContainers      TaskContainer[]
-  taskModules         TaskModule[]
-  taskTests           TaskTest[]
-  taskAssignments     TaskAssignment[]
-  questionShareTokens QuestionShareToken[]
-  taskPdfUploads      TaskPdfUpload[]
-  teacherNotes        TeacherNote[]
-  teacherTasks        TeacherTask[]
-
-  @@unique([teacherId, institutionId])
-  @@index([institutionId])
-}
-
-model TeacherNote {
-  id            String      @id @default(uuid())
-  teacherId     String
-  teacher       Teacher     @relation(fields: [teacherId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  text          String
-  color         String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@index([teacherId])
-}
-
-model TeacherTask {
-  id            String      @id @default(uuid())
-  teacherId     String
-  teacher       Teacher     @relation(fields: [teacherId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  text          String
-  done          Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@index([teacherId])
-}
-
-model AdminNote {
-  id            String      @id @default(uuid())
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  text          String
-  color         String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@index([userId])
-}
-
-model AdminTask {
-  id            String      @id @default(uuid())
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  text          String
-  done          Boolean     @default(false)
-  // Optional due date/time — set manually or by the AI School PA (Jarvis)
-  // when an admin asks it to remind them of something ("remind me to call
-  // them tomorrow at 12pm"). Null means "no specific time", same as before.
-  dueAt         DateTime?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@index([userId])
-}
-
-model SubAdmin {
-  id            String      @id @default(uuid())
-  userId        String      @unique
-  user          User        @relation(fields: [userId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  permissions   String[]
-  createdById   String
-
-  prefix        String? // e.g. Mr./Ms./Mrs./Dr. — same options as the Admin's prefix picker
-  designation   String?
-  phone         String?
-  dob           String?
-  gender        String?
-  address       String?
-  city          String?
-  state         String?
-  pincode       String?
-  country       String?     @default("India")
-  qualification String?
-  experience    String?
-  avatarUrl     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([institutionId])
-}
-
-model AuditLog {
-  id            String        @id @default(uuid())
-  action        String
-  category      AuditCategory @default(ADMIN_ACTION)
-  severity      AuditSeverity @default(INFO)
-  userId        String?
-  actorRole     String?
-  institutionId String?
-  details       String?
-  ip            String?
-  metadata      Json?
-
-  user        User?        @relation(fields: [userId], references: [id])
-  institution Institution? @relation(fields: [institutionId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@index([institutionId, category, createdAt(sort: Desc)])
-  @@index([createdAt(sort: Desc)])
-  @@index([action])
-  @@index([actorRole])
-  @@index([institutionId])
-}
-
-// Records every isActive transition for a user (created, activated, deactivated,
-// invite accepted) with a timestamp. Used to reconstruct, for any past month,
-// whether a user was active on at least one day of that month — a plain
-// current-state boolean can't answer that retroactively, and AuditLog's
-// ACTIVATED/DEACTIVATED entries store the target user's identity inconsistently
-// across call sites (business code vs primary key), so this is a clean,
-// purpose-built source of truth instead of parsing AuditLog metadata.
-model UserStatusEvent {
-  id            String   @id @default(uuid())
-  userId        String
-  institutionId String?
-  isActive      Boolean
-  createdAt     DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@index([userId, createdAt])
-  @@index([institutionId])
-}
-
-model Notification {
-  id            String  @id @default(uuid())
-  title         String
-  message       String
-  tag           String
-  recipientType String
-  deliveredTo   Int     @default(0)
-  sentById      String?
-
-  recipients NotificationRecipient[]
-
-  createdAt DateTime @default(now())
-}
-
-model NotificationRecipient {
-  id             String       @id @default(uuid())
-  notificationId String
-  notification   Notification @relation(fields: [notificationId], references: [id])
-  institutionId  String
-  institution    Institution  @relation(fields: [institutionId], references: [id])
-
-  readAt      DateTime?
-  dismissedAt DateTime?
-
-  @@index([institutionId, readAt])
-  @@index([institutionId, dismissedAt])
-}
-
-model SupportTicket {
-  id          String @id @default(uuid())
-  title       String
-  description String
-  category    String
-  priority    String
-  status      String @default("OPEN")
-  attachments Json? // TicketAttachment[] — {url, name, type, size}
-
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  adminEmail    String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  replies TicketReply[]
 }
 
 enum DemoRequestStatus {
@@ -588,474 +1670,6 @@ enum DemoRequestStatus {
   CONVERTED
   CLOSED
 }
-
-model DemoRequest {
-  id              String            @id @default(uuid())
-  name            String
-  email           String
-  phone           String
-  institutionName String
-  institutionType InstitutionType
-  studentCount    Int?
-  message         String?
-  status          DemoRequestStatus @default(NEW)
-  emailSent       Boolean           @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([email, createdAt])
-}
-
-model TicketReply {
-  id       String        @id @default(uuid())
-  ticketId String
-  ticket   SupportTicket @relation(fields: [ticketId], references: [id])
-
-  author      String
-  role        String
-  message     String
-  attachments Json? // TicketAttachment[] — {url, name, type, size}
-
-  createdAt DateTime @default(now())
-}
-
-model Review {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  adminName    String
-  adminEmail   String
-  rating       Int
-  title        String
-  body         String
-  likes        Int     @default(0)
-  replyMessage String?
-
-  repliedAt DateTime?
-  createdAt DateTime  @default(now())
-}
-
-// ─── Campus Structure ─────────────────────────────────────────────────────────
-
-model Standard {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  name  String
-  order Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  divisions   Division[]
-  students    Student[]
-  subjects    Subject[]
-
-  @@unique([institutionId, name])
-  @@index([institutionId])
-}
-
-model Division {
-  id            String      @id @default(uuid())
-  standardId    String
-  standard      Standard    @relation(fields: [standardId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  name     String
-  capacity Int?
-
-  timetableUrl String? // class-teacher-uploaded timetable image, shown as-is (no signing needed)
-
-  classTeacherId String?
-  classTeacher   Teacher? @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  assignments        DivisionAssignment[]
-  students           Student[]
-  divisionSubjects   DivisionSubject[]
-  campusPosts        CampusFeedPost[]
-  calendarEvents     CalendarEvent[]
-  feeStructure       DivisionFeeStructure?
-  attendances        Attendance[]
-  attendanceDayNotes AttendanceDayNote[]
-  taskTests          TaskTest[]
-  taskContainers     TaskContainer[]
-  taskAssignments    TaskAssignment[]
-  marksheets         Marksheet[]
-
-  @@unique([standardId, name])
-  @@index([institutionId])
-  @@index([standardId])
-}
-
-model Subject {
-  id            String      @id @default(uuid())
-  standardId    String
-  standard      Standard    @relation(fields: [standardId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  name  String
-  code  String?
-  color String?
-  order Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  assignments      DivisionAssignment[]
-  divisionSubjects DivisionSubject[]
-  taskQuestions    TaskQuestion[]
-  taskContainers   TaskContainer[]
-  taskModules      TaskModule[]
-  taskTests        TaskTest[]
-  taskAssignments  TaskAssignment[]
-  marksheetConfigs MarksheetSubjectConfig[]
-  marksheetColumns MarksheetExamColumn[]
-  campusFeedPosts  CampusFeedPost[]
-
-  @@unique([standardId, name])
-  @@index([standardId])
-  @@index([institutionId])
-}
-
-model DivisionSubject {
-  id            String   @id @default(uuid())
-  divisionId    String
-  division      Division @relation(fields: [divisionId], references: [id])
-  subjectId     String
-  subject       Subject  @relation(fields: [subjectId], references: [id])
-  institutionId String
-
-  @@unique([divisionId, subjectId])
-  @@index([divisionId])
-}
-
-model DivisionAssignment {
-  id            String      @id @default(uuid())
-  divisionId    String
-  division      Division    @relation(fields: [divisionId], references: [id])
-  subjectId     String?
-  subject       Subject?    @relation(fields: [subjectId], references: [id])
-  teacherId     String
-  teacher       Teacher     @relation(fields: [teacherId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@index([divisionId])
-  @@index([teacherId])
-  @@index([institutionId])
-}
-
-model Student {
-  id            String      @id @default(uuid())
-  studentId     String
-  userId        String      @unique
-  user          User        @relation(fields: [userId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  standardId String?
-  standard   Standard? @relation(fields: [standardId], references: [id])
-  divisionId String?
-  division   Division? @relation(fields: [divisionId], references: [id])
-
-  phone            String?
-  avatarUrl        String?
-  dob              String?
-  gender           String?
-  address          String?
-  city             String?
-  state            String?
-  pincode          String?
-  country          String? @default("India")
-  rollNo           String?
-  houseColor       String?
-  bloodGroup       String?
-  aadharNo         String?
-  panNo            String?
-  emergencyContact String?
-  religion         String?
-  category         String?
-  nationality      String?
-  admissionYear    String?
-  guardians        Json?
-  extraDetailFields Json? // { [studentDetailField.id]: value } — per-student values for the fee card's custom Student Details fields
-  tempPassword     String?
-  hasLoggedIn      Boolean       @default(false)
-  status           StudentStatus @default(ACTIVE)
-  joinedAt         DateTime      @default(now())
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  attendances           Attendance[]
-  taskTestAttempts         TaskTestAttempt[]
-  taskAssignmentSubmissions TaskAssignmentSubmission[]
-  taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
-  marksheetScores          MarksheetScore[]
-  marksheetGradedScores MarksheetGradedScore[]
-  marksheetRemarks       MarksheetRemark[]
-  remarks               StudentRemark[]
-  feePayments           StudentFeePayment[]
-  promotionOutcomes     StudentPromotionOutcome[]
-  ptmNotes              PTMNote[]
-  parentModeEvents      ParentModeEvent[]
-
-  @@unique([studentId, institutionId])
-  @@index([institutionId])
-}
-
-// One row per time a parent/guardian opens Parent Mode on the student's
-// app — used by admin insights to flag families who haven't checked their
-// child's attendance/marks/fee status recently ("disengaged families").
-// Deliberately just an append-only event log (no "last seen" field on
-// Student itself) so we can later compute things like open frequency, not
-// just recency. Academic model (BYOD-eligible) — no relation to User or
-// Institution beyond the scalar institutionId, matching Attendance/PTMNote.
-model ParentModeEvent {
-  id            String   @id @default(uuid())
-  studentId     String
-  institutionId String
-  openedAt      DateTime @default(now())
-
-  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@index([institutionId, openedAt])
-  @@index([studentId, openedAt])
-}
-
-model PromotionBatch {
-  id              String      @id @default(uuid())
-  institutionId   String
-  institution     Institution @relation(fields: [institutionId], references: [id])
-  fromStandardId  String
-  fromDivisionId  String
-  toDivisionId    String?
-  academicYear    String
-  triggeredById   String
-  triggeredByRole String
-  undoneAt        DateTime?
-  createdAt       DateTime    @default(now())
-
-  outcomes StudentPromotionOutcome[]
-
-  @@index([institutionId, createdAt])
-  @@index([fromDivisionId])
-}
-
-model StudentPromotionOutcome {
-  id                 String           @id @default(uuid())
-  batchId            String
-  batch              PromotionBatch   @relation(fields: [batchId], references: [id])
-  studentId          String
-  student            Student          @relation(fields: [studentId], references: [id])
-  institutionId      String
-  institution        Institution      @relation(fields: [institutionId], references: [id])
-  outcome            PromotionOutcome
-
-  previousStandardId String
-  previousDivisionId String
-  previousStatus     StudentStatus
-
-  createdAt DateTime @default(now())
-
-  @@index([batchId])
-  @@index([studentId])
-}
-
-model StudentRemark {
-  id            String         @id @default(uuid())
-  institutionId String
-  institution   Institution    @relation(fields: [institutionId], references: [id])
-  studentId     String
-  student       Student        @relation(fields: [studentId], references: [id])
-
-  type          RemarkCardType
-  severity      RemarkSeverity @default(MEDIUM)
-  category      String
-  title         String
-  detail        String
-  subject       String?
-  actionTaken   String?
-  status        RemarkStatus   @default(ACTIVE)
-
-  // Array of { url, name, type } — supports multiple attachments per report.
-  attachments Json @default("[]")
-
-  reportedByUserId String
-  reportedByUser   User        @relation("StudentRemarkReporter", fields: [reportedByUserId], references: [id])
-  reportedByRole   String
-
-  // Fixed routing rule: reports are auto-assigned to the student's class
-  // teacher at creation time. Admin can review/action any report regardless
-  // of assignment.
-  assignedToUserId String?
-  assignedTo       User?       @relation("StudentRemarkAssignee", fields: [assignedToUserId], references: [id])
-
-  reviewRemark     String?
-  reviewedByUserId String?
-  reviewedBy       User?       @relation("StudentRemarkReviewer", fields: [reviewedByUserId], references: [id])
-  reviewedAt       DateTime?
-
-  createdAt DateTime @default(now())
-
-  @@index([studentId])
-  @@index([institutionId])
-  @@index([assignedToUserId, status])
-}
-
-// One entry per Parent-Teacher Meeting discussion point for a student, logged
-// live from the app's "Parent Mode" screen (a toggle on the student's own
-// account — no separate parent login exists). The parent taps "Discussed &
-// Acknowledged" on the same device at the end of the meeting as a
-// meeting-closure marker, not identity verification.
-model PTMNote {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  studentId     String
-  student       Student     @relation(fields: [studentId], references: [id])
-
-  note String
-
-  createdByUserId String
-  createdByUser   User    @relation("PTMNoteCreator", fields: [createdByUserId], references: [id])
-  createdByName   String?
-  createdByRole   String
-
-  acknowledgedAt DateTime?
-
-  createdAt DateTime @default(now())
-
-  @@index([studentId])
-  @@index([institutionId])
-}
-
-// ─── Attendance ───────────────────────────────────────────────────────────────
-
-model Attendance {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  divisionId    String
-  division      Division    @relation(fields: [divisionId], references: [id])
-  studentId     String
-  student       Student     @relation(fields: [studentId], references: [id])
-  date          String      // YYYY-MM-DD
-  status        String      // P | A | L
-  remark        String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@unique([divisionId, studentId, date])
-  @@index([divisionId, date])
-  @@index([studentId])
-  @@index([institutionId])
-}
-
-model SchoolHoliday {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  date          String      // YYYY-MM-DD
-  name          String
-  createdAt     DateTime    @default(now())
-
-  @@unique([institutionId, date])
-  @@index([institutionId])
-}
-
-model AttendanceDayNote {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  divisionId    String
-  division      Division    @relation(fields: [divisionId], references: [id])
-  date          String      // YYYY-MM-DD
-  note          String
-
-  @@unique([divisionId, date])
-  @@index([divisionId])
-}
-
-// ─── Staffroom ────────────────────────────────────────────────────────────────
-
-model StaffPost {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  authorId      String
-  author        User        @relation("StaffPostAuthor", fields: [authorId], references: [id])
-
-  text           String
-  attachmentUrl  String?
-  attachmentType String?
-  attachmentName String?
-
-  createdAt DateTime @default(now())
-
-  reactions StaffPostReaction[]
-  comments  StaffPostComment[]
-
-  @@index([institutionId])
-}
-
-model StaffPostReaction {
-  id            String    @id @default(uuid())
-  postId        String
-  post          StaffPost @relation(fields: [postId], references: [id])
-  userId        String
-  user          User      @relation("StaffPostReactionUser", fields: [userId], references: [id])
-  institutionId String
-
-  @@unique([postId, userId])
-}
-
-model StaffPostComment {
-  id            String    @id @default(uuid())
-  postId        String
-  post          StaffPost @relation(fields: [postId], references: [id])
-  authorId      String
-  author        User      @relation("StaffPostCommentAuthor", fields: [authorId], references: [id])
-  institutionId String
-  text          String
-
-  createdAt DateTime @default(now())
-
-  @@index([postId])
-}
-
-model StaffMessage {
-  id            String  @id @default(uuid())
-  institutionId String
-  senderId      String
-  sender        User    @relation("StaffMessageSender", fields: [senderId], references: [id])
-  receiverId    String
-  receiver      User    @relation("StaffMessageReceiver", fields: [receiverId], references: [id])
-
-  text           String?
-  attachmentUrl  String?
-  attachmentType String?
-  attachmentName String?
-  readAt         DateTime?
-
-  createdAt DateTime @default(now())
-
-  @@index([institutionId])
-  @@index([senderId])
-  @@index([receiverId])
-}
-
-// ─── Campus Feed & Calendar ───────────────────────────────────────────────────
 
 enum CampusPostType {
   ANNOUNCEMENT
@@ -1067,171 +1681,14 @@ enum CampusPostType {
 enum CalendarEventType {
   HOLIDAY
   TEST
-  TERMTEST
   EXAM
   SUBMISSION
   MEETING
   SPORTS
   EVENT
   TRIP
+  TERMTEST
 }
-
-model CampusFeedPost {
-  id            String         @id @default(uuid())
-  institutionId String
-  institution   Institution    @relation(fields: [institutionId], references: [id])
-  authorId      String
-  author        User           @relation("CampusFeedPostAuthor", fields: [authorId], references: [id])
-  divisionId    String?
-  division      Division?      @relation(fields: [divisionId], references: [id])
-  subjectId     String?
-  subjectRef    Subject?       @relation(fields: [subjectId], references: [id])
-
-  type           CampusPostType
-  title          String
-  body           String
-  subject        String?
-  attachmentUrl  String?
-  attachmentType String?
-  attachmentName String?
-
-  createdAt DateTime @default(now())
-
-  @@index([institutionId])
-  @@index([divisionId])
-  @@index([subjectId])
-}
-
-model CalendarEvent {
-  id            String            @id @default(uuid())
-  institutionId String
-  institution   Institution       @relation(fields: [institutionId], references: [id])
-  createdById   String
-  createdBy     User              @relation("CalendarEventCreator", fields: [createdById], references: [id])
-  divisionId    String?
-  division      Division?         @relation(fields: [divisionId], references: [id])
-
-  type  CalendarEventType
-  label String
-  date  DateTime
-
-  @@index([institutionId])
-  @@index([divisionId])
-}
-
-// ─── Fee Structure ────────────────────────────────────────────────────────────
-
-model DivisionFeeStructure {
-  id            String      @id @default(uuid())
-  divisionId    String      @unique
-  division      Division    @relation(fields: [divisionId], references: [id])
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-
-  feeStructures      Json  // FeeStructure[] — named fee bundles (Regular, Exam, Event, etc.)
-  feeMonths          Json  // FeeMonth[] — monthly schedule with assignedStructureIds
-  bankDetails        Json?
-  qrImageUrl         String?
-  extraColumns       Json
-  extraStudentFields Json  // StudentDetailField[] — { id, kind, defaultKey?, label, value? }
-  generalRemark      String?
-  feeCardTheme       String? // one of FEE_CARD_THEMES keys on the frontend (yellow/green/blue/pink)
-  schoolLogoUrl      String?
-  schoolName         String?
-  rulesAndRegs       Json?   // { id, text }[] — shown on the back of the fee card
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([institutionId])
-}
-
-model StudentFeePayment {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  studentId     String
-  student       Student     @relation(fields: [studentId], references: [id])
-
-  feeMonthId String // matches the `id` embedded in DivisionFeeStructure.feeMonths JSON entries
-  status     String  @default("PENDING") // PAID | PENDING
-  paidDate   String?
-  remark     String? // free-text note per student per month (e.g. "paid in cash")
-  extraFields Json? // { [extraColumn.label]: value } — per-student values for the fee card's custom columns
-  extraStructureIds Json? // string[] — extra fee structure IDs (e.g. Penalty) added just for this student in this month, on top of the division's shared assignedStructureIds
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([studentId, feeMonthId])
-  @@index([institutionId])
-}
-
-// ─── Storage Cleanup ──────────────────────────────────────────────────────────
-
-model PendingFileDeletion {
-  id          String   @id @default(uuid())
-  r2Key       String   // object key in R2: institutions/{institutionId}/{area}/{uuid}-filename
-  scheduledAt DateTime // delete after this time (set to createdAt + 14 days)
-  createdAt   DateTime @default(now())
-
-  @@index([scheduledAt])
-}
-
-// ─── Blackboard ───────────────────────────────────────────────────────────────
-
-model BlackboardFolder {
-  id            String  @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher  @relation(fields: [teacherId], references: [id])
-  name          String
-  parentId      String?
-  parent        BlackboardFolder?  @relation("FolderChildren", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children      BlackboardFolder[] @relation("FolderChildren")
-  files         BlackboardMaterial[]
-  createdAt     DateTime @default(now())
-
-  @@index([institutionId, teacherId])
-  @@index([teacherId])
-  @@index([institutionId])
-}
-
-model BlackboardMaterial {
-  id            String @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher  @relation(fields: [teacherId], references: [id])
-  folderId      String
-  folder        BlackboardFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
-  name          String
-  fileUrl       String
-  r2Key         String
-  mimeType      String
-  size          Int
-  createdAt     DateTime @default(now())
-
-  @@index([institutionId, teacherId])
-  @@index([folderId])
-  @@index([teacherId])
-}
-
-model Mindmap {
-  id            String @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher  @relation(fields: [teacherId], references: [id])
-  title         String
-  data          Json // recursive tree: { label: string, children: Mindmap[] }
-  createdAt     DateTime @default(now())
-
-  @@index([institutionId, teacherId])
-}
-
-// ─── Task Questions & Modules ─────────────────────────────────────────────────
 
 enum TaskQuestionType {
   MCQ
@@ -1260,631 +1717,8 @@ enum TaskTestStatus {
   COMPLETED
 }
 
-model TaskContainer {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher     @relation(fields: [teacherId], references: [id])
-  subjectId     String
-  subject       Subject     @relation(fields: [subjectId], references: [id])
-  divisionId    String
-  division      Division    @relation(fields: [divisionId], references: [id])
-
-  name          String
-  questions     TaskQuestion[]
-
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@index([teacherId, subjectId, divisionId])
-  @@index([institutionId])
-}
-
-model TaskQuestion {
-  id            String             @id @default(uuid())
-  institutionId String
-  institution   Institution        @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher            @relation(fields: [teacherId], references: [id])
-  subjectId     String
-  subject       Subject            @relation(fields: [subjectId], references: [id])
-  containerId   String
-  container     TaskContainer @relation(fields: [containerId], references: [id], onDelete: Cascade)
-
-  type             TaskQuestionType
-  status           TaskQuestionStatus @default(APPROVED)
-  source           TaskQuestionSource @default(AI)
-  sourceFile       String?            // display name of the PDF that generated this question
-  uploadBatchId    String?            // TaskPdfUpload.id that produced this question
-  question         String
-  questionTemplate String?            // question text with {variable} placeholders
-  options          Json?              // String[4] — MCQ only
-  answer           String
-  details          Json?              // NUMERICAL: {variables, correct_answer_formula, distractor_formulas, category}; CONCEPTUAL: {correct_answer, distractors, category}
-  category         String?
-  images           Json?              // String[] — R2 URLs, teacher-attached (diagrams/figures the question needs)
-
-  moduleAssignment TaskModuleQuestion?
-  testQuestions    TaskTestQuestion[]
-  studentAnswers   TaskStudentAnswer[]
-
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-
-  @@index([teacherId, subjectId])
-  @@index([institutionId])
-  @@index([status])
-}
-
-model TaskModule {
-  id            String               @id @default(uuid())
-  institutionId String
-  institution   Institution          @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher              @relation(fields: [teacherId], references: [id])
-  subjectId     String
-  subject       Subject              @relation(fields: [subjectId], references: [id])
-
-  name          String
-  description   String?
-  order         Int                  @default(0)
-
-  questions     TaskModuleQuestion[]
-
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
-
-  @@index([teacherId, subjectId])
-  @@index([institutionId])
-}
-
-model TaskModuleQuestion {
-  id         String       @id @default(uuid())
-  moduleId   String
-  module     TaskModule   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  questionId String       @unique
-  question   TaskQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  order      Int          @default(0)
-  assignedAt DateTime     @default(now())
-
-  @@index([moduleId])
-}
-
-// ─── Task Tests & Quiz ────────────────────────────────────────────────────────
-
-model TaskTest {
-  id            String         @id @default(uuid())
-  institutionId String
-  institution   Institution    @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher        @relation(fields: [teacherId], references: [id])
-  subjectId     String
-  subject       Subject        @relation(fields: [subjectId], references: [id])
-  divisionId    String
-  division      Division       @relation(fields: [divisionId], references: [id])
-
-  title            String
-  description      String?
-  testLink         String         @unique
-  status           TaskTestStatus @default(DRAFT)
-  paperType        String         @default("TEST")
-  isRandomized     Boolean        @default(false)
-  answerSpace      Boolean        @default(true)
-  sections         Json?
-  durationMinutes  Int            @default(60)
-  totalMarks       Int            @default(100)
-  numberOfQuestions Int
-  maxAttempts      Int            @default(1)
-  startDate        DateTime?
-  validUntil       DateTime?
-
-  questions TaskTestQuestion[]
-  attempts  TaskTestAttempt[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([teacherId])
-  @@index([institutionId])
-  @@index([divisionId])
-}
-
-model TaskTestQuestion {
-  id           String       @id @default(uuid())
-  testId       String
-  test         TaskTest     @relation(fields: [testId], references: [id], onDelete: Cascade)
-  questionId   String
-  question     TaskQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  isCompulsory Boolean      @default(false)
-  sectionId    String?
-  marks        Int?
-  order        Int          @default(0)
-
-  @@unique([testId, questionId])
-  @@index([testId])
-}
-
-model TaskTestAttempt {
-  id            String    @id @default(uuid())
-  testId        String
-  test          TaskTest  @relation(fields: [testId], references: [id], onDelete: Cascade)
-  studentId     String?
-  student       Student?  @relation(fields: [studentId], references: [id], onDelete: SetNull)
-
-  studentName    String
-  rollNo         String
-  attemptNumber  Int      @default(1)
-  startTime      DateTime @default(now())
-  endTime        DateTime?
-  totalScore     Int      @default(0)
-  maxScore       Int      @default(0)
-  status          String   @default("in_progress")
-  tabChangeCount  Int      @default(0)
-  malpracticeFlag Boolean  @default(false)
-
-  // Single-device lock: which device (a client-generated id persisted in
-  // localStorage, NOT tied to a user account) currently "owns" this
-  // in-progress attempt, and when it last proved it's still active (a
-  // heartbeat sent every ~10s while the test page is open). A second device
-  // trying to /start the same test while this is recent gets blocked; once
-  // it goes stale (no heartbeat for ~30s — the original device crashed,
-  // lost network, or force-closed the app) the attempt gets auto-submitted
-  // as-is and a new device is free to claim a fresh attempt.
-  activeClientId String?
-  activeClientAt DateTime?
-
-  answers TaskStudentAnswer[]
-
-  @@index([testId])
-  @@index([studentId])
-}
-
-model TaskStudentAnswer {
-  id         String          @id @default(uuid())
-  attemptId  String
-  attempt    TaskTestAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
-  questionId String
-  question   TaskQuestion    @relation(fields: [questionId], references: [id])
-
-  generatedQuestion String
-  generatedOptions  Json?    // String[] shown to student
-  studentAnswer     String?
-  correctAnswer     String
-  isCorrect         Boolean
-  // Position in the student's personalised question sequence (section order,
-  // then shuffled-within-section). createdAt/id can't be trusted to preserve
-  // this on resume - createMany often gives identical createdAt timestamps
-  // and id is a random uuid, so re-fetching without this column could show
-  // sections out of the teacher's defined order.
-  order Int @default(0)
-
-  createdAt DateTime @default(now())
-
-  @@index([attemptId])
-}
-
-model TaskPdfUpload {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher     @relation(fields: [teacherId], references: [id])
-  divisionId    String
-  containerId   String
-
-  displayName   String
-  originalName  String
-  status        String   @default("processing")
-  questionCount Int?
-  errorMessage  String?
-
-  createdAt DateTime @default(now())
-
-  @@index([teacherId])
-  @@index([institutionId])
-}
-
-model QuestionShareToken {
-  id                String      @id @default(uuid())
-  institutionId     String
-  institution       Institution @relation(fields: [institutionId], references: [id])
-  teacherId         String
-  teacher           Teacher     @relation(fields: [teacherId], references: [id])
-  sourceContainerId String
-  questionIds       Json        // String[] — IDs of questions included in this share
-  expiresAt         DateTime
-  createdAt         DateTime    @default(now())
-
-  @@index([institutionId])
-}
-
 enum TaskAssignmentStatus {
   DRAFT
   ACTIVE
   COMPLETED
-}
-
-model TaskAssignment {
-  id            String               @id @default(uuid())
-  institutionId String
-  institution   Institution          @relation(fields: [institutionId], references: [id])
-  teacherId     String
-  teacher       Teacher              @relation(fields: [teacherId], references: [id])
-  subjectId     String
-  subject       Subject              @relation(fields: [subjectId], references: [id])
-  divisionId    String
-  division      Division             @relation(fields: [divisionId], references: [id])
-  title             String
-  description       String?
-  totalMarks        Int                  @default(10)
-  dueDate           DateTime?
-  status            TaskAssignmentStatus @default(DRAFT)
-  completedAt       DateTime? // set when the teacher hits "Stop Now" — the real end moment, kept separate from dueDate
-  submissionType    String               @default("OFFLINE") // OFFLINE | ONLINE
-  sections          Json?
-  questions         Json?
-  isRandomized      Boolean              @default(false)
-  answerSpace       Boolean              @default(true)
-  numberOfQuestions Int                  @default(0)
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
-
-  submissions   TaskAssignmentSubmission[]
-  submissionAttempts TaskAssignmentSubmissionAttempt[]
-
-  @@index([teacherId, divisionId])
-  @@index([institutionId])
-}
-
-model TaskAssignmentSubmission {
-  id             String         @id @default(uuid())
-  assignmentId   String
-  assignment     TaskAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  studentId      String
-  student        Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  institutionId  String
-  institution    Institution    @relation(fields: [institutionId], references: [id])
-
-  // Online PDF submission — always mirrors the LATEST attempt below, kept here
-  // so existing "current status" reads don't need to join/order the history.
-  fileKey        String?   // R2 object key
-  fileUrl        String?   // R2 public URL
-  submittedAt    DateTime? // most recent online upload time
-  resubmitCount  Int       @default(0)
-
-  // Teacher review of online submission — mirrors the latest attempt's review.
-  reviewStatus   String?   // CORRECT | WRITE_AGAIN | null (pending review)
-  reviewNote     String?
-  reviewedAt     DateTime?
-  reviewedByTeacherId String?
-
-  // Offline copy submission (teacher marks manually)
-  offlineSubmittedAt       DateTime?
-  offlineMarkedByTeacherId String?
-  offlineMarkedLate        Boolean   @default(false) // manual "Mark Late" toggle — only shown alongside Submitted once received
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  attempts TaskAssignmentSubmissionAttempt[]
-
-  @@unique([assignmentId, studentId])
-  @@index([assignmentId])
-  @@index([studentId])
-  @@index([institutionId])
-}
-
-// Full history of a student's online PDF submissions for one assignment — one
-// row per upload, oldest to newest, so a resubmission never erases the
-// previous version. TaskAssignmentSubmission above stays as the "current
-// state" pointer (latest attempt's file/review mirrored onto it) for cheap
-// status reads; this table is what the UI walks to show submission history.
-model TaskAssignmentSubmissionAttempt {
-  id             String                   @id @default(uuid())
-  submissionId   String
-  submission     TaskAssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  assignmentId   String
-  assignment     TaskAssignment           @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  studentId      String
-  student        Student                  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  institutionId  String
-  institution    Institution              @relation(fields: [institutionId], references: [id])
-
-  attemptNumber Int
-  fileKey       String?
-  fileUrl       String?
-  submittedAt   DateTime @default(now())
-
-  reviewStatus   String?   // CORRECT | WRITE_AGAIN | null (pending review)
-  reviewNote     String?
-  reviewedAt     DateTime?
-  reviewedByTeacherId String?
-
-  createdAt DateTime @default(now())
-
-  @@index([submissionId])
-  @@index([assignmentId])
-  @@index([studentId])
-  @@index([institutionId])
-}
-
-// ─── Marksheet ────────────────────────────────────────────────────────────────
-
-model Marksheet {
-  id                 String          @id @default(uuid())
-  institutionId      String
-  institution        Institution     @relation(fields: [institutionId], references: [id])
-  divisionId         String
-  division           Division        @relation(fields: [divisionId], references: [id])
-  createdByTeacherId String
-  createdBy          Teacher         @relation("MarksheetCreator", fields: [createdByTeacherId], references: [id])
-  academicYear       String
-  status             MarksheetStatus @default(DRAFT)
-  pdfR2Key           String?
-  shareToken         String          @unique
-  gradedSectionTitle String          @default("Graded Subjects")
-  gradeScale         Json            @default("[]")
-  // Frozen copy of exam columns + scores + graded subjects/scores + remarks +
-  // grade scale + section title, taken at the moment of Publish/Re-publish.
-  // Student-facing reads serve this instead of the live editable tables, so
-  // a teacher's in-progress score edits never reach students until they
-  // explicitly re-publish. Null for marksheets published before this existed
-  // — those fall back to live data until the teacher re-publishes once.
-  publishedSnapshot  Json?
-  publishedAt        DateTime?
-  // True the moment ANY score/column/grade-scale/graded-score/remark edit
-  // happens after the last publish — persisted server-side (not just React
-  // state) so it survives navigation/reload. Reset to false by publish/
-  // re-publish. Drives the "Re-publish" nudge in the marksheet header.
-  hasUnpublishedChanges Boolean      @default(false)
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-
-  subjectConfigs MarksheetSubjectConfig[]
-  examColumns    MarksheetExamColumn[]
-  scores         MarksheetScore[]
-  gradedSubjects MarksheetGradedSubject[]
-  gradedScores   MarksheetGradedScore[]
-  remarks        MarksheetRemark[]
-
-  @@unique([divisionId, academicYear])
-  @@index([institutionId])
-  @@index([divisionId])
-}
-
-model MarksheetSubjectConfig {
-  id            String    @id @default(uuid())
-  marksheetId   String
-  marksheet     Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
-  subjectId     String
-  subject       Subject   @relation(fields: [subjectId], references: [id])
-  institutionId String
-  passingMarks  Float     @default(0)
-  gradeScale    Json      @default("[]")
-
-  @@unique([marksheetId, subjectId])
-  @@index([marksheetId])
-}
-
-model MarksheetExamColumn {
-  id                 String    @id @default(uuid())
-  marksheetId        String
-  marksheet          Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
-  subjectId          String
-  subject            Subject   @relation(fields: [subjectId], references: [id])
-  institutionId      String
-  name               String
-  maxMarks           Float
-  examDate           DateTime?
-  order              Int       @default(0)
-  createdByTeacherId String
-
-  scores MarksheetScore[]
-
-  @@index([marksheetId, subjectId])
-  @@index([marksheetId])
-}
-
-model MarksheetScore {
-  id                 String              @id @default(uuid())
-  marksheetId        String
-  marksheet          Marksheet           @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
-  examColumnId       String
-  examColumn         MarksheetExamColumn @relation(fields: [examColumnId], references: [id], onDelete: Cascade)
-  studentId          String
-  student            Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  institutionId      String
-  score              Float?
-  isAbsent           Boolean             @default(false)
-  enteredByTeacherId String
-  updatedAt          DateTime            @updatedAt
-
-  @@unique([examColumnId, studentId])
-  @@index([marksheetId])
-  @@index([examColumnId])
-}
-
-model MarksheetGradedSubject {
-  id            String    @id @default(uuid())
-  marksheetId   String
-  marksheet     Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
-  institutionId String
-  name          String
-  order         Int       @default(0)
-
-  gradedScores MarksheetGradedScore[]
-
-  @@index([marksheetId])
-}
-
-model MarksheetGradedScore {
-  id              String                 @id @default(uuid())
-  marksheetId     String
-  marksheet       Marksheet              @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
-  gradedSubjectId String
-  gradedSubject   MarksheetGradedSubject @relation(fields: [gradedSubjectId], references: [id], onDelete: Cascade)
-  studentId       String
-  student         Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  institutionId   String
-  term1Grade      String?
-  term2Grade      String?
-  updatedAt       DateTime               @updatedAt
-
-  @@unique([gradedSubjectId, studentId])
-  @@index([marksheetId])
-}
-
-// One row per AI provider call (chat completion). Central table — never
-// routed through academicDb() — so SuperAdmin platform-wide aggregation
-// stays a single query. institutionId/userId relate to Institution/User
-// (always central); teacherId is a plain, unrelated scalar so this table
-// never takes on an FK dependency on wherever a BYOD institution's Teacher
-// rows happen to live.
-model AiUsageEvent {
-  id            String      @id @default(uuid())
-  institutionId String
-  institution   Institution @relation(fields: [institutionId], references: [id])
-  teacherId     String?
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  userRole      String
-
-  feature     String // "BLACKBOARD_CONTEXT" | "BLACKBOARD_SCAN" | "BLACKBOARD_CHAT" | "BLACKBOARD_QUIZ" | "TASK_QUESTION_GENERATION"
-  provider    String // "openai" | "groq"
-  model       String // "gpt-4.1-mini" | "llama-3.3-70b-versatile"
-  requestType String // "chat_completion"
-
-  inputTokens  Int?
-  outputTokens Int?
-  totalTokens  Int?
-
-  status String // "SUCCESS" | "FAILED"
-  error  String?
-
-  createdAt DateTime @default(now())
-
-  @@index([institutionId, createdAt])
-  @@index([teacherId, createdAt])
-  @@index([institutionId, feature, createdAt])
-}
-
-// Jarvis (AI School PA) chat history — one row per message, keyed to the
-// logged-in user (not a browser/device), so the same conversation is visible
-// no matter which device the admin logs in from. Pruned/ignored past a
-// per-user cap by the reader, not deleted here, so history never silently
-// grows unbounded server-side either.
-model AiChatMessage {
-  id            String   @id @default(uuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  institutionId String
-
-  role    String // "user" | "assistant"
-  content String @db.Text
-
-  createdAt DateTime @default(now())
-
-  @@index([userId, createdAt])
-}
-
-// Per-student "Conduct" + "Remarks" on the offline report card — written by
-// the class teacher only, one row per student per marksheet (not tied to any
-// subject/exam column), and surfaced read-only on that student's own report
-// card (My Profile > View Report Card > Offline) once written.
-model MarksheetRemark {
-  id                 String    @id @default(uuid())
-  marksheetId        String
-  marksheet          Marksheet @relation(fields: [marksheetId], references: [id], onDelete: Cascade)
-  studentId          String
-  student            Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  institutionId      String
-  conduct            String?
-  remarks            String?
-  updatedByTeacherId String?
-  updatedAt          DateTime  @updatedAt
-
-  @@unique([marksheetId, studentId])
-  @@index([marksheetId])
-}
-
-// Cache for machine-translated teacher-entered free text (Conduct/Remarks,
-// flag category/title/detail/actionTaken/reviewRemark) shown in Parent Mode
-// when a parent selects Hindi or Marathi. Keyed by a hash of the original
-// text + target language so the same sentence is only ever sent to the
-// translation API once, no matter how many students/parents view it.
-model TranslationCache {
-  id             String   @id @default(uuid())
-  sourceTextHash String
-  targetLang     String // 'hi' | 'mr'
-  translatedText String
-  createdAt      DateTime @default(now())
-
-  @@unique([sourceTextHash, targetLang])
-}
-
-// Singleton row (fixed id "platform") holding the platform's own payment
-// details — shown to institution admins on the Subscription/Billing page
-// for manual bank transfer / UPI payments. Editable only by SuperAdmin.
-model PlatformSettings {
-  id                String   @id @default("platform")
-  bankAccountName   String?
-  bankAccountNumber String?
-  bankIfsc          String?
-  bankName          String?
-  upiId             String?
-  updatedAt         DateTime @updatedAt
-  updatedBy         String?
-}
-
-// ─── BYOD: Institution-owned database configuration ──────────────────────────
-// Central-only. Holds per-institution data-storage mode + (for BYOD) the
-// encrypted connection details for the institution's own database.
-model InstitutionDbConfig {
-  id            String      @id @default(uuid())
-  institutionId String      @unique
-  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-
-  mode          String      @default("MANAGED") // MANAGED | BYOD
-  engine        String? // POSTGRES | MYSQL | SQLSERVER
-  host          String?
-  port          Int?
-  databaseName  String?
-  username      String?
-
-  // AES-256-GCM at rest — never returned to the frontend.
-  passwordCipher String?
-  passwordIv     String?
-  passwordTag    String?
-
-  sslMode   String? @default("require") // disable | require | verify-full
-  sslCaCert String?
-
-  status        String    @default("PENDING") // PENDING | CONNECTED | FAILED
-  lastTestedAt  DateTime?
-  lastError     String?
-  provisionedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// Pro-plan-only custom branding. Config is preserved when disabled (re-enabling
-// restores it) — eligibility (Pro + ACTIVE subscription) is re-checked every
-// time branding is served, not just when this is toggled on, so a lapsed Pro
-// subscription silently falls back to QubeEx branding without needing an
-// explicit disable.
-model WhiteLabelConfig {
-  id            String      @id @default(uuid())
-  institutionId String      @unique
-  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-
-  enabled   Boolean @default(false)
-  brandName String?
-  logoUrl   String?
-  faviconUrl String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

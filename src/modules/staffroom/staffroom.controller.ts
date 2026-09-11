@@ -24,11 +24,15 @@ export const upload = multer({
 
 const attachmentTypeEnum = z.enum(["image", "video", "file"]);
 
+const attachmentItemSchema = z.object({
+  url: z.string().url(),
+  type: attachmentTypeEnum,
+  name: z.string().max(200),
+});
+
 const createPostSchema = z.object({
   text: z.string().min(1).max(2000).trim(),
-  attachmentUrl: z.string().url().optional(),
-  attachmentType: attachmentTypeEnum.optional(),
-  attachmentName: z.string().max(200).optional(),
+  attachments: z.array(attachmentItemSchema).max(10).optional(),
 });
 
 const createCommentSchema = z.object({
@@ -55,9 +59,7 @@ function requireInstitution(req: AuthRequest) {
 function formatPost(post: {
   id: string;
   text: string;
-  attachmentUrl: string | null;
-  attachmentType: string | null;
-  attachmentName: string | null;
+  attachments: unknown;
   createdAt: Date;
   author: { id: string; name: string | null; role: string };
   reactions: { userId: string }[];
@@ -71,9 +73,7 @@ function formatPost(post: {
   return {
     id: post.id,
     text: post.text,
-    attachmentUrl: post.attachmentUrl,
-    attachmentType: post.attachmentType,
-    attachmentName: post.attachmentName,
+    attachments: Array.isArray(post.attachments) ? post.attachments : [],
     createdAt: post.createdAt.toISOString(),
     author: {
       id: post.author.id,
@@ -223,9 +223,7 @@ export const createPost = async (
         institutionId,
         authorId: userId,
         text: data.text,
-        attachmentUrl: data.attachmentUrl,
-        attachmentType: data.attachmentType,
-        attachmentName: data.attachmentName,
+        attachments: data.attachments ?? undefined,
       },
       include: {
         reactions: { select: { userId: true } },
@@ -263,9 +261,13 @@ export const deletePost = async (
 
     await academicDb().staffPost.delete({ where: { id } });
 
-    // Schedule R2 attachment deletion after grace period
-    if (post.attachmentUrl) {
-      const key = r2KeyFromUrl(post.attachmentUrl);
+    // Schedule R2 attachment deletion after grace period — for each
+    // attachment in the array now, instead of a single scalar URL.
+    const attachmentsToClean = Array.isArray(post.attachments) ? post.attachments : [];
+    for (const att of attachmentsToClean) {
+      const url = (att as { url?: string })?.url;
+      if (!url) continue;
+      const key = r2KeyFromUrl(url);
       if (key) await scheduleR2FileDeletion(key);
     }
 

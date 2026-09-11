@@ -402,6 +402,57 @@ export const sendSmartBoardFreeExpiryEmail = async ({
   }
 };
 
+export const sendPayslipEmail = async ({
+    to,
+    staffName,
+    institutionName,
+    month,
+    pdfBuffer,
+}: {
+    to: string;
+    staffName: string;
+    institutionName: string;
+    month: string; // "2026-10"
+    pdfBuffer: Buffer;
+}) => {
+    const monthLabel = (() => {
+        const [y, m] = month.split('-').map(Number);
+        return new Date(y, m - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+    })();
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'QubeEx <support@qubeex.in>',
+            to,
+            subject: `Your payslip for ${monthLabel} — ${institutionName}`,
+            html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:24px;background:#0F0A1E;color:#fff;font-family:'Segoe UI',Arial,sans-serif;">
+  <h2 style="margin:0 0 12px;">Your payslip is ready</h2>
+  <p style="margin:0 0 10px;line-height:1.6;">
+    Hi ${staffName}, your payslip for <strong>${monthLabel}</strong> from <strong>${institutionName}</strong> is attached to this email as a PDF.
+  </p>
+  <p style="margin:0;line-height:1.6;color:#aaa;font-size:13px;">
+    This is an automated email — please contact your institution's admin office for any payroll queries.
+  </p>
+</body>
+</html>`,
+            attachments: [
+                {
+                    filename: `payslip-${month}.pdf`,
+                    content: pdfBuffer,
+                },
+            ],
+        });
+
+        if (error) console.error('Resend error (payslip email):', error);
+        else console.log('Payslip email sent:', data?.id);
+    } catch (err) {
+        console.error('Payslip email send failed:', err);
+    }
+};
+
 export const sendMonthlyBillEmail = async ({
   to,
   institutionName,
@@ -589,6 +640,12 @@ export const sendTeacherInviteEmail = async ({
     }
 };
 
+// Was previously a one-off design (solid #1A1535 card, purple button, plain
+// <ul> permissions list, no logo/footer) — brought in line with the shared
+// QubeEx account-email template (see sendInviteEmail / sendTeacherInviteEmail):
+// same gradient header bar, logo block, orange CTA gradient, and
+// divider+footer close. Content (name, institution, permissions, invite link)
+// is unchanged — only the markup/styling around it.
 export const sendSubAdminInviteEmail = async ({
     to,
     name,
@@ -608,37 +665,117 @@ export const sendSubAdminInviteEmail = async ({
     };
     const grantedList = permissions
         .map(p => permissionLabels[p] ?? p)
-        .map(p => `<li style="margin-bottom:4px;">✅ ${p}</li>`)
+        .map(p => `<li style="margin:0 0 8px;padding:0;list-style:none;font-size:14px;color:rgba(255,255,255,0.75);">✅&nbsp;&nbsp;${p}</li>`)
         .join('');
 
     try {
-        await resend.emails.send({
+        const { data, error } = await resend.emails.send({
             from: 'QubeEx <support@qubeex.in>',
             to,
-            subject: `You've been added as a SubAdmin at ${institutionName} — QubeEx`,
+            subject: "You're invited to QubeEx — Set up your Sub-Admin account",
             html: `
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QubeEx SubAdmin Invite</title>
+</head>
 <body style="margin:0;padding:0;background:#0F0A1E;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0A1E;padding:40px 20px;">
-    <tr><td align="center">
-      <table width="520" cellpadding="0" cellspacing="0" style="background:#1A1535;border-radius:16px;padding:40px;border:1px solid #2D2850;">
-        <tr><td>
-          <h1 style="color:#E2DDFF;font-size:24px;margin:0 0 8px;">You're a SubAdmin 🏛️</h1>
-          <p style="color:#9B97C4;font-size:15px;margin:0 0 24px;">Hi ${name ?? 'there'}, ${institutionName} has given you administrative access to QubeEx.</p>
-          <p style="color:#9B97C4;font-size:14px;margin:0 0 8px;">Your access includes:</p>
-          <ul style="color:#E2DDFF;font-size:14px;margin:0 0 24px;padding-left:20px;">${grantedList}</ul>
-          <p style="color:#9B97C4;font-size:14px;margin:0 0 16px;">Set your password to activate your account:</p>
-          <a href="${inviteLink}" style="display:inline-block;background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">Set Password & Login</a>
-          <p style="color:#5E5A8A;font-size:12px;margin:24px 0 0;">This link expires in 7 days. If you didn't expect this email, ignore it.</p>
-        </td></tr>
-      </table>
-    </td></tr>
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0" style="background:#1A112E;border-radius:20px;overflow:hidden;border:1px solid rgba(124,58,237,0.2);">
+
+          <!-- Gradient header bar -->
+          <tr>
+            <td style="height:4px;background:linear-gradient(90deg,#7C3AED,#DA7756);"></td>
+          </tr>
+
+          <!-- Logo + brand -->
+          <tr>
+            <td align="center" style="padding:36px 40px 24px;">
+              <p style="margin:0;font-size:26px;font-weight:700;color:#FAE5D9;letter-spacing:-0.5px;">QubeEx</p>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;">AI-Powered School Platform</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:0 40px 32px;">
+              <p style="margin:0 0 16px;font-size:22px;font-weight:700;color:#FAE5D9;">
+                ${name ? `Hi ${name},` : 'Hello,'}
+              </p>
+              <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">
+                You have been added as a <strong style="color:#DA7756;">Sub-Admin</strong> at <strong style="color:#fff;">${institutionName}</strong> on the QubeEx platform.
+              </p>
+
+              <!-- Permissions box -->
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+                <tr>
+                  <td style="background:rgba(218,119,86,0.12);border:1px solid rgba(218,119,86,0.3);border-radius:12px;padding:20px 24px;">
+                    <p style="margin:0 0 10px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Your Access Includes</p>
+                    <ul style="margin:0;padding:0;">${grantedList}</ul>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 28px;font-size:13px;color:rgba(255,255,255,0.35);">
+                This link expires in <strong style="color:rgba(255,255,255,0.55);">7 days</strong>.
+              </p>
+
+              <!-- CTA Button -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 32px;">
+                <tr>
+                  <td align="center" style="border-radius:12px;background:linear-gradient(135deg,#E8876A,#DA7756,#C06040);">
+                    <a href="${inviteLink}"
+                      style="display:inline-block;padding:14px 36px;font-size:14px;font-weight:600;color:#fff;text-decoration:none;border-radius:12px;letter-spacing:0.2px;">
+                      Set Up My Account →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Fallback link -->
+              <p style="margin:0 0 6px;font-size:12px;color:rgba(255,255,255,0.3);">Or copy this link into your browser:</p>
+              <p style="margin:0;font-size:11px;color:#7C3AED;word-break:break-all;">${inviteLink}</p>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 40px;">
+              <div style="height:1px;background:rgba(255,255,255,0.07);"></div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding:24px 40px 32px;">
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.25);">
+                This invite was sent via QubeEx. If you weren't expecting this, you can safely ignore it.
+              </p>
+              <p style="margin:8px 0 0;font-size:11px;color:rgba(255,255,255,0.15);">
+                © ${new Date().getFullYear()} QubeEx. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
   </table>
 </body>
-</html>`,
+</html>
+`,
         });
+
+        if (error) {
+            console.error('Resend error (subadmin invite email):', error);
+            throw new Error('Failed to send subadmin invite email');
+        }
+
+        console.log('SubAdmin invite email sent:', data?.id);
     } catch (err) {
         console.error('sendSubAdminInviteEmail failed:', err);
         throw new Error('Failed to send subadmin invite email');

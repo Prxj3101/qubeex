@@ -24,11 +24,10 @@ describe("Mark payslip as paid", () => {
       data: { name: "Test Admin", email: `admin-${suffix}@example.com`, role: "ADMIN", institutionId, isActive: true },
     });
     adminToken = jwt.sign({ userId: adminUser.id, role: "ADMIN", institutionId }, process.env.JWT_SECRET!);
-    const teacherUser = await prisma.user.create({ data: { name: "Paid Teacher", email: `t-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true } });
-    const teacher = await prisma.teacher.create({ data: { teacherId: `PD-${suffix}`, userId: teacherUser.id, institutionId } });
+    const staff = await prisma.staff.create({ data: { institutionId, name: "Paid Staff", email: `t-${suffix}@example.com`, staffType: "HELPER" } });
     const run = await prisma.payrollRun.create({ data: { institutionId, month: "2027-01", status: "PUBLISHED", publishedAt: new Date() } });
     const payslip = await prisma.payslip.create({
-      data: { payrollRunId: run.id, teacherId: teacher.id, institutionId, earnings: [{ label: "Basic", amount: 15000 }], deductions: [], grossPay: 15000, netPay: 15000 },
+      data: { payrollRunId: run.id, staffId: staff.id, staffName: staff.name, staffEmail: staff.email, institutionId, earnings: [{ label: "Basic", amount: 15000 }], deductions: [], grossPay: 15000, netPay: 15000 },
     });
     payslipId = payslip.id;
 
@@ -40,11 +39,10 @@ describe("Mark payslip as paid", () => {
       },
     });
     secondInstitutionId = secondInstitution.id;
-    const secondTeacherUser = await prisma.user.create({ data: { name: "Second Teacher", email: `t2-${suffix}@example.com`, role: "TEACHER", institutionId: secondInstitutionId, isActive: true } });
-    const secondTeacher = await prisma.teacher.create({ data: { teacherId: `PD2-${suffix}`, userId: secondTeacherUser.id, institutionId: secondInstitutionId } });
+    const secondStaff = await prisma.staff.create({ data: { institutionId: secondInstitutionId, name: "Second Staff", email: `t2-${suffix}@example.com`, staffType: "HELPER" } });
     const secondRun = await prisma.payrollRun.create({ data: { institutionId: secondInstitutionId, month: "2027-01", status: "PUBLISHED", publishedAt: new Date() } });
     const secondPayslip = await prisma.payslip.create({
-      data: { payrollRunId: secondRun.id, teacherId: secondTeacher.id, institutionId: secondInstitutionId, earnings: [{ label: "Basic", amount: 20000 }], deductions: [], grossPay: 20000, netPay: 20000 },
+      data: { payrollRunId: secondRun.id, staffId: secondStaff.id, staffName: secondStaff.name, staffEmail: secondStaff.email, institutionId: secondInstitutionId, earnings: [{ label: "Basic", amount: 20000 }], deductions: [], grossPay: 20000, netPay: 20000 },
     });
     secondPayslipId = secondPayslip.id;
   });
@@ -52,13 +50,13 @@ describe("Mark payslip as paid", () => {
   afterAll(async () => {
     await prisma.payslip.deleteMany({ where: { institutionId } });
     await prisma.payrollRun.deleteMany({ where: { institutionId } });
-    await prisma.teacher.deleteMany({ where: { institutionId } });
+    await prisma.staff.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } }).catch(() => {});
 
     await prisma.payslip.deleteMany({ where: { institutionId: secondInstitutionId } });
     await prisma.payrollRun.deleteMany({ where: { institutionId: secondInstitutionId } });
-    await prisma.teacher.deleteMany({ where: { institutionId: secondInstitutionId } });
+    await prisma.staff.deleteMany({ where: { institutionId: secondInstitutionId } });
     await prisma.user.deleteMany({ where: { institutionId: secondInstitutionId } });
     await prisma.institution.delete({ where: { id: secondInstitutionId } }).catch(() => {});
 

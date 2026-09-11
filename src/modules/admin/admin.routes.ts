@@ -21,7 +21,9 @@ import {
   deleteTask,
 } from "./notepad.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, adminGetDivisionOnlineMarksheet, assignClassTeacher } from "./marksheet.controller";
-import { listSalaryTemplates, createSalaryTemplate, updateSalaryTemplate, deleteSalaryTemplate, getTeacherSalaryStructure, saveTeacherSalaryStructure, listPayrollRuns, createPayrollRun, getPayrollRun, updatePayslipLineItems, removePayslipFromRun, publishPayrollRun, markPayslipPaid } from "./payroll.controller";
+import { listSalaryTemplates, createSalaryTemplate, updateSalaryTemplate, deleteSalaryTemplate, getStaffSalaryStructure, saveStaffSalaryStructure, listPayrollRuns, createPayrollRun, getPayrollRun, updatePayslipLineItems, removePayslipFromRun, publishPayrollRun, markPayslipPaid } from "./payroll.controller";
+import { listStaff, searchLinkableProfiles, createStaff, updateStaff, deleteStaff } from "./staff.controller";
+import { listMyPayslips, redirectToMyPayslipPdf } from "./myPayslips.controller";
 import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
 import { getAttendanceInsights, getFeeInsights, getFeeAiInsights, getAiUsageInsights, getUsersInsights, getTeacherAiUsage, getParentEngagementInsights, askAssistant, getAssistantHistory, clearAssistantHistory } from "./insights.controller";
 import {
@@ -231,12 +233,17 @@ router.delete("/insights/assistant/history", ...INSIGHTS_ANALYTICS_PERM, clearAs
 router.get("/insights/users", ...A, getUsersInsights);
 
 // ── Payroll ──────────────────────────────────────────────────────────────────
+router.get("/payroll/staff", ...ADMIN_ONLY, listStaff);
+router.get("/payroll/staff/search-profiles", ...ADMIN_ONLY, searchLinkableProfiles);
+router.post("/payroll/staff", ...ADMIN_ONLY, createStaff);
+router.patch("/payroll/staff/:id", ...ADMIN_ONLY, updateStaff);
+router.delete("/payroll/staff/:id", ...ADMIN_ONLY, deleteStaff);
 router.get("/payroll/templates", ...ADMIN_ONLY, listSalaryTemplates);
 router.post("/payroll/templates", ...ADMIN_ONLY, createSalaryTemplate);
 router.patch("/payroll/templates/:id", ...ADMIN_ONLY, updateSalaryTemplate);
 router.delete("/payroll/templates/:id", ...ADMIN_ONLY, deleteSalaryTemplate);
-router.get("/payroll/teachers/:teacherId/structure", ...ADMIN_ONLY, getTeacherSalaryStructure);
-router.put("/payroll/teachers/:teacherId/structure", ...ADMIN_ONLY, saveTeacherSalaryStructure);
+router.get("/payroll/staff/:staffId/structure", ...ADMIN_ONLY, getStaffSalaryStructure);
+router.put("/payroll/staff/:staffId/structure", ...ADMIN_ONLY, saveStaffSalaryStructure);
 router.get("/payroll/runs", ...ADMIN_ONLY, listPayrollRuns);
 router.post("/payroll/runs", ...ADMIN_ONLY, createPayrollRun);
 router.get("/payroll/runs/:id", ...ADMIN_ONLY, getPayrollRun);
@@ -244,5 +251,7 @@ router.patch("/payroll/runs/:id/payslips/:payslipId", ...ADMIN_ONLY, updatePaysl
 router.delete("/payroll/runs/:id/payslips/:payslipId", ...ADMIN_ONLY, removePayslipFromRun);
 router.post("/payroll/runs/:id/publish", ...ADMIN_ONLY, publishPayrollRun);
 router.patch("/payroll/payslips/:id/mark-paid", ...ADMIN_ONLY, markPayslipPaid);
+router.get("/payroll/my-payslips", ...A, listMyPayslips);
+router.get("/payroll/my-payslips/:id/pdf", ...A, redirectToMyPayslipPdf);
 
 export default router;

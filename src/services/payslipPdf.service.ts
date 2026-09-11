@@ -4,8 +4,8 @@ const PDFDocument = require("pdfkit");
 export interface PayslipPdfParams {
   institutionName: string;
   institutionLogoUrl?: string | null;
-  teacherName: string;
-  teacherDisplayId: string;
+  staffName: string;
+  staffDesignation: string;
   month: string; // "2026-10"
   earnings: { label: string; amount: number }[];
   deductions: { label: string; amount: number }[];
@@ -45,10 +45,10 @@ export async function generatePayslipPdf(params: PayslipPdfParams): Promise<Buff
       .text(`Payslip — ${monthLabel(params.month)}`, { align: "center", width: pageWidth });
     doc.moveDown(1);
 
-    doc.fontSize(10).font("Helvetica-Bold").fillColor("#1a1a1a").text("Employee Name:", startX, doc.y, { continued: true });
-    doc.font("Helvetica").text(`  ${params.teacherName}`);
-    doc.font("Helvetica-Bold").text("Employee ID:", startX, doc.y, { continued: true });
-    doc.font("Helvetica").text(`  ${params.teacherDisplayId}`);
+    doc.fontSize(10).font("Helvetica-Bold").fillColor("#1a1a1a").text("Name:", startX, doc.y, { continued: true });
+    doc.font("Helvetica").text(`  ${params.staffName}`);
+    doc.font("Helvetica-Bold").text("Designation:", startX, doc.y, { continued: true });
+    doc.font("Helvetica").text(`  ${params.staffDesignation || "—"}`);
     doc.moveDown(1);
 
     const colWidth = pageWidth / 2 - 10;

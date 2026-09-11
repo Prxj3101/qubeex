@@ -23,11 +23,13 @@ describe("Teacher self-service payslips", () => {
     institutionId = institution.id;
 
     const userA = await prisma.user.create({ data: { name: "Self A", email: `sa-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true } });
-    const teacherA = await prisma.teacher.create({ data: { teacherId: `SA-${suffix}`, userId: userA.id, institutionId } });
+    await prisma.teacher.create({ data: { teacherId: `SA-${suffix}`, userId: userA.id, institutionId } });
+    const staffA = await prisma.staff.create({ data: { institutionId, name: "Self A", email: `sa-${suffix}@example.com`, staffType: "TEACHER", userId: userA.id } });
     teacherAToken = jwt.sign({ userId: userA.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const userB = await prisma.user.create({ data: { name: "Self B", email: `sb-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true } });
     await prisma.teacher.create({ data: { teacherId: `SB-${suffix}`, userId: userB.id, institutionId } });
+    await prisma.staff.create({ data: { institutionId, name: "Self B", email: `sb-${suffix}@example.com`, staffType: "TEACHER", userId: userB.id } });
     teacherBToken = jwt.sign({ userId: userB.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const upload = await uploadAttachmentToR2(Buffer.from("%PDF-1.4 fake payslip content"), {
@@ -41,13 +43,13 @@ describe("Teacher self-service payslips", () => {
 
     const publishedRun = await prisma.payrollRun.create({ data: { institutionId, month: "2027-02", status: "PUBLISHED", publishedAt: new Date() } });
     const publishedPayslip = await prisma.payslip.create({
-      data: { payrollRunId: publishedRun.id, teacherId: teacherA.id, institutionId, earnings: [{ label: "Basic", amount: 12000 }], deductions: [], grossPay: 12000, netPay: 12000, pdfUrl: uploadedPdfUrl },
+      data: { payrollRunId: publishedRun.id, staffId: staffA.id, institutionId, staffName: "Self A", staffEmail: `sa-${suffix}@example.com`, earnings: [{ label: "Basic", amount: 12000 }], deductions: [], grossPay: 12000, netPay: 12000, pdfUrl: uploadedPdfUrl },
     });
     publishedPayslipId = publishedPayslip.id;
 
     const draftRun = await prisma.payrollRun.create({ data: { institutionId, month: "2027-03", status: "DRAFT" } });
     const draftPayslip = await prisma.payslip.create({
-      data: { payrollRunId: draftRun.id, teacherId: teacherA.id, institutionId, earnings: [{ label: "Basic", amount: 12000 }], deductions: [], grossPay: 12000, netPay: 12000 },
+      data: { payrollRunId: draftRun.id, staffId: staffA.id, institutionId, staffName: "Self A", staffEmail: `sa-${suffix}@example.com`, earnings: [{ label: "Basic", amount: 12000 }], deductions: [], grossPay: 12000, netPay: 12000 },
     });
     draftPayslipId = draftPayslip.id;
   });
@@ -59,6 +61,7 @@ describe("Teacher self-service payslips", () => {
     }
     await prisma.payslip.deleteMany({ where: { institutionId } });
     await prisma.payrollRun.deleteMany({ where: { institutionId } });
+    await prisma.staff.deleteMany({ where: { institutionId } });
     await prisma.teacher.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } }).catch(() => {});

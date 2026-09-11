@@ -4,8 +4,8 @@ describe("generatePayslipPdf", () => {
   it("produces a non-empty PDF buffer starting with the PDF magic bytes", async () => {
     const buffer = await generatePayslipPdf({
       institutionName: "Test School",
-      teacherName: "Jane Doe",
-      teacherDisplayId: "TCH-0001",
+      staffName: "Jane Doe",
+      staffDesignation: "TCH-0001",
       month: "2026-10",
       earnings: [{ label: "Basic", amount: 30000 }, { label: "HRA", amount: 8000 }],
       deductions: [{ label: "PF", amount: 1200 }],
@@ -21,8 +21,8 @@ describe("generatePayslipPdf", () => {
   it("still produces a valid PDF with no bank details", async () => {
     const buffer = await generatePayslipPdf({
       institutionName: "Test School",
-      teacherName: "Jane Doe",
-      teacherDisplayId: "TCH-0001",
+      staffName: "Jane Doe",
+      staffDesignation: "TCH-0001",
       month: "2026-10",
       earnings: [{ label: "Basic", amount: 30000 }],
       deductions: [],

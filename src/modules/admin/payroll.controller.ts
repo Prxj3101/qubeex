@@ -3,10 +3,10 @@ import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError, NotFoundError, ConflictError } from "../../utils/errors";
-import { resolveUsers } from "../../services/userLookup.service";
 import { prisma } from "../../utils/prisma";
 import { uploadAttachmentToR2 } from "../../services/storage.service";
 import { generatePayslipPdf } from "../../services/payslipPdf.service";
+import { sendPayslipEmail } from "../../services/email.service";
 
 const lineItemSchema = z.object({
   label: z.string().min(1).max(100),
@@ -95,7 +95,7 @@ const bankDetailsSchema = z.object({
   bankName: z.string(),
 });
 
-const saveTeacherSalaryStructureSchema = z.object({
+const saveStaffSalaryStructureSchema = z.object({
   templateId: z.string().nullable().optional(),
   earnings: z.array(lineItemSchema),
   deductions: z.array(lineItemSchema),
@@ -103,33 +103,33 @@ const saveTeacherSalaryStructureSchema = z.object({
   effectiveFrom: z.string().datetime(),
 });
 
-export const getTeacherSalaryStructure = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const getStaffSalaryStructure = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
-    const teacherId = req.params.teacherId as string;
+    const staffId = req.params.staffId as string;
 
-    const teacher = await academicDb().teacher.findFirst({ where: { id: teacherId, institutionId } });
-    if (!teacher) throw new NotFoundError("Teacher not found");
+    const staff = await academicDb().staff.findFirst({ where: { id: staffId, institutionId } });
+    if (!staff) throw new NotFoundError("Staff member not found");
 
-    const structure = await academicDb().teacherSalaryStructure.findFirst({ where: { teacherId, institutionId } });
+    const structure = await academicDb().staffSalaryStructure.findFirst({ where: { staffId, institutionId } });
     res.json({ success: true, data: structure });
   } catch (err) {
     next(err);
   }
 };
 
-export const saveTeacherSalaryStructure = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const saveStaffSalaryStructure = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
-    const teacherId = req.params.teacherId as string;
-    const data = saveTeacherSalaryStructureSchema.parse(req.body);
+    const staffId = req.params.staffId as string;
+    const data = saveStaffSalaryStructureSchema.parse(req.body);
 
-    const teacher = await academicDb().teacher.findFirst({ where: { id: teacherId, institutionId } });
-    if (!teacher) throw new NotFoundError("Teacher not found");
+    const staff = await academicDb().staff.findFirst({ where: { id: staffId, institutionId } });
+    if (!staff) throw new NotFoundError("Staff member not found");
 
-    const existing = await academicDb().teacherSalaryStructure.findFirst({ where: { teacherId, institutionId } });
+    const existing = await academicDb().staffSalaryStructure.findFirst({ where: { staffId, institutionId } });
     const payload = {
       templateId: data.templateId ?? null,
       earnings: data.earnings,
@@ -139,8 +139,8 @@ export const saveTeacherSalaryStructure = async (req: AuthRequest, res: Response
     };
 
     const structure = existing
-      ? await academicDb().teacherSalaryStructure.update({ where: { id: existing.id }, data: payload })
-      : await academicDb().teacherSalaryStructure.create({ data: { teacherId, institutionId, ...payload } });
+      ? await academicDb().staffSalaryStructure.update({ where: { id: existing.id }, data: payload })
+      : await academicDb().staffSalaryStructure.create({ data: { staffId, institutionId, ...payload } });
 
     res.json({ success: true, data: structure });
   } catch (err) {
@@ -183,19 +183,27 @@ export const createPayrollRun = async (req: AuthRequest, res: Response, next: Ne
     const existing = await academicDb().payrollRun.findFirst({ where: { institutionId, month } });
     if (existing) throw new ConflictError(`A payroll run for ${month} already exists`);
 
-    const structures = await academicDb().teacherSalaryStructure.findMany({ where: { institutionId } });
+    const structures = await academicDb().staffSalaryStructure.findMany({ where: { institutionId } });
+    const staffList = await academicDb().staff.findMany({
+      where: { id: { in: structures.map((s) => s.staffId) }, status: "ACTIVE" },
+      select: { id: true, name: true, email: true },
+    });
+    const staffById = new Map(staffList.map((s) => [s.id, s]));
 
     const run = await academicDb().$transaction(async (tx) => {
       const createdRun = await tx.payrollRun.create({ data: { institutionId, month, status: "DRAFT" } });
 
       for (const s of structures) {
+        const staff = staffById.get(s.staffId);
+        if (!staff) continue;
         const earnings = s.earnings as unknown as LineItem[];
         const deductions = s.deductions as unknown as LineItem[];
         const grossPay = sumLineItems(earnings);
         const netPay = grossPay - sumLineItems(deductions);
         await tx.payslip.create({
           data: {
-            payrollRunId: createdRun.id, teacherId: s.teacherId, institutionId,
+            payrollRunId: createdRun.id, staffId: s.staffId, institutionId,
+            staffName: staff.name, staffEmail: staff.email,
             earnings, deductions, grossPay, netPay,
           },
         });
@@ -220,18 +228,21 @@ export const getPayrollRun = async (req: AuthRequest, res: Response, next: NextF
     if (!run) throw new NotFoundError("Payroll run not found");
 
     const payslips = await academicDb().payslip.findMany({ where: { payrollRunId: id }, orderBy: { createdAt: "asc" } });
-    const teachers = await academicDb().teacher.findMany({
-      where: { id: { in: payslips.map((p) => p.teacherId) } },
-      select: { id: true, userId: true },
+    const staffList = await academicDb().staff.findMany({
+      where: { id: { in: payslips.map((p) => p.staffId) } },
+      select: { id: true, staffType: true, designation: true },
     });
-    const teacherUsers = await resolveUsers(teachers.map((t) => t.userId), { id: true, name: true });
-    const nameByTeacherId = new Map(teachers.map((t) => [t.id, teacherUsers.get(t.userId)?.name ?? "Unknown"]));
+    const staffById = new Map(staffList.map((s) => [s.id, s]));
 
     res.json({
       success: true,
       data: {
         ...run,
-        payslips: payslips.map((p) => ({ ...p, teacherName: nameByTeacherId.get(p.teacherId) ?? "Unknown" })),
+        payslips: payslips.map((p) => ({
+          ...p,
+          staffType: staffById.get(p.staffId)?.staffType ?? "OTHER",
+          staffDesignation: staffById.get(p.staffId)?.designation ?? null,
+        })),
       },
     });
   } catch (err) {
@@ -303,11 +314,11 @@ export const publishPayrollRun = async (req: AuthRequest, res: Response, next: N
     if (run.status === "PUBLISHED") throw new BadRequestError("This payroll run is already published");
 
     const payslips = await academicDb().payslip.findMany({ where: { payrollRunId: runId } });
-    const teachers = await academicDb().teacher.findMany({
-      where: { id: { in: payslips.map((p) => p.teacherId) } },
-      select: { id: true, teacherId: true, userId: true },
+    const staffList = await academicDb().staff.findMany({
+      where: { id: { in: payslips.map((p) => p.staffId) } },
+      select: { id: true, name: true, email: true, designation: true, userId: true },
     });
-    const teacherUsers = await resolveUsers(teachers.map((t) => t.userId), { id: true, name: true });
+    const staffById = new Map(staffList.map((s) => [s.id, s]));
     // institution.name is central data, always safe via the plain `prisma`
     // client regardless of BYOD — matches the precedent in
     // teacher/overview.controller.ts.
@@ -315,17 +326,16 @@ export const publishPayrollRun = async (req: AuthRequest, res: Response, next: N
 
     for (const payslip of payslips) {
       if (payslip.pdfUrl) continue;
-      const teacher = teachers.find((t) => t.id === payslip.teacherId);
-      if (!teacher) continue;
-      const teacherName = teacherUsers.get(teacher.userId)?.name ?? "Unknown";
+      const staff = staffById.get(payslip.staffId);
+      if (!staff) continue;
 
-      const structure = await academicDb().teacherSalaryStructure.findFirst({ where: { teacherId: teacher.id, institutionId } });
+      const structure = await academicDb().staffSalaryStructure.findFirst({ where: { staffId: staff.id, institutionId } });
       const bankDetails = structure?.bankDetails as PayslipPdfBankDetails | null | undefined;
 
       const pdfBuffer = await generatePayslipPdf({
         institutionName: institution?.name ?? "",
-        teacherName,
-        teacherDisplayId: teacher.teacherId,
+        staffName: staff.name,
+        staffDesignation: staff.designation ?? "",
         month: run.month,
         earnings: payslip.earnings as unknown as LineItem[],
         deductions: payslip.deductions as unknown as LineItem[],
@@ -335,27 +345,37 @@ export const publishPayrollRun = async (req: AuthRequest, res: Response, next: N
       });
 
       const upload = await uploadAttachmentToR2(pdfBuffer, {
-        originalName: `payslip-${run.month}-${teacher.teacherId}.pdf`,
+        originalName: `payslip-${run.month}-${staff.id}.pdf`,
         contentType: "application/pdf",
         institutionId,
         area: "payroll",
         skipSizeLimit: true,
       });
 
-      await academicDb().payslip.update({ where: { id: payslip.id }, data: { pdfUrl: upload.publicUrl } });
+      if (staff.userId) {
+        const notification = await prisma.notification.create({
+          data: {
+            title: "Your payslip is ready",
+            message: `Your payslip for ${run.month} has been published.`,
+            tag: "PAYSLIP_PUBLISHED",
+            recipientType: "USER",
+            deliveredTo: 1,
+            sentById: adminUserId,
+            recipients: { create: [{ institutionId, userId: staff.userId }] },
+          },
+        });
+        void notification;
+      }
 
-      const notification = await prisma.notification.create({
-        data: {
-          title: "Your payslip is ready",
-          message: `Your payslip for ${run.month} has been published.`,
-          tag: "PAYSLIP_PUBLISHED",
-          recipientType: "USER",
-          deliveredTo: 1,
-          sentById: adminUserId,
-          recipients: { create: [{ institutionId, userId: teacher.userId }] },
-        },
+      await sendPayslipEmail({
+        to: staff.email,
+        staffName: staff.name,
+        institutionName: institution?.name ?? "",
+        month: run.month,
+        pdfBuffer,
       });
-      void notification;
+
+      await academicDb().payslip.update({ where: { id: payslip.id }, data: { pdfUrl: upload.publicUrl } });
     }
 
     const published = await academicDb().payrollRun.update({

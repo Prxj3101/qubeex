@@ -59,16 +59,16 @@ model Institution {
   mindmaps                         Mindmap[]
   notifications                    NotificationRecipient[]
   ptmNotes                         PTMNote[]
-  PayrollRun                       PayrollRun[]
-  Payslip                          Payslip[]
+  payrollRuns                      PayrollRun[]
+  payslips                         Payslip[]
   promotionBatches                 PromotionBatch[]
   questionShareTokens              QuestionShareToken[]
   reviews                          Review[]
-  SalaryTemplate                   SalaryTemplate[]
+  salaryTemplates                  SalaryTemplate[]
   holidays                         SchoolHoliday[]
-  Staff                            Staff[]
+  staff                            Staff[]
   staffPosts                       StaffPost[]
-  StaffSalaryStructure             StaffSalaryStructure[]
+  staffSalaryStructures            StaffSalaryStructure[]
   standards                        Standard[]
   students                         Student[]
   studentFeePayments               StudentFeePayment[]
@@ -114,7 +114,7 @@ model User {
   campusPostsAuthored    CampusFeedPost[]        @relation("CampusFeedPostAuthor")
   NotificationRecipient  NotificationRecipient[]
   ptmNotesCreated        PTMNote[]               @relation("PTMNoteCreator")
-  Staff                  Staff?
+  staff                  Staff?
   staffMessagesReceived  StaffMessage[]          @relation("StaffMessageReceiver")
   staffMessagesSent      StaffMessage[]          @relation("StaffMessageSender")
   staffPostsAuthored     StaffPost[]             @relation("StaffPostAuthor")
@@ -1467,99 +1467,114 @@ model WhiteLabelConfig {
   institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 }
 
-model PayrollRun {
-  id            String      @id
-  institutionId String
-  month         String
-  status        String      @default("DRAFT")
-  publishedAt   DateTime?
-  publishedBy   String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime
-  Institution   Institution @relation(fields: [institutionId], references: [id])
-  Payslip       Payslip[]
-
-  @@unique([institutionId, month])
-  @@index([institutionId])
-}
-
-model Payslip {
-  id            String      @id
-  payrollRunId  String
-  institutionId String
-  earnings      Json
-  deductions    Json
-  grossPay      Float
-  netPay        Float
-  status        String      @default("PENDING")
-  paidAt        DateTime?
-  paymentMethod String?
-  paymentRef    String?
-  pdfUrl        String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime
-  staffId       String
-  staffName     String
-  staffEmail    String
-  Institution   Institution @relation(fields: [institutionId], references: [id])
-  PayrollRun    PayrollRun  @relation(fields: [payrollRunId], references: [id])
-  Staff         Staff       @relation(fields: [staffId], references: [id])
-
-  @@unique([payrollRunId, staffId])
-  @@index([institutionId])
-  @@index([staffId])
-}
-
 model SalaryTemplate {
-  id            String      @id
+  id            String      @id @default(uuid())
   institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
   name          String
-  earnings      Json
-  deductions    Json
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime
-  Institution   Institution @relation(fields: [institutionId], references: [id])
+  earnings      Json // [{ label: "Basic", amount: 30000 }, ...]
+  deductions    Json // [{ label: "PF", amount: 1200 }, ...]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([institutionId, name])
   @@index([institutionId])
 }
 
 model Staff {
-  id                   String                @id
-  institutionId        String
-  name                 String
-  email                String
-  phone                String?
-  designation          String?
-  staffType            String
-  status               String                @default("ACTIVE")
-  joinedAt             DateTime              @default(now())
-  userId               String?               @unique
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @default(now())
-  Payslip              Payslip[]
-  Institution          Institution           @relation(fields: [institutionId], references: [id])
-  User                 User?                 @relation(fields: [userId], references: [id], onDelete: Restrict)
-  StaffSalaryStructure StaffSalaryStructure?
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  name        String
+  email       String
+  phone       String?
+  designation String?
+  staffType   String // TEACHER | ADMIN | SUB_ADMIN | HELPER | OTHER
+  status      String   @default("ACTIVE") // ACTIVE | INACTIVE
+  joinedAt    DateTime @default(now())
+
+  userId String? @unique // optional link to an existing Teacher/Admin/Sub-Admin User. Null = payroll-only staff.
+  user   User?   @relation(fields: [userId], references: [id])
+
+  salaryStructure StaffSalaryStructure?
+  payslips        Payslip[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([institutionId])
 }
 
 model StaffSalaryStructure {
-  id            String      @id
+  id            String      @id @default(uuid())
   staffId       String      @unique
+  staff         Staff       @relation(fields: [staffId], references: [id])
   institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
   templateId    String?
   earnings      Json
   deductions    Json
   bankDetails   Json?
   effectiveFrom DateTime
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @default(now())
-  Institution   Institution @relation(fields: [institutionId], references: [id])
-  Staff         Staff       @relation(fields: [staffId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([institutionId])
+}
+
+model PayrollRun {
+  id            String      @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  month         String // "2026-10"
+  status        String      @default("DRAFT") // DRAFT | PUBLISHED
+  publishedAt   DateTime?
+  publishedBy   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payslips Payslip[]
+
+  @@unique([institutionId, month])
+  @@index([institutionId])
+}
+
+model Payslip {
+  id            String      @id @default(uuid())
+  payrollRunId  String
+  payrollRun    PayrollRun  @relation(fields: [payrollRunId], references: [id])
+  staffId       String
+  staff         Staff       @relation(fields: [staffId], references: [id])
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+
+  // Snapshotted at run-creation time — a payroll-only Staff row has no live
+  // profile to join against later, and a published payslip must keep the
+  // name/email it was actually generated for even if the Staff row changes.
+  staffName  String
+  staffEmail String
+
+  earnings   Json
+  deductions Json
+  grossPay   Float
+  netPay     Float
+
+  status        String    @default("PENDING") // PENDING | PAID
+  paidAt        DateTime?
+  paymentMethod String?
+  paymentRef    String?
+  pdfUrl        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([payrollRunId, staffId])
+  @@index([institutionId])
+  @@index([staffId])
 }
 
 enum Role {

@@ -7,7 +7,7 @@ describe("Payslip editing within a draft run", () => {
   const suffix = `${Date.now()}-payroll-edit`;
   let institutionId: string;
   let adminToken: string;
-  let teacherId: string;
+  let staffId: string;
   let runId: string;
   let payslipId: string;
 
@@ -23,14 +23,13 @@ describe("Payslip editing within a draft run", () => {
       data: { name: "Test Admin", email: `admin-${suffix}@example.com`, role: "ADMIN", institutionId, isActive: true },
     });
     adminToken = jwt.sign({ userId: adminUser.id, role: "ADMIN", institutionId }, process.env.JWT_SECRET!);
-    const teacherUser = await prisma.user.create({ data: { name: "Test Teacher", email: `t-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true } });
-    const teacher = await prisma.teacher.create({ data: { teacherId: `PE-${suffix}`, userId: teacherUser.id, institutionId } });
-    teacherId = teacher.id;
+    const staff = await prisma.staff.create({ data: { institutionId, name: "Test Staff", email: `t-${suffix}@example.com`, staffType: "HELPER" } });
+    staffId = staff.id;
 
     const run = await prisma.payrollRun.create({ data: { institutionId, month: "2026-11", status: "DRAFT" } });
     runId = run.id;
     const payslip = await prisma.payslip.create({
-      data: { payrollRunId: runId, teacherId, institutionId, earnings: [{ label: "Basic", amount: 10000 }], deductions: [], grossPay: 10000, netPay: 10000 },
+      data: { payrollRunId: runId, staffId, staffName: staff.name, staffEmail: staff.email, institutionId, earnings: [{ label: "Basic", amount: 10000 }], deductions: [], grossPay: 10000, netPay: 10000 },
     });
     payslipId = payslip.id;
   });
@@ -38,7 +37,7 @@ describe("Payslip editing within a draft run", () => {
   afterAll(async () => {
     await prisma.payslip.deleteMany({ where: { institutionId } });
     await prisma.payrollRun.deleteMany({ where: { institutionId } });
-    await prisma.teacher.deleteMany({ where: { institutionId } });
+    await prisma.staff.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } }).catch(() => {});
     await prisma.$disconnect();

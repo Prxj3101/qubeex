@@ -186,7 +186,14 @@ import {
   deleteTask,
 } from "./notepad.controller";
 import { getOverview, getMyAiUsage } from "./overview.controller";
+import { listMyPayslips, redirectToMyPayslipPdf } from "./payroll.controller";
 import { getProfile, updateProfile, changePassword, getLoginActivity } from "../shared/profile.controller";
+import {
+  listNotifications,
+  markNotificationRead,
+  dismissNotification,
+  markAllNotificationsRead,
+} from "../admin/notifications.controller";
 
 const router = Router();
 
@@ -211,6 +218,14 @@ router.post("/presence", ...T, async (req: AuthRequest, res: Response, next: Nex
 // ── Overview ──────────────────────────────────────────────────────────────────
 router.get("/overview", ...T, getOverview);
 router.get("/ai-usage", ...T, getMyAiUsage);
+router.get("/payroll/payslips", ...T, listMyPayslips);
+router.get("/payroll/payslips/:id/pdf", ...T, redirectToMyPayslipPdf);
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+router.get("/notifications", ...T, listNotifications);
+router.patch("/notifications/read-all", ...T, markAllNotificationsRead);
+router.patch("/notifications/:recipientId/read", ...T, markNotificationRead);
+router.patch("/notifications/:recipientId/dismiss", ...T, dismissNotification);
 
 // ── Me ────────────────────────────────────────────────────────────────────────
 router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {

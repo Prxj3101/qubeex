@@ -753,19 +753,19 @@ model AttendanceDayNote {
 }
 
 model StaffPost {
-  id             String              @id @default(uuid())
-  institutionId  String
-  authorId       String
-  text        String
+  id            String              @id @default(uuid())
+  institutionId String
+  authorId      String
+  text          String
   // Multiple attachments per post — array of {url, type, name} objects,
   // replaces the old single attachmentUrl/attachmentType/attachmentName
   // scalars.
-  attachments Json?
-  createdAt   DateTime            @default(now())
-  author      User                @relation("StaffPostAuthor", fields: [authorId], references: [id])
-  institution    Institution         @relation(fields: [institutionId], references: [id])
-  comments       StaffPostComment[]
-  reactions      StaffPostReaction[]
+  attachments   Json?
+  createdAt     DateTime            @default(now())
+  author        User                @relation("StaffPostAuthor", fields: [authorId], references: [id])
+  institution   Institution         @relation(fields: [institutionId], references: [id])
+  comments      StaffPostComment[]
+  reactions     StaffPostReaction[]
 
   @@index([institutionId])
 }

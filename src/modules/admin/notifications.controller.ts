@@ -5,7 +5,7 @@ import { BadRequestError, NotFoundError } from "../../utils/errors";
 
 export const listNotifications = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = req.user!;
+    const { institutionId, userId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
     const page  = Math.max(1, parseInt(req.query.page  as string, 10) || 1);
@@ -13,14 +13,14 @@ export const listNotifications = async (req: AuthRequest, res: Response, next: N
 
     const [recipients, total, unreadCount] = await prisma.$transaction([
       prisma.notificationRecipient.findMany({
-        where: { institutionId, dismissedAt: null },
+        where: { institutionId, dismissedAt: null, OR: [{ userId: null }, { userId }] },
         include: { notification: true },
         orderBy: { notification: { createdAt: "desc" } },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.notificationRecipient.count({ where: { institutionId, dismissedAt: null } }),
-      prisma.notificationRecipient.count({ where: { institutionId, dismissedAt: null, readAt: null } }),
+      prisma.notificationRecipient.count({ where: { institutionId, dismissedAt: null, OR: [{ userId: null }, { userId }] } }),
+      prisma.notificationRecipient.count({ where: { institutionId, dismissedAt: null, readAt: null, OR: [{ userId: null }, { userId }] } }),
     ]);
 
     const notifications = recipients.map(r => ({
@@ -49,12 +49,12 @@ export const listNotifications = async (req: AuthRequest, res: Response, next: N
 
 export const markNotificationRead = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = req.user!;
+    const { institutionId, userId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const recipientId = req.params.recipientId as string;
 
     const existing = await prisma.notificationRecipient.findFirst({
-      where: { id: recipientId, institutionId, dismissedAt: null },
+      where: { id: recipientId, institutionId, dismissedAt: null, OR: [{ userId: null }, { userId }] },
     });
     if (!existing) throw new NotFoundError("Notification not found");
 
@@ -80,12 +80,12 @@ export const markNotificationRead = async (req: AuthRequest, res: Response, next
 
 export const dismissNotification = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = req.user!;
+    const { institutionId, userId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const recipientId = req.params.recipientId as string;
 
     const existing = await prisma.notificationRecipient.findFirst({
-      where: { id: recipientId, institutionId, dismissedAt: null },
+      where: { id: recipientId, institutionId, dismissedAt: null, OR: [{ userId: null }, { userId }] },
     });
     if (!existing) throw new NotFoundError("Notification not found");
 
@@ -102,12 +102,12 @@ export const dismissNotification = async (req: AuthRequest, res: Response, next:
 
 export const markAllNotificationsRead = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { institutionId } = req.user!;
+    const { institutionId, userId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
     const now = new Date();
     const result = await prisma.notificationRecipient.updateMany({
-      where: { institutionId, dismissedAt: null, readAt: null },
+      where: { institutionId, dismissedAt: null, readAt: null, OR: [{ userId: null }, { userId }] },
       data: { readAt: now },
     });
 

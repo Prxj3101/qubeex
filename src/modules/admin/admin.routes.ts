@@ -21,6 +21,7 @@ import {
   deleteTask,
 } from "./notepad.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, adminGetDivisionOnlineMarksheet, assignClassTeacher } from "./marksheet.controller";
+import { listSalaryTemplates, createSalaryTemplate, updateSalaryTemplate, deleteSalaryTemplate, getTeacherSalaryStructure, saveTeacherSalaryStructure, listPayrollRuns, createPayrollRun, getPayrollRun, updatePayslipLineItems, removePayslipFromRun, publishPayrollRun, markPayslipPaid } from "./payroll.controller";
 import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
 import { getAttendanceInsights, getFeeInsights, getFeeAiInsights, getAiUsageInsights, getUsersInsights, getTeacherAiUsage, getParentEngagementInsights, askAssistant, getAssistantHistory, clearAssistantHistory } from "./insights.controller";
 import {
@@ -228,5 +229,20 @@ router.post("/insights/assistant/ask", ...INSIGHTS_ANALYTICS_PERM, askAssistant)
 router.get("/insights/assistant/history", ...INSIGHTS_ANALYTICS_PERM, getAssistantHistory);
 router.delete("/insights/assistant/history", ...INSIGHTS_ANALYTICS_PERM, clearAssistantHistory);
 router.get("/insights/users", ...A, getUsersInsights);
+
+// ── Payroll ──────────────────────────────────────────────────────────────────
+router.get("/payroll/templates", ...ADMIN_ONLY, listSalaryTemplates);
+router.post("/payroll/templates", ...ADMIN_ONLY, createSalaryTemplate);
+router.patch("/payroll/templates/:id", ...ADMIN_ONLY, updateSalaryTemplate);
+router.delete("/payroll/templates/:id", ...ADMIN_ONLY, deleteSalaryTemplate);
+router.get("/payroll/teachers/:teacherId/structure", ...ADMIN_ONLY, getTeacherSalaryStructure);
+router.put("/payroll/teachers/:teacherId/structure", ...ADMIN_ONLY, saveTeacherSalaryStructure);
+router.get("/payroll/runs", ...ADMIN_ONLY, listPayrollRuns);
+router.post("/payroll/runs", ...ADMIN_ONLY, createPayrollRun);
+router.get("/payroll/runs/:id", ...ADMIN_ONLY, getPayrollRun);
+router.patch("/payroll/runs/:id/payslips/:payslipId", ...ADMIN_ONLY, updatePayslipLineItems);
+router.delete("/payroll/runs/:id/payslips/:payslipId", ...ADMIN_ONLY, removePayslipFromRun);
+router.post("/payroll/runs/:id/publish", ...ADMIN_ONLY, publishPayrollRun);
+router.patch("/payroll/payslips/:id/mark-paid", ...ADMIN_ONLY, markPayslipPaid);
 
 export default router;

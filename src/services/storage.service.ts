@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import path from "path";
-import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { BadRequestError } from "../utils/errors";
 import { prisma } from "../utils/prisma";
 import { getCache, setCache, delCache } from "../utils/cache";
@@ -435,6 +435,16 @@ const DELETION_GRACE_DAYS = 14;
 export async function scheduleR2FileDeletion(r2Key: string): Promise<void> {
   const scheduledAt = new Date(Date.now() + DELETION_GRACE_DAYS * 24 * 60 * 60 * 1000);
   await prisma.pendingFileDeletion.create({ data: { r2Key, scheduledAt } });
+}
+
+/** Downloads a single object from R2 and returns its bytes as a Buffer. */
+export async function downloadFromR2(r2Key: string): Promise<Buffer> {
+  const client = getR2Client();
+  const result = await client.send(new GetObjectCommand({ Bucket: R2_BUCKET, Key: r2Key }));
+  const stream = result.Body as import("stream").Readable;
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  return Buffer.concat(chunks);
 }
 
 /** Delete a single object from R2 immediately. Used by the cron job. */

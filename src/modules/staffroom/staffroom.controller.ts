@@ -41,10 +41,8 @@ const createCommentSchema = z.object({
 
 const sendMessageSchema = z.object({
   text: z.string().max(2000).trim().optional(),
-  attachmentUrl: z.string().url().optional(),
-  attachmentType: attachmentTypeEnum.optional(),
-  attachmentName: z.string().max(200).optional(),
-}).refine(d => d.text || d.attachmentUrl, {
+  attachments: z.array(attachmentItemSchema).max(10).optional(),
+}).refine(d => d.text || (d.attachments && d.attachments.length > 0), {
   message: "Message must have text or an attachment",
 });
 
@@ -506,7 +504,7 @@ export const listDmThreads = async (
             ],
           },
           orderBy: { createdAt: "desc" },
-          select: { text: true, attachmentName: true, createdAt: true, senderId: true },
+          select: { text: true, attachments: true, createdAt: true, senderId: true },
         });
 
         const unread = await academicDb().staffMessage.count({
@@ -527,7 +525,7 @@ export const listDmThreads = async (
           title: c.title,
           isActive: redisAvailable ? (presenceMap[c.contactUserId] ?? false) : c.isActive,
           lastMessage: lastMessage
-            ? (lastMessage.text ?? lastMessage.attachmentName ?? "Attachment")
+            ? (lastMessage.text ?? (Array.isArray(lastMessage.attachments) ? (lastMessage.attachments[0] as { name?: string })?.name : undefined) ?? "Attachment")
             : null,
           lastMessageAt: lastMessage?.createdAt.toISOString() ?? null,
           lastMessageIsMe: lastMessage?.senderId === userId,
@@ -581,9 +579,7 @@ export const getMessages = async (
         id: true,
         senderId: true,
         text: true,
-        attachmentUrl: true,
-        attachmentType: true,
-        attachmentName: true,
+        attachments: true,
         readAt: true,
         createdAt: true,
       },
@@ -606,9 +602,7 @@ export const getMessages = async (
         id: m.id,
         isMe: m.senderId === userId,
         text: m.text,
-        attachmentUrl: m.attachmentUrl,
-        attachmentType: m.attachmentType,
-        attachmentName: m.attachmentName,
+        attachments: Array.isArray(m.attachments) ? m.attachments : [],
         createdAt: m.createdAt.toISOString(),
       })),
     });
@@ -645,17 +639,13 @@ export const sendMessage = async (
         senderId: userId,
         receiverId: teacherUserId,
         text: data.text,
-        attachmentUrl: data.attachmentUrl,
-        attachmentType: data.attachmentType,
-        attachmentName: data.attachmentName,
+        attachments: data.attachments ?? undefined,
       },
       select: {
         id: true,
         senderId: true,
         text: true,
-        attachmentUrl: true,
-        attachmentType: true,
-        attachmentName: true,
+        attachments: true,
         createdAt: true,
       },
     });
@@ -666,9 +656,7 @@ export const sendMessage = async (
         id: message.id,
         isMe: true,
         text: message.text,
-        attachmentUrl: message.attachmentUrl,
-        attachmentType: message.attachmentType,
-        attachmentName: message.attachmentName,
+        attachments: Array.isArray(message.attachments) ? message.attachments : [],
         createdAt: message.createdAt.toISOString(),
       },
     });
@@ -697,8 +685,11 @@ export const unsendMessage = async (
 
     await academicDb().staffMessage.delete({ where: { id: messageId } });
 
-    if (message.attachmentUrl) {
-      const key = r2KeyFromUrl(message.attachmentUrl);
+    const attachmentsToClean = Array.isArray(message.attachments) ? message.attachments : [];
+    for (const att of attachmentsToClean) {
+      const url = (att as { url?: string })?.url;
+      if (!url) continue;
+      const key = r2KeyFromUrl(url);
       if (key) await scheduleR2FileDeletion(key);
     }
 

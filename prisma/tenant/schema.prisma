@@ -585,11 +585,12 @@ model StaffMessage {
   senderId      String
   receiverId    String
 
-  text           String?
-  attachmentUrl  String?
-  attachmentType String?
-  attachmentName String?
-  readAt         DateTime?
+  text String?
+  // Multiple attachments per message — array of {url, type, name} objects,
+  // replaces the old single attachmentUrl/attachmentType/attachmentName
+  // scalars.
+  attachments Json?
+  readAt      DateTime?
 
   createdAt DateTime @default(now())
 

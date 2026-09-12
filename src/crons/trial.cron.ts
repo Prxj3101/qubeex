@@ -3,6 +3,7 @@ import { prisma } from "../utils/prisma";
 import { logAudit } from "../services/audit.service";
 import { sendTrialEndingEmail } from "../services/email.service";
 import { recordCronRun } from "../services/cronTracker.service";
+import { createNotification } from "../services/notification.service";
 
 // ─── Daily: 9:00 AM IST (03:30 UTC) ─────────────────────────────────────────
 
@@ -51,17 +52,12 @@ async function runDailyTrialNotifications() {
         }
 
         // Dashboard notification for institution admin
-        await prisma.notification.create({
-          data: {
-            title: `Trial ending in ${daysRemaining} day${daysRemaining === 1 ? "" : "s"}`,
-            message: `Your QubeEx trial for ${sub.institution.name} expires on ${formattedEndDate}. Contact your QubeEx administrator to activate a plan and avoid losing access.`,
-            tag: "TRIAL",
-            recipientType: "SPECIFIC",
-            deliveredTo: 1,
-            recipients: {
-              create: { institutionId: sub.institutionId },
-            },
-          },
+        await createNotification({
+          title: `Trial ending in ${daysRemaining} day${daysRemaining === 1 ? "" : "s"}`,
+          message: `Your QubeEx trial for ${sub.institution.name} expires on ${formattedEndDate}. Contact your QubeEx administrator to activate a plan and avoid losing access.`,
+          tag: "TRIAL",
+          recipientType: "SPECIFIC",
+          recipients: [{ institutionId: sub.institutionId }],
         });
 
         await prisma.subscription.update({
@@ -81,14 +77,11 @@ async function runDailyTrialNotifications() {
           timeZone: "Asia/Kolkata",
         });
 
-        await prisma.notification.create({
-          data: {
-            title: `Trial expired — ${sub.institution.name}`,
-            message: `The trial for ${sub.institution.name} expired on ${formattedEndDate}. Activate a plan to restore access, or the institution will be auto-locked within 24 hours.`,
-            tag: "TRIAL",
-            recipientType: "SYSTEM",
-            deliveredTo: 0,
-          },
+        await createNotification({
+          title: `Trial expired — ${sub.institution.name}`,
+          message: `The trial for ${sub.institution.name} expired on ${formattedEndDate}. Activate a plan to restore access, or the institution will be auto-locked within 24 hours.`,
+          tag: "TRIAL",
+          recipientType: "SYSTEM",
         });
 
         await prisma.subscription.update({

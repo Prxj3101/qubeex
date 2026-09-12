@@ -7,6 +7,7 @@ import { prisma } from "../../utils/prisma";
 import { uploadAttachmentToR2 } from "../../services/storage.service";
 import { generatePayslipPdf } from "../../services/payslipPdf.service";
 import { sendPayslipEmail } from "../../services/email.service";
+import { createNotification } from "../../services/notification.service";
 
 const lineItemSchema = z.object({
   label: z.string().min(1).max(100),
@@ -353,18 +354,14 @@ export const publishPayrollRun = async (req: AuthRequest, res: Response, next: N
       });
 
       if (staff.userId) {
-        const notification = await prisma.notification.create({
-          data: {
-            title: "Your payslip is ready",
-            message: `Your payslip for ${run.month} has been published.`,
-            tag: "PAYSLIP_PUBLISHED",
-            recipientType: "USER",
-            deliveredTo: 1,
-            sentById: adminUserId,
-            recipients: { create: [{ institutionId, userId: staff.userId }] },
-          },
+        await createNotification({
+          title: "Your payslip is ready",
+          message: `Your payslip for ${run.month} has been published.`,
+          tag: "PAYSLIP_PUBLISHED",
+          recipientType: "USER",
+          sentById: adminUserId,
+          recipients: [{ institutionId, userId: staff.userId }],
         });
-        void notification;
       }
 
       await sendPayslipEmail({

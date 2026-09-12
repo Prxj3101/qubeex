@@ -1,6 +1,12 @@
 import { prisma } from "../../utils/prisma";
 import { redis, isRedisReady } from "../../utils/redis";
-import { hashToken } from "../../utils/token";
+import {
+  hashToken,
+  formatExpiryLabel,
+  ADMIN_INVITE_EXPIRY_MS,
+  TEACHER_INVITE_EXPIRY_MS,
+  SUBADMIN_INVITE_EXPIRY_MS,
+} from "../../utils/token";
 import { logAudit } from "../../services/audit.service";
 import { UnauthorizedError, BadRequestError } from "../../utils/errors";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
@@ -24,7 +30,20 @@ export const verifyInvite = async (token: string) => {
   if (!invite) throw new BadRequestError("Invalid or expired invite");
   if (invite.isUsed) throw new BadRequestError("Invalid or expired invite");
   if (invite.expiresAt < new Date()) {
-    throw new BadRequestError("Invalid or expired invite");
+    // Return (rather than throw) so the frontend can show the *real* expiry
+    // window for this invite's role instead of a guessed/hardcoded one —
+    // teacher and sub-admin invites last 7 days, admin invites last 1 hour.
+    const expiryMs =
+      invite.role === "TEACHER"
+        ? TEACHER_INVITE_EXPIRY_MS
+        : invite.role === "SUB_ADMIN"
+          ? SUBADMIN_INVITE_EXPIRY_MS
+          : ADMIN_INVITE_EXPIRY_MS;
+    return {
+      valid: false,
+      role: invite.role,
+      expiryLabel: formatExpiryLabel(expiryMs),
+    };
   }
 
   // Look up the INVITED user so we surface THEIR own login ID — not the admin's.

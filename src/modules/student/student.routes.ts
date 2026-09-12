@@ -25,6 +25,7 @@ import {
   dismissNotification,
   markAllNotificationsRead,
 } from "../admin/notifications.controller";
+import { registerDevicePushToken, unregisterDevicePushToken } from "../admin/pushToken.controller";
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -37,6 +38,8 @@ router.get("/notifications", ...S, listNotifications);
 router.patch("/notifications/read-all", ...S, markAllNotificationsRead);
 router.patch("/notifications/:recipientId/read", ...S, markNotificationRead);
 router.patch("/notifications/:recipientId/dismiss", ...S, dismissNotification);
+router.post("/push-token", ...S, registerDevicePushToken);
+router.delete("/push-token", ...S, unregisterDevicePushToken);
 
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).trim().optional(),

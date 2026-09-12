@@ -128,6 +128,23 @@ model User {
   teacher                Teacher?
   institution            Institution?            @relation(fields: [institutionId], references: [id])
   statusEvents           UserStatusEvent[]
+  pushTokens             PushToken[]
+}
+
+// Expo push tokens — one per device, so a user with multiple devices gets a
+// push on all of them. Keyed unique on `token` (not userId) so re-registering
+// the same device after a re-login on a different account reassigns it
+// instead of leaving a duplicate row pointed at the old user.
+model PushToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  platform  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model Plan {

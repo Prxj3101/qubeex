@@ -1,5 +1,5 @@
 import { prisma } from "../../utils/prisma";
-import { generateToken, hashToken } from "../../utils/token";
+import { generateToken, hashToken, ADMIN_INVITE_EXPIRY_MS } from "../../utils/token";
 import { sendInviteEmail, sendActivationEmail } from "../../services/email.service";
 import { logAudit } from "../../services/audit.service";
 import { uploadImageToR2, uploadAttachmentToR2, generateSignedAvatarUrl, getInstitutionStorageBytes, bytesToGb } from "../../services/storage.service";
@@ -13,6 +13,7 @@ import { cancelPaymentLink } from "../../services/razorpay.service";
 import { generateInstitutionCode } from "../../utils/institutionCode";
 import { generateUserId } from "../../utils/userId";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
+import { createNotification } from "../../services/notification.service";
 import { getInstitutionUsersForMonth } from "../../services/userDirectory.service";
 import { getAcademicClient } from "../../services/tenantDb.service";
 import type { AcademicClient } from "../../utils/academicContext";
@@ -389,14 +390,14 @@ export const createInstitutionService = async (data: any) => {
 
   const rawToken = generateToken();
   const tokenHash = hashToken(rawToken);
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + ADMIN_INVITE_EXPIRY_MS);
 
   // Generate human-readable code before the transaction (numbered per institution type).
   // The demo institute always gets 0000 and is excluded from the sequence
   // counted for every other institute of the same type.
   const institutionCode = await generateInstitutionCode(abbreviation, type, isDemo);
 
-  const institution = await prisma.$transaction(async (tx) => {
+  const { institution, adminDisplayId } = await prisma.$transaction(async (tx) => {
     const newInstitution = await tx.institution.create({
       data: {
         institutionCode,
@@ -456,13 +457,21 @@ export const createInstitutionService = async (data: any) => {
       },
     });
 
-    return newInstitution;
+    return { institution: newInstitution, adminDisplayId };
   });
 
   const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
 
   // Fire-and-forget — don't let email failure block institution creation
-  sendInviteEmail({ to: adminEmail, name: adminName, inviteLink, institutionCode }).catch((err) =>
+  sendInviteEmail({
+    to: adminEmail,
+    name: adminName,
+    inviteLink,
+    institutionName: name,
+    institutionCode,
+    userDisplayId: adminDisplayId,
+    expiresInMs: ADMIN_INVITE_EXPIRY_MS,
+  }).catch((err) =>
     console.error("⚠️  Invite email failed (non-blocking):", err.message)
   );
 
@@ -1046,14 +1055,14 @@ export const resendInvite = async (email: string, institutionId: string) => {
 
   const rawToken = generateToken();
   const tokenHash = hashToken(rawToken);
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + ADMIN_INVITE_EXPIRY_MS);
 
   await prisma.invite.create({
     data: { email, tokenHash, role: "ADMIN", institutionId: user.institutionId!, expiresAt },
   });
 
   const inviteLink = `${process.env.FRONTEND_URL}/set-password?token=${rawToken}`;
-  sendInviteEmail({ to: user.email, inviteLink }).catch((err) =>
+  sendInviteEmail({ to: user.email, inviteLink, expiresInMs: ADMIN_INVITE_EXPIRY_MS }).catch((err) =>
     console.error("⚠️  Resend invite email failed:", err.message)
   );
 
@@ -1471,18 +1480,13 @@ export const broadcastNotification = async (
     });
   }
 
-  const notification = await prisma.notification.create({
-    data: {
-      title: data.title,
-      message: data.message,
-      tag: data.tag,
-      recipientType: data.recipient,
-      deliveredTo: targetInstitutions.length,
-      sentById: actorId,
-      recipients: {
-        create: targetInstitutions.map((inst) => ({ institutionId: inst.id })),
-      },
-    },
+  const notification = await createNotification({
+    title: data.title,
+    message: data.message,
+    tag: data.tag,
+    recipientType: data.recipient,
+    sentById: actorId,
+    recipients: targetInstitutions.map((inst) => ({ institutionId: inst.id })),
   });
 
   logAudit("NOTIFICATION_SENT", {
@@ -1654,17 +1658,12 @@ export const replyToTicket = async (
 
   // Notify the institution's admin
   const truncated = message.length > 160 ? message.slice(0, 160) + "…" : message;
-  await prisma.notification.create({
-    data: {
-      title: "QubeEx Support replied to your ticket",
-      message: `${existing.title} — ${truncated}`,
-      tag: "TICKET_REPLY",
-      recipientType: "SPECIFIC",
-      deliveredTo: 1,
-      recipients: {
-        create: [{ institutionId: existing.institutionId }],
-      },
-    },
+  await createNotification({
+    title: "QubeEx Support replied to your ticket",
+    message: `${existing.title} — ${truncated}`,
+    tag: "TICKET_REPLY",
+    recipientType: "SPECIFIC",
+    recipients: [{ institutionId: existing.institutionId }],
   });
 
   return reply;

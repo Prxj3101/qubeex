@@ -5,6 +5,7 @@ import {
 } from "../services/billing.service";
 import { prisma } from "../utils/prisma";
 import { recordCronRun } from "../services/cronTracker.service";
+import { createNotification } from "../services/notification.service";
 
 // Runs at 23:59 on the last day of every month (IST = UTC+5:30 → 18:29 UTC)
 // Cron: minute hour day-of-month month day-of-week
@@ -41,15 +42,12 @@ export function startBillingCron() {
         const notifiedSet = new Set(alreadyNotified.map(r => r.institutionId));
         const toNotify = unpaidBills.filter(b => !notifiedSet.has(b.institutionId));
         for (const bill of toNotify) {
-          await prisma.notification.create({
-            data: {
-              title: "Your monthly bill is ready",
-              message: "Your bill has been generated. Please pay by the 8th to avoid service interruption.",
-              tag: "PLAN_EXPIRY",
-              recipientType: "SYSTEM",
-              deliveredTo: 1,
-              recipients: { create: [{ institutionId: bill.institutionId }] },
-            },
+          await createNotification({
+            title: "Your monthly bill is ready",
+            message: "Your bill has been generated. Please pay by the 8th to avoid service interruption.",
+            tag: "PLAN_EXPIRY",
+            recipientType: "SYSTEM",
+            recipients: [{ institutionId: bill.institutionId }],
           });
         }
         console.log(`[Billing Cron] Sent bill notifications to ${toNotify.length} institution(s)`);
@@ -106,15 +104,12 @@ export function startBillingCron() {
         const remindedSet = new Set(alreadyReminded.map(r => r.institutionId));
         const toRemind = unpaidBills.filter(b => !remindedSet.has(b.institutionId));
         for (const bill of toRemind) {
-          await prisma.notification.create({
-            data: {
-              title: "Payment reminder — 3 days left",
-              message: "Your account will be suspended on the 8th if payment is not received. Please pay now.",
-              tag: "PLAN_EXPIRY",
-              recipientType: "SYSTEM",
-              deliveredTo: 1,
-              recipients: { create: [{ institutionId: bill.institutionId }] },
-            },
+          await createNotification({
+            title: "Payment reminder — 3 days left",
+            message: "Your account will be suspended on the 8th if payment is not received. Please pay now.",
+            tag: "PLAN_EXPIRY",
+            recipientType: "SYSTEM",
+            recipients: [{ institutionId: bill.institutionId }],
           });
         }
         console.log(`[Billing Cron] Sent payment reminders to ${toRemind.length} institution(s)`);

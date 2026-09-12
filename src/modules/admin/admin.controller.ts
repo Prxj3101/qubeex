@@ -7,7 +7,7 @@ import { checkInstitutionAccess } from "../../utils/authorization";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { NotFoundError, BadRequestError } from "../../utils/errors";
-import { generateToken, hashToken } from "../../utils/token";
+import { generateToken, hashToken, TEACHER_INVITE_EXPIRY_MS, SUBADMIN_INVITE_EXPIRY_MS } from "../../utils/token";
 import { sendTeacherInviteEmail, sendSubAdminInviteEmail } from "../../services/email.service";
 import { cacheSubAdminPermissions } from "../../middlewares/requirePermission.middleware";
 import { generateUserId } from "../../utils/userId";
@@ -530,7 +530,7 @@ export const addTeacher = async (
         await recordUserStatusEvent(tx, { userId: newUser.id, institutionId: institutionId!, isActive: false });
         const newTeacher = await tx.teacher.create({ data: teacherCreateData(teacherId, newUser.id) });
         await tx.invite.create({
-          data: { email: data.email, tokenHash, role: "TEACHER", institutionId: institutionId!, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
+          data: { email: data.email, tokenHash, role: "TEACHER", institutionId: institutionId!, expiresAt: new Date(Date.now() + TEACHER_INVITE_EXPIRY_MS) },
         });
         return newTeacher;
       });
@@ -542,7 +542,7 @@ export const addTeacher = async (
         });
         await recordUserStatusEvent(tx, { userId: newUser.id, institutionId: institutionId!, isActive: false });
         await tx.invite.create({
-          data: { email: data.email, tokenHash, role: "TEACHER", institutionId: institutionId!, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
+          data: { email: data.email, tokenHash, role: "TEACHER", institutionId: institutionId!, expiresAt: new Date(Date.now() + TEACHER_INVITE_EXPIRY_MS) },
         });
         return { teacherId, newUser };
       });
@@ -557,6 +557,7 @@ export const addTeacher = async (
       name: data.name,
       institutionName: institution.name,
       inviteLink,
+      expiresInMs: TEACHER_INVITE_EXPIRY_MS,
     }).catch((err) => console.error("Teacher invite email failed:", err));
 
     logAudit("TEACHER_ADDED", {
@@ -1273,7 +1274,7 @@ export const resendTeacherInvite = async (
           tokenHash,
           role: "TEACHER",
           institutionId,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          expiresAt: new Date(Date.now() + TEACHER_INVITE_EXPIRY_MS),
         },
       });
     });
@@ -1284,6 +1285,7 @@ export const resendTeacherInvite = async (
       name: resendTeacherUser.name ?? undefined,
       institutionName: institution.name,
       inviteLink,
+      expiresInMs: TEACHER_INVITE_EXPIRY_MS,
     });
 
     logAudit("TEACHER_INVITE_RESENT", {
@@ -1518,7 +1520,7 @@ export const addSubAdmin = async (
           role: "SUB_ADMIN",
           permissions: data.permissions,
           institutionId: institutionId!,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          expiresAt: new Date(Date.now() + SUBADMIN_INVITE_EXPIRY_MS),
         },
       });
 
@@ -1532,6 +1534,7 @@ export const addSubAdmin = async (
       institutionName: institution.name,
       inviteLink,
       permissions: data.permissions as string[],
+      expiresInMs: SUBADMIN_INVITE_EXPIRY_MS,
     }).catch(err => console.error("SubAdmin invite email failed:", err));
 
     logAudit("SUBADMIN_ADDED", {
@@ -1886,7 +1889,7 @@ export const resendSubAdminInvite = async (
         role: "SUB_ADMIN",
         permissions: subAdmin.permissions,
         institutionId: institutionId!,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + SUBADMIN_INVITE_EXPIRY_MS),
       },
     });
 
@@ -1897,6 +1900,7 @@ export const resendSubAdminInvite = async (
       institutionName: institution.name,
       inviteLink,
       permissions: subAdmin.permissions,
+      expiresInMs: SUBADMIN_INVITE_EXPIRY_MS,
     });
 
     logAudit("SUBADMIN_INVITE_RESENT", {
@@ -1932,10 +1936,26 @@ export const deleteSubAdmin = async (
     });
     if (!subAdmin) throw new NotFoundError("SubAdmin not found");
 
+    // The User row can't be hard-deleted: it's referenced (non-cascading) by
+    // staff posts/reactions/comments, messages, calendar events, and student
+    // remarks they reported/reviewed — deleting it would either violate those
+    // FKs or destroy that history. Instead we tombstone it (deactivate +
+    // anonymize) so it keeps satisfying those FKs while disappearing from
+    // subadmin listings, which all join through the now-deleted SubAdmin row.
     await prisma.$transaction(async (tx) => {
       await tx.invite.deleteMany({ where: { email: subAdmin.user.email } });
       await tx.subAdmin.delete({ where: { id } });
-      await tx.user.delete({ where: { id: subAdmin.userId } });
+      await tx.user.update({
+        where: { id: subAdmin.userId },
+        data: {
+          isActive: false,
+          name: "Deleted SubAdmin",
+          email: `deleted-${subAdmin.userId}@deleted.qubeex.local`,
+          password: null,
+          mustChangePassword: false,
+        },
+      });
+      await recordUserStatusEvent(tx, { userId: subAdmin.userId, institutionId: institutionId!, isActive: false });
     });
 
     logAudit("SUBADMIN_DELETED", {

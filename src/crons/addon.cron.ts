@@ -3,6 +3,7 @@ import { prisma } from "../utils/prisma";
 import { logAudit } from "../services/audit.service";
 import { sendSmartBoardFreeExpiryEmail } from "../services/email.service";
 import { recordCronRun } from "../services/cronTracker.service";
+import { createNotification } from "../services/notification.service";
 
 type SmartBoardAddonState = {
   active?: boolean;
@@ -69,17 +70,12 @@ async function runSmartBoardFreeExpiryAlerts() {
       });
     }
 
-    await prisma.notification.create({
-      data: {
-        title: `Smart Board free period ends in 30 days — ${sub.institution.name}`,
-        message: `The Smart Board + AI free period for ${sub.institution.name} ends on ${formattedEndDate}. Configure billing or deactivate the addon before expiry.`,
-        tag: "PLAN_EXPIRY",
-        recipientType: "SPECIFIC",
-        deliveredTo: 1,
-        recipients: {
-          create: { institutionId: sub.institutionId },
-        },
-      },
+    await createNotification({
+      title: `Smart Board free period ends in 30 days — ${sub.institution.name}`,
+      message: `The Smart Board + AI free period for ${sub.institution.name} ends on ${formattedEndDate}. Configure billing or deactivate the addon before expiry.`,
+      tag: "PLAN_EXPIRY",
+      recipientType: "SPECIFIC",
+      recipients: [{ institutionId: sub.institutionId }],
     });
 
     const updatedAddons = {

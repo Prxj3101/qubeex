@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { formatExpiryLabel, ADMIN_INVITE_EXPIRY_MS, TEACHER_INVITE_EXPIRY_MS, SUBADMIN_INVITE_EXPIRY_MS } from '../utils/token';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -83,13 +84,6 @@ export const sendActivationEmail = async ({
                           <p style="margin:0;font-size:14px;font-weight:600;color:#fff;">${formatDate(nextBillingDate)}</p>
                         </td>
                       </tr>
-                      ${discountPct > 0 ? `
-                      <tr>
-                        <td style="padding-top:12px;">
-                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Discount Applied</p>
-                          <p style="margin:0;font-size:14px;font-weight:600;color:#10B981;">${discountPct}% off licence fee</p>
-                        </td>
-                      </tr>` : '<tr><td style="padding-top:12px;"></td></tr>'}
                       <tr>
                         <td style="padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);">
                           <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Invoice ID</p>
@@ -102,12 +96,13 @@ export const sendActivationEmail = async ({
                           <p style="margin:0;font-size:14px;font-weight:600;color:#fff;">₹${licenseFee.toLocaleString("en-IN")}</p>
                         </td>
                       </tr>
+                      ${discountPct > 0 && discountAmount > 0 ? `
                       <tr>
                         <td style="padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07);">
-                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Discount Amount</p>
-                          <p style="margin:0;font-size:14px;font-weight:600;color:#10B981;">₹${discountAmount.toLocaleString("en-IN")}</p>
+                          <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Discount Applied</p>
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#10B981;">${discountPct}% off licence fee (−₹${discountAmount.toLocaleString("en-IN")})</p>
                         </td>
-                      </tr>
+                      </tr>` : ''}
                       <tr>
                         <td style="padding-top:12px;">
                           <p style="margin:0 0 3px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Paid Amount</p>
@@ -154,13 +149,22 @@ export const sendInviteEmail = async ({
     to,
     name,
     inviteLink,
+    institutionName,
     institutionCode,
+    userDisplayId,
+    expiresInMs = ADMIN_INVITE_EXPIRY_MS,
 }: {
     to: string;
     name?: string;
     inviteLink: string;
+    institutionName?: string;
     institutionCode?: string;
+    /** The invited Admin's own login ID (User.displayId) — usable in place of email at login. */
+    userDisplayId?: string;
+    /** Must match the duration actually used for this invite's `expiresAt`, so the copy below can never drift from what's really enforced. */
+    expiresInMs?: number;
 }) => {
+    const expiryLabel = formatExpiryLabel(expiresInMs);
     try {
         const { data, error } = await resend.emails.send({
             from: 'QubeEx <support@qubeex.in>',
@@ -200,25 +204,38 @@ export const sendInviteEmail = async ({
                 Hello${name ? `, ${name}` : ''}! 👋
               </p>
               <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">
-                You have been invited as an <strong style="color:#DA7756;">Admin</strong> on the QubeEx platform. 
+                You have been invited as an <strong style="color:#DA7756;">Admin</strong>${institutionName ? ` at <strong style="color:#fff;">${institutionName}</strong>` : ''} on the QubeEx platform.
                 Click the button below to set your password and activate your account.
               </p>
 
               ${institutionCode ? `
               <!-- Institution Code Box -->
-              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:16px;">
                 <tr>
                   <td style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:12px;padding:16px 20px;">
                     <p style="margin:0 0 4px;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;text-transform:uppercase;">Your Institution ID</p>
                     <p style="margin:0;font-size:22px;font-weight:700;color:#DA7756;letter-spacing:2px;font-family:monospace;">${institutionCode}</p>
-                    <p style="margin:6px 0 0;font-size:11px;color:rgba(255,255,255,0.3);">Keep this safe — you'll need it to complete setup and to log in.</p>
+                    <p style="margin:6px 0 0;font-size:11px;color:rgba(255,255,255,0.3);">Keep this safe — you'll need it to complete setup.</p>
+                  </td>
+                </tr>
+              </table>
+              ` : ''}
+
+              ${userDisplayId ? `
+              <!-- Admin User ID Box -->
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+                <tr>
+                  <td style="background:rgba(218,119,86,0.12);border:1px solid rgba(218,119,86,0.3);border-radius:12px;padding:16px 20px;">
+                    <p style="margin:0 0 4px;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;text-transform:uppercase;">Your Admin ID</p>
+                    <p style="margin:0;font-size:22px;font-weight:700;color:#DA7756;letter-spacing:2px;font-family:monospace;">${userDisplayId}</p>
+                    <p style="margin:6px 0 0;font-size:11px;color:rgba(255,255,255,0.3);">Use this (or your email) with your password to log in going forward.</p>
                   </td>
                 </tr>
               </table>
               ` : ''}
 
               <p style="margin:0 0 28px;font-size:13px;color:rgba(255,255,255,0.35);">
-                This link expires in <strong style="color:rgba(255,255,255,0.55);">1 hour</strong>.
+                This link expires in <strong style="color:rgba(255,255,255,0.55);">${expiryLabel}</strong>.
               </p>
 
               <!-- CTA Button -->
@@ -561,12 +578,16 @@ export const sendTeacherInviteEmail = async ({
     name,
     inviteLink,
     institutionName,
+    expiresInMs = TEACHER_INVITE_EXPIRY_MS,
 }: {
     to: string;
     name?: string;
     inviteLink: string;
     institutionName: string;
+    /** Must match the duration actually used for this invite's `expiresAt`, so the copy below can never drift from what's really enforced. */
+    expiresInMs?: number;
 }) => {
+    const expiryLabel = formatExpiryLabel(expiresInMs);
     try {
         const { data, error } = await resend.emails.send({
             from: 'QubeEx <support@qubeex.in>',
@@ -616,7 +637,7 @@ export const sendTeacherInviteEmail = async ({
                 </tr>
               </table>
               <p style="margin:24px 0 0;font-size:12px;color:rgba(255,255,255,0.3);text-align:center;">
-                Link expires in 7 days. If you weren't expecting this, you can safely ignore it.
+                Link expires in ${expiryLabel}. If you weren't expecting this, you can safely ignore it.
               </p>
             </td>
           </tr>
@@ -652,13 +673,17 @@ export const sendSubAdminInviteEmail = async ({
     inviteLink,
     institutionName,
     permissions,
+    expiresInMs = SUBADMIN_INVITE_EXPIRY_MS,
 }: {
     to: string;
     name?: string;
     inviteLink: string;
     institutionName: string;
     permissions: string[];
+    /** Must match the duration actually used for this invite's `expiresAt`, so the copy below can never drift from what's really enforced. */
+    expiresInMs?: number;
 }) => {
+    const expiryLabel = formatExpiryLabel(expiresInMs);
     const permissionLabels: Record<string, string> = {
         CAMPUS: 'Campus & Classes',
         FEES: 'Fees Management',
@@ -721,7 +746,7 @@ export const sendSubAdminInviteEmail = async ({
               </table>
 
               <p style="margin:0 0 28px;font-size:13px;color:rgba(255,255,255,0.35);">
-                This link expires in <strong style="color:rgba(255,255,255,0.55);">7 days</strong>.
+                This link expires in <strong style="color:rgba(255,255,255,0.55);">${expiryLabel}</strong>.
               </p>
 
               <!-- CTA Button -->

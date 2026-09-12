@@ -194,6 +194,7 @@ import {
   dismissNotification,
   markAllNotificationsRead,
 } from "../admin/notifications.controller";
+import { registerDevicePushToken, unregisterDevicePushToken } from "../admin/pushToken.controller";
 
 const router = Router();
 
@@ -226,6 +227,8 @@ router.get("/notifications", ...T, listNotifications);
 router.patch("/notifications/read-all", ...T, markAllNotificationsRead);
 router.patch("/notifications/:recipientId/read", ...T, markNotificationRead);
 router.patch("/notifications/:recipientId/dismiss", ...T, dismissNotification);
+router.post("/push-token", ...T, registerDevicePushToken);
+router.delete("/push-token", ...T, unregisterDevicePushToken);
 
 // ── Me ────────────────────────────────────────────────────────────────────────
 router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {

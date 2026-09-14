@@ -76,6 +76,7 @@ async function runSmartBoardFreeExpiryAlerts() {
       tag: "PLAN_EXPIRY",
       recipientType: "SPECIFIC",
       recipients: [{ institutionId: sub.institutionId }],
+      adminOnly: true,
     });
 
     const updatedAddons = {

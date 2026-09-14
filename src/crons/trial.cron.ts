@@ -58,6 +58,7 @@ async function runDailyTrialNotifications() {
           tag: "TRIAL",
           recipientType: "SPECIFIC",
           recipients: [{ institutionId: sub.institutionId }],
+          adminOnly: true,
         });
 
         await prisma.subscription.update({

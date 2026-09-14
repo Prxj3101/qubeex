@@ -1487,6 +1487,7 @@ export const broadcastNotification = async (
     recipientType: data.recipient,
     sentById: actorId,
     recipients: targetInstitutions.map((inst) => ({ institutionId: inst.id })),
+    adminOnly: true,
   });
 
   logAudit("NOTIFICATION_SENT", {
@@ -1664,6 +1665,7 @@ export const replyToTicket = async (
     tag: "TICKET_REPLY",
     recipientType: "SPECIFIC",
     recipients: [{ institutionId: existing.institutionId }],
+    adminOnly: true,
   });
 
   return reply;

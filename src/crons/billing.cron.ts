@@ -48,6 +48,7 @@ export function startBillingCron() {
             tag: "PLAN_EXPIRY",
             recipientType: "SYSTEM",
             recipients: [{ institutionId: bill.institutionId }],
+            adminOnly: true,
           });
         }
         console.log(`[Billing Cron] Sent bill notifications to ${toNotify.length} institution(s)`);
@@ -110,6 +111,7 @@ export function startBillingCron() {
             tag: "PLAN_EXPIRY",
             recipientType: "SYSTEM",
             recipients: [{ institutionId: bill.institutionId }],
+            adminOnly: true,
           });
         }
         console.log(`[Billing Cron] Sent payment reminders to ${toRemind.length} institution(s)`);

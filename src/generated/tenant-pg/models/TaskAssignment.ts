@@ -47,13 +47,14 @@ export type TaskAssignmentMinAggregateOutputType = {
   totalMarks: number | null
   dueDate: Date | null
   status: $Enums.TaskAssignmentStatus | null
-  completedAt: Date | null
-  submissionType: string | null
-  isRandomized: boolean | null
-  answerSpace: boolean | null
-  numberOfQuestions: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  answerSpace: boolean | null
+  isRandomized: boolean | null
+  numberOfQuestions: number | null
+  submissionType: string | null
+  completedAt: Date | null
+  deadlineReminderSent: boolean | null
 }
 
 export type TaskAssignmentMaxAggregateOutputType = {
@@ -67,13 +68,14 @@ export type TaskAssignmentMaxAggregateOutputType = {
   totalMarks: number | null
   dueDate: Date | null
   status: $Enums.TaskAssignmentStatus | null
-  completedAt: Date | null
-  submissionType: string | null
-  isRandomized: boolean | null
-  answerSpace: boolean | null
-  numberOfQuestions: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  answerSpace: boolean | null
+  isRandomized: boolean | null
+  numberOfQuestions: number | null
+  submissionType: string | null
+  completedAt: Date | null
+  deadlineReminderSent: boolean | null
 }
 
 export type TaskAssignmentCountAggregateOutputType = {
@@ -87,15 +89,16 @@ export type TaskAssignmentCountAggregateOutputType = {
   totalMarks: number
   dueDate: number
   status: number
-  completedAt: number
-  submissionType: number
-  sections: number
-  questions: number
-  isRandomized: number
-  answerSpace: number
-  numberOfQuestions: number
   createdAt: number
   updatedAt: number
+  answerSpace: number
+  isRandomized: number
+  numberOfQuestions: number
+  questions: number
+  sections: number
+  submissionType: number
+  completedAt: number
+  deadlineReminderSent: number
   _all: number
 }
 
@@ -121,13 +124,14 @@ export type TaskAssignmentMinAggregateInputType = {
   totalMarks?: true
   dueDate?: true
   status?: true
-  completedAt?: true
-  submissionType?: true
-  isRandomized?: true
-  answerSpace?: true
-  numberOfQuestions?: true
   createdAt?: true
   updatedAt?: true
+  answerSpace?: true
+  isRandomized?: true
+  numberOfQuestions?: true
+  submissionType?: true
+  completedAt?: true
+  deadlineReminderSent?: true
 }
 
 export type TaskAssignmentMaxAggregateInputType = {
@@ -141,13 +145,14 @@ export type TaskAssignmentMaxAggregateInputType = {
   totalMarks?: true
   dueDate?: true
   status?: true
-  completedAt?: true
-  submissionType?: true
-  isRandomized?: true
-  answerSpace?: true
-  numberOfQuestions?: true
   createdAt?: true
   updatedAt?: true
+  answerSpace?: true
+  isRandomized?: true
+  numberOfQuestions?: true
+  submissionType?: true
+  completedAt?: true
+  deadlineReminderSent?: true
 }
 
 export type TaskAssignmentCountAggregateInputType = {
@@ -161,15 +166,16 @@ export type TaskAssignmentCountAggregateInputType = {
   totalMarks?: true
   dueDate?: true
   status?: true
-  completedAt?: true
-  submissionType?: true
-  sections?: true
-  questions?: true
-  isRandomized?: true
-  answerSpace?: true
-  numberOfQuestions?: true
   createdAt?: true
   updatedAt?: true
+  answerSpace?: true
+  isRandomized?: true
+  numberOfQuestions?: true
+  questions?: true
+  sections?: true
+  submissionType?: true
+  completedAt?: true
+  deadlineReminderSent?: true
   _all?: true
 }
 
@@ -270,15 +276,16 @@ export type TaskAssignmentGroupByOutputType = {
   totalMarks: number
   dueDate: Date | null
   status: $Enums.TaskAssignmentStatus
-  completedAt: Date | null
-  submissionType: string
-  sections: runtime.JsonValue | null
-  questions: runtime.JsonValue | null
-  isRandomized: boolean
-  answerSpace: boolean
-  numberOfQuestions: number
   createdAt: Date
   updatedAt: Date
+  answerSpace: boolean
+  isRandomized: boolean
+  numberOfQuestions: number
+  questions: runtime.JsonValue | null
+  sections: runtime.JsonValue | null
+  submissionType: string
+  completedAt: Date | null
+  deadlineReminderSent: boolean
   _count: TaskAssignmentCountAggregateOutputType | null
   _avg: TaskAssignmentAvgAggregateOutputType | null
   _sum: TaskAssignmentSumAggregateOutputType | null
@@ -315,18 +322,19 @@ export type TaskAssignmentWhereInput = {
   totalMarks?: Prisma.IntFilter<"TaskAssignment"> | number
   dueDate?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFilter<"TaskAssignment"> | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
-  submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
-  sections?: Prisma.JsonNullableFilter<"TaskAssignment">
-  questions?: Prisma.JsonNullableFilter<"TaskAssignment">
-  isRandomized?: Prisma.BoolFilter<"TaskAssignment"> | boolean
-  answerSpace?: Prisma.BoolFilter<"TaskAssignment"> | boolean
-  numberOfQuestions?: Prisma.IntFilter<"TaskAssignment"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  answerSpace?: Prisma.BoolFilter<"TaskAssignment"> | boolean
+  isRandomized?: Prisma.BoolFilter<"TaskAssignment"> | boolean
+  numberOfQuestions?: Prisma.IntFilter<"TaskAssignment"> | number
+  questions?: Prisma.JsonNullableFilter<"TaskAssignment">
+  sections?: Prisma.JsonNullableFilter<"TaskAssignment">
+  submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
+  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFilter<"TaskAssignment"> | boolean
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
+  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   submissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
 }
@@ -342,18 +350,19 @@ export type TaskAssignmentOrderByWithRelationInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  submissionType?: Prisma.SortOrder
-  sections?: Prisma.SortOrderInput | Prisma.SortOrder
-  questions?: Prisma.SortOrderInput | Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
-  numberOfQuestions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  teacher?: Prisma.TeacherOrderByWithRelationInput
-  subject?: Prisma.SubjectOrderByWithRelationInput
+  answerSpace?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  numberOfQuestions?: Prisma.SortOrder
+  questions?: Prisma.SortOrderInput | Prisma.SortOrder
+  sections?: Prisma.SortOrderInput | Prisma.SortOrder
+  submissionType?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
   division?: Prisma.DivisionOrderByWithRelationInput
+  subject?: Prisma.SubjectOrderByWithRelationInput
+  teacher?: Prisma.TeacherOrderByWithRelationInput
   submissions?: Prisma.TaskAssignmentSubmissionOrderByRelationAggregateInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptOrderByRelationAggregateInput
 }
@@ -372,18 +381,19 @@ export type TaskAssignmentWhereUniqueInput = Prisma.AtLeast<{
   totalMarks?: Prisma.IntFilter<"TaskAssignment"> | number
   dueDate?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFilter<"TaskAssignment"> | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
-  submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
-  sections?: Prisma.JsonNullableFilter<"TaskAssignment">
-  questions?: Prisma.JsonNullableFilter<"TaskAssignment">
-  isRandomized?: Prisma.BoolFilter<"TaskAssignment"> | boolean
-  answerSpace?: Prisma.BoolFilter<"TaskAssignment"> | boolean
-  numberOfQuestions?: Prisma.IntFilter<"TaskAssignment"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  answerSpace?: Prisma.BoolFilter<"TaskAssignment"> | boolean
+  isRandomized?: Prisma.BoolFilter<"TaskAssignment"> | boolean
+  numberOfQuestions?: Prisma.IntFilter<"TaskAssignment"> | number
+  questions?: Prisma.JsonNullableFilter<"TaskAssignment">
+  sections?: Prisma.JsonNullableFilter<"TaskAssignment">
+  submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
+  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFilter<"TaskAssignment"> | boolean
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
+  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   submissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
 }, "id">
@@ -399,15 +409,16 @@ export type TaskAssignmentOrderByWithAggregationInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  submissionType?: Prisma.SortOrder
-  sections?: Prisma.SortOrderInput | Prisma.SortOrder
-  questions?: Prisma.SortOrderInput | Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
-  numberOfQuestions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  numberOfQuestions?: Prisma.SortOrder
+  questions?: Prisma.SortOrderInput | Prisma.SortOrder
+  sections?: Prisma.SortOrderInput | Prisma.SortOrder
+  submissionType?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
   _count?: Prisma.TaskAssignmentCountOrderByAggregateInput
   _avg?: Prisma.TaskAssignmentAvgOrderByAggregateInput
   _max?: Prisma.TaskAssignmentMaxOrderByAggregateInput
@@ -429,15 +440,16 @@ export type TaskAssignmentScalarWhereWithAggregatesInput = {
   totalMarks?: Prisma.IntWithAggregatesFilter<"TaskAssignment"> | number
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignment"> | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusWithAggregatesFilter<"TaskAssignment"> | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignment"> | Date | string | null
-  submissionType?: Prisma.StringWithAggregatesFilter<"TaskAssignment"> | string
-  sections?: Prisma.JsonNullableWithAggregatesFilter<"TaskAssignment">
-  questions?: Prisma.JsonNullableWithAggregatesFilter<"TaskAssignment">
-  isRandomized?: Prisma.BoolWithAggregatesFilter<"TaskAssignment"> | boolean
-  answerSpace?: Prisma.BoolWithAggregatesFilter<"TaskAssignment"> | boolean
-  numberOfQuestions?: Prisma.IntWithAggregatesFilter<"TaskAssignment"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignment"> | Date | string
+  answerSpace?: Prisma.BoolWithAggregatesFilter<"TaskAssignment"> | boolean
+  isRandomized?: Prisma.BoolWithAggregatesFilter<"TaskAssignment"> | boolean
+  numberOfQuestions?: Prisma.IntWithAggregatesFilter<"TaskAssignment"> | number
+  questions?: Prisma.JsonNullableWithAggregatesFilter<"TaskAssignment">
+  sections?: Prisma.JsonNullableWithAggregatesFilter<"TaskAssignment">
+  submissionType?: Prisma.StringWithAggregatesFilter<"TaskAssignment"> | string
+  completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignment"> | Date | string | null
+  deadlineReminderSent?: Prisma.BoolWithAggregatesFilter<"TaskAssignment"> | boolean
 }
 
 export type TaskAssignmentCreateInput = {
@@ -448,18 +460,19 @@ export type TaskAssignmentCreateInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
@@ -475,15 +488,16 @@ export type TaskAssignmentUncheckedCreateInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
@@ -496,18 +510,19 @@ export type TaskAssignmentUpdateInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
@@ -523,15 +538,16 @@ export type TaskAssignmentUncheckedUpdateInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
@@ -547,15 +563,16 @@ export type TaskAssignmentCreateManyInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
 }
 
 export type TaskAssignmentUpdateManyMutationInput = {
@@ -566,15 +583,16 @@ export type TaskAssignmentUpdateManyMutationInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskAssignmentUncheckedUpdateManyInput = {
@@ -588,15 +606,16 @@ export type TaskAssignmentUncheckedUpdateManyInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskAssignmentListRelationFilter = {
@@ -620,15 +639,16 @@ export type TaskAssignmentCountOrderByAggregateInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrder
-  submissionType?: Prisma.SortOrder
-  sections?: Prisma.SortOrder
-  questions?: Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
-  numberOfQuestions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  numberOfQuestions?: Prisma.SortOrder
+  questions?: Prisma.SortOrder
+  sections?: Prisma.SortOrder
+  submissionType?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
 }
 
 export type TaskAssignmentAvgOrderByAggregateInput = {
@@ -647,13 +667,14 @@ export type TaskAssignmentMaxOrderByAggregateInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrder
-  submissionType?: Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
-  numberOfQuestions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  numberOfQuestions?: Prisma.SortOrder
+  submissionType?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
 }
 
 export type TaskAssignmentMinOrderByAggregateInput = {
@@ -667,13 +688,14 @@ export type TaskAssignmentMinOrderByAggregateInput = {
   totalMarks?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  completedAt?: Prisma.SortOrder
-  submissionType?: Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
-  numberOfQuestions?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  numberOfQuestions?: Prisma.SortOrder
+  submissionType?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
 }
 
 export type TaskAssignmentSumOrderByAggregateInput = {
@@ -852,17 +874,18 @@ export type TaskAssignmentCreateWithoutTeacherInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
@@ -877,15 +900,16 @@ export type TaskAssignmentUncheckedCreateWithoutTeacherInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
@@ -930,15 +954,16 @@ export type TaskAssignmentScalarWhereInput = {
   totalMarks?: Prisma.IntFilter<"TaskAssignment"> | number
   dueDate?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFilter<"TaskAssignment"> | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
-  submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
-  sections?: Prisma.JsonNullableFilter<"TaskAssignment">
-  questions?: Prisma.JsonNullableFilter<"TaskAssignment">
-  isRandomized?: Prisma.BoolFilter<"TaskAssignment"> | boolean
-  answerSpace?: Prisma.BoolFilter<"TaskAssignment"> | boolean
-  numberOfQuestions?: Prisma.IntFilter<"TaskAssignment"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
+  answerSpace?: Prisma.BoolFilter<"TaskAssignment"> | boolean
+  isRandomized?: Prisma.BoolFilter<"TaskAssignment"> | boolean
+  numberOfQuestions?: Prisma.IntFilter<"TaskAssignment"> | number
+  questions?: Prisma.JsonNullableFilter<"TaskAssignment">
+  sections?: Prisma.JsonNullableFilter<"TaskAssignment">
+  submissionType?: Prisma.StringFilter<"TaskAssignment"> | string
+  completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFilter<"TaskAssignment"> | boolean
 }
 
 export type TaskAssignmentCreateWithoutDivisionInput = {
@@ -949,17 +974,18 @@ export type TaskAssignmentCreateWithoutDivisionInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
@@ -974,15 +1000,16 @@ export type TaskAssignmentUncheckedCreateWithoutDivisionInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
@@ -1021,17 +1048,18 @@ export type TaskAssignmentCreateWithoutSubjectInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
@@ -1046,15 +1074,16 @@ export type TaskAssignmentUncheckedCreateWithoutSubjectInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
@@ -1093,18 +1122,19 @@ export type TaskAssignmentCreateWithoutSubmissionsInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutAssignmentInput
 }
 
@@ -1119,15 +1149,16 @@ export type TaskAssignmentUncheckedCreateWithoutSubmissionsInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutAssignmentInput
 }
 
@@ -1155,18 +1186,19 @@ export type TaskAssignmentUpdateWithoutSubmissionsInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
 
@@ -1181,15 +1213,16 @@ export type TaskAssignmentUncheckedUpdateWithoutSubmissionsInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
 
@@ -1201,18 +1234,19 @@ export type TaskAssignmentCreateWithoutSubmissionAttemptsInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskAssignmentsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskAssignmentsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskAssignmentsInput
   submissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutAssignmentInput
 }
 
@@ -1227,15 +1261,16 @@ export type TaskAssignmentUncheckedCreateWithoutSubmissionAttemptsInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutAssignmentInput
 }
 
@@ -1263,18 +1298,19 @@ export type TaskAssignmentUpdateWithoutSubmissionAttemptsInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
 }
 
@@ -1289,15 +1325,16 @@ export type TaskAssignmentUncheckedUpdateWithoutSubmissionAttemptsInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
 }
 
@@ -1311,15 +1348,16 @@ export type TaskAssignmentCreateManyTeacherInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
 }
 
 export type TaskAssignmentUpdateWithoutTeacherInput = {
@@ -1330,17 +1368,18 @@ export type TaskAssignmentUpdateWithoutTeacherInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
@@ -1355,15 +1394,16 @@ export type TaskAssignmentUncheckedUpdateWithoutTeacherInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
@@ -1378,15 +1418,16 @@ export type TaskAssignmentUncheckedUpdateManyWithoutTeacherInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskAssignmentCreateManyDivisionInput = {
@@ -1399,15 +1440,16 @@ export type TaskAssignmentCreateManyDivisionInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
 }
 
 export type TaskAssignmentUpdateWithoutDivisionInput = {
@@ -1418,17 +1460,18 @@ export type TaskAssignmentUpdateWithoutDivisionInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
@@ -1443,15 +1486,16 @@ export type TaskAssignmentUncheckedUpdateWithoutDivisionInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
@@ -1466,15 +1510,16 @@ export type TaskAssignmentUncheckedUpdateManyWithoutDivisionInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskAssignmentCreateManySubjectInput = {
@@ -1487,15 +1532,16 @@ export type TaskAssignmentCreateManySubjectInput = {
   totalMarks?: number
   dueDate?: Date | string | null
   status?: $Enums.TaskAssignmentStatus
-  completedAt?: Date | string | null
-  submissionType?: string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: string
+  completedAt?: Date | string | null
+  deadlineReminderSent?: boolean
 }
 
 export type TaskAssignmentUpdateWithoutSubjectInput = {
@@ -1506,17 +1552,18 @@ export type TaskAssignmentUpdateWithoutSubjectInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskAssignmentsNestedInput
   submissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutAssignmentNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutAssignmentNestedInput
 }
@@ -1531,15 +1578,16 @@ export type TaskAssignmentUncheckedUpdateWithoutSubjectInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   submissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentNestedInput
   submissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutAssignmentNestedInput
 }
@@ -1554,15 +1602,16 @@ export type TaskAssignmentUncheckedUpdateManyWithoutSubjectInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumTaskAssignmentStatusFieldUpdateOperationsInput | $Enums.TaskAssignmentStatus
-  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
+  questions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  submissionType?: Prisma.StringFieldUpdateOperationsInput | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -1616,18 +1665,19 @@ export type TaskAssignmentSelect<ExtArgs extends runtime.Types.Extensions.Intern
   totalMarks?: boolean
   dueDate?: boolean
   status?: boolean
-  completedAt?: boolean
-  submissionType?: boolean
-  sections?: boolean
-  questions?: boolean
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: boolean
+  questions?: boolean
+  sections?: boolean
+  submissionType?: boolean
+  completedAt?: boolean
+  deadlineReminderSent?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   submissions?: boolean | Prisma.TaskAssignment$submissionsArgs<ExtArgs>
   submissionAttempts?: boolean | Prisma.TaskAssignment$submissionAttemptsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskAssignmentCountOutputTypeDefaultArgs<ExtArgs>
@@ -1644,18 +1694,19 @@ export type TaskAssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   totalMarks?: boolean
   dueDate?: boolean
   status?: boolean
-  completedAt?: boolean
-  submissionType?: boolean
-  sections?: boolean
-  questions?: boolean
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: boolean
+  questions?: boolean
+  sections?: boolean
+  submissionType?: boolean
+  completedAt?: boolean
+  deadlineReminderSent?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignment"]>
 
 export type TaskAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1669,18 +1720,19 @@ export type TaskAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   totalMarks?: boolean
   dueDate?: boolean
   status?: boolean
-  completedAt?: boolean
-  submissionType?: boolean
-  sections?: boolean
-  questions?: boolean
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: boolean
+  questions?: boolean
+  sections?: boolean
+  submissionType?: boolean
+  completedAt?: boolean
+  deadlineReminderSent?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignment"]>
 
 export type TaskAssignmentSelectScalar = {
@@ -1694,43 +1746,44 @@ export type TaskAssignmentSelectScalar = {
   totalMarks?: boolean
   dueDate?: boolean
   status?: boolean
-  completedAt?: boolean
-  submissionType?: boolean
-  sections?: boolean
-  questions?: boolean
-  isRandomized?: boolean
-  answerSpace?: boolean
-  numberOfQuestions?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  answerSpace?: boolean
+  isRandomized?: boolean
+  numberOfQuestions?: boolean
+  questions?: boolean
+  sections?: boolean
+  submissionType?: boolean
+  completedAt?: boolean
+  deadlineReminderSent?: boolean
 }
 
-export type TaskAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "divisionId" | "title" | "description" | "totalMarks" | "dueDate" | "status" | "completedAt" | "submissionType" | "sections" | "questions" | "isRandomized" | "answerSpace" | "numberOfQuestions" | "createdAt" | "updatedAt", ExtArgs["result"]["taskAssignment"]>
+export type TaskAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "divisionId" | "title" | "description" | "totalMarks" | "dueDate" | "status" | "createdAt" | "updatedAt" | "answerSpace" | "isRandomized" | "numberOfQuestions" | "questions" | "sections" | "submissionType" | "completedAt" | "deadlineReminderSent", ExtArgs["result"]["taskAssignment"]>
 export type TaskAssignmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   submissions?: boolean | Prisma.TaskAssignment$submissionsArgs<ExtArgs>
   submissionAttempts?: boolean | Prisma.TaskAssignment$submissionAttemptsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskAssignmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskAssignmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 export type TaskAssignmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 
 export type $TaskAssignmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskAssignment"
   objects: {
-    teacher: Prisma.$TeacherPayload<ExtArgs>
-    subject: Prisma.$SubjectPayload<ExtArgs>
     division: Prisma.$DivisionPayload<ExtArgs>
+    subject: Prisma.$SubjectPayload<ExtArgs>
+    teacher: Prisma.$TeacherPayload<ExtArgs>
     submissions: Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>[]
     submissionAttempts: Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>[]
   }
@@ -1745,15 +1798,16 @@ export type $TaskAssignmentPayload<ExtArgs extends runtime.Types.Extensions.Inte
     totalMarks: number
     dueDate: Date | null
     status: $Enums.TaskAssignmentStatus
-    completedAt: Date | null
-    submissionType: string
-    sections: runtime.JsonValue | null
-    questions: runtime.JsonValue | null
-    isRandomized: boolean
-    answerSpace: boolean
-    numberOfQuestions: number
     createdAt: Date
     updatedAt: Date
+    answerSpace: boolean
+    isRandomized: boolean
+    numberOfQuestions: number
+    questions: runtime.JsonValue | null
+    sections: runtime.JsonValue | null
+    submissionType: string
+    completedAt: Date | null
+    deadlineReminderSent: boolean
   }, ExtArgs["result"]["taskAssignment"]>
   composites: {}
 }
@@ -2148,9 +2202,9 @@ readonly fields: TaskAssignmentFieldRefs;
  */
 export interface Prisma__TaskAssignmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   division<T extends Prisma.DivisionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionDefaultArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   submissions<T extends Prisma.TaskAssignment$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignment$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   submissionAttempts<T extends Prisma.TaskAssignment$submissionAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignment$submissionAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2192,15 +2246,16 @@ export interface TaskAssignmentFieldRefs {
   readonly totalMarks: Prisma.FieldRef<"TaskAssignment", 'Int'>
   readonly dueDate: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
   readonly status: Prisma.FieldRef<"TaskAssignment", 'TaskAssignmentStatus'>
-  readonly completedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
-  readonly submissionType: Prisma.FieldRef<"TaskAssignment", 'String'>
-  readonly sections: Prisma.FieldRef<"TaskAssignment", 'Json'>
-  readonly questions: Prisma.FieldRef<"TaskAssignment", 'Json'>
-  readonly isRandomized: Prisma.FieldRef<"TaskAssignment", 'Boolean'>
-  readonly answerSpace: Prisma.FieldRef<"TaskAssignment", 'Boolean'>
-  readonly numberOfQuestions: Prisma.FieldRef<"TaskAssignment", 'Int'>
   readonly createdAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
+  readonly answerSpace: Prisma.FieldRef<"TaskAssignment", 'Boolean'>
+  readonly isRandomized: Prisma.FieldRef<"TaskAssignment", 'Boolean'>
+  readonly numberOfQuestions: Prisma.FieldRef<"TaskAssignment", 'Int'>
+  readonly questions: Prisma.FieldRef<"TaskAssignment", 'Json'>
+  readonly sections: Prisma.FieldRef<"TaskAssignment", 'Json'>
+  readonly submissionType: Prisma.FieldRef<"TaskAssignment", 'String'>
+  readonly completedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
+  readonly deadlineReminderSent: Prisma.FieldRef<"TaskAssignment", 'Boolean'>
 }
     
 

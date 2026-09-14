@@ -29,18 +29,18 @@ export type TaskQuestionMinAggregateOutputType = {
   institutionId: string | null
   teacherId: string | null
   subjectId: string | null
-  containerId: string | null
   type: $Enums.TaskQuestionType | null
+  question: string | null
+  answer: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  category: string | null
+  questionTemplate: string | null
   status: $Enums.TaskQuestionStatus | null
+  containerId: string | null
   source: $Enums.TaskQuestionSource | null
   sourceFile: string | null
   uploadBatchId: string | null
-  question: string | null
-  questionTemplate: string | null
-  answer: string | null
-  category: string | null
-  createdAt: Date | null
-  updatedAt: Date | null
 }
 
 export type TaskQuestionMaxAggregateOutputType = {
@@ -48,18 +48,18 @@ export type TaskQuestionMaxAggregateOutputType = {
   institutionId: string | null
   teacherId: string | null
   subjectId: string | null
-  containerId: string | null
   type: $Enums.TaskQuestionType | null
+  question: string | null
+  answer: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  category: string | null
+  questionTemplate: string | null
   status: $Enums.TaskQuestionStatus | null
+  containerId: string | null
   source: $Enums.TaskQuestionSource | null
   sourceFile: string | null
   uploadBatchId: string | null
-  question: string | null
-  questionTemplate: string | null
-  answer: string | null
-  category: string | null
-  createdAt: Date | null
-  updatedAt: Date | null
 }
 
 export type TaskQuestionCountAggregateOutputType = {
@@ -67,21 +67,21 @@ export type TaskQuestionCountAggregateOutputType = {
   institutionId: number
   teacherId: number
   subjectId: number
-  containerId: number
   type: number
+  question: number
+  options: number
+  answer: number
+  createdAt: number
+  updatedAt: number
+  category: number
+  details: number
+  questionTemplate: number
   status: number
+  containerId: number
   source: number
   sourceFile: number
   uploadBatchId: number
-  question: number
-  questionTemplate: number
-  options: number
-  answer: number
-  details: number
-  category: number
   images: number
-  createdAt: number
-  updatedAt: number
   _all: number
 }
 
@@ -91,18 +91,18 @@ export type TaskQuestionMinAggregateInputType = {
   institutionId?: true
   teacherId?: true
   subjectId?: true
-  containerId?: true
   type?: true
+  question?: true
+  answer?: true
+  createdAt?: true
+  updatedAt?: true
+  category?: true
+  questionTemplate?: true
   status?: true
+  containerId?: true
   source?: true
   sourceFile?: true
   uploadBatchId?: true
-  question?: true
-  questionTemplate?: true
-  answer?: true
-  category?: true
-  createdAt?: true
-  updatedAt?: true
 }
 
 export type TaskQuestionMaxAggregateInputType = {
@@ -110,18 +110,18 @@ export type TaskQuestionMaxAggregateInputType = {
   institutionId?: true
   teacherId?: true
   subjectId?: true
-  containerId?: true
   type?: true
+  question?: true
+  answer?: true
+  createdAt?: true
+  updatedAt?: true
+  category?: true
+  questionTemplate?: true
   status?: true
+  containerId?: true
   source?: true
   sourceFile?: true
   uploadBatchId?: true
-  question?: true
-  questionTemplate?: true
-  answer?: true
-  category?: true
-  createdAt?: true
-  updatedAt?: true
 }
 
 export type TaskQuestionCountAggregateInputType = {
@@ -129,21 +129,21 @@ export type TaskQuestionCountAggregateInputType = {
   institutionId?: true
   teacherId?: true
   subjectId?: true
-  containerId?: true
   type?: true
+  question?: true
+  options?: true
+  answer?: true
+  createdAt?: true
+  updatedAt?: true
+  category?: true
+  details?: true
+  questionTemplate?: true
   status?: true
+  containerId?: true
   source?: true
   sourceFile?: true
   uploadBatchId?: true
-  question?: true
-  questionTemplate?: true
-  options?: true
-  answer?: true
-  details?: true
-  category?: true
   images?: true
-  createdAt?: true
-  updatedAt?: true
   _all?: true
 }
 
@@ -224,21 +224,21 @@ export type TaskQuestionGroupByOutputType = {
   institutionId: string
   teacherId: string
   subjectId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options: runtime.JsonValue | null
+  answer: string
+  createdAt: Date
+  updatedAt: Date
+  category: string | null
+  details: runtime.JsonValue | null
+  questionTemplate: string | null
   status: $Enums.TaskQuestionStatus
+  containerId: string
   source: $Enums.TaskQuestionSource
   sourceFile: string | null
   uploadBatchId: string | null
-  question: string
-  questionTemplate: string | null
-  options: runtime.JsonValue | null
-  answer: string
-  details: runtime.JsonValue | null
-  category: string | null
   images: runtime.JsonValue | null
-  createdAt: Date
-  updatedAt: Date
   _count: TaskQuestionCountAggregateOutputType | null
   _min: TaskQuestionMinAggregateOutputType | null
   _max: TaskQuestionMaxAggregateOutputType | null
@@ -267,27 +267,27 @@ export type TaskQuestionWhereInput = {
   institutionId?: Prisma.StringFilter<"TaskQuestion"> | string
   teacherId?: Prisma.StringFilter<"TaskQuestion"> | string
   subjectId?: Prisma.StringFilter<"TaskQuestion"> | string
-  containerId?: Prisma.StringFilter<"TaskQuestion"> | string
   type?: Prisma.EnumTaskQuestionTypeFilter<"TaskQuestion"> | $Enums.TaskQuestionType
+  question?: Prisma.StringFilter<"TaskQuestion"> | string
+  options?: Prisma.JsonNullableFilter<"TaskQuestion">
+  answer?: Prisma.StringFilter<"TaskQuestion"> | string
+  createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
+  category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
+  details?: Prisma.JsonNullableFilter<"TaskQuestion">
+  questionTemplate?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   status?: Prisma.EnumTaskQuestionStatusFilter<"TaskQuestion"> | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFilter<"TaskQuestion"> | string
   source?: Prisma.EnumTaskQuestionSourceFilter<"TaskQuestion"> | $Enums.TaskQuestionSource
   sourceFile?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   uploadBatchId?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
-  question?: Prisma.StringFilter<"TaskQuestion"> | string
-  questionTemplate?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
-  options?: Prisma.JsonNullableFilter<"TaskQuestion">
-  answer?: Prisma.StringFilter<"TaskQuestion"> | string
-  details?: Prisma.JsonNullableFilter<"TaskQuestion">
-  category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   images?: Prisma.JsonNullableFilter<"TaskQuestion">
-  createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
-  container?: Prisma.XOR<Prisma.TaskContainerScalarRelationFilter, Prisma.TaskContainerWhereInput>
   moduleAssignment?: Prisma.XOR<Prisma.TaskModuleQuestionNullableScalarRelationFilter, Prisma.TaskModuleQuestionWhereInput> | null
-  testQuestions?: Prisma.TaskTestQuestionListRelationFilter
+  container?: Prisma.XOR<Prisma.TaskContainerScalarRelationFilter, Prisma.TaskContainerWhereInput>
+  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   studentAnswers?: Prisma.TaskStudentAnswerListRelationFilter
+  testQuestions?: Prisma.TaskTestQuestionListRelationFilter
 }
 
 export type TaskQuestionOrderByWithRelationInput = {
@@ -295,27 +295,27 @@ export type TaskQuestionOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  question?: Prisma.SortOrder
+  options?: Prisma.SortOrderInput | Prisma.SortOrder
+  answer?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
+  details?: Prisma.SortOrderInput | Prisma.SortOrder
+  questionTemplate?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   sourceFile?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadBatchId?: Prisma.SortOrderInput | Prisma.SortOrder
-  question?: Prisma.SortOrder
-  questionTemplate?: Prisma.SortOrderInput | Prisma.SortOrder
-  options?: Prisma.SortOrderInput | Prisma.SortOrder
-  answer?: Prisma.SortOrder
-  details?: Prisma.SortOrderInput | Prisma.SortOrder
-  category?: Prisma.SortOrderInput | Prisma.SortOrder
   images?: Prisma.SortOrderInput | Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
-  teacher?: Prisma.TeacherOrderByWithRelationInput
-  subject?: Prisma.SubjectOrderByWithRelationInput
-  container?: Prisma.TaskContainerOrderByWithRelationInput
   moduleAssignment?: Prisma.TaskModuleQuestionOrderByWithRelationInput
-  testQuestions?: Prisma.TaskTestQuestionOrderByRelationAggregateInput
+  container?: Prisma.TaskContainerOrderByWithRelationInput
+  subject?: Prisma.SubjectOrderByWithRelationInput
+  teacher?: Prisma.TeacherOrderByWithRelationInput
   studentAnswers?: Prisma.TaskStudentAnswerOrderByRelationAggregateInput
+  testQuestions?: Prisma.TaskTestQuestionOrderByRelationAggregateInput
 }
 
 export type TaskQuestionWhereUniqueInput = Prisma.AtLeast<{
@@ -326,27 +326,27 @@ export type TaskQuestionWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"TaskQuestion"> | string
   teacherId?: Prisma.StringFilter<"TaskQuestion"> | string
   subjectId?: Prisma.StringFilter<"TaskQuestion"> | string
-  containerId?: Prisma.StringFilter<"TaskQuestion"> | string
   type?: Prisma.EnumTaskQuestionTypeFilter<"TaskQuestion"> | $Enums.TaskQuestionType
+  question?: Prisma.StringFilter<"TaskQuestion"> | string
+  options?: Prisma.JsonNullableFilter<"TaskQuestion">
+  answer?: Prisma.StringFilter<"TaskQuestion"> | string
+  createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
+  category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
+  details?: Prisma.JsonNullableFilter<"TaskQuestion">
+  questionTemplate?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   status?: Prisma.EnumTaskQuestionStatusFilter<"TaskQuestion"> | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFilter<"TaskQuestion"> | string
   source?: Prisma.EnumTaskQuestionSourceFilter<"TaskQuestion"> | $Enums.TaskQuestionSource
   sourceFile?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   uploadBatchId?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
-  question?: Prisma.StringFilter<"TaskQuestion"> | string
-  questionTemplate?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
-  options?: Prisma.JsonNullableFilter<"TaskQuestion">
-  answer?: Prisma.StringFilter<"TaskQuestion"> | string
-  details?: Prisma.JsonNullableFilter<"TaskQuestion">
-  category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   images?: Prisma.JsonNullableFilter<"TaskQuestion">
-  createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
-  container?: Prisma.XOR<Prisma.TaskContainerScalarRelationFilter, Prisma.TaskContainerWhereInput>
   moduleAssignment?: Prisma.XOR<Prisma.TaskModuleQuestionNullableScalarRelationFilter, Prisma.TaskModuleQuestionWhereInput> | null
-  testQuestions?: Prisma.TaskTestQuestionListRelationFilter
+  container?: Prisma.XOR<Prisma.TaskContainerScalarRelationFilter, Prisma.TaskContainerWhereInput>
+  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   studentAnswers?: Prisma.TaskStudentAnswerListRelationFilter
+  testQuestions?: Prisma.TaskTestQuestionListRelationFilter
 }, "id">
 
 export type TaskQuestionOrderByWithAggregationInput = {
@@ -354,21 +354,21 @@ export type TaskQuestionOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  question?: Prisma.SortOrder
+  options?: Prisma.SortOrderInput | Prisma.SortOrder
+  answer?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
+  details?: Prisma.SortOrderInput | Prisma.SortOrder
+  questionTemplate?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   sourceFile?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadBatchId?: Prisma.SortOrderInput | Prisma.SortOrder
-  question?: Prisma.SortOrder
-  questionTemplate?: Prisma.SortOrderInput | Prisma.SortOrder
-  options?: Prisma.SortOrderInput | Prisma.SortOrder
-  answer?: Prisma.SortOrder
-  details?: Prisma.SortOrderInput | Prisma.SortOrder
-  category?: Prisma.SortOrderInput | Prisma.SortOrder
   images?: Prisma.SortOrderInput | Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   _count?: Prisma.TaskQuestionCountOrderByAggregateInput
   _max?: Prisma.TaskQuestionMaxOrderByAggregateInput
   _min?: Prisma.TaskQuestionMinOrderByAggregateInput
@@ -382,46 +382,46 @@ export type TaskQuestionScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
   teacherId?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
   subjectId?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
-  containerId?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
   type?: Prisma.EnumTaskQuestionTypeWithAggregatesFilter<"TaskQuestion"> | $Enums.TaskQuestionType
+  question?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
+  options?: Prisma.JsonNullableWithAggregatesFilter<"TaskQuestion">
+  answer?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskQuestion"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskQuestion"> | Date | string
+  category?: Prisma.StringNullableWithAggregatesFilter<"TaskQuestion"> | string | null
+  details?: Prisma.JsonNullableWithAggregatesFilter<"TaskQuestion">
+  questionTemplate?: Prisma.StringNullableWithAggregatesFilter<"TaskQuestion"> | string | null
   status?: Prisma.EnumTaskQuestionStatusWithAggregatesFilter<"TaskQuestion"> | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
   source?: Prisma.EnumTaskQuestionSourceWithAggregatesFilter<"TaskQuestion"> | $Enums.TaskQuestionSource
   sourceFile?: Prisma.StringNullableWithAggregatesFilter<"TaskQuestion"> | string | null
   uploadBatchId?: Prisma.StringNullableWithAggregatesFilter<"TaskQuestion"> | string | null
-  question?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
-  questionTemplate?: Prisma.StringNullableWithAggregatesFilter<"TaskQuestion"> | string | null
-  options?: Prisma.JsonNullableWithAggregatesFilter<"TaskQuestion">
-  answer?: Prisma.StringWithAggregatesFilter<"TaskQuestion"> | string
-  details?: Prisma.JsonNullableWithAggregatesFilter<"TaskQuestion">
-  category?: Prisma.StringNullableWithAggregatesFilter<"TaskQuestion"> | string | null
   images?: Prisma.JsonNullableWithAggregatesFilter<"TaskQuestion">
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskQuestion"> | Date | string
-  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskQuestion"> | Date | string
 }
 
 export type TaskQuestionCreateInput = {
   id?: string
   institutionId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
-  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
   moduleAssignment?: Prisma.TaskModuleQuestionCreateNestedOneWithoutQuestionInput
-  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
+  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
   studentAnswers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionUncheckedCreateInput = {
@@ -429,49 +429,49 @@ export type TaskQuestionUncheckedCreateInput = {
   institutionId: string
   teacherId: string
   subjectId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
-  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
   moduleAssignment?: Prisma.TaskModuleQuestionUpdateOneWithoutQuestionNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
+  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionUncheckedUpdateInput = {
@@ -479,24 +479,24 @@ export type TaskQuestionUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionCreateManyInput = {
@@ -504,40 +504,40 @@ export type TaskQuestionCreateManyInput = {
   institutionId: string
   teacherId: string
   subjectId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type TaskQuestionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TaskQuestionUncheckedUpdateManyInput = {
@@ -545,21 +545,21 @@ export type TaskQuestionUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TaskQuestionListRelationFilter = {
@@ -577,21 +577,21 @@ export type TaskQuestionCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  question?: Prisma.SortOrder
+  options?: Prisma.SortOrder
+  answer?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  details?: Prisma.SortOrder
+  questionTemplate?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   sourceFile?: Prisma.SortOrder
   uploadBatchId?: Prisma.SortOrder
-  question?: Prisma.SortOrder
-  questionTemplate?: Prisma.SortOrder
-  options?: Prisma.SortOrder
-  answer?: Prisma.SortOrder
-  details?: Prisma.SortOrder
-  category?: Prisma.SortOrder
   images?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
 }
 
 export type TaskQuestionMaxOrderByAggregateInput = {
@@ -599,18 +599,18 @@ export type TaskQuestionMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  question?: Prisma.SortOrder
+  answer?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  questionTemplate?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   sourceFile?: Prisma.SortOrder
   uploadBatchId?: Prisma.SortOrder
-  question?: Prisma.SortOrder
-  questionTemplate?: Prisma.SortOrder
-  answer?: Prisma.SortOrder
-  category?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
 }
 
 export type TaskQuestionMinOrderByAggregateInput = {
@@ -618,18 +618,18 @@ export type TaskQuestionMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  question?: Prisma.SortOrder
+  answer?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  questionTemplate?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
   source?: Prisma.SortOrder
   sourceFile?: Prisma.SortOrder
   uploadBatchId?: Prisma.SortOrder
-  question?: Prisma.SortOrder
-  questionTemplate?: Prisma.SortOrder
-  answer?: Prisma.SortOrder
-  category?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
 }
 
 export type TaskQuestionScalarRelationFilter = {
@@ -821,48 +821,48 @@ export type TaskQuestionCreateWithoutTeacherInput = {
   id?: string
   institutionId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
-  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
   moduleAssignment?: Prisma.TaskModuleQuestionCreateNestedOneWithoutQuestionInput
-  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
+  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
   studentAnswers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionUncheckedCreateWithoutTeacherInput = {
   id?: string
   institutionId: string
   subjectId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
-  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionCreateOrConnectWithoutTeacherInput = {
@@ -899,69 +899,69 @@ export type TaskQuestionScalarWhereInput = {
   institutionId?: Prisma.StringFilter<"TaskQuestion"> | string
   teacherId?: Prisma.StringFilter<"TaskQuestion"> | string
   subjectId?: Prisma.StringFilter<"TaskQuestion"> | string
-  containerId?: Prisma.StringFilter<"TaskQuestion"> | string
   type?: Prisma.EnumTaskQuestionTypeFilter<"TaskQuestion"> | $Enums.TaskQuestionType
+  question?: Prisma.StringFilter<"TaskQuestion"> | string
+  options?: Prisma.JsonNullableFilter<"TaskQuestion">
+  answer?: Prisma.StringFilter<"TaskQuestion"> | string
+  createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
+  category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
+  details?: Prisma.JsonNullableFilter<"TaskQuestion">
+  questionTemplate?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   status?: Prisma.EnumTaskQuestionStatusFilter<"TaskQuestion"> | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFilter<"TaskQuestion"> | string
   source?: Prisma.EnumTaskQuestionSourceFilter<"TaskQuestion"> | $Enums.TaskQuestionSource
   sourceFile?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   uploadBatchId?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
-  question?: Prisma.StringFilter<"TaskQuestion"> | string
-  questionTemplate?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
-  options?: Prisma.JsonNullableFilter<"TaskQuestion">
-  answer?: Prisma.StringFilter<"TaskQuestion"> | string
-  details?: Prisma.JsonNullableFilter<"TaskQuestion">
-  category?: Prisma.StringNullableFilter<"TaskQuestion"> | string | null
   images?: Prisma.JsonNullableFilter<"TaskQuestion">
-  createdAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"TaskQuestion"> | Date | string
 }
 
 export type TaskQuestionCreateWithoutSubjectInput = {
   id?: string
   institutionId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
-  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
   moduleAssignment?: Prisma.TaskModuleQuestionCreateNestedOneWithoutQuestionInput
-  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
+  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
   studentAnswers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionUncheckedCreateWithoutSubjectInput = {
   id?: string
   institutionId: string
   teacherId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
-  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionCreateOrConnectWithoutSubjectInput = {
@@ -994,24 +994,24 @@ export type TaskQuestionCreateWithoutContainerInput = {
   id?: string
   institutionId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
   moduleAssignment?: Prisma.TaskModuleQuestionCreateNestedOneWithoutQuestionInput
-  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
   studentAnswers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionUncheckedCreateWithoutContainerInput = {
@@ -1020,22 +1020,22 @@ export type TaskQuestionUncheckedCreateWithoutContainerInput = {
   teacherId: string
   subjectId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
-  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionCreateOrConnectWithoutContainerInput = {
@@ -1068,24 +1068,24 @@ export type TaskQuestionCreateWithoutModuleAssignmentInput = {
   id?: string
   institutionId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
   container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
-  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
   studentAnswers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionUncheckedCreateWithoutModuleAssignmentInput = {
@@ -1093,23 +1093,23 @@ export type TaskQuestionUncheckedCreateWithoutModuleAssignmentInput = {
   institutionId: string
   teacherId: string
   subjectId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutQuestionInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type TaskQuestionCreateOrConnectWithoutModuleAssignmentInput = {
@@ -1132,24 +1132,24 @@ export type TaskQuestionUpdateWithoutModuleAssignmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
   container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionUncheckedUpdateWithoutModuleAssignmentInput = {
@@ -1157,46 +1157,46 @@ export type TaskQuestionUncheckedUpdateWithoutModuleAssignmentInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionCreateWithoutTestQuestionsInput = {
   id?: string
   institutionId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
-  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
   moduleAssignment?: Prisma.TaskModuleQuestionCreateNestedOneWithoutQuestionInput
+  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
   studentAnswers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutQuestionInput
 }
 
@@ -1205,21 +1205,21 @@ export type TaskQuestionUncheckedCreateWithoutTestQuestionsInput = {
   institutionId: string
   teacherId: string
   subjectId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutQuestionInput
 }
@@ -1244,23 +1244,23 @@ export type TaskQuestionUpdateWithoutTestQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
   moduleAssignment?: Prisma.TaskModuleQuestionUpdateOneWithoutQuestionNestedInput
+  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1269,21 +1269,21 @@ export type TaskQuestionUncheckedUpdateWithoutTestQuestionsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutQuestionNestedInput
 }
@@ -1292,23 +1292,23 @@ export type TaskQuestionCreateWithoutStudentAnswersInput = {
   id?: string
   institutionId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
-  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
   moduleAssignment?: Prisma.TaskModuleQuestionCreateNestedOneWithoutQuestionInput
+  container: Prisma.TaskContainerCreateNestedOneWithoutQuestionsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskQuestionsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskQuestionsInput
   testQuestions?: Prisma.TaskTestQuestionCreateNestedManyWithoutQuestionInput
 }
 
@@ -1317,21 +1317,21 @@ export type TaskQuestionUncheckedCreateWithoutStudentAnswersInput = {
   institutionId: string
   teacherId: string
   subjectId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedCreateNestedOneWithoutQuestionInput
   testQuestions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutQuestionInput
 }
@@ -1356,23 +1356,23 @@ export type TaskQuestionUpdateWithoutStudentAnswersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
   moduleAssignment?: Prisma.TaskModuleQuestionUpdateOneWithoutQuestionNestedInput
+  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
   testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1381,21 +1381,21 @@ export type TaskQuestionUncheckedUpdateWithoutStudentAnswersInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
   testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
 }
@@ -1404,180 +1404,180 @@ export type TaskQuestionCreateManyTeacherInput = {
   id?: string
   institutionId: string
   subjectId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type TaskQuestionUpdateWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
   moduleAssignment?: Prisma.TaskModuleQuestionUpdateOneWithoutQuestionNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
+  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionUncheckedUpdateWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionUncheckedUpdateManyWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TaskQuestionCreateManySubjectInput = {
   id?: string
   institutionId: string
   teacherId: string
-  containerId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
+  containerId: string
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type TaskQuestionUpdateWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
   moduleAssignment?: Prisma.TaskModuleQuestionUpdateOneWithoutQuestionNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
+  container?: Prisma.TaskContainerUpdateOneRequiredWithoutQuestionsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionUncheckedUpdateWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionUncheckedUpdateManyWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TaskQuestionCreateManyContainerInput = {
@@ -1586,43 +1586,43 @@ export type TaskQuestionCreateManyContainerInput = {
   teacherId: string
   subjectId: string
   type: $Enums.TaskQuestionType
+  question: string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  category?: string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: string | null
   status?: $Enums.TaskQuestionStatus
   source?: $Enums.TaskQuestionSource
   sourceFile?: string | null
   uploadBatchId?: string | null
-  question: string
-  questionTemplate?: string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer: string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type TaskQuestionUpdateWithoutContainerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
   moduleAssignment?: Prisma.TaskModuleQuestionUpdateOneWithoutQuestionNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskQuestionsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskQuestionsNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionUncheckedUpdateWithoutContainerInput = {
@@ -1631,22 +1631,22 @@ export type TaskQuestionUncheckedUpdateWithoutContainerInput = {
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moduleAssignment?: Prisma.TaskModuleQuestionUncheckedUpdateOneWithoutQuestionNestedInput
-  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
   studentAnswers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutQuestionNestedInput
+  testQuestions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type TaskQuestionUncheckedUpdateManyWithoutContainerInput = {
@@ -1655,19 +1655,19 @@ export type TaskQuestionUncheckedUpdateManyWithoutContainerInput = {
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumTaskQuestionTypeFieldUpdateOperationsInput | $Enums.TaskQuestionType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  answer?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskQuestionStatusFieldUpdateOperationsInput | $Enums.TaskQuestionStatus
   source?: Prisma.EnumTaskQuestionSourceFieldUpdateOperationsInput | $Enums.TaskQuestionSource
   sourceFile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uploadBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  question?: Prisma.StringFieldUpdateOperationsInput | string
-  questionTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  options?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  answer?: Prisma.StringFieldUpdateOperationsInput | string
-  details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   images?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -1676,13 +1676,13 @@ export type TaskQuestionUncheckedUpdateManyWithoutContainerInput = {
  */
 
 export type TaskQuestionCountOutputType = {
-  testQuestions: number
   studentAnswers: number
+  testQuestions: number
 }
 
 export type TaskQuestionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  testQuestions?: boolean | TaskQuestionCountOutputTypeCountTestQuestionsArgs
   studentAnswers?: boolean | TaskQuestionCountOutputTypeCountStudentAnswersArgs
+  testQuestions?: boolean | TaskQuestionCountOutputTypeCountTestQuestionsArgs
 }
 
 /**
@@ -1698,15 +1698,15 @@ export type TaskQuestionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types
 /**
  * TaskQuestionCountOutputType without action
  */
-export type TaskQuestionCountOutputTypeCountTestQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskTestQuestionWhereInput
+export type TaskQuestionCountOutputTypeCountStudentAnswersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskStudentAnswerWhereInput
 }
 
 /**
  * TaskQuestionCountOutputType without action
  */
-export type TaskQuestionCountOutputTypeCountStudentAnswersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskStudentAnswerWhereInput
+export type TaskQuestionCountOutputTypeCountTestQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskTestQuestionWhereInput
 }
 
 
@@ -1715,27 +1715,27 @@ export type TaskQuestionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   institutionId?: boolean
   teacherId?: boolean
   subjectId?: boolean
-  containerId?: boolean
   type?: boolean
+  question?: boolean
+  options?: boolean
+  answer?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  category?: boolean
+  details?: boolean
+  questionTemplate?: boolean
   status?: boolean
+  containerId?: boolean
   source?: boolean
   sourceFile?: boolean
   uploadBatchId?: boolean
-  question?: boolean
-  questionTemplate?: boolean
-  options?: boolean
-  answer?: boolean
-  details?: boolean
-  category?: boolean
   images?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
-  container?: boolean | Prisma.TaskContainerDefaultArgs<ExtArgs>
   moduleAssignment?: boolean | Prisma.TaskQuestion$moduleAssignmentArgs<ExtArgs>
-  testQuestions?: boolean | Prisma.TaskQuestion$testQuestionsArgs<ExtArgs>
+  container?: boolean | Prisma.TaskContainerDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   studentAnswers?: boolean | Prisma.TaskQuestion$studentAnswersArgs<ExtArgs>
+  testQuestions?: boolean | Prisma.TaskQuestion$testQuestionsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskQuestionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskQuestion"]>
 
@@ -1744,24 +1744,24 @@ export type TaskQuestionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   institutionId?: boolean
   teacherId?: boolean
   subjectId?: boolean
-  containerId?: boolean
   type?: boolean
+  question?: boolean
+  options?: boolean
+  answer?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  category?: boolean
+  details?: boolean
+  questionTemplate?: boolean
   status?: boolean
+  containerId?: boolean
   source?: boolean
   sourceFile?: boolean
   uploadBatchId?: boolean
-  question?: boolean
-  questionTemplate?: boolean
-  options?: boolean
-  answer?: boolean
-  details?: boolean
-  category?: boolean
   images?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   container?: boolean | Prisma.TaskContainerDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskQuestion"]>
 
 export type TaskQuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1769,24 +1769,24 @@ export type TaskQuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   institutionId?: boolean
   teacherId?: boolean
   subjectId?: boolean
-  containerId?: boolean
   type?: boolean
+  question?: boolean
+  options?: boolean
+  answer?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  category?: boolean
+  details?: boolean
+  questionTemplate?: boolean
   status?: boolean
+  containerId?: boolean
   source?: boolean
   sourceFile?: boolean
   uploadBatchId?: boolean
-  question?: boolean
-  questionTemplate?: boolean
-  options?: boolean
-  answer?: boolean
-  details?: boolean
-  category?: boolean
   images?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   container?: boolean | Prisma.TaskContainerDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskQuestion"]>
 
 export type TaskQuestionSelectScalar = {
@@ -1794,74 +1794,74 @@ export type TaskQuestionSelectScalar = {
   institutionId?: boolean
   teacherId?: boolean
   subjectId?: boolean
-  containerId?: boolean
   type?: boolean
+  question?: boolean
+  options?: boolean
+  answer?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  category?: boolean
+  details?: boolean
+  questionTemplate?: boolean
   status?: boolean
+  containerId?: boolean
   source?: boolean
   sourceFile?: boolean
   uploadBatchId?: boolean
-  question?: boolean
-  questionTemplate?: boolean
-  options?: boolean
-  answer?: boolean
-  details?: boolean
-  category?: boolean
   images?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
 }
 
-export type TaskQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "containerId" | "type" | "status" | "source" | "sourceFile" | "uploadBatchId" | "question" | "questionTemplate" | "options" | "answer" | "details" | "category" | "images" | "createdAt" | "updatedAt", ExtArgs["result"]["taskQuestion"]>
+export type TaskQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "type" | "question" | "options" | "answer" | "createdAt" | "updatedAt" | "category" | "details" | "questionTemplate" | "status" | "containerId" | "source" | "sourceFile" | "uploadBatchId" | "images", ExtArgs["result"]["taskQuestion"]>
 export type TaskQuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
-  container?: boolean | Prisma.TaskContainerDefaultArgs<ExtArgs>
   moduleAssignment?: boolean | Prisma.TaskQuestion$moduleAssignmentArgs<ExtArgs>
-  testQuestions?: boolean | Prisma.TaskQuestion$testQuestionsArgs<ExtArgs>
+  container?: boolean | Prisma.TaskContainerDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   studentAnswers?: boolean | Prisma.TaskQuestion$studentAnswersArgs<ExtArgs>
+  testQuestions?: boolean | Prisma.TaskQuestion$testQuestionsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskQuestionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskQuestionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   container?: boolean | Prisma.TaskContainerDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 export type TaskQuestionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   container?: boolean | Prisma.TaskContainerDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 
 export type $TaskQuestionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskQuestion"
   objects: {
-    teacher: Prisma.$TeacherPayload<ExtArgs>
-    subject: Prisma.$SubjectPayload<ExtArgs>
-    container: Prisma.$TaskContainerPayload<ExtArgs>
     moduleAssignment: Prisma.$TaskModuleQuestionPayload<ExtArgs> | null
-    testQuestions: Prisma.$TaskTestQuestionPayload<ExtArgs>[]
+    container: Prisma.$TaskContainerPayload<ExtArgs>
+    subject: Prisma.$SubjectPayload<ExtArgs>
+    teacher: Prisma.$TeacherPayload<ExtArgs>
     studentAnswers: Prisma.$TaskStudentAnswerPayload<ExtArgs>[]
+    testQuestions: Prisma.$TaskTestQuestionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     institutionId: string
     teacherId: string
     subjectId: string
-    containerId: string
     type: $Enums.TaskQuestionType
+    question: string
+    options: runtime.JsonValue | null
+    answer: string
+    createdAt: Date
+    updatedAt: Date
+    category: string | null
+    details: runtime.JsonValue | null
+    questionTemplate: string | null
     status: $Enums.TaskQuestionStatus
+    containerId: string
     source: $Enums.TaskQuestionSource
     sourceFile: string | null
     uploadBatchId: string | null
-    question: string
-    questionTemplate: string | null
-    options: runtime.JsonValue | null
-    answer: string
-    details: runtime.JsonValue | null
-    category: string | null
     images: runtime.JsonValue | null
-    createdAt: Date
-    updatedAt: Date
   }, ExtArgs["result"]["taskQuestion"]>
   composites: {}
 }
@@ -2256,12 +2256,12 @@ readonly fields: TaskQuestionFieldRefs;
  */
 export interface Prisma__TaskQuestionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  container<T extends Prisma.TaskContainerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskContainerDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskContainerClient<runtime.Types.Result.GetResult<Prisma.$TaskContainerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   moduleAssignment<T extends Prisma.TaskQuestion$moduleAssignmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskQuestion$moduleAssignmentArgs<ExtArgs>>): Prisma.Prisma__TaskModuleQuestionClient<runtime.Types.Result.GetResult<Prisma.$TaskModuleQuestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  testQuestions<T extends Prisma.TaskQuestion$testQuestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskQuestion$testQuestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  container<T extends Prisma.TaskContainerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskContainerDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskContainerClient<runtime.Types.Result.GetResult<Prisma.$TaskContainerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   studentAnswers<T extends Prisma.TaskQuestion$studentAnswersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskQuestion$studentAnswersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskStudentAnswerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  testQuestions<T extends Prisma.TaskQuestion$testQuestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskQuestion$testQuestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2295,21 +2295,21 @@ export interface TaskQuestionFieldRefs {
   readonly institutionId: Prisma.FieldRef<"TaskQuestion", 'String'>
   readonly teacherId: Prisma.FieldRef<"TaskQuestion", 'String'>
   readonly subjectId: Prisma.FieldRef<"TaskQuestion", 'String'>
-  readonly containerId: Prisma.FieldRef<"TaskQuestion", 'String'>
   readonly type: Prisma.FieldRef<"TaskQuestion", 'TaskQuestionType'>
+  readonly question: Prisma.FieldRef<"TaskQuestion", 'String'>
+  readonly options: Prisma.FieldRef<"TaskQuestion", 'Json'>
+  readonly answer: Prisma.FieldRef<"TaskQuestion", 'String'>
+  readonly createdAt: Prisma.FieldRef<"TaskQuestion", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"TaskQuestion", 'DateTime'>
+  readonly category: Prisma.FieldRef<"TaskQuestion", 'String'>
+  readonly details: Prisma.FieldRef<"TaskQuestion", 'Json'>
+  readonly questionTemplate: Prisma.FieldRef<"TaskQuestion", 'String'>
   readonly status: Prisma.FieldRef<"TaskQuestion", 'TaskQuestionStatus'>
+  readonly containerId: Prisma.FieldRef<"TaskQuestion", 'String'>
   readonly source: Prisma.FieldRef<"TaskQuestion", 'TaskQuestionSource'>
   readonly sourceFile: Prisma.FieldRef<"TaskQuestion", 'String'>
   readonly uploadBatchId: Prisma.FieldRef<"TaskQuestion", 'String'>
-  readonly question: Prisma.FieldRef<"TaskQuestion", 'String'>
-  readonly questionTemplate: Prisma.FieldRef<"TaskQuestion", 'String'>
-  readonly options: Prisma.FieldRef<"TaskQuestion", 'Json'>
-  readonly answer: Prisma.FieldRef<"TaskQuestion", 'String'>
-  readonly details: Prisma.FieldRef<"TaskQuestion", 'Json'>
-  readonly category: Prisma.FieldRef<"TaskQuestion", 'String'>
   readonly images: Prisma.FieldRef<"TaskQuestion", 'Json'>
-  readonly createdAt: Prisma.FieldRef<"TaskQuestion", 'DateTime'>
-  readonly updatedAt: Prisma.FieldRef<"TaskQuestion", 'DateTime'>
 }
     
 
@@ -2730,30 +2730,6 @@ export type TaskQuestion$moduleAssignmentArgs<ExtArgs extends runtime.Types.Exte
 }
 
 /**
- * TaskQuestion.testQuestions
- */
-export type TaskQuestion$testQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TaskTestQuestion
-   */
-  select?: Prisma.TaskTestQuestionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TaskTestQuestion
-   */
-  omit?: Prisma.TaskTestQuestionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskTestQuestionInclude<ExtArgs> | null
-  where?: Prisma.TaskTestQuestionWhereInput
-  orderBy?: Prisma.TaskTestQuestionOrderByWithRelationInput | Prisma.TaskTestQuestionOrderByWithRelationInput[]
-  cursor?: Prisma.TaskTestQuestionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TaskTestQuestionScalarFieldEnum | Prisma.TaskTestQuestionScalarFieldEnum[]
-}
-
-/**
  * TaskQuestion.studentAnswers
  */
 export type TaskQuestion$studentAnswersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2775,6 +2751,30 @@ export type TaskQuestion$studentAnswersArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.TaskStudentAnswerScalarFieldEnum | Prisma.TaskStudentAnswerScalarFieldEnum[]
+}
+
+/**
+ * TaskQuestion.testQuestions
+ */
+export type TaskQuestion$testQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskTestQuestion
+   */
+  select?: Prisma.TaskTestQuestionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskTestQuestion
+   */
+  omit?: Prisma.TaskTestQuestionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskTestQuestionInclude<ExtArgs> | null
+  where?: Prisma.TaskTestQuestionWhereInput
+  orderBy?: Prisma.TaskTestQuestionOrderByWithRelationInput | Prisma.TaskTestQuestionOrderByWithRelationInput[]
+  cursor?: Prisma.TaskTestQuestionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskTestQuestionScalarFieldEnum | Prisma.TaskTestQuestionScalarFieldEnum[]
 }
 
 /**

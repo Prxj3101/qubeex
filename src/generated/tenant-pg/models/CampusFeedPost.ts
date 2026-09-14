@@ -28,8 +28,6 @@ export type CampusFeedPostMinAggregateOutputType = {
   id: string | null
   institutionId: string | null
   authorId: string | null
-  divisionId: string | null
-  subjectId: string | null
   type: $Enums.CampusPostType | null
   title: string | null
   body: string | null
@@ -38,14 +36,14 @@ export type CampusFeedPostMinAggregateOutputType = {
   attachmentType: string | null
   attachmentName: string | null
   createdAt: Date | null
+  divisionId: string | null
+  subjectId: string | null
 }
 
 export type CampusFeedPostMaxAggregateOutputType = {
   id: string | null
   institutionId: string | null
   authorId: string | null
-  divisionId: string | null
-  subjectId: string | null
   type: $Enums.CampusPostType | null
   title: string | null
   body: string | null
@@ -54,14 +52,14 @@ export type CampusFeedPostMaxAggregateOutputType = {
   attachmentType: string | null
   attachmentName: string | null
   createdAt: Date | null
+  divisionId: string | null
+  subjectId: string | null
 }
 
 export type CampusFeedPostCountAggregateOutputType = {
   id: number
   institutionId: number
   authorId: number
-  divisionId: number
-  subjectId: number
   type: number
   title: number
   body: number
@@ -70,6 +68,8 @@ export type CampusFeedPostCountAggregateOutputType = {
   attachmentType: number
   attachmentName: number
   createdAt: number
+  divisionId: number
+  subjectId: number
   _all: number
 }
 
@@ -78,8 +78,6 @@ export type CampusFeedPostMinAggregateInputType = {
   id?: true
   institutionId?: true
   authorId?: true
-  divisionId?: true
-  subjectId?: true
   type?: true
   title?: true
   body?: true
@@ -88,14 +86,14 @@ export type CampusFeedPostMinAggregateInputType = {
   attachmentType?: true
   attachmentName?: true
   createdAt?: true
+  divisionId?: true
+  subjectId?: true
 }
 
 export type CampusFeedPostMaxAggregateInputType = {
   id?: true
   institutionId?: true
   authorId?: true
-  divisionId?: true
-  subjectId?: true
   type?: true
   title?: true
   body?: true
@@ -104,14 +102,14 @@ export type CampusFeedPostMaxAggregateInputType = {
   attachmentType?: true
   attachmentName?: true
   createdAt?: true
+  divisionId?: true
+  subjectId?: true
 }
 
 export type CampusFeedPostCountAggregateInputType = {
   id?: true
   institutionId?: true
   authorId?: true
-  divisionId?: true
-  subjectId?: true
   type?: true
   title?: true
   body?: true
@@ -120,6 +118,8 @@ export type CampusFeedPostCountAggregateInputType = {
   attachmentType?: true
   attachmentName?: true
   createdAt?: true
+  divisionId?: true
+  subjectId?: true
   _all?: true
 }
 
@@ -199,8 +199,6 @@ export type CampusFeedPostGroupByOutputType = {
   id: string
   institutionId: string
   authorId: string
-  divisionId: string | null
-  subjectId: string | null
   type: $Enums.CampusPostType
   title: string
   body: string
@@ -209,6 +207,8 @@ export type CampusFeedPostGroupByOutputType = {
   attachmentType: string | null
   attachmentName: string | null
   createdAt: Date
+  divisionId: string | null
+  subjectId: string | null
   _count: CampusFeedPostCountAggregateOutputType | null
   _min: CampusFeedPostMinAggregateOutputType | null
   _max: CampusFeedPostMaxAggregateOutputType | null
@@ -236,8 +236,6 @@ export type CampusFeedPostWhereInput = {
   id?: Prisma.StringFilter<"CampusFeedPost"> | string
   institutionId?: Prisma.StringFilter<"CampusFeedPost"> | string
   authorId?: Prisma.StringFilter<"CampusFeedPost"> | string
-  divisionId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
-  subjectId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   type?: Prisma.EnumCampusPostTypeFilter<"CampusFeedPost"> | $Enums.CampusPostType
   title?: Prisma.StringFilter<"CampusFeedPost"> | string
   body?: Prisma.StringFilter<"CampusFeedPost"> | string
@@ -246,6 +244,8 @@ export type CampusFeedPostWhereInput = {
   attachmentType?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   attachmentName?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CampusFeedPost"> | Date | string
+  divisionId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
+  subjectId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   division?: Prisma.XOR<Prisma.DivisionNullableScalarRelationFilter, Prisma.DivisionWhereInput> | null
   subjectRef?: Prisma.XOR<Prisma.SubjectNullableScalarRelationFilter, Prisma.SubjectWhereInput> | null
 }
@@ -254,8 +254,6 @@ export type CampusFeedPostOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrderInput | Prisma.SortOrder
-  subjectId?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -264,6 +262,8 @@ export type CampusFeedPostOrderByWithRelationInput = {
   attachmentType?: Prisma.SortOrderInput | Prisma.SortOrder
   attachmentName?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subjectId?: Prisma.SortOrderInput | Prisma.SortOrder
   division?: Prisma.DivisionOrderByWithRelationInput
   subjectRef?: Prisma.SubjectOrderByWithRelationInput
 }
@@ -275,8 +275,6 @@ export type CampusFeedPostWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CampusFeedPostWhereInput | Prisma.CampusFeedPostWhereInput[]
   institutionId?: Prisma.StringFilter<"CampusFeedPost"> | string
   authorId?: Prisma.StringFilter<"CampusFeedPost"> | string
-  divisionId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
-  subjectId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   type?: Prisma.EnumCampusPostTypeFilter<"CampusFeedPost"> | $Enums.CampusPostType
   title?: Prisma.StringFilter<"CampusFeedPost"> | string
   body?: Prisma.StringFilter<"CampusFeedPost"> | string
@@ -285,6 +283,8 @@ export type CampusFeedPostWhereUniqueInput = Prisma.AtLeast<{
   attachmentType?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   attachmentName?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CampusFeedPost"> | Date | string
+  divisionId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
+  subjectId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   division?: Prisma.XOR<Prisma.DivisionNullableScalarRelationFilter, Prisma.DivisionWhereInput> | null
   subjectRef?: Prisma.XOR<Prisma.SubjectNullableScalarRelationFilter, Prisma.SubjectWhereInput> | null
 }, "id">
@@ -293,8 +293,6 @@ export type CampusFeedPostOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrderInput | Prisma.SortOrder
-  subjectId?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -303,6 +301,8 @@ export type CampusFeedPostOrderByWithAggregationInput = {
   attachmentType?: Prisma.SortOrderInput | Prisma.SortOrder
   attachmentName?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subjectId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CampusFeedPostCountOrderByAggregateInput
   _max?: Prisma.CampusFeedPostMaxOrderByAggregateInput
   _min?: Prisma.CampusFeedPostMinOrderByAggregateInput
@@ -315,8 +315,6 @@ export type CampusFeedPostScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"CampusFeedPost"> | string
   institutionId?: Prisma.StringWithAggregatesFilter<"CampusFeedPost"> | string
   authorId?: Prisma.StringWithAggregatesFilter<"CampusFeedPost"> | string
-  divisionId?: Prisma.StringNullableWithAggregatesFilter<"CampusFeedPost"> | string | null
-  subjectId?: Prisma.StringNullableWithAggregatesFilter<"CampusFeedPost"> | string | null
   type?: Prisma.EnumCampusPostTypeWithAggregatesFilter<"CampusFeedPost"> | $Enums.CampusPostType
   title?: Prisma.StringWithAggregatesFilter<"CampusFeedPost"> | string
   body?: Prisma.StringWithAggregatesFilter<"CampusFeedPost"> | string
@@ -325,6 +323,8 @@ export type CampusFeedPostScalarWhereWithAggregatesInput = {
   attachmentType?: Prisma.StringNullableWithAggregatesFilter<"CampusFeedPost"> | string | null
   attachmentName?: Prisma.StringNullableWithAggregatesFilter<"CampusFeedPost"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CampusFeedPost"> | Date | string
+  divisionId?: Prisma.StringNullableWithAggregatesFilter<"CampusFeedPost"> | string | null
+  subjectId?: Prisma.StringNullableWithAggregatesFilter<"CampusFeedPost"> | string | null
 }
 
 export type CampusFeedPostCreateInput = {
@@ -347,8 +347,6 @@ export type CampusFeedPostUncheckedCreateInput = {
   id?: string
   institutionId: string
   authorId: string
-  divisionId?: string | null
-  subjectId?: string | null
   type: $Enums.CampusPostType
   title: string
   body: string
@@ -357,6 +355,8 @@ export type CampusFeedPostUncheckedCreateInput = {
   attachmentType?: string | null
   attachmentName?: string | null
   createdAt?: Date | string
+  divisionId?: string | null
+  subjectId?: string | null
 }
 
 export type CampusFeedPostUpdateInput = {
@@ -379,8 +379,6 @@ export type CampusFeedPostUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumCampusPostTypeFieldUpdateOperationsInput | $Enums.CampusPostType
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -389,14 +387,14 @@ export type CampusFeedPostUncheckedUpdateInput = {
   attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CampusFeedPostCreateManyInput = {
   id?: string
   institutionId: string
   authorId: string
-  divisionId?: string | null
-  subjectId?: string | null
   type: $Enums.CampusPostType
   title: string
   body: string
@@ -405,6 +403,8 @@ export type CampusFeedPostCreateManyInput = {
   attachmentType?: string | null
   attachmentName?: string | null
   createdAt?: Date | string
+  divisionId?: string | null
+  subjectId?: string | null
 }
 
 export type CampusFeedPostUpdateManyMutationInput = {
@@ -425,8 +425,6 @@ export type CampusFeedPostUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumCampusPostTypeFieldUpdateOperationsInput | $Enums.CampusPostType
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -435,6 +433,8 @@ export type CampusFeedPostUncheckedUpdateManyInput = {
   attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CampusFeedPostListRelationFilter = {
@@ -451,8 +451,6 @@ export type CampusFeedPostCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrder
-  subjectId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -461,14 +459,14 @@ export type CampusFeedPostCountOrderByAggregateInput = {
   attachmentType?: Prisma.SortOrder
   attachmentName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrder
+  subjectId?: Prisma.SortOrder
 }
 
 export type CampusFeedPostMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrder
-  subjectId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -477,14 +475,14 @@ export type CampusFeedPostMaxOrderByAggregateInput = {
   attachmentType?: Prisma.SortOrder
   attachmentName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrder
+  subjectId?: Prisma.SortOrder
 }
 
 export type CampusFeedPostMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrder
-  subjectId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   title?: Prisma.SortOrder
   body?: Prisma.SortOrder
@@ -493,6 +491,8 @@ export type CampusFeedPostMinOrderByAggregateInput = {
   attachmentType?: Prisma.SortOrder
   attachmentName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrder
+  subjectId?: Prisma.SortOrder
 }
 
 export type CampusFeedPostCreateNestedManyWithoutDivisionInput = {
@@ -602,7 +602,6 @@ export type CampusFeedPostUncheckedCreateWithoutDivisionInput = {
   id?: string
   institutionId: string
   authorId: string
-  subjectId?: string | null
   type: $Enums.CampusPostType
   title: string
   body: string
@@ -611,6 +610,7 @@ export type CampusFeedPostUncheckedCreateWithoutDivisionInput = {
   attachmentType?: string | null
   attachmentName?: string | null
   createdAt?: Date | string
+  subjectId?: string | null
 }
 
 export type CampusFeedPostCreateOrConnectWithoutDivisionInput = {
@@ -646,8 +646,6 @@ export type CampusFeedPostScalarWhereInput = {
   id?: Prisma.StringFilter<"CampusFeedPost"> | string
   institutionId?: Prisma.StringFilter<"CampusFeedPost"> | string
   authorId?: Prisma.StringFilter<"CampusFeedPost"> | string
-  divisionId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
-  subjectId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   type?: Prisma.EnumCampusPostTypeFilter<"CampusFeedPost"> | $Enums.CampusPostType
   title?: Prisma.StringFilter<"CampusFeedPost"> | string
   body?: Prisma.StringFilter<"CampusFeedPost"> | string
@@ -656,6 +654,8 @@ export type CampusFeedPostScalarWhereInput = {
   attachmentType?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   attachmentName?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CampusFeedPost"> | Date | string
+  divisionId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
+  subjectId?: Prisma.StringNullableFilter<"CampusFeedPost"> | string | null
 }
 
 export type CampusFeedPostCreateWithoutSubjectRefInput = {
@@ -677,7 +677,6 @@ export type CampusFeedPostUncheckedCreateWithoutSubjectRefInput = {
   id?: string
   institutionId: string
   authorId: string
-  divisionId?: string | null
   type: $Enums.CampusPostType
   title: string
   body: string
@@ -686,6 +685,7 @@ export type CampusFeedPostUncheckedCreateWithoutSubjectRefInput = {
   attachmentType?: string | null
   attachmentName?: string | null
   createdAt?: Date | string
+  divisionId?: string | null
 }
 
 export type CampusFeedPostCreateOrConnectWithoutSubjectRefInput = {
@@ -718,7 +718,6 @@ export type CampusFeedPostCreateManyDivisionInput = {
   id?: string
   institutionId: string
   authorId: string
-  subjectId?: string | null
   type: $Enums.CampusPostType
   title: string
   body: string
@@ -727,6 +726,7 @@ export type CampusFeedPostCreateManyDivisionInput = {
   attachmentType?: string | null
   attachmentName?: string | null
   createdAt?: Date | string
+  subjectId?: string | null
 }
 
 export type CampusFeedPostUpdateWithoutDivisionInput = {
@@ -748,7 +748,6 @@ export type CampusFeedPostUncheckedUpdateWithoutDivisionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumCampusPostTypeFieldUpdateOperationsInput | $Enums.CampusPostType
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -757,13 +756,13 @@ export type CampusFeedPostUncheckedUpdateWithoutDivisionInput = {
   attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CampusFeedPostUncheckedUpdateManyWithoutDivisionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumCampusPostTypeFieldUpdateOperationsInput | $Enums.CampusPostType
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -772,13 +771,13 @@ export type CampusFeedPostUncheckedUpdateManyWithoutDivisionInput = {
   attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CampusFeedPostCreateManySubjectRefInput = {
   id?: string
   institutionId: string
   authorId: string
-  divisionId?: string | null
   type: $Enums.CampusPostType
   title: string
   body: string
@@ -787,6 +786,7 @@ export type CampusFeedPostCreateManySubjectRefInput = {
   attachmentType?: string | null
   attachmentName?: string | null
   createdAt?: Date | string
+  divisionId?: string | null
 }
 
 export type CampusFeedPostUpdateWithoutSubjectRefInput = {
@@ -808,7 +808,6 @@ export type CampusFeedPostUncheckedUpdateWithoutSubjectRefInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumCampusPostTypeFieldUpdateOperationsInput | $Enums.CampusPostType
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -817,13 +816,13 @@ export type CampusFeedPostUncheckedUpdateWithoutSubjectRefInput = {
   attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CampusFeedPostUncheckedUpdateManyWithoutSubjectRefInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
-  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumCampusPostTypeFieldUpdateOperationsInput | $Enums.CampusPostType
   title?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
@@ -832,6 +831,7 @@ export type CampusFeedPostUncheckedUpdateManyWithoutSubjectRefInput = {
   attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -840,8 +840,6 @@ export type CampusFeedPostSelect<ExtArgs extends runtime.Types.Extensions.Intern
   id?: boolean
   institutionId?: boolean
   authorId?: boolean
-  divisionId?: boolean
-  subjectId?: boolean
   type?: boolean
   title?: boolean
   body?: boolean
@@ -850,6 +848,8 @@ export type CampusFeedPostSelect<ExtArgs extends runtime.Types.Extensions.Intern
   attachmentType?: boolean
   attachmentName?: boolean
   createdAt?: boolean
+  divisionId?: boolean
+  subjectId?: boolean
   division?: boolean | Prisma.CampusFeedPost$divisionArgs<ExtArgs>
   subjectRef?: boolean | Prisma.CampusFeedPost$subjectRefArgs<ExtArgs>
 }, ExtArgs["result"]["campusFeedPost"]>
@@ -858,8 +858,6 @@ export type CampusFeedPostSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   institutionId?: boolean
   authorId?: boolean
-  divisionId?: boolean
-  subjectId?: boolean
   type?: boolean
   title?: boolean
   body?: boolean
@@ -868,6 +866,8 @@ export type CampusFeedPostSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   attachmentType?: boolean
   attachmentName?: boolean
   createdAt?: boolean
+  divisionId?: boolean
+  subjectId?: boolean
   division?: boolean | Prisma.CampusFeedPost$divisionArgs<ExtArgs>
   subjectRef?: boolean | Prisma.CampusFeedPost$subjectRefArgs<ExtArgs>
 }, ExtArgs["result"]["campusFeedPost"]>
@@ -876,8 +876,6 @@ export type CampusFeedPostSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   institutionId?: boolean
   authorId?: boolean
-  divisionId?: boolean
-  subjectId?: boolean
   type?: boolean
   title?: boolean
   body?: boolean
@@ -886,6 +884,8 @@ export type CampusFeedPostSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   attachmentType?: boolean
   attachmentName?: boolean
   createdAt?: boolean
+  divisionId?: boolean
+  subjectId?: boolean
   division?: boolean | Prisma.CampusFeedPost$divisionArgs<ExtArgs>
   subjectRef?: boolean | Prisma.CampusFeedPost$subjectRefArgs<ExtArgs>
 }, ExtArgs["result"]["campusFeedPost"]>
@@ -894,8 +894,6 @@ export type CampusFeedPostSelectScalar = {
   id?: boolean
   institutionId?: boolean
   authorId?: boolean
-  divisionId?: boolean
-  subjectId?: boolean
   type?: boolean
   title?: boolean
   body?: boolean
@@ -904,9 +902,11 @@ export type CampusFeedPostSelectScalar = {
   attachmentType?: boolean
   attachmentName?: boolean
   createdAt?: boolean
+  divisionId?: boolean
+  subjectId?: boolean
 }
 
-export type CampusFeedPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "authorId" | "divisionId" | "subjectId" | "type" | "title" | "body" | "subject" | "attachmentUrl" | "attachmentType" | "attachmentName" | "createdAt", ExtArgs["result"]["campusFeedPost"]>
+export type CampusFeedPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "authorId" | "type" | "title" | "body" | "subject" | "attachmentUrl" | "attachmentType" | "attachmentName" | "createdAt" | "divisionId" | "subjectId", ExtArgs["result"]["campusFeedPost"]>
 export type CampusFeedPostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.CampusFeedPost$divisionArgs<ExtArgs>
   subjectRef?: boolean | Prisma.CampusFeedPost$subjectRefArgs<ExtArgs>
@@ -930,8 +930,6 @@ export type $CampusFeedPostPayload<ExtArgs extends runtime.Types.Extensions.Inte
     id: string
     institutionId: string
     authorId: string
-    divisionId: string | null
-    subjectId: string | null
     type: $Enums.CampusPostType
     title: string
     body: string
@@ -940,6 +938,8 @@ export type $CampusFeedPostPayload<ExtArgs extends runtime.Types.Extensions.Inte
     attachmentType: string | null
     attachmentName: string | null
     createdAt: Date
+    divisionId: string | null
+    subjectId: string | null
   }, ExtArgs["result"]["campusFeedPost"]>
   composites: {}
 }
@@ -1368,8 +1368,6 @@ export interface CampusFeedPostFieldRefs {
   readonly id: Prisma.FieldRef<"CampusFeedPost", 'String'>
   readonly institutionId: Prisma.FieldRef<"CampusFeedPost", 'String'>
   readonly authorId: Prisma.FieldRef<"CampusFeedPost", 'String'>
-  readonly divisionId: Prisma.FieldRef<"CampusFeedPost", 'String'>
-  readonly subjectId: Prisma.FieldRef<"CampusFeedPost", 'String'>
   readonly type: Prisma.FieldRef<"CampusFeedPost", 'CampusPostType'>
   readonly title: Prisma.FieldRef<"CampusFeedPost", 'String'>
   readonly body: Prisma.FieldRef<"CampusFeedPost", 'String'>
@@ -1378,6 +1376,8 @@ export interface CampusFeedPostFieldRefs {
   readonly attachmentType: Prisma.FieldRef<"CampusFeedPost", 'String'>
   readonly attachmentName: Prisma.FieldRef<"CampusFeedPost", 'String'>
   readonly createdAt: Prisma.FieldRef<"CampusFeedPost", 'DateTime'>
+  readonly divisionId: Prisma.FieldRef<"CampusFeedPost", 'String'>
+  readonly subjectId: Prisma.FieldRef<"CampusFeedPost", 'String'>
 }
     
 

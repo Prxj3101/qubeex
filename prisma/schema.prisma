@@ -1078,6 +1078,7 @@ model TaskTest {
   totalMarks        Int                @default(100)
   answerSpace       Boolean            @default(true)
   startDate         DateTime?
+  deadlineReminderSent Boolean         @default(false)
   division          Division           @relation(fields: [divisionId], references: [id])
   institution       Institution        @relation(fields: [institutionId], references: [id])
   subject           Subject            @relation(fields: [subjectId], references: [id])
@@ -1199,6 +1200,7 @@ model TaskAssignment {
   sections           Json?
   submissionType     String                            @default("OFFLINE")
   completedAt        DateTime?
+  deadlineReminderSent Boolean                         @default(false)
   division           Division                          @relation(fields: [divisionId], references: [id])
   institution        Institution                       @relation(fields: [institutionId], references: [id])
   subject            Subject                           @relation(fields: [subjectId], references: [id])

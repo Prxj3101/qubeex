@@ -49,9 +49,9 @@ export type TaskAssignmentSubmissionMinAggregateOutputType = {
   reviewedByTeacherId: string | null
   offlineSubmittedAt: Date | null
   offlineMarkedByTeacherId: string | null
-  offlineMarkedLate: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  offlineMarkedLate: boolean | null
 }
 
 export type TaskAssignmentSubmissionMaxAggregateOutputType = {
@@ -69,9 +69,9 @@ export type TaskAssignmentSubmissionMaxAggregateOutputType = {
   reviewedByTeacherId: string | null
   offlineSubmittedAt: Date | null
   offlineMarkedByTeacherId: string | null
-  offlineMarkedLate: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  offlineMarkedLate: boolean | null
 }
 
 export type TaskAssignmentSubmissionCountAggregateOutputType = {
@@ -89,9 +89,9 @@ export type TaskAssignmentSubmissionCountAggregateOutputType = {
   reviewedByTeacherId: number
   offlineSubmittedAt: number
   offlineMarkedByTeacherId: number
-  offlineMarkedLate: number
   createdAt: number
   updatedAt: number
+  offlineMarkedLate: number
   _all: number
 }
 
@@ -119,9 +119,9 @@ export type TaskAssignmentSubmissionMinAggregateInputType = {
   reviewedByTeacherId?: true
   offlineSubmittedAt?: true
   offlineMarkedByTeacherId?: true
-  offlineMarkedLate?: true
   createdAt?: true
   updatedAt?: true
+  offlineMarkedLate?: true
 }
 
 export type TaskAssignmentSubmissionMaxAggregateInputType = {
@@ -139,9 +139,9 @@ export type TaskAssignmentSubmissionMaxAggregateInputType = {
   reviewedByTeacherId?: true
   offlineSubmittedAt?: true
   offlineMarkedByTeacherId?: true
-  offlineMarkedLate?: true
   createdAt?: true
   updatedAt?: true
+  offlineMarkedLate?: true
 }
 
 export type TaskAssignmentSubmissionCountAggregateInputType = {
@@ -159,9 +159,9 @@ export type TaskAssignmentSubmissionCountAggregateInputType = {
   reviewedByTeacherId?: true
   offlineSubmittedAt?: true
   offlineMarkedByTeacherId?: true
-  offlineMarkedLate?: true
   createdAt?: true
   updatedAt?: true
+  offlineMarkedLate?: true
   _all?: true
 }
 
@@ -266,9 +266,9 @@ export type TaskAssignmentSubmissionGroupByOutputType = {
   reviewedByTeacherId: string | null
   offlineSubmittedAt: Date | null
   offlineMarkedByTeacherId: string | null
-  offlineMarkedLate: boolean
   createdAt: Date
   updatedAt: Date
+  offlineMarkedLate: boolean
   _count: TaskAssignmentSubmissionCountAggregateOutputType | null
   _avg: TaskAssignmentSubmissionAvgAggregateOutputType | null
   _sum: TaskAssignmentSubmissionSumAggregateOutputType | null
@@ -309,9 +309,9 @@ export type TaskAssignmentSubmissionWhereInput = {
   reviewedByTeacherId?: Prisma.StringNullableFilter<"TaskAssignmentSubmission"> | string | null
   offlineSubmittedAt?: Prisma.DateTimeNullableFilter<"TaskAssignmentSubmission"> | Date | string | null
   offlineMarkedByTeacherId?: Prisma.StringNullableFilter<"TaskAssignmentSubmission"> | string | null
-  offlineMarkedLate?: Prisma.BoolFilter<"TaskAssignmentSubmission"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TaskAssignmentSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignmentSubmission"> | Date | string
+  offlineMarkedLate?: Prisma.BoolFilter<"TaskAssignmentSubmission"> | boolean
   assignment?: Prisma.XOR<Prisma.TaskAssignmentScalarRelationFilter, Prisma.TaskAssignmentWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
   attempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
@@ -332,9 +332,9 @@ export type TaskAssignmentSubmissionOrderByWithRelationInput = {
   reviewedByTeacherId?: Prisma.SortOrderInput | Prisma.SortOrder
   offlineSubmittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   offlineMarkedByTeacherId?: Prisma.SortOrderInput | Prisma.SortOrder
-  offlineMarkedLate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  offlineMarkedLate?: Prisma.SortOrder
   assignment?: Prisma.TaskAssignmentOrderByWithRelationInput
   student?: Prisma.StudentOrderByWithRelationInput
   attempts?: Prisma.TaskAssignmentSubmissionAttemptOrderByRelationAggregateInput
@@ -359,9 +359,9 @@ export type TaskAssignmentSubmissionWhereUniqueInput = Prisma.AtLeast<{
   reviewedByTeacherId?: Prisma.StringNullableFilter<"TaskAssignmentSubmission"> | string | null
   offlineSubmittedAt?: Prisma.DateTimeNullableFilter<"TaskAssignmentSubmission"> | Date | string | null
   offlineMarkedByTeacherId?: Prisma.StringNullableFilter<"TaskAssignmentSubmission"> | string | null
-  offlineMarkedLate?: Prisma.BoolFilter<"TaskAssignmentSubmission"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TaskAssignmentSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignmentSubmission"> | Date | string
+  offlineMarkedLate?: Prisma.BoolFilter<"TaskAssignmentSubmission"> | boolean
   assignment?: Prisma.XOR<Prisma.TaskAssignmentScalarRelationFilter, Prisma.TaskAssignmentWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
   attempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
@@ -382,9 +382,9 @@ export type TaskAssignmentSubmissionOrderByWithAggregationInput = {
   reviewedByTeacherId?: Prisma.SortOrderInput | Prisma.SortOrder
   offlineSubmittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   offlineMarkedByTeacherId?: Prisma.SortOrderInput | Prisma.SortOrder
-  offlineMarkedLate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  offlineMarkedLate?: Prisma.SortOrder
   _count?: Prisma.TaskAssignmentSubmissionCountOrderByAggregateInput
   _avg?: Prisma.TaskAssignmentSubmissionAvgOrderByAggregateInput
   _max?: Prisma.TaskAssignmentSubmissionMaxOrderByAggregateInput
@@ -410,9 +410,9 @@ export type TaskAssignmentSubmissionScalarWhereWithAggregatesInput = {
   reviewedByTeacherId?: Prisma.StringNullableWithAggregatesFilter<"TaskAssignmentSubmission"> | string | null
   offlineSubmittedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignmentSubmission"> | Date | string | null
   offlineMarkedByTeacherId?: Prisma.StringNullableWithAggregatesFilter<"TaskAssignmentSubmission"> | string | null
-  offlineMarkedLate?: Prisma.BoolWithAggregatesFilter<"TaskAssignmentSubmission"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignmentSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignmentSubmission"> | Date | string
+  offlineMarkedLate?: Prisma.BoolWithAggregatesFilter<"TaskAssignmentSubmission"> | boolean
 }
 
 export type TaskAssignmentSubmissionCreateInput = {
@@ -428,9 +428,9 @@ export type TaskAssignmentSubmissionCreateInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
   assignment: Prisma.TaskAssignmentCreateNestedOneWithoutSubmissionsInput
   student: Prisma.StudentCreateNestedOneWithoutTaskAssignmentSubmissionsInput
   attempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutSubmissionInput
@@ -451,9 +451,9 @@ export type TaskAssignmentSubmissionUncheckedCreateInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
@@ -470,9 +470,9 @@ export type TaskAssignmentSubmissionUpdateInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   assignment?: Prisma.TaskAssignmentUpdateOneRequiredWithoutSubmissionsNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutTaskAssignmentSubmissionsNestedInput
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutSubmissionNestedInput
@@ -493,9 +493,9 @@ export type TaskAssignmentSubmissionUncheckedUpdateInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
@@ -514,9 +514,9 @@ export type TaskAssignmentSubmissionCreateManyInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
 }
 
 export type TaskAssignmentSubmissionUpdateManyMutationInput = {
@@ -532,9 +532,9 @@ export type TaskAssignmentSubmissionUpdateManyMutationInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskAssignmentSubmissionUncheckedUpdateManyInput = {
@@ -552,9 +552,9 @@ export type TaskAssignmentSubmissionUncheckedUpdateManyInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskAssignmentSubmissionListRelationFilter = {
@@ -587,9 +587,9 @@ export type TaskAssignmentSubmissionCountOrderByAggregateInput = {
   reviewedByTeacherId?: Prisma.SortOrder
   offlineSubmittedAt?: Prisma.SortOrder
   offlineMarkedByTeacherId?: Prisma.SortOrder
-  offlineMarkedLate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  offlineMarkedLate?: Prisma.SortOrder
 }
 
 export type TaskAssignmentSubmissionAvgOrderByAggregateInput = {
@@ -611,9 +611,9 @@ export type TaskAssignmentSubmissionMaxOrderByAggregateInput = {
   reviewedByTeacherId?: Prisma.SortOrder
   offlineSubmittedAt?: Prisma.SortOrder
   offlineMarkedByTeacherId?: Prisma.SortOrder
-  offlineMarkedLate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  offlineMarkedLate?: Prisma.SortOrder
 }
 
 export type TaskAssignmentSubmissionMinOrderByAggregateInput = {
@@ -631,9 +631,9 @@ export type TaskAssignmentSubmissionMinOrderByAggregateInput = {
   reviewedByTeacherId?: Prisma.SortOrder
   offlineSubmittedAt?: Prisma.SortOrder
   offlineMarkedByTeacherId?: Prisma.SortOrder
-  offlineMarkedLate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  offlineMarkedLate?: Prisma.SortOrder
 }
 
 export type TaskAssignmentSubmissionSumOrderByAggregateInput = {
@@ -756,9 +756,9 @@ export type TaskAssignmentSubmissionCreateWithoutStudentInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
   assignment: Prisma.TaskAssignmentCreateNestedOneWithoutSubmissionsInput
   attempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutSubmissionInput
 }
@@ -777,9 +777,9 @@ export type TaskAssignmentSubmissionUncheckedCreateWithoutStudentInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
@@ -827,9 +827,9 @@ export type TaskAssignmentSubmissionScalarWhereInput = {
   reviewedByTeacherId?: Prisma.StringNullableFilter<"TaskAssignmentSubmission"> | string | null
   offlineSubmittedAt?: Prisma.DateTimeNullableFilter<"TaskAssignmentSubmission"> | Date | string | null
   offlineMarkedByTeacherId?: Prisma.StringNullableFilter<"TaskAssignmentSubmission"> | string | null
-  offlineMarkedLate?: Prisma.BoolFilter<"TaskAssignmentSubmission"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TaskAssignmentSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignmentSubmission"> | Date | string
+  offlineMarkedLate?: Prisma.BoolFilter<"TaskAssignmentSubmission"> | boolean
 }
 
 export type TaskAssignmentSubmissionCreateWithoutAssignmentInput = {
@@ -845,9 +845,9 @@ export type TaskAssignmentSubmissionCreateWithoutAssignmentInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
   student: Prisma.StudentCreateNestedOneWithoutTaskAssignmentSubmissionsInput
   attempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutSubmissionInput
 }
@@ -866,9 +866,9 @@ export type TaskAssignmentSubmissionUncheckedCreateWithoutAssignmentInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutSubmissionInput
 }
 
@@ -911,9 +911,9 @@ export type TaskAssignmentSubmissionCreateWithoutAttemptsInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
   assignment: Prisma.TaskAssignmentCreateNestedOneWithoutSubmissionsInput
   student: Prisma.StudentCreateNestedOneWithoutTaskAssignmentSubmissionsInput
 }
@@ -933,9 +933,9 @@ export type TaskAssignmentSubmissionUncheckedCreateWithoutAttemptsInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
 }
 
 export type TaskAssignmentSubmissionCreateOrConnectWithoutAttemptsInput = {
@@ -967,9 +967,9 @@ export type TaskAssignmentSubmissionUpdateWithoutAttemptsInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   assignment?: Prisma.TaskAssignmentUpdateOneRequiredWithoutSubmissionsNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutTaskAssignmentSubmissionsNestedInput
 }
@@ -989,9 +989,9 @@ export type TaskAssignmentSubmissionUncheckedUpdateWithoutAttemptsInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskAssignmentSubmissionCreateManyStudentInput = {
@@ -1008,9 +1008,9 @@ export type TaskAssignmentSubmissionCreateManyStudentInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
 }
 
 export type TaskAssignmentSubmissionUpdateWithoutStudentInput = {
@@ -1026,9 +1026,9 @@ export type TaskAssignmentSubmissionUpdateWithoutStudentInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   assignment?: Prisma.TaskAssignmentUpdateOneRequiredWithoutSubmissionsNestedInput
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutSubmissionNestedInput
 }
@@ -1047,9 +1047,9 @@ export type TaskAssignmentSubmissionUncheckedUpdateWithoutStudentInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
@@ -1067,9 +1067,9 @@ export type TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskAssignmentSubmissionCreateManyAssignmentInput = {
@@ -1086,9 +1086,9 @@ export type TaskAssignmentSubmissionCreateManyAssignmentInput = {
   reviewedByTeacherId?: string | null
   offlineSubmittedAt?: Date | string | null
   offlineMarkedByTeacherId?: string | null
-  offlineMarkedLate?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  offlineMarkedLate?: boolean
 }
 
 export type TaskAssignmentSubmissionUpdateWithoutAssignmentInput = {
@@ -1104,9 +1104,9 @@ export type TaskAssignmentSubmissionUpdateWithoutAssignmentInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   student?: Prisma.StudentUpdateOneRequiredWithoutTaskAssignmentSubmissionsNestedInput
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutSubmissionNestedInput
 }
@@ -1125,9 +1125,9 @@ export type TaskAssignmentSubmissionUncheckedUpdateWithoutAssignmentInput = {
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutSubmissionNestedInput
 }
 
@@ -1145,9 +1145,9 @@ export type TaskAssignmentSubmissionUncheckedUpdateManyWithoutAssignmentInput = 
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   offlineSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   offlineMarkedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  offlineMarkedLate?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -1196,9 +1196,9 @@ export type TaskAssignmentSubmissionSelect<ExtArgs extends runtime.Types.Extensi
   reviewedByTeacherId?: boolean
   offlineSubmittedAt?: boolean
   offlineMarkedByTeacherId?: boolean
-  offlineMarkedLate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  offlineMarkedLate?: boolean
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
   attempts?: boolean | Prisma.TaskAssignmentSubmission$attemptsArgs<ExtArgs>
@@ -1220,9 +1220,9 @@ export type TaskAssignmentSubmissionSelectCreateManyAndReturn<ExtArgs extends ru
   reviewedByTeacherId?: boolean
   offlineSubmittedAt?: boolean
   offlineMarkedByTeacherId?: boolean
-  offlineMarkedLate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  offlineMarkedLate?: boolean
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignmentSubmission"]>
@@ -1242,9 +1242,9 @@ export type TaskAssignmentSubmissionSelectUpdateManyAndReturn<ExtArgs extends ru
   reviewedByTeacherId?: boolean
   offlineSubmittedAt?: boolean
   offlineMarkedByTeacherId?: boolean
-  offlineMarkedLate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  offlineMarkedLate?: boolean
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignmentSubmission"]>
@@ -1264,12 +1264,12 @@ export type TaskAssignmentSubmissionSelectScalar = {
   reviewedByTeacherId?: boolean
   offlineSubmittedAt?: boolean
   offlineMarkedByTeacherId?: boolean
-  offlineMarkedLate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  offlineMarkedLate?: boolean
 }
 
-export type TaskAssignmentSubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "assignmentId" | "studentId" | "institutionId" | "fileKey" | "fileUrl" | "submittedAt" | "resubmitCount" | "reviewStatus" | "reviewNote" | "reviewedAt" | "reviewedByTeacherId" | "offlineSubmittedAt" | "offlineMarkedByTeacherId" | "offlineMarkedLate" | "createdAt" | "updatedAt", ExtArgs["result"]["taskAssignmentSubmission"]>
+export type TaskAssignmentSubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "assignmentId" | "studentId" | "institutionId" | "fileKey" | "fileUrl" | "submittedAt" | "resubmitCount" | "reviewStatus" | "reviewNote" | "reviewedAt" | "reviewedByTeacherId" | "offlineSubmittedAt" | "offlineMarkedByTeacherId" | "createdAt" | "updatedAt" | "offlineMarkedLate", ExtArgs["result"]["taskAssignmentSubmission"]>
 export type TaskAssignmentSubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -1307,9 +1307,9 @@ export type $TaskAssignmentSubmissionPayload<ExtArgs extends runtime.Types.Exten
     reviewedByTeacherId: string | null
     offlineSubmittedAt: Date | null
     offlineMarkedByTeacherId: string | null
-    offlineMarkedLate: boolean
     createdAt: Date
     updatedAt: Date
+    offlineMarkedLate: boolean
   }, ExtArgs["result"]["taskAssignmentSubmission"]>
   composites: {}
 }
@@ -1750,9 +1750,9 @@ export interface TaskAssignmentSubmissionFieldRefs {
   readonly reviewedByTeacherId: Prisma.FieldRef<"TaskAssignmentSubmission", 'String'>
   readonly offlineSubmittedAt: Prisma.FieldRef<"TaskAssignmentSubmission", 'DateTime'>
   readonly offlineMarkedByTeacherId: Prisma.FieldRef<"TaskAssignmentSubmission", 'String'>
-  readonly offlineMarkedLate: Prisma.FieldRef<"TaskAssignmentSubmission", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"TaskAssignmentSubmission", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaskAssignmentSubmission", 'DateTime'>
+  readonly offlineMarkedLate: Prisma.FieldRef<"TaskAssignmentSubmission", 'Boolean'>
 }
     
 

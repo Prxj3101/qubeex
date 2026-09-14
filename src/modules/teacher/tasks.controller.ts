@@ -34,6 +34,7 @@ import { getAiTokenLimit } from "../../services/billing.service";
 import { recordAiUsage, type AiFeature, institutionUsageRedisKey, checkTeacherSoftLimit } from "../../services/ai-usage.service";
 import { generateTestResultPdf } from "../../services/testResultPdf.service";
 import { uploadImageToR2, deleteFromR2 } from "../../services/storage.service";
+import { createNotification } from "../../services/notification.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -1239,6 +1240,19 @@ export const updateTest = async (req: AuthRequest, res: Response, next: NextFunc
     });
 
     res.json({ success: true, data: updated });
+
+    // Notify the division's students the moment a test goes live — not on
+    // every edit, only the DRAFT -> ACTIVE transition.
+    if (test.status === "DRAFT" && updated.status === "ACTIVE") {
+      void notifyDivisionStudents({
+        institutionId,
+        divisionId: updated.divisionId,
+        title: `New test: ${updated.title}`,
+        message: `A new test has been published${updated.validUntil ? ` — closes ${updated.validUntil.toLocaleDateString("en-IN")}` : ""}.`,
+        tag: "TEST_PUBLISHED",
+        sentById: userId,
+      }).catch((err) => console.error("Test publish notification failed (non-blocking):", err.message));
+    }
   } catch (err) { next(err); }
 };
 
@@ -2056,8 +2070,45 @@ export const updateAssignment = async (req: AuthRequest, res: Response, next: Ne
     });
 
     res.json({ success: true, data: { ...updated, _count: { submissions: 0 } } });
+
+    // Notify the division's students the moment an assignment goes live —
+    // not on every edit, only the DRAFT -> ACTIVE transition.
+    if (existing.status === "DRAFT" && updated.status === "ACTIVE") {
+      void notifyDivisionStudents({
+        institutionId,
+        divisionId: updated.divisionId,
+        title: `New assignment: ${updated.title}`,
+        message: `A new assignment has been published${updated.dueDate ? ` — due ${updated.dueDate.toLocaleDateString("en-IN")}` : ""}.`,
+        tag: "ASSIGNMENT_PUBLISHED",
+        sentById: userId,
+      }).catch((err) => console.error("Assignment publish notification failed (non-blocking):", err.message));
+    }
   } catch (err) { next(err); }
 };
+
+async function notifyDivisionStudents(post: {
+  institutionId: string;
+  divisionId: string;
+  title: string;
+  message: string;
+  tag: string;
+  sentById: string;
+}) {
+  const students = await academicDb().student.findMany({
+    where: { divisionId: post.divisionId, institutionId: post.institutionId },
+    select: { userId: true },
+  });
+  if (students.length === 0) return;
+
+  await createNotification({
+    title: post.title,
+    message: post.message,
+    tag: post.tag,
+    recipientType: "SPECIFIC",
+    sentById: post.sentById,
+    recipients: students.map((s) => ({ institutionId: post.institutionId, userId: s.userId })),
+  });
+}
 
 export const deleteAssignment = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

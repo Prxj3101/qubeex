@@ -12,9 +12,9 @@
 export const Role = {
   SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
-  SUB_ADMIN: 'SUB_ADMIN',
   TEACHER: 'TEACHER',
-  STUDENT: 'STUDENT'
+  STUDENT: 'STUDENT',
+  SUB_ADMIN: 'SUB_ADMIN'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -132,10 +132,10 @@ export type RemarkCardType = (typeof RemarkCardType)[keyof typeof RemarkCardType
 
 export const RemarkStatus = {
   ACTIVE: 'ACTIVE',
-  UNDER_REVIEW: 'UNDER_REVIEW',
   RESOLVED: 'RESOLVED',
-  REJECTED: 'REJECTED',
-  APPEALED: 'APPEALED'
+  APPEALED: 'APPEALED',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  REJECTED: 'REJECTED'
 } as const
 
 export type RemarkStatus = (typeof RemarkStatus)[keyof typeof RemarkStatus]
@@ -183,13 +183,13 @@ export type CampusPostType = (typeof CampusPostType)[keyof typeof CampusPostType
 export const CalendarEventType = {
   HOLIDAY: 'HOLIDAY',
   TEST: 'TEST',
-  TERMTEST: 'TERMTEST',
   EXAM: 'EXAM',
   SUBMISSION: 'SUBMISSION',
   MEETING: 'MEETING',
   SPORTS: 'SPORTS',
   EVENT: 'EVENT',
-  TRIP: 'TRIP'
+  TRIP: 'TRIP',
+  TERMTEST: 'TERMTEST'
 } as const
 
 export type CalendarEventType = (typeof CalendarEventType)[keyof typeof CalendarEventType]

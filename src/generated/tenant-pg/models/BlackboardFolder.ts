@@ -190,9 +190,9 @@ export type BlackboardFolderWhereInput = {
   name?: Prisma.StringFilter<"BlackboardFolder"> | string
   parentId?: Prisma.StringNullableFilter<"BlackboardFolder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BlackboardFolder"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   parent?: Prisma.XOR<Prisma.BlackboardFolderNullableScalarRelationFilter, Prisma.BlackboardFolderWhereInput> | null
   children?: Prisma.BlackboardFolderListRelationFilter
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   files?: Prisma.BlackboardMaterialListRelationFilter
 }
 
@@ -203,9 +203,9 @@ export type BlackboardFolderOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  teacher?: Prisma.TeacherOrderByWithRelationInput
   parent?: Prisma.BlackboardFolderOrderByWithRelationInput
   children?: Prisma.BlackboardFolderOrderByRelationAggregateInput
+  teacher?: Prisma.TeacherOrderByWithRelationInput
   files?: Prisma.BlackboardMaterialOrderByRelationAggregateInput
 }
 
@@ -219,9 +219,9 @@ export type BlackboardFolderWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"BlackboardFolder"> | string
   parentId?: Prisma.StringNullableFilter<"BlackboardFolder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BlackboardFolder"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   parent?: Prisma.XOR<Prisma.BlackboardFolderNullableScalarRelationFilter, Prisma.BlackboardFolderWhereInput> | null
   children?: Prisma.BlackboardFolderListRelationFilter
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   files?: Prisma.BlackboardMaterialListRelationFilter
 }, "id">
 
@@ -254,9 +254,9 @@ export type BlackboardFolderCreateInput = {
   institutionId: string
   name: string
   createdAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardFoldersInput
   parent?: Prisma.BlackboardFolderCreateNestedOneWithoutChildrenInput
   children?: Prisma.BlackboardFolderCreateNestedManyWithoutParentInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardFoldersInput
   files?: Prisma.BlackboardMaterialCreateNestedManyWithoutFolderInput
 }
 
@@ -276,9 +276,9 @@ export type BlackboardFolderUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardFoldersNestedInput
   parent?: Prisma.BlackboardFolderUpdateOneWithoutChildrenNestedInput
   children?: Prisma.BlackboardFolderUpdateManyWithoutParentNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardFoldersNestedInput
   files?: Prisma.BlackboardMaterialUpdateManyWithoutFolderNestedInput
 }
 
@@ -542,8 +542,8 @@ export type BlackboardFolderCreateWithoutChildrenInput = {
   institutionId: string
   name: string
   createdAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardFoldersInput
   parent?: Prisma.BlackboardFolderCreateNestedOneWithoutChildrenInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardFoldersInput
   files?: Prisma.BlackboardMaterialCreateNestedManyWithoutFolderInput
 }
 
@@ -567,8 +567,8 @@ export type BlackboardFolderCreateWithoutParentInput = {
   institutionId: string
   name: string
   createdAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardFoldersInput
   children?: Prisma.BlackboardFolderCreateNestedManyWithoutParentInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardFoldersInput
   files?: Prisma.BlackboardMaterialCreateNestedManyWithoutFolderInput
 }
 
@@ -608,8 +608,8 @@ export type BlackboardFolderUpdateWithoutChildrenInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardFoldersNestedInput
   parent?: Prisma.BlackboardFolderUpdateOneWithoutChildrenNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardFoldersNestedInput
   files?: Prisma.BlackboardMaterialUpdateManyWithoutFolderNestedInput
 }
 
@@ -644,9 +644,9 @@ export type BlackboardFolderCreateWithoutFilesInput = {
   institutionId: string
   name: string
   createdAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardFoldersInput
   parent?: Prisma.BlackboardFolderCreateNestedOneWithoutChildrenInput
   children?: Prisma.BlackboardFolderCreateNestedManyWithoutParentInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardFoldersInput
 }
 
 export type BlackboardFolderUncheckedCreateWithoutFilesInput = {
@@ -680,9 +680,9 @@ export type BlackboardFolderUpdateWithoutFilesInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardFoldersNestedInput
   parent?: Prisma.BlackboardFolderUpdateOneWithoutChildrenNestedInput
   children?: Prisma.BlackboardFolderUpdateManyWithoutParentNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardFoldersNestedInput
 }
 
 export type BlackboardFolderUncheckedUpdateWithoutFilesInput = {
@@ -744,8 +744,8 @@ export type BlackboardFolderUpdateWithoutParentInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardFoldersNestedInput
   children?: Prisma.BlackboardFolderUpdateManyWithoutParentNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardFoldersNestedInput
   files?: Prisma.BlackboardMaterialUpdateManyWithoutFolderNestedInput
 }
 
@@ -814,9 +814,9 @@ export type BlackboardFolderSelect<ExtArgs extends runtime.Types.Extensions.Inte
   name?: boolean
   parentId?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.BlackboardFolder$parentArgs<ExtArgs>
   children?: boolean | Prisma.BlackboardFolder$childrenArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   files?: boolean | Prisma.BlackboardFolder$filesArgs<ExtArgs>
   _count?: boolean | Prisma.BlackboardFolderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blackboardFolder"]>
@@ -828,8 +828,8 @@ export type BlackboardFolderSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   name?: boolean
   parentId?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.BlackboardFolder$parentArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blackboardFolder"]>
 
 export type BlackboardFolderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -839,8 +839,8 @@ export type BlackboardFolderSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   name?: boolean
   parentId?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.BlackboardFolder$parentArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blackboardFolder"]>
 
 export type BlackboardFolderSelectScalar = {
@@ -854,27 +854,27 @@ export type BlackboardFolderSelectScalar = {
 
 export type BlackboardFolderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "name" | "parentId" | "createdAt", ExtArgs["result"]["blackboardFolder"]>
 export type BlackboardFolderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.BlackboardFolder$parentArgs<ExtArgs>
   children?: boolean | Prisma.BlackboardFolder$childrenArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   files?: boolean | Prisma.BlackboardFolder$filesArgs<ExtArgs>
   _count?: boolean | Prisma.BlackboardFolderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BlackboardFolderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.BlackboardFolder$parentArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 export type BlackboardFolderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.BlackboardFolder$parentArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 
 export type $BlackboardFolderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BlackboardFolder"
   objects: {
-    teacher: Prisma.$TeacherPayload<ExtArgs>
     parent: Prisma.$BlackboardFolderPayload<ExtArgs> | null
     children: Prisma.$BlackboardFolderPayload<ExtArgs>[]
+    teacher: Prisma.$TeacherPayload<ExtArgs>
     files: Prisma.$BlackboardMaterialPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1278,9 +1278,9 @@ readonly fields: BlackboardFolderFieldRefs;
  */
 export interface Prisma__BlackboardFolderClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   parent<T extends Prisma.BlackboardFolder$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BlackboardFolder$parentArgs<ExtArgs>>): Prisma.Prisma__BlackboardFolderClient<runtime.Types.Result.GetResult<Prisma.$BlackboardFolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   children<T extends Prisma.BlackboardFolder$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BlackboardFolder$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlackboardFolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   files<T extends Prisma.BlackboardFolder$filesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BlackboardFolder$filesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlackboardMaterialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

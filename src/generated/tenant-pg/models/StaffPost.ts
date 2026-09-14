@@ -29,9 +29,6 @@ export type StaffPostMinAggregateOutputType = {
   institutionId: string | null
   authorId: string | null
   text: string | null
-  attachmentUrl: string | null
-  attachmentType: string | null
-  attachmentName: string | null
   createdAt: Date | null
 }
 
@@ -40,9 +37,6 @@ export type StaffPostMaxAggregateOutputType = {
   institutionId: string | null
   authorId: string | null
   text: string | null
-  attachmentUrl: string | null
-  attachmentType: string | null
-  attachmentName: string | null
   createdAt: Date | null
 }
 
@@ -51,9 +45,7 @@ export type StaffPostCountAggregateOutputType = {
   institutionId: number
   authorId: number
   text: number
-  attachmentUrl: number
-  attachmentType: number
-  attachmentName: number
+  attachments: number
   createdAt: number
   _all: number
 }
@@ -64,9 +56,6 @@ export type StaffPostMinAggregateInputType = {
   institutionId?: true
   authorId?: true
   text?: true
-  attachmentUrl?: true
-  attachmentType?: true
-  attachmentName?: true
   createdAt?: true
 }
 
@@ -75,9 +64,6 @@ export type StaffPostMaxAggregateInputType = {
   institutionId?: true
   authorId?: true
   text?: true
-  attachmentUrl?: true
-  attachmentType?: true
-  attachmentName?: true
   createdAt?: true
 }
 
@@ -86,9 +72,7 @@ export type StaffPostCountAggregateInputType = {
   institutionId?: true
   authorId?: true
   text?: true
-  attachmentUrl?: true
-  attachmentType?: true
-  attachmentName?: true
+  attachments?: true
   createdAt?: true
   _all?: true
 }
@@ -170,9 +154,7 @@ export type StaffPostGroupByOutputType = {
   institutionId: string
   authorId: string
   text: string
-  attachmentUrl: string | null
-  attachmentType: string | null
-  attachmentName: string | null
+  attachments: runtime.JsonValue | null
   createdAt: Date
   _count: StaffPostCountAggregateOutputType | null
   _min: StaffPostMinAggregateOutputType | null
@@ -202,12 +184,10 @@ export type StaffPostWhereInput = {
   institutionId?: Prisma.StringFilter<"StaffPost"> | string
   authorId?: Prisma.StringFilter<"StaffPost"> | string
   text?: Prisma.StringFilter<"StaffPost"> | string
-  attachmentUrl?: Prisma.StringNullableFilter<"StaffPost"> | string | null
-  attachmentType?: Prisma.StringNullableFilter<"StaffPost"> | string | null
-  attachmentName?: Prisma.StringNullableFilter<"StaffPost"> | string | null
+  attachments?: Prisma.JsonNullableFilter<"StaffPost">
   createdAt?: Prisma.DateTimeFilter<"StaffPost"> | Date | string
-  reactions?: Prisma.StaffPostReactionListRelationFilter
   comments?: Prisma.StaffPostCommentListRelationFilter
+  reactions?: Prisma.StaffPostReactionListRelationFilter
 }
 
 export type StaffPostOrderByWithRelationInput = {
@@ -215,12 +195,10 @@ export type StaffPostOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentType?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentName?: Prisma.SortOrderInput | Prisma.SortOrder
+  attachments?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  reactions?: Prisma.StaffPostReactionOrderByRelationAggregateInput
   comments?: Prisma.StaffPostCommentOrderByRelationAggregateInput
+  reactions?: Prisma.StaffPostReactionOrderByRelationAggregateInput
 }
 
 export type StaffPostWhereUniqueInput = Prisma.AtLeast<{
@@ -231,12 +209,10 @@ export type StaffPostWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"StaffPost"> | string
   authorId?: Prisma.StringFilter<"StaffPost"> | string
   text?: Prisma.StringFilter<"StaffPost"> | string
-  attachmentUrl?: Prisma.StringNullableFilter<"StaffPost"> | string | null
-  attachmentType?: Prisma.StringNullableFilter<"StaffPost"> | string | null
-  attachmentName?: Prisma.StringNullableFilter<"StaffPost"> | string | null
+  attachments?: Prisma.JsonNullableFilter<"StaffPost">
   createdAt?: Prisma.DateTimeFilter<"StaffPost"> | Date | string
-  reactions?: Prisma.StaffPostReactionListRelationFilter
   comments?: Prisma.StaffPostCommentListRelationFilter
+  reactions?: Prisma.StaffPostReactionListRelationFilter
 }, "id">
 
 export type StaffPostOrderByWithAggregationInput = {
@@ -244,9 +220,7 @@ export type StaffPostOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentType?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentName?: Prisma.SortOrderInput | Prisma.SortOrder
+  attachments?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.StaffPostCountOrderByAggregateInput
   _max?: Prisma.StaffPostMaxOrderByAggregateInput
@@ -261,9 +235,7 @@ export type StaffPostScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"StaffPost"> | string
   authorId?: Prisma.StringWithAggregatesFilter<"StaffPost"> | string
   text?: Prisma.StringWithAggregatesFilter<"StaffPost"> | string
-  attachmentUrl?: Prisma.StringNullableWithAggregatesFilter<"StaffPost"> | string | null
-  attachmentType?: Prisma.StringNullableWithAggregatesFilter<"StaffPost"> | string | null
-  attachmentName?: Prisma.StringNullableWithAggregatesFilter<"StaffPost"> | string | null
+  attachments?: Prisma.JsonNullableWithAggregatesFilter<"StaffPost">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StaffPost"> | Date | string
 }
 
@@ -272,12 +244,10 @@ export type StaffPostCreateInput = {
   institutionId: string
   authorId: string
   text: string
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  reactions?: Prisma.StaffPostReactionCreateNestedManyWithoutPostInput
   comments?: Prisma.StaffPostCommentCreateNestedManyWithoutPostInput
+  reactions?: Prisma.StaffPostReactionCreateNestedManyWithoutPostInput
 }
 
 export type StaffPostUncheckedCreateInput = {
@@ -285,12 +255,10 @@ export type StaffPostUncheckedCreateInput = {
   institutionId: string
   authorId: string
   text: string
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  reactions?: Prisma.StaffPostReactionUncheckedCreateNestedManyWithoutPostInput
   comments?: Prisma.StaffPostCommentUncheckedCreateNestedManyWithoutPostInput
+  reactions?: Prisma.StaffPostReactionUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type StaffPostUpdateInput = {
@@ -298,12 +266,10 @@ export type StaffPostUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  reactions?: Prisma.StaffPostReactionUpdateManyWithoutPostNestedInput
   comments?: Prisma.StaffPostCommentUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.StaffPostReactionUpdateManyWithoutPostNestedInput
 }
 
 export type StaffPostUncheckedUpdateInput = {
@@ -311,12 +277,10 @@ export type StaffPostUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  reactions?: Prisma.StaffPostReactionUncheckedUpdateManyWithoutPostNestedInput
   comments?: Prisma.StaffPostCommentUncheckedUpdateManyWithoutPostNestedInput
+  reactions?: Prisma.StaffPostReactionUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type StaffPostCreateManyInput = {
@@ -324,9 +288,7 @@ export type StaffPostCreateManyInput = {
   institutionId: string
   authorId: string
   text: string
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -335,9 +297,7 @@ export type StaffPostUpdateManyMutationInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -346,9 +306,7 @@ export type StaffPostUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -357,9 +315,7 @@ export type StaffPostCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrder
-  attachmentType?: Prisma.SortOrder
-  attachmentName?: Prisma.SortOrder
+  attachments?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -368,9 +324,6 @@ export type StaffPostMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrder
-  attachmentType?: Prisma.SortOrder
-  attachmentName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -379,9 +332,6 @@ export type StaffPostMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrder
-  attachmentType?: Prisma.SortOrder
-  attachmentName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -423,9 +373,7 @@ export type StaffPostCreateWithoutReactionsInput = {
   institutionId: string
   authorId: string
   text: string
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   comments?: Prisma.StaffPostCommentCreateNestedManyWithoutPostInput
 }
@@ -435,9 +383,7 @@ export type StaffPostUncheckedCreateWithoutReactionsInput = {
   institutionId: string
   authorId: string
   text: string
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   comments?: Prisma.StaffPostCommentUncheckedCreateNestedManyWithoutPostInput
 }
@@ -463,9 +409,7 @@ export type StaffPostUpdateWithoutReactionsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.StaffPostCommentUpdateManyWithoutPostNestedInput
 }
@@ -475,9 +419,7 @@ export type StaffPostUncheckedUpdateWithoutReactionsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.StaffPostCommentUncheckedUpdateManyWithoutPostNestedInput
 }
@@ -487,9 +429,7 @@ export type StaffPostCreateWithoutCommentsInput = {
   institutionId: string
   authorId: string
   text: string
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   reactions?: Prisma.StaffPostReactionCreateNestedManyWithoutPostInput
 }
@@ -499,9 +439,7 @@ export type StaffPostUncheckedCreateWithoutCommentsInput = {
   institutionId: string
   authorId: string
   text: string
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   reactions?: Prisma.StaffPostReactionUncheckedCreateNestedManyWithoutPostInput
 }
@@ -527,9 +465,7 @@ export type StaffPostUpdateWithoutCommentsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reactions?: Prisma.StaffPostReactionUpdateManyWithoutPostNestedInput
 }
@@ -539,9 +475,7 @@ export type StaffPostUncheckedUpdateWithoutCommentsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reactions?: Prisma.StaffPostReactionUncheckedUpdateManyWithoutPostNestedInput
 }
@@ -552,13 +486,13 @@ export type StaffPostUncheckedUpdateWithoutCommentsInput = {
  */
 
 export type StaffPostCountOutputType = {
-  reactions: number
   comments: number
+  reactions: number
 }
 
 export type StaffPostCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  reactions?: boolean | StaffPostCountOutputTypeCountReactionsArgs
   comments?: boolean | StaffPostCountOutputTypeCountCommentsArgs
+  reactions?: boolean | StaffPostCountOutputTypeCountReactionsArgs
 }
 
 /**
@@ -574,15 +508,15 @@ export type StaffPostCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
 /**
  * StaffPostCountOutputType without action
  */
-export type StaffPostCountOutputTypeCountReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StaffPostReactionWhereInput
+export type StaffPostCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StaffPostCommentWhereInput
 }
 
 /**
  * StaffPostCountOutputType without action
  */
-export type StaffPostCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StaffPostCommentWhereInput
+export type StaffPostCountOutputTypeCountReactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StaffPostReactionWhereInput
 }
 
 
@@ -591,12 +525,10 @@ export type StaffPostSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   institutionId?: boolean
   authorId?: boolean
   text?: boolean
-  attachmentUrl?: boolean
-  attachmentType?: boolean
-  attachmentName?: boolean
+  attachments?: boolean
   createdAt?: boolean
-  reactions?: boolean | Prisma.StaffPost$reactionsArgs<ExtArgs>
   comments?: boolean | Prisma.StaffPost$commentsArgs<ExtArgs>
+  reactions?: boolean | Prisma.StaffPost$reactionsArgs<ExtArgs>
   _count?: boolean | Prisma.StaffPostCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staffPost"]>
 
@@ -605,9 +537,7 @@ export type StaffPostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   institutionId?: boolean
   authorId?: boolean
   text?: boolean
-  attachmentUrl?: boolean
-  attachmentType?: boolean
-  attachmentName?: boolean
+  attachments?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["staffPost"]>
 
@@ -616,9 +546,7 @@ export type StaffPostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   institutionId?: boolean
   authorId?: boolean
   text?: boolean
-  attachmentUrl?: boolean
-  attachmentType?: boolean
-  attachmentName?: boolean
+  attachments?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["staffPost"]>
 
@@ -627,16 +555,14 @@ export type StaffPostSelectScalar = {
   institutionId?: boolean
   authorId?: boolean
   text?: boolean
-  attachmentUrl?: boolean
-  attachmentType?: boolean
-  attachmentName?: boolean
+  attachments?: boolean
   createdAt?: boolean
 }
 
-export type StaffPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "authorId" | "text" | "attachmentUrl" | "attachmentType" | "attachmentName" | "createdAt", ExtArgs["result"]["staffPost"]>
+export type StaffPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "authorId" | "text" | "attachments" | "createdAt", ExtArgs["result"]["staffPost"]>
 export type StaffPostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  reactions?: boolean | Prisma.StaffPost$reactionsArgs<ExtArgs>
   comments?: boolean | Prisma.StaffPost$commentsArgs<ExtArgs>
+  reactions?: boolean | Prisma.StaffPost$reactionsArgs<ExtArgs>
   _count?: boolean | Prisma.StaffPostCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StaffPostIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -645,17 +571,15 @@ export type StaffPostIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type $StaffPostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StaffPost"
   objects: {
-    reactions: Prisma.$StaffPostReactionPayload<ExtArgs>[]
     comments: Prisma.$StaffPostCommentPayload<ExtArgs>[]
+    reactions: Prisma.$StaffPostReactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     institutionId: string
     authorId: string
     text: string
-    attachmentUrl: string | null
-    attachmentType: string | null
-    attachmentName: string | null
+    attachments: runtime.JsonValue | null
     createdAt: Date
   }, ExtArgs["result"]["staffPost"]>
   composites: {}
@@ -1051,8 +975,8 @@ readonly fields: StaffPostFieldRefs;
  */
 export interface Prisma__StaffPostClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  reactions<T extends Prisma.StaffPost$reactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffPost$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPostReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comments<T extends Prisma.StaffPost$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffPost$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPostCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reactions<T extends Prisma.StaffPost$reactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffPost$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPostReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1086,9 +1010,7 @@ export interface StaffPostFieldRefs {
   readonly institutionId: Prisma.FieldRef<"StaffPost", 'String'>
   readonly authorId: Prisma.FieldRef<"StaffPost", 'String'>
   readonly text: Prisma.FieldRef<"StaffPost", 'String'>
-  readonly attachmentUrl: Prisma.FieldRef<"StaffPost", 'String'>
-  readonly attachmentType: Prisma.FieldRef<"StaffPost", 'String'>
-  readonly attachmentName: Prisma.FieldRef<"StaffPost", 'String'>
+  readonly attachments: Prisma.FieldRef<"StaffPost", 'Json'>
   readonly createdAt: Prisma.FieldRef<"StaffPost", 'DateTime'>
 }
     
@@ -1483,30 +1405,6 @@ export type StaffPostDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * StaffPost.reactions
- */
-export type StaffPost$reactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StaffPostReaction
-   */
-  select?: Prisma.StaffPostReactionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the StaffPostReaction
-   */
-  omit?: Prisma.StaffPostReactionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StaffPostReactionInclude<ExtArgs> | null
-  where?: Prisma.StaffPostReactionWhereInput
-  orderBy?: Prisma.StaffPostReactionOrderByWithRelationInput | Prisma.StaffPostReactionOrderByWithRelationInput[]
-  cursor?: Prisma.StaffPostReactionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.StaffPostReactionScalarFieldEnum | Prisma.StaffPostReactionScalarFieldEnum[]
-}
-
-/**
  * StaffPost.comments
  */
 export type StaffPost$commentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1528,6 +1426,30 @@ export type StaffPost$commentsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.StaffPostCommentScalarFieldEnum | Prisma.StaffPostCommentScalarFieldEnum[]
+}
+
+/**
+ * StaffPost.reactions
+ */
+export type StaffPost$reactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffPostReaction
+   */
+  select?: Prisma.StaffPostReactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffPostReaction
+   */
+  omit?: Prisma.StaffPostReactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffPostReactionInclude<ExtArgs> | null
+  where?: Prisma.StaffPostReactionWhereInput
+  orderBy?: Prisma.StaffPostReactionOrderByWithRelationInput | Prisma.StaffPostReactionOrderByWithRelationInput[]
+  cursor?: Prisma.StaffPostReactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StaffPostReactionScalarFieldEnum | Prisma.StaffPostReactionScalarFieldEnum[]
 }
 
 /**

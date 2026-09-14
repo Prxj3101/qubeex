@@ -39,13 +39,13 @@ export type TaskPdfUploadMinAggregateOutputType = {
   institutionId: string | null
   teacherId: string | null
   divisionId: string | null
-  containerId: string | null
   displayName: string | null
   originalName: string | null
   status: string | null
   questionCount: number | null
   errorMessage: string | null
   createdAt: Date | null
+  containerId: string | null
 }
 
 export type TaskPdfUploadMaxAggregateOutputType = {
@@ -53,13 +53,13 @@ export type TaskPdfUploadMaxAggregateOutputType = {
   institutionId: string | null
   teacherId: string | null
   divisionId: string | null
-  containerId: string | null
   displayName: string | null
   originalName: string | null
   status: string | null
   questionCount: number | null
   errorMessage: string | null
   createdAt: Date | null
+  containerId: string | null
 }
 
 export type TaskPdfUploadCountAggregateOutputType = {
@@ -67,13 +67,13 @@ export type TaskPdfUploadCountAggregateOutputType = {
   institutionId: number
   teacherId: number
   divisionId: number
-  containerId: number
   displayName: number
   originalName: number
   status: number
   questionCount: number
   errorMessage: number
   createdAt: number
+  containerId: number
   _all: number
 }
 
@@ -91,13 +91,13 @@ export type TaskPdfUploadMinAggregateInputType = {
   institutionId?: true
   teacherId?: true
   divisionId?: true
-  containerId?: true
   displayName?: true
   originalName?: true
   status?: true
   questionCount?: true
   errorMessage?: true
   createdAt?: true
+  containerId?: true
 }
 
 export type TaskPdfUploadMaxAggregateInputType = {
@@ -105,13 +105,13 @@ export type TaskPdfUploadMaxAggregateInputType = {
   institutionId?: true
   teacherId?: true
   divisionId?: true
-  containerId?: true
   displayName?: true
   originalName?: true
   status?: true
   questionCount?: true
   errorMessage?: true
   createdAt?: true
+  containerId?: true
 }
 
 export type TaskPdfUploadCountAggregateInputType = {
@@ -119,13 +119,13 @@ export type TaskPdfUploadCountAggregateInputType = {
   institutionId?: true
   teacherId?: true
   divisionId?: true
-  containerId?: true
   displayName?: true
   originalName?: true
   status?: true
   questionCount?: true
   errorMessage?: true
   createdAt?: true
+  containerId?: true
   _all?: true
 }
 
@@ -220,13 +220,13 @@ export type TaskPdfUploadGroupByOutputType = {
   institutionId: string
   teacherId: string
   divisionId: string
-  containerId: string
   displayName: string
   originalName: string
   status: string
   questionCount: number | null
   errorMessage: string | null
   createdAt: Date
+  containerId: string
   _count: TaskPdfUploadCountAggregateOutputType | null
   _avg: TaskPdfUploadAvgAggregateOutputType | null
   _sum: TaskPdfUploadSumAggregateOutputType | null
@@ -257,13 +257,13 @@ export type TaskPdfUploadWhereInput = {
   institutionId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   teacherId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   divisionId?: Prisma.StringFilter<"TaskPdfUpload"> | string
-  containerId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   displayName?: Prisma.StringFilter<"TaskPdfUpload"> | string
   originalName?: Prisma.StringFilter<"TaskPdfUpload"> | string
   status?: Prisma.StringFilter<"TaskPdfUpload"> | string
   questionCount?: Prisma.IntNullableFilter<"TaskPdfUpload"> | number | null
   errorMessage?: Prisma.StringNullableFilter<"TaskPdfUpload"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskPdfUpload"> | Date | string
+  containerId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
 }
 
@@ -272,13 +272,13 @@ export type TaskPdfUploadOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   divisionId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   originalName?: Prisma.SortOrder
   status?: Prisma.SortOrder
   questionCount?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
   teacher?: Prisma.TeacherOrderByWithRelationInput
 }
 
@@ -290,13 +290,13 @@ export type TaskPdfUploadWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   teacherId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   divisionId?: Prisma.StringFilter<"TaskPdfUpload"> | string
-  containerId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   displayName?: Prisma.StringFilter<"TaskPdfUpload"> | string
   originalName?: Prisma.StringFilter<"TaskPdfUpload"> | string
   status?: Prisma.StringFilter<"TaskPdfUpload"> | string
   questionCount?: Prisma.IntNullableFilter<"TaskPdfUpload"> | number | null
   errorMessage?: Prisma.StringNullableFilter<"TaskPdfUpload"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskPdfUpload"> | Date | string
+  containerId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
 }, "id">
 
@@ -305,13 +305,13 @@ export type TaskPdfUploadOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   divisionId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   originalName?: Prisma.SortOrder
   status?: Prisma.SortOrder
   questionCount?: Prisma.SortOrderInput | Prisma.SortOrder
   errorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
   _count?: Prisma.TaskPdfUploadCountOrderByAggregateInput
   _avg?: Prisma.TaskPdfUploadAvgOrderByAggregateInput
   _max?: Prisma.TaskPdfUploadMaxOrderByAggregateInput
@@ -327,26 +327,26 @@ export type TaskPdfUploadScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"TaskPdfUpload"> | string
   teacherId?: Prisma.StringWithAggregatesFilter<"TaskPdfUpload"> | string
   divisionId?: Prisma.StringWithAggregatesFilter<"TaskPdfUpload"> | string
-  containerId?: Prisma.StringWithAggregatesFilter<"TaskPdfUpload"> | string
   displayName?: Prisma.StringWithAggregatesFilter<"TaskPdfUpload"> | string
   originalName?: Prisma.StringWithAggregatesFilter<"TaskPdfUpload"> | string
   status?: Prisma.StringWithAggregatesFilter<"TaskPdfUpload"> | string
   questionCount?: Prisma.IntNullableWithAggregatesFilter<"TaskPdfUpload"> | number | null
   errorMessage?: Prisma.StringNullableWithAggregatesFilter<"TaskPdfUpload"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskPdfUpload"> | Date | string
+  containerId?: Prisma.StringWithAggregatesFilter<"TaskPdfUpload"> | string
 }
 
 export type TaskPdfUploadCreateInput = {
   id?: string
   institutionId: string
   divisionId: string
-  containerId: string
   displayName: string
   originalName: string
   status?: string
   questionCount?: number | null
   errorMessage?: string | null
   createdAt?: Date | string
+  containerId: string
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskPdfUploadsInput
 }
 
@@ -355,26 +355,26 @@ export type TaskPdfUploadUncheckedCreateInput = {
   institutionId: string
   teacherId: string
   divisionId: string
-  containerId: string
   displayName: string
   originalName: string
   status?: string
   questionCount?: number | null
   errorMessage?: string | null
   createdAt?: Date | string
+  containerId: string
 }
 
 export type TaskPdfUploadUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   questionCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskPdfUploadsNestedInput
 }
 
@@ -383,13 +383,13 @@ export type TaskPdfUploadUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   questionCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskPdfUploadCreateManyInput = {
@@ -397,26 +397,26 @@ export type TaskPdfUploadCreateManyInput = {
   institutionId: string
   teacherId: string
   divisionId: string
-  containerId: string
   displayName: string
   originalName: string
   status?: string
   questionCount?: number | null
   errorMessage?: string | null
   createdAt?: Date | string
+  containerId: string
 }
 
 export type TaskPdfUploadUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   questionCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskPdfUploadUncheckedUpdateManyInput = {
@@ -424,13 +424,13 @@ export type TaskPdfUploadUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   questionCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskPdfUploadListRelationFilter = {
@@ -448,13 +448,13 @@ export type TaskPdfUploadCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   divisionId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   originalName?: Prisma.SortOrder
   status?: Prisma.SortOrder
   questionCount?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
 }
 
 export type TaskPdfUploadAvgOrderByAggregateInput = {
@@ -466,13 +466,13 @@ export type TaskPdfUploadMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   divisionId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   originalName?: Prisma.SortOrder
   status?: Prisma.SortOrder
   questionCount?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
 }
 
 export type TaskPdfUploadMinOrderByAggregateInput = {
@@ -480,13 +480,13 @@ export type TaskPdfUploadMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   divisionId?: Prisma.SortOrder
-  containerId?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   originalName?: Prisma.SortOrder
   status?: Prisma.SortOrder
   questionCount?: Prisma.SortOrder
   errorMessage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
 }
 
 export type TaskPdfUploadSumOrderByAggregateInput = {
@@ -539,26 +539,26 @@ export type TaskPdfUploadCreateWithoutTeacherInput = {
   id?: string
   institutionId: string
   divisionId: string
-  containerId: string
   displayName: string
   originalName: string
   status?: string
   questionCount?: number | null
   errorMessage?: string | null
   createdAt?: Date | string
+  containerId: string
 }
 
 export type TaskPdfUploadUncheckedCreateWithoutTeacherInput = {
   id?: string
   institutionId: string
   divisionId: string
-  containerId: string
   displayName: string
   originalName: string
   status?: string
   questionCount?: number | null
   errorMessage?: string | null
   createdAt?: Date | string
+  containerId: string
 }
 
 export type TaskPdfUploadCreateOrConnectWithoutTeacherInput = {
@@ -595,65 +595,65 @@ export type TaskPdfUploadScalarWhereInput = {
   institutionId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   teacherId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   divisionId?: Prisma.StringFilter<"TaskPdfUpload"> | string
-  containerId?: Prisma.StringFilter<"TaskPdfUpload"> | string
   displayName?: Prisma.StringFilter<"TaskPdfUpload"> | string
   originalName?: Prisma.StringFilter<"TaskPdfUpload"> | string
   status?: Prisma.StringFilter<"TaskPdfUpload"> | string
   questionCount?: Prisma.IntNullableFilter<"TaskPdfUpload"> | number | null
   errorMessage?: Prisma.StringNullableFilter<"TaskPdfUpload"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskPdfUpload"> | Date | string
+  containerId?: Prisma.StringFilter<"TaskPdfUpload"> | string
 }
 
 export type TaskPdfUploadCreateManyTeacherInput = {
   id?: string
   institutionId: string
   divisionId: string
-  containerId: string
   displayName: string
   originalName: string
   status?: string
   questionCount?: number | null
   errorMessage?: string | null
   createdAt?: Date | string
+  containerId: string
 }
 
 export type TaskPdfUploadUpdateWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   questionCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskPdfUploadUncheckedUpdateWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   questionCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskPdfUploadUncheckedUpdateManyWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  containerId?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   questionCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  containerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -663,13 +663,13 @@ export type TaskPdfUploadSelect<ExtArgs extends runtime.Types.Extensions.Interna
   institutionId?: boolean
   teacherId?: boolean
   divisionId?: boolean
-  containerId?: boolean
   displayName?: boolean
   originalName?: boolean
   status?: boolean
   questionCount?: boolean
   errorMessage?: boolean
   createdAt?: boolean
+  containerId?: boolean
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskPdfUpload"]>
 
@@ -678,13 +678,13 @@ export type TaskPdfUploadSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   institutionId?: boolean
   teacherId?: boolean
   divisionId?: boolean
-  containerId?: boolean
   displayName?: boolean
   originalName?: boolean
   status?: boolean
   questionCount?: boolean
   errorMessage?: boolean
   createdAt?: boolean
+  containerId?: boolean
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskPdfUpload"]>
 
@@ -693,13 +693,13 @@ export type TaskPdfUploadSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   institutionId?: boolean
   teacherId?: boolean
   divisionId?: boolean
-  containerId?: boolean
   displayName?: boolean
   originalName?: boolean
   status?: boolean
   questionCount?: boolean
   errorMessage?: boolean
   createdAt?: boolean
+  containerId?: boolean
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskPdfUpload"]>
 
@@ -708,16 +708,16 @@ export type TaskPdfUploadSelectScalar = {
   institutionId?: boolean
   teacherId?: boolean
   divisionId?: boolean
-  containerId?: boolean
   displayName?: boolean
   originalName?: boolean
   status?: boolean
   questionCount?: boolean
   errorMessage?: boolean
   createdAt?: boolean
+  containerId?: boolean
 }
 
-export type TaskPdfUploadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "divisionId" | "containerId" | "displayName" | "originalName" | "status" | "questionCount" | "errorMessage" | "createdAt", ExtArgs["result"]["taskPdfUpload"]>
+export type TaskPdfUploadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "divisionId" | "displayName" | "originalName" | "status" | "questionCount" | "errorMessage" | "createdAt" | "containerId", ExtArgs["result"]["taskPdfUpload"]>
 export type TaskPdfUploadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
@@ -738,13 +738,13 @@ export type $TaskPdfUploadPayload<ExtArgs extends runtime.Types.Extensions.Inter
     institutionId: string
     teacherId: string
     divisionId: string
-    containerId: string
     displayName: string
     originalName: string
     status: string
     questionCount: number | null
     errorMessage: string | null
     createdAt: Date
+    containerId: string
   }, ExtArgs["result"]["taskPdfUpload"]>
   composites: {}
 }
@@ -1173,13 +1173,13 @@ export interface TaskPdfUploadFieldRefs {
   readonly institutionId: Prisma.FieldRef<"TaskPdfUpload", 'String'>
   readonly teacherId: Prisma.FieldRef<"TaskPdfUpload", 'String'>
   readonly divisionId: Prisma.FieldRef<"TaskPdfUpload", 'String'>
-  readonly containerId: Prisma.FieldRef<"TaskPdfUpload", 'String'>
   readonly displayName: Prisma.FieldRef<"TaskPdfUpload", 'String'>
   readonly originalName: Prisma.FieldRef<"TaskPdfUpload", 'String'>
   readonly status: Prisma.FieldRef<"TaskPdfUpload", 'String'>
   readonly questionCount: Prisma.FieldRef<"TaskPdfUpload", 'Int'>
   readonly errorMessage: Prisma.FieldRef<"TaskPdfUpload", 'String'>
   readonly createdAt: Prisma.FieldRef<"TaskPdfUpload", 'DateTime'>
+  readonly containerId: Prisma.FieldRef<"TaskPdfUpload", 'String'>
 }
     
 

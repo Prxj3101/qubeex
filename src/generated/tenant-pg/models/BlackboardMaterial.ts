@@ -256,8 +256,8 @@ export type BlackboardMaterialWhereInput = {
   mimeType?: Prisma.StringFilter<"BlackboardMaterial"> | string
   size?: Prisma.IntFilter<"BlackboardMaterial"> | number
   createdAt?: Prisma.DateTimeFilter<"BlackboardMaterial"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   folder?: Prisma.XOR<Prisma.BlackboardFolderScalarRelationFilter, Prisma.BlackboardFolderWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
 }
 
 export type BlackboardMaterialOrderByWithRelationInput = {
@@ -271,8 +271,8 @@ export type BlackboardMaterialOrderByWithRelationInput = {
   mimeType?: Prisma.SortOrder
   size?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  teacher?: Prisma.TeacherOrderByWithRelationInput
   folder?: Prisma.BlackboardFolderOrderByWithRelationInput
+  teacher?: Prisma.TeacherOrderByWithRelationInput
 }
 
 export type BlackboardMaterialWhereUniqueInput = Prisma.AtLeast<{
@@ -289,8 +289,8 @@ export type BlackboardMaterialWhereUniqueInput = Prisma.AtLeast<{
   mimeType?: Prisma.StringFilter<"BlackboardMaterial"> | string
   size?: Prisma.IntFilter<"BlackboardMaterial"> | number
   createdAt?: Prisma.DateTimeFilter<"BlackboardMaterial"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   folder?: Prisma.XOR<Prisma.BlackboardFolderScalarRelationFilter, Prisma.BlackboardFolderWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
 }, "id">
 
 export type BlackboardMaterialOrderByWithAggregationInput = {
@@ -336,8 +336,8 @@ export type BlackboardMaterialCreateInput = {
   mimeType: string
   size: number
   createdAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardMaterialsInput
   folder: Prisma.BlackboardFolderCreateNestedOneWithoutFilesInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutBlackboardMaterialsInput
 }
 
 export type BlackboardMaterialUncheckedCreateInput = {
@@ -362,8 +362,8 @@ export type BlackboardMaterialUpdateInput = {
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardMaterialsNestedInput
   folder?: Prisma.BlackboardFolderUpdateOneRequiredWithoutFilesNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutBlackboardMaterialsNestedInput
 }
 
 export type BlackboardMaterialUncheckedUpdateInput = {
@@ -782,8 +782,8 @@ export type BlackboardMaterialSelect<ExtArgs extends runtime.Types.Extensions.In
   mimeType?: boolean
   size?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.BlackboardFolderDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blackboardMaterial"]>
 
 export type BlackboardMaterialSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -797,8 +797,8 @@ export type BlackboardMaterialSelectCreateManyAndReturn<ExtArgs extends runtime.
   mimeType?: boolean
   size?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.BlackboardFolderDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blackboardMaterial"]>
 
 export type BlackboardMaterialSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -812,8 +812,8 @@ export type BlackboardMaterialSelectUpdateManyAndReturn<ExtArgs extends runtime.
   mimeType?: boolean
   size?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.BlackboardFolderDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blackboardMaterial"]>
 
 export type BlackboardMaterialSelectScalar = {
@@ -831,23 +831,23 @@ export type BlackboardMaterialSelectScalar = {
 
 export type BlackboardMaterialOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "folderId" | "name" | "fileUrl" | "r2Key" | "mimeType" | "size" | "createdAt", ExtArgs["result"]["blackboardMaterial"]>
 export type BlackboardMaterialInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.BlackboardFolderDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 export type BlackboardMaterialIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.BlackboardFolderDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 export type BlackboardMaterialIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.BlackboardFolderDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 
 export type $BlackboardMaterialPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BlackboardMaterial"
   objects: {
-    teacher: Prisma.$TeacherPayload<ExtArgs>
     folder: Prisma.$BlackboardFolderPayload<ExtArgs>
+    teacher: Prisma.$TeacherPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1254,8 +1254,8 @@ readonly fields: BlackboardMaterialFieldRefs;
  */
 export interface Prisma__BlackboardMaterialClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   folder<T extends Prisma.BlackboardFolderDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BlackboardFolderDefaultArgs<ExtArgs>>): Prisma.Prisma__BlackboardFolderClient<runtime.Types.Result.GetResult<Prisma.$BlackboardFolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

@@ -206,8 +206,8 @@ export type MarksheetGradedScoreWhereInput = {
   term1Grade?: Prisma.StringNullableFilter<"MarksheetGradedScore"> | string | null
   term2Grade?: Prisma.StringNullableFilter<"MarksheetGradedScore"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"MarksheetGradedScore"> | Date | string
-  marksheet?: Prisma.XOR<Prisma.MarksheetScalarRelationFilter, Prisma.MarksheetWhereInput>
   gradedSubject?: Prisma.XOR<Prisma.MarksheetGradedSubjectScalarRelationFilter, Prisma.MarksheetGradedSubjectWhereInput>
+  marksheet?: Prisma.XOR<Prisma.MarksheetScalarRelationFilter, Prisma.MarksheetWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
 }
 
@@ -220,8 +220,8 @@ export type MarksheetGradedScoreOrderByWithRelationInput = {
   term1Grade?: Prisma.SortOrderInput | Prisma.SortOrder
   term2Grade?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  marksheet?: Prisma.MarksheetOrderByWithRelationInput
   gradedSubject?: Prisma.MarksheetGradedSubjectOrderByWithRelationInput
+  marksheet?: Prisma.MarksheetOrderByWithRelationInput
   student?: Prisma.StudentOrderByWithRelationInput
 }
 
@@ -238,8 +238,8 @@ export type MarksheetGradedScoreWhereUniqueInput = Prisma.AtLeast<{
   term1Grade?: Prisma.StringNullableFilter<"MarksheetGradedScore"> | string | null
   term2Grade?: Prisma.StringNullableFilter<"MarksheetGradedScore"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"MarksheetGradedScore"> | Date | string
-  marksheet?: Prisma.XOR<Prisma.MarksheetScalarRelationFilter, Prisma.MarksheetWhereInput>
   gradedSubject?: Prisma.XOR<Prisma.MarksheetGradedSubjectScalarRelationFilter, Prisma.MarksheetGradedSubjectWhereInput>
+  marksheet?: Prisma.XOR<Prisma.MarksheetScalarRelationFilter, Prisma.MarksheetWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
 }, "id" | "gradedSubjectId_studentId">
 
@@ -277,8 +277,8 @@ export type MarksheetGradedScoreCreateInput = {
   term1Grade?: string | null
   term2Grade?: string | null
   updatedAt?: Date | string
-  marksheet: Prisma.MarksheetCreateNestedOneWithoutGradedScoresInput
   gradedSubject: Prisma.MarksheetGradedSubjectCreateNestedOneWithoutGradedScoresInput
+  marksheet: Prisma.MarksheetCreateNestedOneWithoutGradedScoresInput
   student: Prisma.StudentCreateNestedOneWithoutMarksheetGradedScoresInput
 }
 
@@ -299,8 +299,8 @@ export type MarksheetGradedScoreUpdateInput = {
   term1Grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   term2Grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  marksheet?: Prisma.MarksheetUpdateOneRequiredWithoutGradedScoresNestedInput
   gradedSubject?: Prisma.MarksheetGradedSubjectUpdateOneRequiredWithoutGradedScoresNestedInput
+  marksheet?: Prisma.MarksheetUpdateOneRequiredWithoutGradedScoresNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutMarksheetGradedScoresNestedInput
 }
 
@@ -525,8 +525,8 @@ export type MarksheetGradedScoreCreateWithoutStudentInput = {
   term1Grade?: string | null
   term2Grade?: string | null
   updatedAt?: Date | string
-  marksheet: Prisma.MarksheetCreateNestedOneWithoutGradedScoresInput
   gradedSubject: Prisma.MarksheetGradedSubjectCreateNestedOneWithoutGradedScoresInput
+  marksheet: Prisma.MarksheetCreateNestedOneWithoutGradedScoresInput
 }
 
 export type MarksheetGradedScoreUncheckedCreateWithoutStudentInput = {
@@ -687,8 +687,8 @@ export type MarksheetGradedScoreUpdateWithoutStudentInput = {
   term1Grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   term2Grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  marksheet?: Prisma.MarksheetUpdateOneRequiredWithoutGradedScoresNestedInput
   gradedSubject?: Prisma.MarksheetGradedSubjectUpdateOneRequiredWithoutGradedScoresNestedInput
+  marksheet?: Prisma.MarksheetUpdateOneRequiredWithoutGradedScoresNestedInput
 }
 
 export type MarksheetGradedScoreUncheckedUpdateWithoutStudentInput = {
@@ -802,8 +802,8 @@ export type MarksheetGradedScoreSelect<ExtArgs extends runtime.Types.Extensions.
   term1Grade?: boolean
   term2Grade?: boolean
   updatedAt?: boolean
-  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   gradedSubject?: boolean | Prisma.MarksheetGradedSubjectDefaultArgs<ExtArgs>
+  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marksheetGradedScore"]>
 
@@ -816,8 +816,8 @@ export type MarksheetGradedScoreSelectCreateManyAndReturn<ExtArgs extends runtim
   term1Grade?: boolean
   term2Grade?: boolean
   updatedAt?: boolean
-  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   gradedSubject?: boolean | Prisma.MarksheetGradedSubjectDefaultArgs<ExtArgs>
+  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marksheetGradedScore"]>
 
@@ -830,8 +830,8 @@ export type MarksheetGradedScoreSelectUpdateManyAndReturn<ExtArgs extends runtim
   term1Grade?: boolean
   term2Grade?: boolean
   updatedAt?: boolean
-  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   gradedSubject?: boolean | Prisma.MarksheetGradedSubjectDefaultArgs<ExtArgs>
+  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marksheetGradedScore"]>
 
@@ -848,26 +848,26 @@ export type MarksheetGradedScoreSelectScalar = {
 
 export type MarksheetGradedScoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "marksheetId" | "gradedSubjectId" | "studentId" | "institutionId" | "term1Grade" | "term2Grade" | "updatedAt", ExtArgs["result"]["marksheetGradedScore"]>
 export type MarksheetGradedScoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   gradedSubject?: boolean | Prisma.MarksheetGradedSubjectDefaultArgs<ExtArgs>
+  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }
 export type MarksheetGradedScoreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   gradedSubject?: boolean | Prisma.MarksheetGradedSubjectDefaultArgs<ExtArgs>
+  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }
 export type MarksheetGradedScoreIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   gradedSubject?: boolean | Prisma.MarksheetGradedSubjectDefaultArgs<ExtArgs>
+  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }
 
 export type $MarksheetGradedScorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MarksheetGradedScore"
   objects: {
-    marksheet: Prisma.$MarksheetPayload<ExtArgs>
     gradedSubject: Prisma.$MarksheetGradedSubjectPayload<ExtArgs>
+    marksheet: Prisma.$MarksheetPayload<ExtArgs>
     student: Prisma.$StudentPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1273,8 +1273,8 @@ readonly fields: MarksheetGradedScoreFieldRefs;
  */
 export interface Prisma__MarksheetGradedScoreClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  marksheet<T extends Prisma.MarksheetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarksheetDefaultArgs<ExtArgs>>): Prisma.Prisma__MarksheetClient<runtime.Types.Result.GetResult<Prisma.$MarksheetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   gradedSubject<T extends Prisma.MarksheetGradedSubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarksheetGradedSubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__MarksheetGradedSubjectClient<runtime.Types.Result.GetResult<Prisma.$MarksheetGradedSubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  marksheet<T extends Prisma.MarksheetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarksheetDefaultArgs<ExtArgs>>): Prisma.Prisma__MarksheetClient<runtime.Types.Result.GetResult<Prisma.$MarksheetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   student<T extends Prisma.StudentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentDefaultArgs<ExtArgs>>): Prisma.Prisma__StudentClient<runtime.Types.Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

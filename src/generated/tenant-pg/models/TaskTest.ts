@@ -28,16 +28,16 @@ export type AggregateTaskTest = {
 
 export type TaskTestAvgAggregateOutputType = {
   durationMinutes: number | null
-  totalMarks: number | null
   numberOfQuestions: number | null
   maxAttempts: number | null
+  totalMarks: number | null
 }
 
 export type TaskTestSumAggregateOutputType = {
   durationMinutes: number | null
-  totalMarks: number | null
   numberOfQuestions: number | null
   maxAttempts: number | null
+  totalMarks: number | null
 }
 
 export type TaskTestMinAggregateOutputType = {
@@ -50,17 +50,18 @@ export type TaskTestMinAggregateOutputType = {
   description: string | null
   testLink: string | null
   status: $Enums.TaskTestStatus | null
-  paperType: string | null
-  isRandomized: boolean | null
-  answerSpace: boolean | null
   durationMinutes: number | null
-  totalMarks: number | null
   numberOfQuestions: number | null
   maxAttempts: number | null
-  startDate: Date | null
   validUntil: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  isRandomized: boolean | null
+  paperType: string | null
+  totalMarks: number | null
+  answerSpace: boolean | null
+  startDate: Date | null
+  deadlineReminderSent: boolean | null
 }
 
 export type TaskTestMaxAggregateOutputType = {
@@ -73,17 +74,18 @@ export type TaskTestMaxAggregateOutputType = {
   description: string | null
   testLink: string | null
   status: $Enums.TaskTestStatus | null
-  paperType: string | null
-  isRandomized: boolean | null
-  answerSpace: boolean | null
   durationMinutes: number | null
-  totalMarks: number | null
   numberOfQuestions: number | null
   maxAttempts: number | null
-  startDate: Date | null
   validUntil: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  isRandomized: boolean | null
+  paperType: string | null
+  totalMarks: number | null
+  answerSpace: boolean | null
+  startDate: Date | null
+  deadlineReminderSent: boolean | null
 }
 
 export type TaskTestCountAggregateOutputType = {
@@ -96,34 +98,35 @@ export type TaskTestCountAggregateOutputType = {
   description: number
   testLink: number
   status: number
-  paperType: number
-  isRandomized: number
-  answerSpace: number
-  sections: number
   durationMinutes: number
-  totalMarks: number
   numberOfQuestions: number
   maxAttempts: number
-  startDate: number
   validUntil: number
   createdAt: number
   updatedAt: number
+  isRandomized: number
+  paperType: number
+  sections: number
+  totalMarks: number
+  answerSpace: number
+  startDate: number
+  deadlineReminderSent: number
   _all: number
 }
 
 
 export type TaskTestAvgAggregateInputType = {
   durationMinutes?: true
-  totalMarks?: true
   numberOfQuestions?: true
   maxAttempts?: true
+  totalMarks?: true
 }
 
 export type TaskTestSumAggregateInputType = {
   durationMinutes?: true
-  totalMarks?: true
   numberOfQuestions?: true
   maxAttempts?: true
+  totalMarks?: true
 }
 
 export type TaskTestMinAggregateInputType = {
@@ -136,17 +139,18 @@ export type TaskTestMinAggregateInputType = {
   description?: true
   testLink?: true
   status?: true
-  paperType?: true
-  isRandomized?: true
-  answerSpace?: true
   durationMinutes?: true
-  totalMarks?: true
   numberOfQuestions?: true
   maxAttempts?: true
-  startDate?: true
   validUntil?: true
   createdAt?: true
   updatedAt?: true
+  isRandomized?: true
+  paperType?: true
+  totalMarks?: true
+  answerSpace?: true
+  startDate?: true
+  deadlineReminderSent?: true
 }
 
 export type TaskTestMaxAggregateInputType = {
@@ -159,17 +163,18 @@ export type TaskTestMaxAggregateInputType = {
   description?: true
   testLink?: true
   status?: true
-  paperType?: true
-  isRandomized?: true
-  answerSpace?: true
   durationMinutes?: true
-  totalMarks?: true
   numberOfQuestions?: true
   maxAttempts?: true
-  startDate?: true
   validUntil?: true
   createdAt?: true
   updatedAt?: true
+  isRandomized?: true
+  paperType?: true
+  totalMarks?: true
+  answerSpace?: true
+  startDate?: true
+  deadlineReminderSent?: true
 }
 
 export type TaskTestCountAggregateInputType = {
@@ -182,18 +187,19 @@ export type TaskTestCountAggregateInputType = {
   description?: true
   testLink?: true
   status?: true
-  paperType?: true
-  isRandomized?: true
-  answerSpace?: true
-  sections?: true
   durationMinutes?: true
-  totalMarks?: true
   numberOfQuestions?: true
   maxAttempts?: true
-  startDate?: true
   validUntil?: true
   createdAt?: true
   updatedAt?: true
+  isRandomized?: true
+  paperType?: true
+  sections?: true
+  totalMarks?: true
+  answerSpace?: true
+  startDate?: true
+  deadlineReminderSent?: true
   _all?: true
 }
 
@@ -293,18 +299,19 @@ export type TaskTestGroupByOutputType = {
   description: string | null
   testLink: string
   status: $Enums.TaskTestStatus
-  paperType: string
-  isRandomized: boolean
-  answerSpace: boolean
-  sections: runtime.JsonValue | null
   durationMinutes: number
-  totalMarks: number
   numberOfQuestions: number
   maxAttempts: number
-  startDate: Date | null
   validUntil: Date | null
   createdAt: Date
   updatedAt: Date
+  isRandomized: boolean
+  paperType: string
+  sections: runtime.JsonValue | null
+  totalMarks: number
+  answerSpace: boolean
+  startDate: Date | null
+  deadlineReminderSent: boolean
   _count: TaskTestCountAggregateOutputType | null
   _avg: TaskTestAvgAggregateOutputType | null
   _sum: TaskTestSumAggregateOutputType | null
@@ -340,23 +347,24 @@ export type TaskTestWhereInput = {
   description?: Prisma.StringNullableFilter<"TaskTest"> | string | null
   testLink?: Prisma.StringFilter<"TaskTest"> | string
   status?: Prisma.EnumTaskTestStatusFilter<"TaskTest"> | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFilter<"TaskTest"> | string
-  isRandomized?: Prisma.BoolFilter<"TaskTest"> | boolean
-  answerSpace?: Prisma.BoolFilter<"TaskTest"> | boolean
-  sections?: Prisma.JsonNullableFilter<"TaskTest">
   durationMinutes?: Prisma.IntFilter<"TaskTest"> | number
-  totalMarks?: Prisma.IntFilter<"TaskTest"> | number
   numberOfQuestions?: Prisma.IntFilter<"TaskTest"> | number
   maxAttempts?: Prisma.IntFilter<"TaskTest"> | number
-  startDate?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
   validUntil?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskTest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskTest"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  isRandomized?: Prisma.BoolFilter<"TaskTest"> | boolean
+  paperType?: Prisma.StringFilter<"TaskTest"> | string
+  sections?: Prisma.JsonNullableFilter<"TaskTest">
+  totalMarks?: Prisma.IntFilter<"TaskTest"> | number
+  answerSpace?: Prisma.BoolFilter<"TaskTest"> | boolean
+  startDate?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFilter<"TaskTest"> | boolean
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
-  questions?: Prisma.TaskTestQuestionListRelationFilter
+  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   attempts?: Prisma.TaskTestAttemptListRelationFilter
+  questions?: Prisma.TaskTestQuestionListRelationFilter
 }
 
 export type TaskTestOrderByWithRelationInput = {
@@ -369,23 +377,24 @@ export type TaskTestOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   testLink?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paperType?: Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
-  sections?: Prisma.SortOrderInput | Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
-  totalMarks?: Prisma.SortOrder
   numberOfQuestions?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
-  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  teacher?: Prisma.TeacherOrderByWithRelationInput
-  subject?: Prisma.SubjectOrderByWithRelationInput
+  isRandomized?: Prisma.SortOrder
+  paperType?: Prisma.SortOrder
+  sections?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalMarks?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
   division?: Prisma.DivisionOrderByWithRelationInput
-  questions?: Prisma.TaskTestQuestionOrderByRelationAggregateInput
+  subject?: Prisma.SubjectOrderByWithRelationInput
+  teacher?: Prisma.TeacherOrderByWithRelationInput
   attempts?: Prisma.TaskTestAttemptOrderByRelationAggregateInput
+  questions?: Prisma.TaskTestQuestionOrderByRelationAggregateInput
 }
 
 export type TaskTestWhereUniqueInput = Prisma.AtLeast<{
@@ -401,23 +410,24 @@ export type TaskTestWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"TaskTest"> | string
   description?: Prisma.StringNullableFilter<"TaskTest"> | string | null
   status?: Prisma.EnumTaskTestStatusFilter<"TaskTest"> | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFilter<"TaskTest"> | string
-  isRandomized?: Prisma.BoolFilter<"TaskTest"> | boolean
-  answerSpace?: Prisma.BoolFilter<"TaskTest"> | boolean
-  sections?: Prisma.JsonNullableFilter<"TaskTest">
   durationMinutes?: Prisma.IntFilter<"TaskTest"> | number
-  totalMarks?: Prisma.IntFilter<"TaskTest"> | number
   numberOfQuestions?: Prisma.IntFilter<"TaskTest"> | number
   maxAttempts?: Prisma.IntFilter<"TaskTest"> | number
-  startDate?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
   validUntil?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskTest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskTest"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  isRandomized?: Prisma.BoolFilter<"TaskTest"> | boolean
+  paperType?: Prisma.StringFilter<"TaskTest"> | string
+  sections?: Prisma.JsonNullableFilter<"TaskTest">
+  totalMarks?: Prisma.IntFilter<"TaskTest"> | number
+  answerSpace?: Prisma.BoolFilter<"TaskTest"> | boolean
+  startDate?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFilter<"TaskTest"> | boolean
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
-  questions?: Prisma.TaskTestQuestionListRelationFilter
+  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   attempts?: Prisma.TaskTestAttemptListRelationFilter
+  questions?: Prisma.TaskTestQuestionListRelationFilter
 }, "id" | "testLink">
 
 export type TaskTestOrderByWithAggregationInput = {
@@ -430,18 +440,19 @@ export type TaskTestOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   testLink?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paperType?: Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
-  sections?: Prisma.SortOrderInput | Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
-  totalMarks?: Prisma.SortOrder
   numberOfQuestions?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
-  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  paperType?: Prisma.SortOrder
+  sections?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalMarks?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
   _count?: Prisma.TaskTestCountOrderByAggregateInput
   _avg?: Prisma.TaskTestAvgOrderByAggregateInput
   _max?: Prisma.TaskTestMaxOrderByAggregateInput
@@ -462,18 +473,19 @@ export type TaskTestScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"TaskTest"> | string | null
   testLink?: Prisma.StringWithAggregatesFilter<"TaskTest"> | string
   status?: Prisma.EnumTaskTestStatusWithAggregatesFilter<"TaskTest"> | $Enums.TaskTestStatus
-  paperType?: Prisma.StringWithAggregatesFilter<"TaskTest"> | string
-  isRandomized?: Prisma.BoolWithAggregatesFilter<"TaskTest"> | boolean
-  answerSpace?: Prisma.BoolWithAggregatesFilter<"TaskTest"> | boolean
-  sections?: Prisma.JsonNullableWithAggregatesFilter<"TaskTest">
   durationMinutes?: Prisma.IntWithAggregatesFilter<"TaskTest"> | number
-  totalMarks?: Prisma.IntWithAggregatesFilter<"TaskTest"> | number
   numberOfQuestions?: Prisma.IntWithAggregatesFilter<"TaskTest"> | number
   maxAttempts?: Prisma.IntWithAggregatesFilter<"TaskTest"> | number
-  startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskTest"> | Date | string | null
   validUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskTest"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskTest"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskTest"> | Date | string
+  isRandomized?: Prisma.BoolWithAggregatesFilter<"TaskTest"> | boolean
+  paperType?: Prisma.StringWithAggregatesFilter<"TaskTest"> | string
+  sections?: Prisma.JsonNullableWithAggregatesFilter<"TaskTest">
+  totalMarks?: Prisma.IntWithAggregatesFilter<"TaskTest"> | number
+  answerSpace?: Prisma.BoolWithAggregatesFilter<"TaskTest"> | boolean
+  startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskTest"> | Date | string | null
+  deadlineReminderSent?: Prisma.BoolWithAggregatesFilter<"TaskTest"> | boolean
 }
 
 export type TaskTestCreateInput = {
@@ -483,23 +495,24 @@ export type TaskTestCreateInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskTestsInput
-  questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
   attempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutTestInput
+  questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
 }
 
 export type TaskTestUncheckedCreateInput = {
@@ -512,20 +525,21 @@ export type TaskTestUncheckedCreateInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   attempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutTestInput
+  questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
 }
 
 export type TaskTestUpdateInput = {
@@ -535,23 +549,24 @@ export type TaskTestUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskTestsNestedInput
-  questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
   attempts?: Prisma.TaskTestAttemptUpdateManyWithoutTestNestedInput
+  questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
 }
 
 export type TaskTestUncheckedUpdateInput = {
@@ -564,20 +579,21 @@ export type TaskTestUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutTestNestedInput
+  questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
 }
 
 export type TaskTestCreateManyInput = {
@@ -590,18 +606,19 @@ export type TaskTestCreateManyInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
 }
 
 export type TaskTestUpdateManyMutationInput = {
@@ -611,18 +628,19 @@ export type TaskTestUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskTestUncheckedUpdateManyInput = {
@@ -635,18 +653,19 @@ export type TaskTestUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskTestListRelationFilter = {
@@ -669,25 +688,26 @@ export type TaskTestCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   testLink?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paperType?: Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
-  sections?: Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
-  totalMarks?: Prisma.SortOrder
   numberOfQuestions?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  paperType?: Prisma.SortOrder
+  sections?: Prisma.SortOrder
+  totalMarks?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
 }
 
 export type TaskTestAvgOrderByAggregateInput = {
   durationMinutes?: Prisma.SortOrder
-  totalMarks?: Prisma.SortOrder
   numberOfQuestions?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
+  totalMarks?: Prisma.SortOrder
 }
 
 export type TaskTestMaxOrderByAggregateInput = {
@@ -700,17 +720,18 @@ export type TaskTestMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   testLink?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paperType?: Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
-  totalMarks?: Prisma.SortOrder
   numberOfQuestions?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  paperType?: Prisma.SortOrder
+  totalMarks?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
 }
 
 export type TaskTestMinOrderByAggregateInput = {
@@ -723,24 +744,25 @@ export type TaskTestMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   testLink?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  paperType?: Prisma.SortOrder
-  isRandomized?: Prisma.SortOrder
-  answerSpace?: Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
-  totalMarks?: Prisma.SortOrder
   numberOfQuestions?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
-  startDate?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isRandomized?: Prisma.SortOrder
+  paperType?: Prisma.SortOrder
+  totalMarks?: Prisma.SortOrder
+  answerSpace?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  deadlineReminderSent?: Prisma.SortOrder
 }
 
 export type TaskTestSumOrderByAggregateInput = {
   durationMinutes?: Prisma.SortOrder
-  totalMarks?: Prisma.SortOrder
   numberOfQuestions?: Prisma.SortOrder
   maxAttempts?: Prisma.SortOrder
+  totalMarks?: Prisma.SortOrder
 }
 
 export type TaskTestScalarRelationFilter = {
@@ -913,22 +935,23 @@ export type TaskTestCreateWithoutTeacherInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskTestsInput
-  questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
   attempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutTestInput
+  questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
 }
 
 export type TaskTestUncheckedCreateWithoutTeacherInput = {
@@ -940,20 +963,21 @@ export type TaskTestUncheckedCreateWithoutTeacherInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   attempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutTestInput
+  questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
 }
 
 export type TaskTestCreateOrConnectWithoutTeacherInput = {
@@ -995,18 +1019,19 @@ export type TaskTestScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"TaskTest"> | string | null
   testLink?: Prisma.StringFilter<"TaskTest"> | string
   status?: Prisma.EnumTaskTestStatusFilter<"TaskTest"> | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFilter<"TaskTest"> | string
-  isRandomized?: Prisma.BoolFilter<"TaskTest"> | boolean
-  answerSpace?: Prisma.BoolFilter<"TaskTest"> | boolean
-  sections?: Prisma.JsonNullableFilter<"TaskTest">
   durationMinutes?: Prisma.IntFilter<"TaskTest"> | number
-  totalMarks?: Prisma.IntFilter<"TaskTest"> | number
   numberOfQuestions?: Prisma.IntFilter<"TaskTest"> | number
   maxAttempts?: Prisma.IntFilter<"TaskTest"> | number
-  startDate?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
   validUntil?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskTest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskTest"> | Date | string
+  isRandomized?: Prisma.BoolFilter<"TaskTest"> | boolean
+  paperType?: Prisma.StringFilter<"TaskTest"> | string
+  sections?: Prisma.JsonNullableFilter<"TaskTest">
+  totalMarks?: Prisma.IntFilter<"TaskTest"> | number
+  answerSpace?: Prisma.BoolFilter<"TaskTest"> | boolean
+  startDate?: Prisma.DateTimeNullableFilter<"TaskTest"> | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFilter<"TaskTest"> | boolean
 }
 
 export type TaskTestCreateWithoutDivisionInput = {
@@ -1016,22 +1041,23 @@ export type TaskTestCreateWithoutDivisionInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
-  questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
   attempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutTestInput
+  questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
 }
 
 export type TaskTestUncheckedCreateWithoutDivisionInput = {
@@ -1043,20 +1069,21 @@ export type TaskTestUncheckedCreateWithoutDivisionInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   attempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutTestInput
+  questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
 }
 
 export type TaskTestCreateOrConnectWithoutDivisionInput = {
@@ -1092,22 +1119,23 @@ export type TaskTestCreateWithoutSubjectInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskTestsInput
-  questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
   attempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutTestInput
+  questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
 }
 
 export type TaskTestUncheckedCreateWithoutSubjectInput = {
@@ -1119,20 +1147,21 @@ export type TaskTestUncheckedCreateWithoutSubjectInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   attempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutTestInput
+  questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
 }
 
 export type TaskTestCreateOrConnectWithoutSubjectInput = {
@@ -1168,21 +1197,22 @@ export type TaskTestCreateWithoutQuestionsInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskTestsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
   attempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutTestInput
 }
 
@@ -1196,18 +1226,19 @@ export type TaskTestUncheckedCreateWithoutQuestionsInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   attempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutTestInput
 }
 
@@ -1234,21 +1265,22 @@ export type TaskTestUpdateWithoutQuestionsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskTestsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
   attempts?: Prisma.TaskTestAttemptUpdateManyWithoutTestNestedInput
 }
 
@@ -1262,18 +1294,19 @@ export type TaskTestUncheckedUpdateWithoutQuestionsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutTestNestedInput
 }
 
@@ -1284,21 +1317,22 @@ export type TaskTestCreateWithoutAttemptsInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   division: Prisma.DivisionCreateNestedOneWithoutTaskTestsInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskTestsInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskTestsInput
   questions?: Prisma.TaskTestQuestionCreateNestedManyWithoutTestInput
 }
 
@@ -1312,18 +1346,19 @@ export type TaskTestUncheckedCreateWithoutAttemptsInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
   questions?: Prisma.TaskTestQuestionUncheckedCreateNestedManyWithoutTestInput
 }
 
@@ -1350,21 +1385,22 @@ export type TaskTestUpdateWithoutAttemptsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskTestsNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
   questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
 }
 
@@ -1378,18 +1414,19 @@ export type TaskTestUncheckedUpdateWithoutAttemptsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
 }
 
@@ -1402,18 +1439,19 @@ export type TaskTestCreateManyTeacherInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
 }
 
 export type TaskTestUpdateWithoutTeacherInput = {
@@ -1423,22 +1461,23 @@ export type TaskTestUpdateWithoutTeacherInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskTestsNestedInput
-  questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
   attempts?: Prisma.TaskTestAttemptUpdateManyWithoutTestNestedInput
+  questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
 }
 
 export type TaskTestUncheckedUpdateWithoutTeacherInput = {
@@ -1450,20 +1489,21 @@ export type TaskTestUncheckedUpdateWithoutTeacherInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutTestNestedInput
+  questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
 }
 
 export type TaskTestUncheckedUpdateManyWithoutTeacherInput = {
@@ -1475,18 +1515,19 @@ export type TaskTestUncheckedUpdateManyWithoutTeacherInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskTestCreateManyDivisionInput = {
@@ -1498,18 +1539,19 @@ export type TaskTestCreateManyDivisionInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
 }
 
 export type TaskTestUpdateWithoutDivisionInput = {
@@ -1519,22 +1561,23 @@ export type TaskTestUpdateWithoutDivisionInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskTestsNestedInput
-  questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
   attempts?: Prisma.TaskTestAttemptUpdateManyWithoutTestNestedInput
+  questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
 }
 
 export type TaskTestUncheckedUpdateWithoutDivisionInput = {
@@ -1546,20 +1589,21 @@ export type TaskTestUncheckedUpdateWithoutDivisionInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutTestNestedInput
+  questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
 }
 
 export type TaskTestUncheckedUpdateManyWithoutDivisionInput = {
@@ -1571,18 +1615,19 @@ export type TaskTestUncheckedUpdateManyWithoutDivisionInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskTestCreateManySubjectInput = {
@@ -1594,18 +1639,19 @@ export type TaskTestCreateManySubjectInput = {
   description?: string | null
   testLink: string
   status?: $Enums.TaskTestStatus
-  paperType?: string
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: number
-  totalMarks?: number
   numberOfQuestions: number
   maxAttempts?: number
-  startDate?: Date | string | null
   validUntil?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  isRandomized?: boolean
+  paperType?: string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: number
+  answerSpace?: boolean
+  startDate?: Date | string | null
+  deadlineReminderSent?: boolean
 }
 
 export type TaskTestUpdateWithoutSubjectInput = {
@@ -1615,22 +1661,23 @@ export type TaskTestUpdateWithoutSubjectInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskTestsNestedInput
-  questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskTestsNestedInput
   attempts?: Prisma.TaskTestAttemptUpdateManyWithoutTestNestedInput
+  questions?: Prisma.TaskTestQuestionUpdateManyWithoutTestNestedInput
 }
 
 export type TaskTestUncheckedUpdateWithoutSubjectInput = {
@@ -1642,20 +1689,21 @@ export type TaskTestUncheckedUpdateWithoutSubjectInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutTestNestedInput
+  questions?: Prisma.TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput
 }
 
 export type TaskTestUncheckedUpdateManyWithoutSubjectInput = {
@@ -1667,18 +1715,19 @@ export type TaskTestUncheckedUpdateManyWithoutSubjectInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testLink?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumTaskTestStatusFieldUpdateOperationsInput | $Enums.TaskTestStatus
-  paperType?: Prisma.StringFieldUpdateOperationsInput | string
-  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   numberOfQuestions?: Prisma.IntFieldUpdateOperationsInput | number
   maxAttempts?: Prisma.IntFieldUpdateOperationsInput | number
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isRandomized?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paperType?: Prisma.StringFieldUpdateOperationsInput | string
+  sections?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  answerSpace?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineReminderSent?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -1687,13 +1736,13 @@ export type TaskTestUncheckedUpdateManyWithoutSubjectInput = {
  */
 
 export type TaskTestCountOutputType = {
-  questions: number
   attempts: number
+  questions: number
 }
 
 export type TaskTestCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  questions?: boolean | TaskTestCountOutputTypeCountQuestionsArgs
   attempts?: boolean | TaskTestCountOutputTypeCountAttemptsArgs
+  questions?: boolean | TaskTestCountOutputTypeCountQuestionsArgs
 }
 
 /**
@@ -1709,15 +1758,15 @@ export type TaskTestCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
 /**
  * TaskTestCountOutputType without action
  */
-export type TaskTestCountOutputTypeCountQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskTestQuestionWhereInput
+export type TaskTestCountOutputTypeCountAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskTestAttemptWhereInput
 }
 
 /**
  * TaskTestCountOutputType without action
  */
-export type TaskTestCountOutputTypeCountAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskTestAttemptWhereInput
+export type TaskTestCountOutputTypeCountQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskTestQuestionWhereInput
 }
 
 
@@ -1731,23 +1780,24 @@ export type TaskTestSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   description?: boolean
   testLink?: boolean
   status?: boolean
-  paperType?: boolean
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: boolean
   durationMinutes?: boolean
-  totalMarks?: boolean
   numberOfQuestions?: boolean
   maxAttempts?: boolean
-  startDate?: boolean
   validUntil?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  isRandomized?: boolean
+  paperType?: boolean
+  sections?: boolean
+  totalMarks?: boolean
+  answerSpace?: boolean
+  startDate?: boolean
+  deadlineReminderSent?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
-  questions?: boolean | Prisma.TaskTest$questionsArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   attempts?: boolean | Prisma.TaskTest$attemptsArgs<ExtArgs>
+  questions?: boolean | Prisma.TaskTest$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskTestCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTest"]>
 
@@ -1761,21 +1811,22 @@ export type TaskTestSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   description?: boolean
   testLink?: boolean
   status?: boolean
-  paperType?: boolean
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: boolean
   durationMinutes?: boolean
-  totalMarks?: boolean
   numberOfQuestions?: boolean
   maxAttempts?: boolean
-  startDate?: boolean
   validUntil?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  isRandomized?: boolean
+  paperType?: boolean
+  sections?: boolean
+  totalMarks?: boolean
+  answerSpace?: boolean
+  startDate?: boolean
+  deadlineReminderSent?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTest"]>
 
 export type TaskTestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1788,21 +1839,22 @@ export type TaskTestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   description?: boolean
   testLink?: boolean
   status?: boolean
-  paperType?: boolean
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: boolean
   durationMinutes?: boolean
-  totalMarks?: boolean
   numberOfQuestions?: boolean
   maxAttempts?: boolean
-  startDate?: boolean
   validUntil?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  isRandomized?: boolean
+  paperType?: boolean
+  sections?: boolean
+  totalMarks?: boolean
+  answerSpace?: boolean
+  startDate?: boolean
+  deadlineReminderSent?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTest"]>
 
 export type TaskTestSelectScalar = {
@@ -1815,48 +1867,49 @@ export type TaskTestSelectScalar = {
   description?: boolean
   testLink?: boolean
   status?: boolean
-  paperType?: boolean
-  isRandomized?: boolean
-  answerSpace?: boolean
-  sections?: boolean
   durationMinutes?: boolean
-  totalMarks?: boolean
   numberOfQuestions?: boolean
   maxAttempts?: boolean
-  startDate?: boolean
   validUntil?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isRandomized?: boolean
+  paperType?: boolean
+  sections?: boolean
+  totalMarks?: boolean
+  answerSpace?: boolean
+  startDate?: boolean
+  deadlineReminderSent?: boolean
 }
 
-export type TaskTestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "divisionId" | "title" | "description" | "testLink" | "status" | "paperType" | "isRandomized" | "answerSpace" | "sections" | "durationMinutes" | "totalMarks" | "numberOfQuestions" | "maxAttempts" | "startDate" | "validUntil" | "createdAt" | "updatedAt", ExtArgs["result"]["taskTest"]>
+export type TaskTestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "divisionId" | "title" | "description" | "testLink" | "status" | "durationMinutes" | "numberOfQuestions" | "maxAttempts" | "validUntil" | "createdAt" | "updatedAt" | "isRandomized" | "paperType" | "sections" | "totalMarks" | "answerSpace" | "startDate" | "deadlineReminderSent", ExtArgs["result"]["taskTest"]>
 export type TaskTestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
-  questions?: boolean | Prisma.TaskTest$questionsArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   attempts?: boolean | Prisma.TaskTest$attemptsArgs<ExtArgs>
+  questions?: boolean | Prisma.TaskTest$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskTestCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskTestIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 export type TaskTestIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 
 export type $TaskTestPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskTest"
   objects: {
-    teacher: Prisma.$TeacherPayload<ExtArgs>
-    subject: Prisma.$SubjectPayload<ExtArgs>
     division: Prisma.$DivisionPayload<ExtArgs>
-    questions: Prisma.$TaskTestQuestionPayload<ExtArgs>[]
+    subject: Prisma.$SubjectPayload<ExtArgs>
+    teacher: Prisma.$TeacherPayload<ExtArgs>
     attempts: Prisma.$TaskTestAttemptPayload<ExtArgs>[]
+    questions: Prisma.$TaskTestQuestionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1868,18 +1921,19 @@ export type $TaskTestPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     description: string | null
     testLink: string
     status: $Enums.TaskTestStatus
-    paperType: string
-    isRandomized: boolean
-    answerSpace: boolean
-    sections: runtime.JsonValue | null
     durationMinutes: number
-    totalMarks: number
     numberOfQuestions: number
     maxAttempts: number
-    startDate: Date | null
     validUntil: Date | null
     createdAt: Date
     updatedAt: Date
+    isRandomized: boolean
+    paperType: string
+    sections: runtime.JsonValue | null
+    totalMarks: number
+    answerSpace: boolean
+    startDate: Date | null
+    deadlineReminderSent: boolean
   }, ExtArgs["result"]["taskTest"]>
   composites: {}
 }
@@ -2274,11 +2328,11 @@ readonly fields: TaskTestFieldRefs;
  */
 export interface Prisma__TaskTestClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   division<T extends Prisma.DivisionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionDefaultArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  questions<T extends Prisma.TaskTest$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTest$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   attempts<T extends Prisma.TaskTest$attemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTest$attemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  questions<T extends Prisma.TaskTest$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTest$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2317,18 +2371,19 @@ export interface TaskTestFieldRefs {
   readonly description: Prisma.FieldRef<"TaskTest", 'String'>
   readonly testLink: Prisma.FieldRef<"TaskTest", 'String'>
   readonly status: Prisma.FieldRef<"TaskTest", 'TaskTestStatus'>
-  readonly paperType: Prisma.FieldRef<"TaskTest", 'String'>
-  readonly isRandomized: Prisma.FieldRef<"TaskTest", 'Boolean'>
-  readonly answerSpace: Prisma.FieldRef<"TaskTest", 'Boolean'>
-  readonly sections: Prisma.FieldRef<"TaskTest", 'Json'>
   readonly durationMinutes: Prisma.FieldRef<"TaskTest", 'Int'>
-  readonly totalMarks: Prisma.FieldRef<"TaskTest", 'Int'>
   readonly numberOfQuestions: Prisma.FieldRef<"TaskTest", 'Int'>
   readonly maxAttempts: Prisma.FieldRef<"TaskTest", 'Int'>
-  readonly startDate: Prisma.FieldRef<"TaskTest", 'DateTime'>
   readonly validUntil: Prisma.FieldRef<"TaskTest", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"TaskTest", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaskTest", 'DateTime'>
+  readonly isRandomized: Prisma.FieldRef<"TaskTest", 'Boolean'>
+  readonly paperType: Prisma.FieldRef<"TaskTest", 'String'>
+  readonly sections: Prisma.FieldRef<"TaskTest", 'Json'>
+  readonly totalMarks: Prisma.FieldRef<"TaskTest", 'Int'>
+  readonly answerSpace: Prisma.FieldRef<"TaskTest", 'Boolean'>
+  readonly startDate: Prisma.FieldRef<"TaskTest", 'DateTime'>
+  readonly deadlineReminderSent: Prisma.FieldRef<"TaskTest", 'Boolean'>
 }
     
 
@@ -2730,30 +2785,6 @@ export type TaskTestDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * TaskTest.questions
- */
-export type TaskTest$questionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TaskTestQuestion
-   */
-  select?: Prisma.TaskTestQuestionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TaskTestQuestion
-   */
-  omit?: Prisma.TaskTestQuestionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskTestQuestionInclude<ExtArgs> | null
-  where?: Prisma.TaskTestQuestionWhereInput
-  orderBy?: Prisma.TaskTestQuestionOrderByWithRelationInput | Prisma.TaskTestQuestionOrderByWithRelationInput[]
-  cursor?: Prisma.TaskTestQuestionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TaskTestQuestionScalarFieldEnum | Prisma.TaskTestQuestionScalarFieldEnum[]
-}
-
-/**
  * TaskTest.attempts
  */
 export type TaskTest$attemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2775,6 +2806,30 @@ export type TaskTest$attemptsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.TaskTestAttemptScalarFieldEnum | Prisma.TaskTestAttemptScalarFieldEnum[]
+}
+
+/**
+ * TaskTest.questions
+ */
+export type TaskTest$questionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskTestQuestion
+   */
+  select?: Prisma.TaskTestQuestionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskTestQuestion
+   */
+  omit?: Prisma.TaskTestQuestionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskTestQuestionInclude<ExtArgs> | null
+  where?: Prisma.TaskTestQuestionWhereInput
+  orderBy?: Prisma.TaskTestQuestionOrderByWithRelationInput | Prisma.TaskTestQuestionOrderByWithRelationInput[]
+  cursor?: Prisma.TaskTestQuestionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskTestQuestionScalarFieldEnum | Prisma.TaskTestQuestionScalarFieldEnum[]
 }
 
 /**

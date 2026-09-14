@@ -288,9 +288,9 @@ export type TaskAssignmentSubmissionAttemptWhereInput = {
   reviewedAt?: Prisma.DateTimeNullableFilter<"TaskAssignmentSubmissionAttempt"> | Date | string | null
   reviewedByTeacherId?: Prisma.StringNullableFilter<"TaskAssignmentSubmissionAttempt"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskAssignmentSubmissionAttempt"> | Date | string
-  submission?: Prisma.XOR<Prisma.TaskAssignmentSubmissionScalarRelationFilter, Prisma.TaskAssignmentSubmissionWhereInput>
   assignment?: Prisma.XOR<Prisma.TaskAssignmentScalarRelationFilter, Prisma.TaskAssignmentWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
+  submission?: Prisma.XOR<Prisma.TaskAssignmentSubmissionScalarRelationFilter, Prisma.TaskAssignmentSubmissionWhereInput>
 }
 
 export type TaskAssignmentSubmissionAttemptOrderByWithRelationInput = {
@@ -308,9 +308,9 @@ export type TaskAssignmentSubmissionAttemptOrderByWithRelationInput = {
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewedByTeacherId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  submission?: Prisma.TaskAssignmentSubmissionOrderByWithRelationInput
   assignment?: Prisma.TaskAssignmentOrderByWithRelationInput
   student?: Prisma.StudentOrderByWithRelationInput
+  submission?: Prisma.TaskAssignmentSubmissionOrderByWithRelationInput
 }
 
 export type TaskAssignmentSubmissionAttemptWhereUniqueInput = Prisma.AtLeast<{
@@ -331,9 +331,9 @@ export type TaskAssignmentSubmissionAttemptWhereUniqueInput = Prisma.AtLeast<{
   reviewedAt?: Prisma.DateTimeNullableFilter<"TaskAssignmentSubmissionAttempt"> | Date | string | null
   reviewedByTeacherId?: Prisma.StringNullableFilter<"TaskAssignmentSubmissionAttempt"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskAssignmentSubmissionAttempt"> | Date | string
-  submission?: Prisma.XOR<Prisma.TaskAssignmentSubmissionScalarRelationFilter, Prisma.TaskAssignmentSubmissionWhereInput>
   assignment?: Prisma.XOR<Prisma.TaskAssignmentScalarRelationFilter, Prisma.TaskAssignmentWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
+  submission?: Prisma.XOR<Prisma.TaskAssignmentSubmissionScalarRelationFilter, Prisma.TaskAssignmentSubmissionWhereInput>
 }, "id">
 
 export type TaskAssignmentSubmissionAttemptOrderByWithAggregationInput = {
@@ -390,9 +390,9 @@ export type TaskAssignmentSubmissionAttemptCreateInput = {
   reviewedAt?: Date | string | null
   reviewedByTeacherId?: string | null
   createdAt?: Date | string
-  submission: Prisma.TaskAssignmentSubmissionCreateNestedOneWithoutAttemptsInput
   assignment: Prisma.TaskAssignmentCreateNestedOneWithoutSubmissionAttemptsInput
   student: Prisma.StudentCreateNestedOneWithoutTaskAssignmentSubmissionAttemptsInput
+  submission: Prisma.TaskAssignmentSubmissionCreateNestedOneWithoutAttemptsInput
 }
 
 export type TaskAssignmentSubmissionAttemptUncheckedCreateInput = {
@@ -424,9 +424,9 @@ export type TaskAssignmentSubmissionAttemptUpdateInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submission?: Prisma.TaskAssignmentSubmissionUpdateOneRequiredWithoutAttemptsNestedInput
   assignment?: Prisma.TaskAssignmentUpdateOneRequiredWithoutSubmissionAttemptsNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutTaskAssignmentSubmissionAttemptsNestedInput
+  submission?: Prisma.TaskAssignmentSubmissionUpdateOneRequiredWithoutAttemptsNestedInput
 }
 
 export type TaskAssignmentSubmissionAttemptUncheckedUpdateInput = {
@@ -701,8 +701,8 @@ export type TaskAssignmentSubmissionAttemptCreateWithoutStudentInput = {
   reviewedAt?: Date | string | null
   reviewedByTeacherId?: string | null
   createdAt?: Date | string
-  submission: Prisma.TaskAssignmentSubmissionCreateNestedOneWithoutAttemptsInput
   assignment: Prisma.TaskAssignmentCreateNestedOneWithoutSubmissionAttemptsInput
+  submission: Prisma.TaskAssignmentSubmissionCreateNestedOneWithoutAttemptsInput
 }
 
 export type TaskAssignmentSubmissionAttemptUncheckedCreateWithoutStudentInput = {
@@ -779,8 +779,8 @@ export type TaskAssignmentSubmissionAttemptCreateWithoutAssignmentInput = {
   reviewedAt?: Date | string | null
   reviewedByTeacherId?: string | null
   createdAt?: Date | string
-  submission: Prisma.TaskAssignmentSubmissionCreateNestedOneWithoutAttemptsInput
   student: Prisma.StudentCreateNestedOneWithoutTaskAssignmentSubmissionAttemptsInput
+  submission: Prisma.TaskAssignmentSubmissionCreateNestedOneWithoutAttemptsInput
 }
 
 export type TaskAssignmentSubmissionAttemptUncheckedCreateWithoutAssignmentInput = {
@@ -911,8 +911,8 @@ export type TaskAssignmentSubmissionAttemptUpdateWithoutStudentInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submission?: Prisma.TaskAssignmentSubmissionUpdateOneRequiredWithoutAttemptsNestedInput
   assignment?: Prisma.TaskAssignmentUpdateOneRequiredWithoutSubmissionAttemptsNestedInput
+  submission?: Prisma.TaskAssignmentSubmissionUpdateOneRequiredWithoutAttemptsNestedInput
 }
 
 export type TaskAssignmentSubmissionAttemptUncheckedUpdateWithoutStudentInput = {
@@ -975,8 +975,8 @@ export type TaskAssignmentSubmissionAttemptUpdateWithoutAssignmentInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedByTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submission?: Prisma.TaskAssignmentSubmissionUpdateOneRequiredWithoutAttemptsNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutTaskAssignmentSubmissionAttemptsNestedInput
+  submission?: Prisma.TaskAssignmentSubmissionUpdateOneRequiredWithoutAttemptsNestedInput
 }
 
 export type TaskAssignmentSubmissionAttemptUncheckedUpdateWithoutAssignmentInput = {
@@ -1092,9 +1092,9 @@ export type TaskAssignmentSubmissionAttemptSelect<ExtArgs extends runtime.Types.
   reviewedAt?: boolean
   reviewedByTeacherId?: boolean
   createdAt?: boolean
-  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignmentSubmissionAttempt"]>
 
 export type TaskAssignmentSubmissionAttemptSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1112,9 +1112,9 @@ export type TaskAssignmentSubmissionAttemptSelectCreateManyAndReturn<ExtArgs ext
   reviewedAt?: boolean
   reviewedByTeacherId?: boolean
   createdAt?: boolean
-  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignmentSubmissionAttempt"]>
 
 export type TaskAssignmentSubmissionAttemptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1132,9 +1132,9 @@ export type TaskAssignmentSubmissionAttemptSelectUpdateManyAndReturn<ExtArgs ext
   reviewedAt?: boolean
   reviewedByTeacherId?: boolean
   createdAt?: boolean
-  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignmentSubmissionAttempt"]>
 
 export type TaskAssignmentSubmissionAttemptSelectScalar = {
@@ -1156,27 +1156,27 @@ export type TaskAssignmentSubmissionAttemptSelectScalar = {
 
 export type TaskAssignmentSubmissionAttemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "submissionId" | "assignmentId" | "studentId" | "institutionId" | "attemptNumber" | "fileKey" | "fileUrl" | "submittedAt" | "reviewStatus" | "reviewNote" | "reviewedAt" | "reviewedByTeacherId" | "createdAt", ExtArgs["result"]["taskAssignmentSubmissionAttempt"]>
 export type TaskAssignmentSubmissionAttemptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
 }
 export type TaskAssignmentSubmissionAttemptIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
 }
 export type TaskAssignmentSubmissionAttemptIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
   assignment?: boolean | Prisma.TaskAssignmentDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  submission?: boolean | Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>
 }
 
 export type $TaskAssignmentSubmissionAttemptPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskAssignmentSubmissionAttempt"
   objects: {
-    submission: Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>
     assignment: Prisma.$TaskAssignmentPayload<ExtArgs>
     student: Prisma.$StudentPayload<ExtArgs>
+    submission: Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1587,9 +1587,9 @@ readonly fields: TaskAssignmentSubmissionAttemptFieldRefs;
  */
 export interface Prisma__TaskAssignmentSubmissionAttemptClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  submission<T extends Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskAssignmentSubmissionClient<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   assignment<T extends Prisma.TaskAssignmentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignmentDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskAssignmentClient<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   student<T extends Prisma.StudentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentDefaultArgs<ExtArgs>>): Prisma.Prisma__StudentClient<runtime.Types.Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  submission<T extends Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignmentSubmissionDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskAssignmentSubmissionClient<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

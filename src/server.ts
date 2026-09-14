@@ -10,6 +10,7 @@ import { startAddonCron } from "./crons/addon.cron";
 import { startAuditRetentionCron } from "./crons/audit.cron";
 import { startStorageCron } from "./crons/storage.cron";
 import { startHealthMonitorCron } from "./crons/healthMonitor.cron";
+import { startDeadlineReminderCron } from "./crons/deadlineReminder.cron";
 import { startApiMetricsFlusher } from "./services/systemHealth.service";
 
 const port = process.env.PORT || 3000;
@@ -45,5 +46,6 @@ app.listen(port, async () => {
   startAuditRetentionCron();
   startStorageCron();
   startHealthMonitorCron();
+  startDeadlineReminderCron();
   startApiMetricsFlusher();
 });

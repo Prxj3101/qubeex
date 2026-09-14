@@ -31,9 +31,9 @@ export type StudentFeePaymentMinAggregateOutputType = {
   feeMonthId: string | null
   status: string | null
   paidDate: string | null
-  remark: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  remark: string | null
 }
 
 export type StudentFeePaymentMaxAggregateOutputType = {
@@ -43,9 +43,9 @@ export type StudentFeePaymentMaxAggregateOutputType = {
   feeMonthId: string | null
   status: string | null
   paidDate: string | null
-  remark: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  remark: string | null
 }
 
 export type StudentFeePaymentCountAggregateOutputType = {
@@ -55,11 +55,11 @@ export type StudentFeePaymentCountAggregateOutputType = {
   feeMonthId: number
   status: number
   paidDate: number
+  createdAt: number
+  updatedAt: number
   remark: number
   extraFields: number
   extraStructureIds: number
-  createdAt: number
-  updatedAt: number
   _all: number
 }
 
@@ -71,9 +71,9 @@ export type StudentFeePaymentMinAggregateInputType = {
   feeMonthId?: true
   status?: true
   paidDate?: true
-  remark?: true
   createdAt?: true
   updatedAt?: true
+  remark?: true
 }
 
 export type StudentFeePaymentMaxAggregateInputType = {
@@ -83,9 +83,9 @@ export type StudentFeePaymentMaxAggregateInputType = {
   feeMonthId?: true
   status?: true
   paidDate?: true
-  remark?: true
   createdAt?: true
   updatedAt?: true
+  remark?: true
 }
 
 export type StudentFeePaymentCountAggregateInputType = {
@@ -95,11 +95,11 @@ export type StudentFeePaymentCountAggregateInputType = {
   feeMonthId?: true
   status?: true
   paidDate?: true
+  createdAt?: true
+  updatedAt?: true
   remark?: true
   extraFields?: true
   extraStructureIds?: true
-  createdAt?: true
-  updatedAt?: true
   _all?: true
 }
 
@@ -182,11 +182,11 @@ export type StudentFeePaymentGroupByOutputType = {
   feeMonthId: string
   status: string
   paidDate: string | null
+  createdAt: Date
+  updatedAt: Date
   remark: string | null
   extraFields: runtime.JsonValue | null
   extraStructureIds: runtime.JsonValue | null
-  createdAt: Date
-  updatedAt: Date
   _count: StudentFeePaymentCountAggregateOutputType | null
   _min: StudentFeePaymentMinAggregateOutputType | null
   _max: StudentFeePaymentMaxAggregateOutputType | null
@@ -217,11 +217,11 @@ export type StudentFeePaymentWhereInput = {
   feeMonthId?: Prisma.StringFilter<"StudentFeePayment"> | string
   status?: Prisma.StringFilter<"StudentFeePayment"> | string
   paidDate?: Prisma.StringNullableFilter<"StudentFeePayment"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
   remark?: Prisma.StringNullableFilter<"StudentFeePayment"> | string | null
   extraFields?: Prisma.JsonNullableFilter<"StudentFeePayment">
   extraStructureIds?: Prisma.JsonNullableFilter<"StudentFeePayment">
-  createdAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
 }
 
@@ -232,11 +232,11 @@ export type StudentFeePaymentOrderByWithRelationInput = {
   feeMonthId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paidDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   extraFields?: Prisma.SortOrderInput | Prisma.SortOrder
   extraStructureIds?: Prisma.SortOrderInput | Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   student?: Prisma.StudentOrderByWithRelationInput
 }
 
@@ -251,11 +251,11 @@ export type StudentFeePaymentWhereUniqueInput = Prisma.AtLeast<{
   feeMonthId?: Prisma.StringFilter<"StudentFeePayment"> | string
   status?: Prisma.StringFilter<"StudentFeePayment"> | string
   paidDate?: Prisma.StringNullableFilter<"StudentFeePayment"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
   remark?: Prisma.StringNullableFilter<"StudentFeePayment"> | string | null
   extraFields?: Prisma.JsonNullableFilter<"StudentFeePayment">
   extraStructureIds?: Prisma.JsonNullableFilter<"StudentFeePayment">
-  createdAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
 }, "id" | "studentId_feeMonthId">
 
@@ -266,11 +266,11 @@ export type StudentFeePaymentOrderByWithAggregationInput = {
   feeMonthId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paidDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   extraFields?: Prisma.SortOrderInput | Prisma.SortOrder
   extraStructureIds?: Prisma.SortOrderInput | Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   _count?: Prisma.StudentFeePaymentCountOrderByAggregateInput
   _max?: Prisma.StudentFeePaymentMaxOrderByAggregateInput
   _min?: Prisma.StudentFeePaymentMinOrderByAggregateInput
@@ -286,11 +286,11 @@ export type StudentFeePaymentScalarWhereWithAggregatesInput = {
   feeMonthId?: Prisma.StringWithAggregatesFilter<"StudentFeePayment"> | string
   status?: Prisma.StringWithAggregatesFilter<"StudentFeePayment"> | string
   paidDate?: Prisma.StringNullableWithAggregatesFilter<"StudentFeePayment"> | string | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentFeePayment"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"StudentFeePayment"> | Date | string
   remark?: Prisma.StringNullableWithAggregatesFilter<"StudentFeePayment"> | string | null
   extraFields?: Prisma.JsonNullableWithAggregatesFilter<"StudentFeePayment">
   extraStructureIds?: Prisma.JsonNullableWithAggregatesFilter<"StudentFeePayment">
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentFeePayment"> | Date | string
-  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"StudentFeePayment"> | Date | string
 }
 
 export type StudentFeePaymentCreateInput = {
@@ -299,11 +299,11 @@ export type StudentFeePaymentCreateInput = {
   feeMonthId: string
   status?: string
   paidDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
   remark?: string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
   student: Prisma.StudentCreateNestedOneWithoutFeePaymentsInput
 }
 
@@ -314,11 +314,11 @@ export type StudentFeePaymentUncheckedCreateInput = {
   feeMonthId: string
   status?: string
   paidDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
   remark?: string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type StudentFeePaymentUpdateInput = {
@@ -327,11 +327,11 @@ export type StudentFeePaymentUpdateInput = {
   feeMonthId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.StudentUpdateOneRequiredWithoutFeePaymentsNestedInput
 }
 
@@ -342,11 +342,11 @@ export type StudentFeePaymentUncheckedUpdateInput = {
   feeMonthId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentFeePaymentCreateManyInput = {
@@ -356,11 +356,11 @@ export type StudentFeePaymentCreateManyInput = {
   feeMonthId: string
   status?: string
   paidDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
   remark?: string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type StudentFeePaymentUpdateManyMutationInput = {
@@ -369,11 +369,11 @@ export type StudentFeePaymentUpdateManyMutationInput = {
   feeMonthId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentFeePaymentUncheckedUpdateManyInput = {
@@ -383,11 +383,11 @@ export type StudentFeePaymentUncheckedUpdateManyInput = {
   feeMonthId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentFeePaymentListRelationFilter = {
@@ -412,11 +412,11 @@ export type StudentFeePaymentCountOrderByAggregateInput = {
   feeMonthId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paidDate?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   remark?: Prisma.SortOrder
   extraFields?: Prisma.SortOrder
   extraStructureIds?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
 }
 
 export type StudentFeePaymentMaxOrderByAggregateInput = {
@@ -426,9 +426,9 @@ export type StudentFeePaymentMaxOrderByAggregateInput = {
   feeMonthId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paidDate?: Prisma.SortOrder
-  remark?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  remark?: Prisma.SortOrder
 }
 
 export type StudentFeePaymentMinOrderByAggregateInput = {
@@ -438,9 +438,9 @@ export type StudentFeePaymentMinOrderByAggregateInput = {
   feeMonthId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paidDate?: Prisma.SortOrder
-  remark?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  remark?: Prisma.SortOrder
 }
 
 export type StudentFeePaymentCreateNestedManyWithoutStudentInput = {
@@ -491,11 +491,11 @@ export type StudentFeePaymentCreateWithoutStudentInput = {
   feeMonthId: string
   status?: string
   paidDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
   remark?: string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type StudentFeePaymentUncheckedCreateWithoutStudentInput = {
@@ -504,11 +504,11 @@ export type StudentFeePaymentUncheckedCreateWithoutStudentInput = {
   feeMonthId: string
   status?: string
   paidDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
   remark?: string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type StudentFeePaymentCreateOrConnectWithoutStudentInput = {
@@ -547,11 +547,11 @@ export type StudentFeePaymentScalarWhereInput = {
   feeMonthId?: Prisma.StringFilter<"StudentFeePayment"> | string
   status?: Prisma.StringFilter<"StudentFeePayment"> | string
   paidDate?: Prisma.StringNullableFilter<"StudentFeePayment"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
   remark?: Prisma.StringNullableFilter<"StudentFeePayment"> | string | null
   extraFields?: Prisma.JsonNullableFilter<"StudentFeePayment">
   extraStructureIds?: Prisma.JsonNullableFilter<"StudentFeePayment">
-  createdAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"StudentFeePayment"> | Date | string
 }
 
 export type StudentFeePaymentCreateManyStudentInput = {
@@ -560,11 +560,11 @@ export type StudentFeePaymentCreateManyStudentInput = {
   feeMonthId: string
   status?: string
   paidDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
   remark?: string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type StudentFeePaymentUpdateWithoutStudentInput = {
@@ -573,11 +573,11 @@ export type StudentFeePaymentUpdateWithoutStudentInput = {
   feeMonthId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentFeePaymentUncheckedUpdateWithoutStudentInput = {
@@ -586,11 +586,11 @@ export type StudentFeePaymentUncheckedUpdateWithoutStudentInput = {
   feeMonthId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentFeePaymentUncheckedUpdateManyWithoutStudentInput = {
@@ -599,11 +599,11 @@ export type StudentFeePaymentUncheckedUpdateManyWithoutStudentInput = {
   feeMonthId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   extraFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   extraStructureIds?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -615,11 +615,11 @@ export type StudentFeePaymentSelect<ExtArgs extends runtime.Types.Extensions.Int
   feeMonthId?: boolean
   status?: boolean
   paidDate?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   remark?: boolean
   extraFields?: boolean
   extraStructureIds?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentFeePayment"]>
 
@@ -630,11 +630,11 @@ export type StudentFeePaymentSelectCreateManyAndReturn<ExtArgs extends runtime.T
   feeMonthId?: boolean
   status?: boolean
   paidDate?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   remark?: boolean
   extraFields?: boolean
   extraStructureIds?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentFeePayment"]>
 
@@ -645,11 +645,11 @@ export type StudentFeePaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   feeMonthId?: boolean
   status?: boolean
   paidDate?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   remark?: boolean
   extraFields?: boolean
   extraStructureIds?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentFeePayment"]>
 
@@ -660,14 +660,14 @@ export type StudentFeePaymentSelectScalar = {
   feeMonthId?: boolean
   status?: boolean
   paidDate?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   remark?: boolean
   extraFields?: boolean
   extraStructureIds?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
 }
 
-export type StudentFeePaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "studentId" | "feeMonthId" | "status" | "paidDate" | "remark" | "extraFields" | "extraStructureIds" | "createdAt" | "updatedAt", ExtArgs["result"]["studentFeePayment"]>
+export type StudentFeePaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "studentId" | "feeMonthId" | "status" | "paidDate" | "createdAt" | "updatedAt" | "remark" | "extraFields" | "extraStructureIds", ExtArgs["result"]["studentFeePayment"]>
 export type StudentFeePaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }
@@ -690,11 +690,11 @@ export type $StudentFeePaymentPayload<ExtArgs extends runtime.Types.Extensions.I
     feeMonthId: string
     status: string
     paidDate: string | null
+    createdAt: Date
+    updatedAt: Date
     remark: string | null
     extraFields: runtime.JsonValue | null
     extraStructureIds: runtime.JsonValue | null
-    createdAt: Date
-    updatedAt: Date
   }, ExtArgs["result"]["studentFeePayment"]>
   composites: {}
 }
@@ -1125,11 +1125,11 @@ export interface StudentFeePaymentFieldRefs {
   readonly feeMonthId: Prisma.FieldRef<"StudentFeePayment", 'String'>
   readonly status: Prisma.FieldRef<"StudentFeePayment", 'String'>
   readonly paidDate: Prisma.FieldRef<"StudentFeePayment", 'String'>
+  readonly createdAt: Prisma.FieldRef<"StudentFeePayment", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"StudentFeePayment", 'DateTime'>
   readonly remark: Prisma.FieldRef<"StudentFeePayment", 'String'>
   readonly extraFields: Prisma.FieldRef<"StudentFeePayment", 'Json'>
   readonly extraStructureIds: Prisma.FieldRef<"StudentFeePayment", 'Json'>
-  readonly createdAt: Prisma.FieldRef<"StudentFeePayment", 'DateTime'>
-  readonly updatedAt: Prisma.FieldRef<"StudentFeePayment", 'DateTime'>
 }
     
 

@@ -216,8 +216,8 @@ export type MarksheetGradedSubjectWhereInput = {
   institutionId?: Prisma.StringFilter<"MarksheetGradedSubject"> | string
   name?: Prisma.StringFilter<"MarksheetGradedSubject"> | string
   order?: Prisma.IntFilter<"MarksheetGradedSubject"> | number
-  marksheet?: Prisma.XOR<Prisma.MarksheetScalarRelationFilter, Prisma.MarksheetWhereInput>
   gradedScores?: Prisma.MarksheetGradedScoreListRelationFilter
+  marksheet?: Prisma.XOR<Prisma.MarksheetScalarRelationFilter, Prisma.MarksheetWhereInput>
 }
 
 export type MarksheetGradedSubjectOrderByWithRelationInput = {
@@ -226,8 +226,8 @@ export type MarksheetGradedSubjectOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   order?: Prisma.SortOrder
-  marksheet?: Prisma.MarksheetOrderByWithRelationInput
   gradedScores?: Prisma.MarksheetGradedScoreOrderByRelationAggregateInput
+  marksheet?: Prisma.MarksheetOrderByWithRelationInput
 }
 
 export type MarksheetGradedSubjectWhereUniqueInput = Prisma.AtLeast<{
@@ -239,8 +239,8 @@ export type MarksheetGradedSubjectWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"MarksheetGradedSubject"> | string
   name?: Prisma.StringFilter<"MarksheetGradedSubject"> | string
   order?: Prisma.IntFilter<"MarksheetGradedSubject"> | number
-  marksheet?: Prisma.XOR<Prisma.MarksheetScalarRelationFilter, Prisma.MarksheetWhereInput>
   gradedScores?: Prisma.MarksheetGradedScoreListRelationFilter
+  marksheet?: Prisma.XOR<Prisma.MarksheetScalarRelationFilter, Prisma.MarksheetWhereInput>
 }, "id">
 
 export type MarksheetGradedSubjectOrderByWithAggregationInput = {
@@ -272,8 +272,8 @@ export type MarksheetGradedSubjectCreateInput = {
   institutionId: string
   name: string
   order?: number
-  marksheet: Prisma.MarksheetCreateNestedOneWithoutGradedSubjectsInput
   gradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutGradedSubjectInput
+  marksheet: Prisma.MarksheetCreateNestedOneWithoutGradedSubjectsInput
 }
 
 export type MarksheetGradedSubjectUncheckedCreateInput = {
@@ -290,8 +290,8 @@ export type MarksheetGradedSubjectUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
-  marksheet?: Prisma.MarksheetUpdateOneRequiredWithoutGradedSubjectsNestedInput
   gradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutGradedSubjectNestedInput
+  marksheet?: Prisma.MarksheetUpdateOneRequiredWithoutGradedSubjectsNestedInput
 }
 
 export type MarksheetGradedSubjectUncheckedUpdateInput = {
@@ -597,8 +597,8 @@ export type MarksheetGradedSubjectSelect<ExtArgs extends runtime.Types.Extension
   institutionId?: boolean
   name?: boolean
   order?: boolean
-  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   gradedScores?: boolean | Prisma.MarksheetGradedSubject$gradedScoresArgs<ExtArgs>
+  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.MarksheetGradedSubjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marksheetGradedSubject"]>
 
@@ -630,8 +630,8 @@ export type MarksheetGradedSubjectSelectScalar = {
 
 export type MarksheetGradedSubjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "marksheetId" | "institutionId" | "name" | "order", ExtArgs["result"]["marksheetGradedSubject"]>
 export type MarksheetGradedSubjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   gradedScores?: boolean | Prisma.MarksheetGradedSubject$gradedScoresArgs<ExtArgs>
+  marksheet?: boolean | Prisma.MarksheetDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.MarksheetGradedSubjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MarksheetGradedSubjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -644,8 +644,8 @@ export type MarksheetGradedSubjectIncludeUpdateManyAndReturn<ExtArgs extends run
 export type $MarksheetGradedSubjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MarksheetGradedSubject"
   objects: {
-    marksheet: Prisma.$MarksheetPayload<ExtArgs>
     gradedScores: Prisma.$MarksheetGradedScorePayload<ExtArgs>[]
+    marksheet: Prisma.$MarksheetPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1047,8 +1047,8 @@ readonly fields: MarksheetGradedSubjectFieldRefs;
  */
 export interface Prisma__MarksheetGradedSubjectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  marksheet<T extends Prisma.MarksheetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarksheetDefaultArgs<ExtArgs>>): Prisma.Prisma__MarksheetClient<runtime.Types.Result.GetResult<Prisma.$MarksheetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   gradedScores<T extends Prisma.MarksheetGradedSubject$gradedScoresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarksheetGradedSubject$gradedScoresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetGradedScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  marksheet<T extends Prisma.MarksheetDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarksheetDefaultArgs<ExtArgs>>): Prisma.Prisma__MarksheetClient<runtime.Types.Result.GetResult<Prisma.$MarksheetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

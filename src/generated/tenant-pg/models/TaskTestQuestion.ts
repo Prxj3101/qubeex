@@ -41,9 +41,9 @@ export type TaskTestQuestionMinAggregateOutputType = {
   testId: string | null
   questionId: string | null
   isCompulsory: boolean | null
-  sectionId: string | null
   marks: number | null
   order: number | null
+  sectionId: string | null
 }
 
 export type TaskTestQuestionMaxAggregateOutputType = {
@@ -51,9 +51,9 @@ export type TaskTestQuestionMaxAggregateOutputType = {
   testId: string | null
   questionId: string | null
   isCompulsory: boolean | null
-  sectionId: string | null
   marks: number | null
   order: number | null
+  sectionId: string | null
 }
 
 export type TaskTestQuestionCountAggregateOutputType = {
@@ -61,9 +61,9 @@ export type TaskTestQuestionCountAggregateOutputType = {
   testId: number
   questionId: number
   isCompulsory: number
-  sectionId: number
   marks: number
   order: number
+  sectionId: number
   _all: number
 }
 
@@ -83,9 +83,9 @@ export type TaskTestQuestionMinAggregateInputType = {
   testId?: true
   questionId?: true
   isCompulsory?: true
-  sectionId?: true
   marks?: true
   order?: true
+  sectionId?: true
 }
 
 export type TaskTestQuestionMaxAggregateInputType = {
@@ -93,9 +93,9 @@ export type TaskTestQuestionMaxAggregateInputType = {
   testId?: true
   questionId?: true
   isCompulsory?: true
-  sectionId?: true
   marks?: true
   order?: true
+  sectionId?: true
 }
 
 export type TaskTestQuestionCountAggregateInputType = {
@@ -103,9 +103,9 @@ export type TaskTestQuestionCountAggregateInputType = {
   testId?: true
   questionId?: true
   isCompulsory?: true
-  sectionId?: true
   marks?: true
   order?: true
+  sectionId?: true
   _all?: true
 }
 
@@ -200,9 +200,9 @@ export type TaskTestQuestionGroupByOutputType = {
   testId: string
   questionId: string
   isCompulsory: boolean
-  sectionId: string | null
   marks: number | null
   order: number
+  sectionId: string | null
   _count: TaskTestQuestionCountAggregateOutputType | null
   _avg: TaskTestQuestionAvgAggregateOutputType | null
   _sum: TaskTestQuestionSumAggregateOutputType | null
@@ -233,11 +233,11 @@ export type TaskTestQuestionWhereInput = {
   testId?: Prisma.StringFilter<"TaskTestQuestion"> | string
   questionId?: Prisma.StringFilter<"TaskTestQuestion"> | string
   isCompulsory?: Prisma.BoolFilter<"TaskTestQuestion"> | boolean
-  sectionId?: Prisma.StringNullableFilter<"TaskTestQuestion"> | string | null
   marks?: Prisma.IntNullableFilter<"TaskTestQuestion"> | number | null
   order?: Prisma.IntFilter<"TaskTestQuestion"> | number
-  test?: Prisma.XOR<Prisma.TaskTestScalarRelationFilter, Prisma.TaskTestWhereInput>
+  sectionId?: Prisma.StringNullableFilter<"TaskTestQuestion"> | string | null
   question?: Prisma.XOR<Prisma.TaskQuestionScalarRelationFilter, Prisma.TaskQuestionWhereInput>
+  test?: Prisma.XOR<Prisma.TaskTestScalarRelationFilter, Prisma.TaskTestWhereInput>
 }
 
 export type TaskTestQuestionOrderByWithRelationInput = {
@@ -245,11 +245,11 @@ export type TaskTestQuestionOrderByWithRelationInput = {
   testId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
   isCompulsory?: Prisma.SortOrder
-  sectionId?: Prisma.SortOrderInput | Prisma.SortOrder
   marks?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.SortOrder
-  test?: Prisma.TaskTestOrderByWithRelationInput
+  sectionId?: Prisma.SortOrderInput | Prisma.SortOrder
   question?: Prisma.TaskQuestionOrderByWithRelationInput
+  test?: Prisma.TaskTestOrderByWithRelationInput
 }
 
 export type TaskTestQuestionWhereUniqueInput = Prisma.AtLeast<{
@@ -261,11 +261,11 @@ export type TaskTestQuestionWhereUniqueInput = Prisma.AtLeast<{
   testId?: Prisma.StringFilter<"TaskTestQuestion"> | string
   questionId?: Prisma.StringFilter<"TaskTestQuestion"> | string
   isCompulsory?: Prisma.BoolFilter<"TaskTestQuestion"> | boolean
-  sectionId?: Prisma.StringNullableFilter<"TaskTestQuestion"> | string | null
   marks?: Prisma.IntNullableFilter<"TaskTestQuestion"> | number | null
   order?: Prisma.IntFilter<"TaskTestQuestion"> | number
-  test?: Prisma.XOR<Prisma.TaskTestScalarRelationFilter, Prisma.TaskTestWhereInput>
+  sectionId?: Prisma.StringNullableFilter<"TaskTestQuestion"> | string | null
   question?: Prisma.XOR<Prisma.TaskQuestionScalarRelationFilter, Prisma.TaskQuestionWhereInput>
+  test?: Prisma.XOR<Prisma.TaskTestScalarRelationFilter, Prisma.TaskTestWhereInput>
 }, "id" | "testId_questionId">
 
 export type TaskTestQuestionOrderByWithAggregationInput = {
@@ -273,9 +273,9 @@ export type TaskTestQuestionOrderByWithAggregationInput = {
   testId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
   isCompulsory?: Prisma.SortOrder
-  sectionId?: Prisma.SortOrderInput | Prisma.SortOrder
   marks?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.SortOrder
+  sectionId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TaskTestQuestionCountOrderByAggregateInput
   _avg?: Prisma.TaskTestQuestionAvgOrderByAggregateInput
   _max?: Prisma.TaskTestQuestionMaxOrderByAggregateInput
@@ -291,19 +291,19 @@ export type TaskTestQuestionScalarWhereWithAggregatesInput = {
   testId?: Prisma.StringWithAggregatesFilter<"TaskTestQuestion"> | string
   questionId?: Prisma.StringWithAggregatesFilter<"TaskTestQuestion"> | string
   isCompulsory?: Prisma.BoolWithAggregatesFilter<"TaskTestQuestion"> | boolean
-  sectionId?: Prisma.StringNullableWithAggregatesFilter<"TaskTestQuestion"> | string | null
   marks?: Prisma.IntNullableWithAggregatesFilter<"TaskTestQuestion"> | number | null
   order?: Prisma.IntWithAggregatesFilter<"TaskTestQuestion"> | number
+  sectionId?: Prisma.StringNullableWithAggregatesFilter<"TaskTestQuestion"> | string | null
 }
 
 export type TaskTestQuestionCreateInput = {
   id?: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
-  test: Prisma.TaskTestCreateNestedOneWithoutQuestionsInput
+  sectionId?: string | null
   question: Prisma.TaskQuestionCreateNestedOneWithoutTestQuestionsInput
+  test: Prisma.TaskTestCreateNestedOneWithoutQuestionsInput
 }
 
 export type TaskTestQuestionUncheckedCreateInput = {
@@ -311,19 +311,19 @@ export type TaskTestQuestionUncheckedCreateInput = {
   testId: string
   questionId: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
+  sectionId?: string | null
 }
 
 export type TaskTestQuestionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
-  test?: Prisma.TaskTestUpdateOneRequiredWithoutQuestionsNestedInput
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   question?: Prisma.TaskQuestionUpdateOneRequiredWithoutTestQuestionsNestedInput
+  test?: Prisma.TaskTestUpdateOneRequiredWithoutQuestionsNestedInput
 }
 
 export type TaskTestQuestionUncheckedUpdateInput = {
@@ -331,9 +331,9 @@ export type TaskTestQuestionUncheckedUpdateInput = {
   testId?: Prisma.StringFieldUpdateOperationsInput | string
   questionId?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestQuestionCreateManyInput = {
@@ -341,17 +341,17 @@ export type TaskTestQuestionCreateManyInput = {
   testId: string
   questionId: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
+  sectionId?: string | null
 }
 
 export type TaskTestQuestionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestQuestionUncheckedUpdateManyInput = {
@@ -359,9 +359,9 @@ export type TaskTestQuestionUncheckedUpdateManyInput = {
   testId?: Prisma.StringFieldUpdateOperationsInput | string
   questionId?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestQuestionListRelationFilter = {
@@ -384,9 +384,9 @@ export type TaskTestQuestionCountOrderByAggregateInput = {
   testId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
   isCompulsory?: Prisma.SortOrder
-  sectionId?: Prisma.SortOrder
   marks?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  sectionId?: Prisma.SortOrder
 }
 
 export type TaskTestQuestionAvgOrderByAggregateInput = {
@@ -399,9 +399,9 @@ export type TaskTestQuestionMaxOrderByAggregateInput = {
   testId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
   isCompulsory?: Prisma.SortOrder
-  sectionId?: Prisma.SortOrder
   marks?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  sectionId?: Prisma.SortOrder
 }
 
 export type TaskTestQuestionMinOrderByAggregateInput = {
@@ -409,9 +409,9 @@ export type TaskTestQuestionMinOrderByAggregateInput = {
   testId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
   isCompulsory?: Prisma.SortOrder
-  sectionId?: Prisma.SortOrder
   marks?: Prisma.SortOrder
   order?: Prisma.SortOrder
+  sectionId?: Prisma.SortOrder
 }
 
 export type TaskTestQuestionSumOrderByAggregateInput = {
@@ -506,9 +506,9 @@ export type TaskTestQuestionUncheckedUpdateManyWithoutTestNestedInput = {
 export type TaskTestQuestionCreateWithoutQuestionInput = {
   id?: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
+  sectionId?: string | null
   test: Prisma.TaskTestCreateNestedOneWithoutQuestionsInput
 }
 
@@ -516,9 +516,9 @@ export type TaskTestQuestionUncheckedCreateWithoutQuestionInput = {
   id?: string
   testId: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
+  sectionId?: string | null
 }
 
 export type TaskTestQuestionCreateOrConnectWithoutQuestionInput = {
@@ -555,17 +555,17 @@ export type TaskTestQuestionScalarWhereInput = {
   testId?: Prisma.StringFilter<"TaskTestQuestion"> | string
   questionId?: Prisma.StringFilter<"TaskTestQuestion"> | string
   isCompulsory?: Prisma.BoolFilter<"TaskTestQuestion"> | boolean
-  sectionId?: Prisma.StringNullableFilter<"TaskTestQuestion"> | string | null
   marks?: Prisma.IntNullableFilter<"TaskTestQuestion"> | number | null
   order?: Prisma.IntFilter<"TaskTestQuestion"> | number
+  sectionId?: Prisma.StringNullableFilter<"TaskTestQuestion"> | string | null
 }
 
 export type TaskTestQuestionCreateWithoutTestInput = {
   id?: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
+  sectionId?: string | null
   question: Prisma.TaskQuestionCreateNestedOneWithoutTestQuestionsInput
 }
 
@@ -573,9 +573,9 @@ export type TaskTestQuestionUncheckedCreateWithoutTestInput = {
   id?: string
   questionId: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
+  sectionId?: string | null
 }
 
 export type TaskTestQuestionCreateOrConnectWithoutTestInput = {
@@ -608,17 +608,17 @@ export type TaskTestQuestionCreateManyQuestionInput = {
   id?: string
   testId: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
+  sectionId?: string | null
 }
 
 export type TaskTestQuestionUpdateWithoutQuestionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   test?: Prisma.TaskTestUpdateOneRequiredWithoutQuestionsNestedInput
 }
 
@@ -626,35 +626,35 @@ export type TaskTestQuestionUncheckedUpdateWithoutQuestionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   testId?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestQuestionUncheckedUpdateManyWithoutQuestionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   testId?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestQuestionCreateManyTestInput = {
   id?: string
   questionId: string
   isCompulsory?: boolean
-  sectionId?: string | null
   marks?: number | null
   order?: number
+  sectionId?: string | null
 }
 
 export type TaskTestQuestionUpdateWithoutTestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   question?: Prisma.TaskQuestionUpdateOneRequiredWithoutTestQuestionsNestedInput
 }
 
@@ -662,18 +662,18 @@ export type TaskTestQuestionUncheckedUpdateWithoutTestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   questionId?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestQuestionUncheckedUpdateManyWithoutTestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   questionId?: Prisma.StringFieldUpdateOperationsInput | string
   isCompulsory?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marks?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   order?: Prisma.IntFieldUpdateOperationsInput | number
+  sectionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -683,11 +683,11 @@ export type TaskTestQuestionSelect<ExtArgs extends runtime.Types.Extensions.Inte
   testId?: boolean
   questionId?: boolean
   isCompulsory?: boolean
-  sectionId?: boolean
   marks?: boolean
   order?: boolean
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
+  sectionId?: boolean
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTestQuestion"]>
 
 export type TaskTestQuestionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -695,11 +695,11 @@ export type TaskTestQuestionSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   testId?: boolean
   questionId?: boolean
   isCompulsory?: boolean
-  sectionId?: boolean
   marks?: boolean
   order?: boolean
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
+  sectionId?: boolean
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTestQuestion"]>
 
 export type TaskTestQuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -707,11 +707,11 @@ export type TaskTestQuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   testId?: boolean
   questionId?: boolean
   isCompulsory?: boolean
-  sectionId?: boolean
   marks?: boolean
   order?: boolean
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
+  sectionId?: boolean
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTestQuestion"]>
 
 export type TaskTestQuestionSelectScalar = {
@@ -719,39 +719,39 @@ export type TaskTestQuestionSelectScalar = {
   testId?: boolean
   questionId?: boolean
   isCompulsory?: boolean
-  sectionId?: boolean
   marks?: boolean
   order?: boolean
+  sectionId?: boolean
 }
 
-export type TaskTestQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "testId" | "questionId" | "isCompulsory" | "sectionId" | "marks" | "order", ExtArgs["result"]["taskTestQuestion"]>
+export type TaskTestQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "testId" | "questionId" | "isCompulsory" | "marks" | "order" | "sectionId", ExtArgs["result"]["taskTestQuestion"]>
 export type TaskTestQuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }
 export type TaskTestQuestionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }
 export type TaskTestQuestionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }
 
 export type $TaskTestQuestionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskTestQuestion"
   objects: {
-    test: Prisma.$TaskTestPayload<ExtArgs>
     question: Prisma.$TaskQuestionPayload<ExtArgs>
+    test: Prisma.$TaskTestPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     testId: string
     questionId: string
     isCompulsory: boolean
-    sectionId: string | null
     marks: number | null
     order: number
+    sectionId: string | null
   }, ExtArgs["result"]["taskTestQuestion"]>
   composites: {}
 }
@@ -1146,8 +1146,8 @@ readonly fields: TaskTestQuestionFieldRefs;
  */
 export interface Prisma__TaskTestQuestionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  test<T extends Prisma.TaskTestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTestDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskTestClient<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   question<T extends Prisma.TaskQuestionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskQuestionDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskQuestionClient<runtime.Types.Result.GetResult<Prisma.$TaskQuestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  test<T extends Prisma.TaskTestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTestDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskTestClient<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1181,9 +1181,9 @@ export interface TaskTestQuestionFieldRefs {
   readonly testId: Prisma.FieldRef<"TaskTestQuestion", 'String'>
   readonly questionId: Prisma.FieldRef<"TaskTestQuestion", 'String'>
   readonly isCompulsory: Prisma.FieldRef<"TaskTestQuestion", 'Boolean'>
-  readonly sectionId: Prisma.FieldRef<"TaskTestQuestion", 'String'>
   readonly marks: Prisma.FieldRef<"TaskTestQuestion", 'Int'>
   readonly order: Prisma.FieldRef<"TaskTestQuestion", 'Int'>
+  readonly sectionId: Prisma.FieldRef<"TaskTestQuestion", 'String'>
 }
     
 

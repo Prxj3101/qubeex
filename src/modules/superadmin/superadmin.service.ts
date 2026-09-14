@@ -1784,6 +1784,7 @@ const BACKGROUND_JOB_NAMES = [
   "billing-monthly-bills", "billing-overdue-deactivation", "billing-payment-reminder",
   "trial-daily-notifications", "trial-auto-lock",
   "addon-smartboard-expiry", "audit-retention", "storage-cleanup", "health-monitor",
+  "task-deadline-reminders",
 ];
 
 export const getSystemHealth = async () => {

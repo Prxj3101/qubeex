@@ -206,9 +206,9 @@ export type TaskContainerWhereInput = {
   name?: Prisma.StringFilter<"TaskContainer"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskContainer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskContainer"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
+  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   questions?: Prisma.TaskQuestionListRelationFilter
 }
 
@@ -221,9 +221,9 @@ export type TaskContainerOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  teacher?: Prisma.TeacherOrderByWithRelationInput
-  subject?: Prisma.SubjectOrderByWithRelationInput
   division?: Prisma.DivisionOrderByWithRelationInput
+  subject?: Prisma.SubjectOrderByWithRelationInput
+  teacher?: Prisma.TeacherOrderByWithRelationInput
   questions?: Prisma.TaskQuestionOrderByRelationAggregateInput
 }
 
@@ -239,9 +239,9 @@ export type TaskContainerWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"TaskContainer"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskContainer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskContainer"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
+  subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   questions?: Prisma.TaskQuestionListRelationFilter
 }, "id">
 
@@ -279,9 +279,9 @@ export type TaskContainerCreateInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskContainersInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskContainersInput
   division: Prisma.DivisionCreateNestedOneWithoutTaskContainersInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskContainersInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskContainersInput
   questions?: Prisma.TaskQuestionCreateNestedManyWithoutContainerInput
 }
 
@@ -303,9 +303,9 @@ export type TaskContainerUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskContainersNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskContainersNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskContainersNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskContainersNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskContainersNestedInput
   questions?: Prisma.TaskQuestionUpdateManyWithoutContainerNestedInput
 }
 
@@ -545,8 +545,8 @@ export type TaskContainerCreateWithoutTeacherInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskContainersInput
   division: Prisma.DivisionCreateNestedOneWithoutTaskContainersInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskContainersInput
   questions?: Prisma.TaskQuestionCreateNestedManyWithoutContainerInput
 }
 
@@ -607,8 +607,8 @@ export type TaskContainerCreateWithoutDivisionInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskContainersInput
   subject: Prisma.SubjectCreateNestedOneWithoutTaskContainersInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskContainersInput
   questions?: Prisma.TaskQuestionCreateNestedManyWithoutContainerInput
 }
 
@@ -655,8 +655,8 @@ export type TaskContainerCreateWithoutSubjectInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskContainersInput
   division: Prisma.DivisionCreateNestedOneWithoutTaskContainersInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskContainersInput
   questions?: Prisma.TaskQuestionCreateNestedManyWithoutContainerInput
 }
 
@@ -703,9 +703,9 @@ export type TaskContainerCreateWithoutQuestionsInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskContainersInput
-  subject: Prisma.SubjectCreateNestedOneWithoutTaskContainersInput
   division: Prisma.DivisionCreateNestedOneWithoutTaskContainersInput
+  subject: Prisma.SubjectCreateNestedOneWithoutTaskContainersInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskContainersInput
 }
 
 export type TaskContainerUncheckedCreateWithoutQuestionsInput = {
@@ -741,9 +741,9 @@ export type TaskContainerUpdateWithoutQuestionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskContainersNestedInput
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskContainersNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskContainersNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskContainersNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskContainersNestedInput
 }
 
 export type TaskContainerUncheckedUpdateWithoutQuestionsInput = {
@@ -773,8 +773,8 @@ export type TaskContainerUpdateWithoutTeacherInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskContainersNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskContainersNestedInput
+  subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskContainersNestedInput
   questions?: Prisma.TaskQuestionUpdateManyWithoutContainerNestedInput
 }
 
@@ -815,8 +815,8 @@ export type TaskContainerUpdateWithoutDivisionInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskContainersNestedInput
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskContainersNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskContainersNestedInput
   questions?: Prisma.TaskQuestionUpdateManyWithoutContainerNestedInput
 }
 
@@ -857,8 +857,8 @@ export type TaskContainerUpdateWithoutSubjectInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskContainersNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutTaskContainersNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskContainersNestedInput
   questions?: Prisma.TaskQuestionUpdateManyWithoutContainerNestedInput
 }
 
@@ -923,9 +923,9 @@ export type TaskContainerSelect<ExtArgs extends runtime.Types.Extensions.Interna
   name?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   questions?: boolean | Prisma.TaskContainer$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskContainerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskContainer"]>
@@ -939,9 +939,9 @@ export type TaskContainerSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   name?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskContainer"]>
 
 export type TaskContainerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -953,9 +953,9 @@ export type TaskContainerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   name?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskContainer"]>
 
 export type TaskContainerSelectScalar = {
@@ -971,29 +971,29 @@ export type TaskContainerSelectScalar = {
 
 export type TaskContainerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "divisionId" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["taskContainer"]>
 export type TaskContainerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   questions?: boolean | Prisma.TaskContainer$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskContainerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskContainerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 export type TaskContainerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
+  subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 
 export type $TaskContainerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskContainer"
   objects: {
-    teacher: Prisma.$TeacherPayload<ExtArgs>
-    subject: Prisma.$SubjectPayload<ExtArgs>
     division: Prisma.$DivisionPayload<ExtArgs>
+    subject: Prisma.$SubjectPayload<ExtArgs>
+    teacher: Prisma.$TeacherPayload<ExtArgs>
     questions: Prisma.$TaskQuestionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1399,9 +1399,9 @@ readonly fields: TaskContainerFieldRefs;
  */
 export interface Prisma__TaskContainerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   division<T extends Prisma.DivisionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionDefaultArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   questions<T extends Prisma.TaskContainer$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskContainer$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

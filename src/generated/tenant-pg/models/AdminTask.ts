@@ -32,6 +32,7 @@ export type AdminTaskMinAggregateOutputType = {
   done: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  dueAt: Date | null
 }
 
 export type AdminTaskMaxAggregateOutputType = {
@@ -42,6 +43,7 @@ export type AdminTaskMaxAggregateOutputType = {
   done: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
+  dueAt: Date | null
 }
 
 export type AdminTaskCountAggregateOutputType = {
@@ -52,6 +54,7 @@ export type AdminTaskCountAggregateOutputType = {
   done: number
   createdAt: number
   updatedAt: number
+  dueAt: number
   _all: number
 }
 
@@ -64,6 +67,7 @@ export type AdminTaskMinAggregateInputType = {
   done?: true
   createdAt?: true
   updatedAt?: true
+  dueAt?: true
 }
 
 export type AdminTaskMaxAggregateInputType = {
@@ -74,6 +78,7 @@ export type AdminTaskMaxAggregateInputType = {
   done?: true
   createdAt?: true
   updatedAt?: true
+  dueAt?: true
 }
 
 export type AdminTaskCountAggregateInputType = {
@@ -84,6 +89,7 @@ export type AdminTaskCountAggregateInputType = {
   done?: true
   createdAt?: true
   updatedAt?: true
+  dueAt?: true
   _all?: true
 }
 
@@ -167,6 +173,7 @@ export type AdminTaskGroupByOutputType = {
   done: boolean
   createdAt: Date
   updatedAt: Date
+  dueAt: Date | null
   _count: AdminTaskCountAggregateOutputType | null
   _min: AdminTaskMinAggregateOutputType | null
   _max: AdminTaskMaxAggregateOutputType | null
@@ -198,6 +205,7 @@ export type AdminTaskWhereInput = {
   done?: Prisma.BoolFilter<"AdminTask"> | boolean
   createdAt?: Prisma.DateTimeFilter<"AdminTask"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AdminTask"> | Date | string
+  dueAt?: Prisma.DateTimeNullableFilter<"AdminTask"> | Date | string | null
 }
 
 export type AdminTaskOrderByWithRelationInput = {
@@ -208,6 +216,7 @@ export type AdminTaskOrderByWithRelationInput = {
   done?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  dueAt?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type AdminTaskWhereUniqueInput = Prisma.AtLeast<{
@@ -221,6 +230,7 @@ export type AdminTaskWhereUniqueInput = Prisma.AtLeast<{
   done?: Prisma.BoolFilter<"AdminTask"> | boolean
   createdAt?: Prisma.DateTimeFilter<"AdminTask"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AdminTask"> | Date | string
+  dueAt?: Prisma.DateTimeNullableFilter<"AdminTask"> | Date | string | null
 }, "id">
 
 export type AdminTaskOrderByWithAggregationInput = {
@@ -231,6 +241,7 @@ export type AdminTaskOrderByWithAggregationInput = {
   done?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  dueAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.AdminTaskCountOrderByAggregateInput
   _max?: Prisma.AdminTaskMaxOrderByAggregateInput
   _min?: Prisma.AdminTaskMinOrderByAggregateInput
@@ -247,6 +258,7 @@ export type AdminTaskScalarWhereWithAggregatesInput = {
   done?: Prisma.BoolWithAggregatesFilter<"AdminTask"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AdminTask"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AdminTask"> | Date | string
+  dueAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AdminTask"> | Date | string | null
 }
 
 export type AdminTaskCreateInput = {
@@ -257,6 +269,7 @@ export type AdminTaskCreateInput = {
   done?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  dueAt?: Date | string | null
 }
 
 export type AdminTaskUncheckedCreateInput = {
@@ -267,6 +280,7 @@ export type AdminTaskUncheckedCreateInput = {
   done?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  dueAt?: Date | string | null
 }
 
 export type AdminTaskUpdateInput = {
@@ -277,6 +291,7 @@ export type AdminTaskUpdateInput = {
   done?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AdminTaskUncheckedUpdateInput = {
@@ -287,6 +302,7 @@ export type AdminTaskUncheckedUpdateInput = {
   done?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AdminTaskCreateManyInput = {
@@ -297,6 +313,7 @@ export type AdminTaskCreateManyInput = {
   done?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  dueAt?: Date | string | null
 }
 
 export type AdminTaskUpdateManyMutationInput = {
@@ -307,6 +324,7 @@ export type AdminTaskUpdateManyMutationInput = {
   done?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AdminTaskUncheckedUpdateManyInput = {
@@ -317,6 +335,7 @@ export type AdminTaskUncheckedUpdateManyInput = {
   done?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type AdminTaskCountOrderByAggregateInput = {
@@ -327,6 +346,7 @@ export type AdminTaskCountOrderByAggregateInput = {
   done?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  dueAt?: Prisma.SortOrder
 }
 
 export type AdminTaskMaxOrderByAggregateInput = {
@@ -337,6 +357,7 @@ export type AdminTaskMaxOrderByAggregateInput = {
   done?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  dueAt?: Prisma.SortOrder
 }
 
 export type AdminTaskMinOrderByAggregateInput = {
@@ -347,6 +368,11 @@ export type AdminTaskMinOrderByAggregateInput = {
   done?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  dueAt?: Prisma.SortOrder
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 
@@ -359,6 +385,7 @@ export type AdminTaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   done?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  dueAt?: boolean
 }, ExtArgs["result"]["adminTask"]>
 
 export type AdminTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -369,6 +396,7 @@ export type AdminTaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   done?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  dueAt?: boolean
 }, ExtArgs["result"]["adminTask"]>
 
 export type AdminTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -379,6 +407,7 @@ export type AdminTaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   done?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  dueAt?: boolean
 }, ExtArgs["result"]["adminTask"]>
 
 export type AdminTaskSelectScalar = {
@@ -389,9 +418,10 @@ export type AdminTaskSelectScalar = {
   done?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  dueAt?: boolean
 }
 
-export type AdminTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "institutionId" | "text" | "done" | "createdAt" | "updatedAt", ExtArgs["result"]["adminTask"]>
+export type AdminTaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "institutionId" | "text" | "done" | "createdAt" | "updatedAt" | "dueAt", ExtArgs["result"]["adminTask"]>
 
 export type $AdminTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AdminTask"
@@ -404,6 +434,7 @@ export type $AdminTaskPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     done: boolean
     createdAt: Date
     updatedAt: Date
+    dueAt: Date | null
   }, ExtArgs["result"]["adminTask"]>
   composites: {}
 }
@@ -834,6 +865,7 @@ export interface AdminTaskFieldRefs {
   readonly done: Prisma.FieldRef<"AdminTask", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"AdminTask", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AdminTask", 'DateTime'>
+  readonly dueAt: Prisma.FieldRef<"AdminTask", 'DateTime'>
 }
     
 

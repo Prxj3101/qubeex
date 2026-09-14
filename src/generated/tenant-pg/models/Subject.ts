@@ -36,7 +36,6 @@ export type SubjectSumAggregateOutputType = {
 
 export type SubjectMinAggregateOutputType = {
   id: string | null
-  standardId: string | null
   institutionId: string | null
   name: string | null
   code: string | null
@@ -44,11 +43,11 @@ export type SubjectMinAggregateOutputType = {
   order: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  standardId: string | null
 }
 
 export type SubjectMaxAggregateOutputType = {
   id: string | null
-  standardId: string | null
   institutionId: string | null
   name: string | null
   code: string | null
@@ -56,11 +55,11 @@ export type SubjectMaxAggregateOutputType = {
   order: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  standardId: string | null
 }
 
 export type SubjectCountAggregateOutputType = {
   id: number
-  standardId: number
   institutionId: number
   name: number
   code: number
@@ -68,6 +67,7 @@ export type SubjectCountAggregateOutputType = {
   order: number
   createdAt: number
   updatedAt: number
+  standardId: number
   _all: number
 }
 
@@ -82,7 +82,6 @@ export type SubjectSumAggregateInputType = {
 
 export type SubjectMinAggregateInputType = {
   id?: true
-  standardId?: true
   institutionId?: true
   name?: true
   code?: true
@@ -90,11 +89,11 @@ export type SubjectMinAggregateInputType = {
   order?: true
   createdAt?: true
   updatedAt?: true
+  standardId?: true
 }
 
 export type SubjectMaxAggregateInputType = {
   id?: true
-  standardId?: true
   institutionId?: true
   name?: true
   code?: true
@@ -102,11 +101,11 @@ export type SubjectMaxAggregateInputType = {
   order?: true
   createdAt?: true
   updatedAt?: true
+  standardId?: true
 }
 
 export type SubjectCountAggregateInputType = {
   id?: true
-  standardId?: true
   institutionId?: true
   name?: true
   code?: true
@@ -114,6 +113,7 @@ export type SubjectCountAggregateInputType = {
   order?: true
   createdAt?: true
   updatedAt?: true
+  standardId?: true
   _all?: true
 }
 
@@ -205,7 +205,6 @@ export type SubjectGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type SubjectGroupByOutputType = {
   id: string
-  standardId: string
   institutionId: string
   name: string
   code: string | null
@@ -213,6 +212,7 @@ export type SubjectGroupByOutputType = {
   order: number
   createdAt: Date
   updatedAt: Date
+  standardId: string
   _count: SubjectCountAggregateOutputType | null
   _avg: SubjectAvgAggregateOutputType | null
   _sum: SubjectSumAggregateOutputType | null
@@ -240,7 +240,6 @@ export type SubjectWhereInput = {
   OR?: Prisma.SubjectWhereInput[]
   NOT?: Prisma.SubjectWhereInput | Prisma.SubjectWhereInput[]
   id?: Prisma.StringFilter<"Subject"> | string
-  standardId?: Prisma.StringFilter<"Subject"> | string
   institutionId?: Prisma.StringFilter<"Subject"> | string
   name?: Prisma.StringFilter<"Subject"> | string
   code?: Prisma.StringNullableFilter<"Subject"> | string | null
@@ -248,22 +247,22 @@ export type SubjectWhereInput = {
   order?: Prisma.IntFilter<"Subject"> | number
   createdAt?: Prisma.DateTimeFilter<"Subject"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subject"> | Date | string
-  standard?: Prisma.XOR<Prisma.StandardScalarRelationFilter, Prisma.StandardWhereInput>
+  standardId?: Prisma.StringFilter<"Subject"> | string
+  campusFeedPosts?: Prisma.CampusFeedPostListRelationFilter
   assignments?: Prisma.DivisionAssignmentListRelationFilter
   divisionSubjects?: Prisma.DivisionSubjectListRelationFilter
-  taskQuestions?: Prisma.TaskQuestionListRelationFilter
+  marksheetColumns?: Prisma.MarksheetExamColumnListRelationFilter
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigListRelationFilter
+  standard?: Prisma.XOR<Prisma.StandardScalarRelationFilter, Prisma.StandardWhereInput>
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   taskContainers?: Prisma.TaskContainerListRelationFilter
   taskModules?: Prisma.TaskModuleListRelationFilter
+  taskQuestions?: Prisma.TaskQuestionListRelationFilter
   taskTests?: Prisma.TaskTestListRelationFilter
-  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigListRelationFilter
-  marksheetColumns?: Prisma.MarksheetExamColumnListRelationFilter
-  campusFeedPosts?: Prisma.CampusFeedPostListRelationFilter
 }
 
 export type SubjectOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  standardId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   code?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -271,17 +270,18 @@ export type SubjectOrderByWithRelationInput = {
   order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  standard?: Prisma.StandardOrderByWithRelationInput
+  standardId?: Prisma.SortOrder
+  campusFeedPosts?: Prisma.CampusFeedPostOrderByRelationAggregateInput
   assignments?: Prisma.DivisionAssignmentOrderByRelationAggregateInput
   divisionSubjects?: Prisma.DivisionSubjectOrderByRelationAggregateInput
-  taskQuestions?: Prisma.TaskQuestionOrderByRelationAggregateInput
+  marksheetColumns?: Prisma.MarksheetExamColumnOrderByRelationAggregateInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigOrderByRelationAggregateInput
+  standard?: Prisma.StandardOrderByWithRelationInput
+  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
   taskContainers?: Prisma.TaskContainerOrderByRelationAggregateInput
   taskModules?: Prisma.TaskModuleOrderByRelationAggregateInput
+  taskQuestions?: Prisma.TaskQuestionOrderByRelationAggregateInput
   taskTests?: Prisma.TaskTestOrderByRelationAggregateInput
-  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigOrderByRelationAggregateInput
-  marksheetColumns?: Prisma.MarksheetExamColumnOrderByRelationAggregateInput
-  campusFeedPosts?: Prisma.CampusFeedPostOrderByRelationAggregateInput
 }
 
 export type SubjectWhereUniqueInput = Prisma.AtLeast<{
@@ -290,7 +290,6 @@ export type SubjectWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.SubjectWhereInput | Prisma.SubjectWhereInput[]
   OR?: Prisma.SubjectWhereInput[]
   NOT?: Prisma.SubjectWhereInput | Prisma.SubjectWhereInput[]
-  standardId?: Prisma.StringFilter<"Subject"> | string
   institutionId?: Prisma.StringFilter<"Subject"> | string
   name?: Prisma.StringFilter<"Subject"> | string
   code?: Prisma.StringNullableFilter<"Subject"> | string | null
@@ -298,22 +297,22 @@ export type SubjectWhereUniqueInput = Prisma.AtLeast<{
   order?: Prisma.IntFilter<"Subject"> | number
   createdAt?: Prisma.DateTimeFilter<"Subject"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subject"> | Date | string
-  standard?: Prisma.XOR<Prisma.StandardScalarRelationFilter, Prisma.StandardWhereInput>
+  standardId?: Prisma.StringFilter<"Subject"> | string
+  campusFeedPosts?: Prisma.CampusFeedPostListRelationFilter
   assignments?: Prisma.DivisionAssignmentListRelationFilter
   divisionSubjects?: Prisma.DivisionSubjectListRelationFilter
-  taskQuestions?: Prisma.TaskQuestionListRelationFilter
+  marksheetColumns?: Prisma.MarksheetExamColumnListRelationFilter
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigListRelationFilter
+  standard?: Prisma.XOR<Prisma.StandardScalarRelationFilter, Prisma.StandardWhereInput>
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   taskContainers?: Prisma.TaskContainerListRelationFilter
   taskModules?: Prisma.TaskModuleListRelationFilter
+  taskQuestions?: Prisma.TaskQuestionListRelationFilter
   taskTests?: Prisma.TaskTestListRelationFilter
-  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigListRelationFilter
-  marksheetColumns?: Prisma.MarksheetExamColumnListRelationFilter
-  campusFeedPosts?: Prisma.CampusFeedPostListRelationFilter
 }, "id" | "standardId_name">
 
 export type SubjectOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  standardId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   code?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -321,6 +320,7 @@ export type SubjectOrderByWithAggregationInput = {
   order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  standardId?: Prisma.SortOrder
   _count?: Prisma.SubjectCountOrderByAggregateInput
   _avg?: Prisma.SubjectAvgOrderByAggregateInput
   _max?: Prisma.SubjectMaxOrderByAggregateInput
@@ -333,7 +333,6 @@ export type SubjectScalarWhereWithAggregatesInput = {
   OR?: Prisma.SubjectScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SubjectScalarWhereWithAggregatesInput | Prisma.SubjectScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Subject"> | string
-  standardId?: Prisma.StringWithAggregatesFilter<"Subject"> | string
   institutionId?: Prisma.StringWithAggregatesFilter<"Subject"> | string
   name?: Prisma.StringWithAggregatesFilter<"Subject"> | string
   code?: Prisma.StringNullableWithAggregatesFilter<"Subject"> | string | null
@@ -341,6 +340,7 @@ export type SubjectScalarWhereWithAggregatesInput = {
   order?: Prisma.IntWithAggregatesFilter<"Subject"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Subject"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Subject"> | Date | string
+  standardId?: Prisma.StringWithAggregatesFilter<"Subject"> | string
 }
 
 export type SubjectCreateInput = {
@@ -352,22 +352,21 @@ export type SubjectCreateInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUncheckedCreateInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -375,16 +374,17 @@ export type SubjectUncheckedCreateInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUpdateInput = {
@@ -396,22 +396,21 @@ export type SubjectUpdateInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -419,21 +418,21 @@ export type SubjectUncheckedUpdateInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectCreateManyInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -441,6 +440,7 @@ export type SubjectCreateManyInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
 }
 
 export type SubjectUpdateManyMutationInput = {
@@ -456,7 +456,6 @@ export type SubjectUpdateManyMutationInput = {
 
 export type SubjectUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -464,6 +463,7 @@ export type SubjectUncheckedUpdateManyInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SubjectListRelationFilter = {
@@ -483,7 +483,6 @@ export type SubjectStandardIdNameCompoundUniqueInput = {
 
 export type SubjectCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  standardId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   code?: Prisma.SortOrder
@@ -491,6 +490,7 @@ export type SubjectCountOrderByAggregateInput = {
   order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  standardId?: Prisma.SortOrder
 }
 
 export type SubjectAvgOrderByAggregateInput = {
@@ -499,7 +499,6 @@ export type SubjectAvgOrderByAggregateInput = {
 
 export type SubjectMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  standardId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   code?: Prisma.SortOrder
@@ -507,11 +506,11 @@ export type SubjectMaxOrderByAggregateInput = {
   order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  standardId?: Prisma.SortOrder
 }
 
 export type SubjectMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  standardId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   code?: Prisma.SortOrder
@@ -519,6 +518,7 @@ export type SubjectMinOrderByAggregateInput = {
   order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  standardId?: Prisma.SortOrder
 }
 
 export type SubjectSumOrderByAggregateInput = {
@@ -730,16 +730,16 @@ export type SubjectCreateWithoutStandardInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUncheckedCreateWithoutStandardInput = {
@@ -751,16 +751,16 @@ export type SubjectUncheckedCreateWithoutStandardInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectCreateOrConnectWithoutStandardInput = {
@@ -794,7 +794,6 @@ export type SubjectScalarWhereInput = {
   OR?: Prisma.SubjectScalarWhereInput[]
   NOT?: Prisma.SubjectScalarWhereInput | Prisma.SubjectScalarWhereInput[]
   id?: Prisma.StringFilter<"Subject"> | string
-  standardId?: Prisma.StringFilter<"Subject"> | string
   institutionId?: Prisma.StringFilter<"Subject"> | string
   name?: Prisma.StringFilter<"Subject"> | string
   code?: Prisma.StringNullableFilter<"Subject"> | string | null
@@ -802,6 +801,7 @@ export type SubjectScalarWhereInput = {
   order?: Prisma.IntFilter<"Subject"> | number
   createdAt?: Prisma.DateTimeFilter<"Subject"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subject"> | Date | string
+  standardId?: Prisma.StringFilter<"Subject"> | string
 }
 
 export type SubjectCreateWithoutDivisionSubjectsInput = {
@@ -813,21 +813,20 @@ export type SubjectCreateWithoutDivisionSubjectsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUncheckedCreateWithoutDivisionSubjectsInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -835,15 +834,16 @@ export type SubjectUncheckedCreateWithoutDivisionSubjectsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectCreateOrConnectWithoutDivisionSubjectsInput = {
@@ -871,21 +871,20 @@ export type SubjectUpdateWithoutDivisionSubjectsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutDivisionSubjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -893,15 +892,16 @@ export type SubjectUncheckedUpdateWithoutDivisionSubjectsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectCreateWithoutAssignmentsInput = {
@@ -913,21 +913,20 @@ export type SubjectCreateWithoutAssignmentsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUncheckedCreateWithoutAssignmentsInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -935,15 +934,16 @@ export type SubjectUncheckedCreateWithoutAssignmentsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectCreateOrConnectWithoutAssignmentsInput = {
@@ -971,21 +971,20 @@ export type SubjectUpdateWithoutAssignmentsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutAssignmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -993,15 +992,16 @@ export type SubjectUncheckedUpdateWithoutAssignmentsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectCreateWithoutCampusFeedPostsInput = {
@@ -1013,21 +1013,20 @@ export type SubjectCreateWithoutCampusFeedPostsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutCampusFeedPostsInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -1035,15 +1034,16 @@ export type SubjectUncheckedCreateWithoutCampusFeedPostsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutCampusFeedPostsInput = {
@@ -1071,21 +1071,20 @@ export type SubjectUpdateWithoutCampusFeedPostsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutCampusFeedPostsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1093,15 +1092,16 @@ export type SubjectUncheckedUpdateWithoutCampusFeedPostsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateWithoutTaskContainersInput = {
@@ -1113,21 +1113,20 @@ export type SubjectCreateWithoutTaskContainersInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
-  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutTaskContainersInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -1135,15 +1134,16 @@ export type SubjectUncheckedCreateWithoutTaskContainersInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
-  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutTaskContainersInput = {
@@ -1171,21 +1171,20 @@ export type SubjectUpdateWithoutTaskContainersInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
-  taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutTaskContainersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1193,15 +1192,16 @@ export type SubjectUncheckedUpdateWithoutTaskContainersInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
-  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateWithoutTaskQuestionsInput = {
@@ -1213,21 +1213,20 @@ export type SubjectCreateWithoutTaskQuestionsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUncheckedCreateWithoutTaskQuestionsInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -1235,15 +1234,16 @@ export type SubjectUncheckedCreateWithoutTaskQuestionsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectCreateOrConnectWithoutTaskQuestionsInput = {
@@ -1271,21 +1271,20 @@ export type SubjectUpdateWithoutTaskQuestionsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutTaskQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1293,15 +1292,16 @@ export type SubjectUncheckedUpdateWithoutTaskQuestionsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectCreateWithoutTaskModulesInput = {
@@ -1313,21 +1313,20 @@ export type SubjectCreateWithoutTaskModulesInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
-  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutTaskModulesInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -1335,15 +1334,16 @@ export type SubjectUncheckedCreateWithoutTaskModulesInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
-  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutTaskModulesInput = {
@@ -1371,21 +1371,20 @@ export type SubjectUpdateWithoutTaskModulesInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
-  taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutTaskModulesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1393,15 +1392,16 @@ export type SubjectUncheckedUpdateWithoutTaskModulesInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
-  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateWithoutTaskTestsInput = {
@@ -1413,21 +1413,20 @@ export type SubjectCreateWithoutTaskTestsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutTaskTestsInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -1435,15 +1434,16 @@ export type SubjectUncheckedCreateWithoutTaskTestsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutTaskTestsInput = {
@@ -1471,21 +1471,20 @@ export type SubjectUpdateWithoutTaskTestsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutTaskTestsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1493,15 +1492,16 @@ export type SubjectUncheckedUpdateWithoutTaskTestsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateWithoutTaskAssignmentsInput = {
@@ -1513,21 +1513,20 @@ export type SubjectCreateWithoutTaskAssignmentsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUncheckedCreateWithoutTaskAssignmentsInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -1535,15 +1534,16 @@ export type SubjectUncheckedCreateWithoutTaskAssignmentsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectCreateOrConnectWithoutTaskAssignmentsInput = {
@@ -1571,21 +1571,20 @@ export type SubjectUpdateWithoutTaskAssignmentsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutTaskAssignmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1593,15 +1592,16 @@ export type SubjectUncheckedUpdateWithoutTaskAssignmentsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectCreateWithoutMarksheetConfigsInput = {
@@ -1613,21 +1613,20 @@ export type SubjectCreateWithoutMarksheetConfigsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUncheckedCreateWithoutMarksheetConfigsInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -1635,15 +1634,16 @@ export type SubjectUncheckedCreateWithoutMarksheetConfigsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectCreateOrConnectWithoutMarksheetConfigsInput = {
@@ -1671,21 +1671,20 @@ export type SubjectUpdateWithoutMarksheetConfigsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutMarksheetConfigsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1693,15 +1692,16 @@ export type SubjectUncheckedUpdateWithoutMarksheetConfigsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectCreateWithoutMarksheetColumnsInput = {
@@ -1713,21 +1713,20 @@ export type SubjectCreateWithoutMarksheetColumnsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectUncheckedCreateWithoutMarksheetColumnsInput = {
   id?: string
-  standardId: string
   institutionId: string
   name: string
   code?: string | null
@@ -1735,15 +1734,16 @@ export type SubjectUncheckedCreateWithoutMarksheetColumnsInput = {
   order: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
 }
 
 export type SubjectCreateOrConnectWithoutMarksheetColumnsInput = {
@@ -1771,21 +1771,20 @@ export type SubjectUpdateWithoutMarksheetColumnsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutMarksheetColumnsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  standardId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1793,15 +1792,16 @@ export type SubjectUncheckedUpdateWithoutMarksheetColumnsInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectCreateManyStandardInput = {
@@ -1824,16 +1824,16 @@ export type SubjectUpdateWithoutStandardInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutStandardInput = {
@@ -1845,16 +1845,16 @@ export type SubjectUncheckedUpdateWithoutStandardInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
-  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
-  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
 }
 
 export type SubjectUncheckedUpdateManyWithoutStandardInput = {
@@ -1874,29 +1874,29 @@ export type SubjectUncheckedUpdateManyWithoutStandardInput = {
  */
 
 export type SubjectCountOutputType = {
+  campusFeedPosts: number
   assignments: number
   divisionSubjects: number
-  taskQuestions: number
+  marksheetColumns: number
+  marksheetConfigs: number
+  taskAssignments: number
   taskContainers: number
   taskModules: number
+  taskQuestions: number
   taskTests: number
-  taskAssignments: number
-  marksheetConfigs: number
-  marksheetColumns: number
-  campusFeedPosts: number
 }
 
 export type SubjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  campusFeedPosts?: boolean | SubjectCountOutputTypeCountCampusFeedPostsArgs
   assignments?: boolean | SubjectCountOutputTypeCountAssignmentsArgs
   divisionSubjects?: boolean | SubjectCountOutputTypeCountDivisionSubjectsArgs
-  taskQuestions?: boolean | SubjectCountOutputTypeCountTaskQuestionsArgs
+  marksheetColumns?: boolean | SubjectCountOutputTypeCountMarksheetColumnsArgs
+  marksheetConfigs?: boolean | SubjectCountOutputTypeCountMarksheetConfigsArgs
+  taskAssignments?: boolean | SubjectCountOutputTypeCountTaskAssignmentsArgs
   taskContainers?: boolean | SubjectCountOutputTypeCountTaskContainersArgs
   taskModules?: boolean | SubjectCountOutputTypeCountTaskModulesArgs
+  taskQuestions?: boolean | SubjectCountOutputTypeCountTaskQuestionsArgs
   taskTests?: boolean | SubjectCountOutputTypeCountTaskTestsArgs
-  taskAssignments?: boolean | SubjectCountOutputTypeCountTaskAssignmentsArgs
-  marksheetConfigs?: boolean | SubjectCountOutputTypeCountMarksheetConfigsArgs
-  marksheetColumns?: boolean | SubjectCountOutputTypeCountMarksheetColumnsArgs
-  campusFeedPosts?: boolean | SubjectCountOutputTypeCountCampusFeedPostsArgs
 }
 
 /**
@@ -1907,6 +1907,13 @@ export type SubjectCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
    * Select specific fields to fetch from the SubjectCountOutputType
    */
   select?: Prisma.SubjectCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * SubjectCountOutputType without action
+ */
+export type SubjectCountOutputTypeCountCampusFeedPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CampusFeedPostWhereInput
 }
 
 /**
@@ -1926,8 +1933,22 @@ export type SubjectCountOutputTypeCountDivisionSubjectsArgs<ExtArgs extends runt
 /**
  * SubjectCountOutputType without action
  */
-export type SubjectCountOutputTypeCountTaskQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskQuestionWhereInput
+export type SubjectCountOutputTypeCountMarksheetColumnsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MarksheetExamColumnWhereInput
+}
+
+/**
+ * SubjectCountOutputType without action
+ */
+export type SubjectCountOutputTypeCountMarksheetConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MarksheetSubjectConfigWhereInput
+}
+
+/**
+ * SubjectCountOutputType without action
+ */
+export type SubjectCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssignmentWhereInput
 }
 
 /**
@@ -1947,42 +1968,20 @@ export type SubjectCountOutputTypeCountTaskModulesArgs<ExtArgs extends runtime.T
 /**
  * SubjectCountOutputType without action
  */
+export type SubjectCountOutputTypeCountTaskQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskQuestionWhereInput
+}
+
+/**
+ * SubjectCountOutputType without action
+ */
 export type SubjectCountOutputTypeCountTaskTestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TaskTestWhereInput
-}
-
-/**
- * SubjectCountOutputType without action
- */
-export type SubjectCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskAssignmentWhereInput
-}
-
-/**
- * SubjectCountOutputType without action
- */
-export type SubjectCountOutputTypeCountMarksheetConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MarksheetSubjectConfigWhereInput
-}
-
-/**
- * SubjectCountOutputType without action
- */
-export type SubjectCountOutputTypeCountMarksheetColumnsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MarksheetExamColumnWhereInput
-}
-
-/**
- * SubjectCountOutputType without action
- */
-export type SubjectCountOutputTypeCountCampusFeedPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CampusFeedPostWhereInput
 }
 
 
 export type SubjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  standardId?: boolean
   institutionId?: boolean
   name?: boolean
   code?: boolean
@@ -1990,23 +1989,23 @@ export type SubjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
+  standardId?: boolean
+  campusFeedPosts?: boolean | Prisma.Subject$campusFeedPostsArgs<ExtArgs>
   assignments?: boolean | Prisma.Subject$assignmentsArgs<ExtArgs>
   divisionSubjects?: boolean | Prisma.Subject$divisionSubjectsArgs<ExtArgs>
-  taskQuestions?: boolean | Prisma.Subject$taskQuestionsArgs<ExtArgs>
+  marksheetColumns?: boolean | Prisma.Subject$marksheetColumnsArgs<ExtArgs>
+  marksheetConfigs?: boolean | Prisma.Subject$marksheetConfigsArgs<ExtArgs>
+  standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.Subject$taskAssignmentsArgs<ExtArgs>
   taskContainers?: boolean | Prisma.Subject$taskContainersArgs<ExtArgs>
   taskModules?: boolean | Prisma.Subject$taskModulesArgs<ExtArgs>
+  taskQuestions?: boolean | Prisma.Subject$taskQuestionsArgs<ExtArgs>
   taskTests?: boolean | Prisma.Subject$taskTestsArgs<ExtArgs>
-  taskAssignments?: boolean | Prisma.Subject$taskAssignmentsArgs<ExtArgs>
-  marksheetConfigs?: boolean | Prisma.Subject$marksheetConfigsArgs<ExtArgs>
-  marksheetColumns?: boolean | Prisma.Subject$marksheetColumnsArgs<ExtArgs>
-  campusFeedPosts?: boolean | Prisma.Subject$campusFeedPostsArgs<ExtArgs>
   _count?: boolean | Prisma.SubjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["subject"]>
 
 export type SubjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  standardId?: boolean
   institutionId?: boolean
   name?: boolean
   code?: boolean
@@ -2014,12 +2013,12 @@ export type SubjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  standardId?: boolean
   standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["subject"]>
 
 export type SubjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  standardId?: boolean
   institutionId?: boolean
   name?: boolean
   code?: boolean
@@ -2027,12 +2026,12 @@ export type SubjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  standardId?: boolean
   standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["subject"]>
 
 export type SubjectSelectScalar = {
   id?: boolean
-  standardId?: boolean
   institutionId?: boolean
   name?: boolean
   code?: boolean
@@ -2040,21 +2039,22 @@ export type SubjectSelectScalar = {
   order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  standardId?: boolean
 }
 
-export type SubjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "standardId" | "institutionId" | "name" | "code" | "color" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["subject"]>
+export type SubjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "code" | "color" | "order" | "createdAt" | "updatedAt" | "standardId", ExtArgs["result"]["subject"]>
 export type SubjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
+  campusFeedPosts?: boolean | Prisma.Subject$campusFeedPostsArgs<ExtArgs>
   assignments?: boolean | Prisma.Subject$assignmentsArgs<ExtArgs>
   divisionSubjects?: boolean | Prisma.Subject$divisionSubjectsArgs<ExtArgs>
-  taskQuestions?: boolean | Prisma.Subject$taskQuestionsArgs<ExtArgs>
+  marksheetColumns?: boolean | Prisma.Subject$marksheetColumnsArgs<ExtArgs>
+  marksheetConfigs?: boolean | Prisma.Subject$marksheetConfigsArgs<ExtArgs>
+  standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.Subject$taskAssignmentsArgs<ExtArgs>
   taskContainers?: boolean | Prisma.Subject$taskContainersArgs<ExtArgs>
   taskModules?: boolean | Prisma.Subject$taskModulesArgs<ExtArgs>
+  taskQuestions?: boolean | Prisma.Subject$taskQuestionsArgs<ExtArgs>
   taskTests?: boolean | Prisma.Subject$taskTestsArgs<ExtArgs>
-  taskAssignments?: boolean | Prisma.Subject$taskAssignmentsArgs<ExtArgs>
-  marksheetConfigs?: boolean | Prisma.Subject$marksheetConfigsArgs<ExtArgs>
-  marksheetColumns?: boolean | Prisma.Subject$marksheetColumnsArgs<ExtArgs>
-  campusFeedPosts?: boolean | Prisma.Subject$campusFeedPostsArgs<ExtArgs>
   _count?: boolean | Prisma.SubjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SubjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2067,21 +2067,20 @@ export type SubjectIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $SubjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Subject"
   objects: {
-    standard: Prisma.$StandardPayload<ExtArgs>
+    campusFeedPosts: Prisma.$CampusFeedPostPayload<ExtArgs>[]
     assignments: Prisma.$DivisionAssignmentPayload<ExtArgs>[]
     divisionSubjects: Prisma.$DivisionSubjectPayload<ExtArgs>[]
-    taskQuestions: Prisma.$TaskQuestionPayload<ExtArgs>[]
+    marksheetColumns: Prisma.$MarksheetExamColumnPayload<ExtArgs>[]
+    marksheetConfigs: Prisma.$MarksheetSubjectConfigPayload<ExtArgs>[]
+    standard: Prisma.$StandardPayload<ExtArgs>
+    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
     taskContainers: Prisma.$TaskContainerPayload<ExtArgs>[]
     taskModules: Prisma.$TaskModulePayload<ExtArgs>[]
+    taskQuestions: Prisma.$TaskQuestionPayload<ExtArgs>[]
     taskTests: Prisma.$TaskTestPayload<ExtArgs>[]
-    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
-    marksheetConfigs: Prisma.$MarksheetSubjectConfigPayload<ExtArgs>[]
-    marksheetColumns: Prisma.$MarksheetExamColumnPayload<ExtArgs>[]
-    campusFeedPosts: Prisma.$CampusFeedPostPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    standardId: string
     institutionId: string
     name: string
     code: string | null
@@ -2089,6 +2088,7 @@ export type $SubjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     order: number
     createdAt: Date
     updatedAt: Date
+    standardId: string
   }, ExtArgs["result"]["subject"]>
   composites: {}
 }
@@ -2483,17 +2483,17 @@ readonly fields: SubjectFieldRefs;
  */
 export interface Prisma__SubjectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  standard<T extends Prisma.StandardDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StandardDefaultArgs<ExtArgs>>): Prisma.Prisma__StandardClient<runtime.Types.Result.GetResult<Prisma.$StandardPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  campusFeedPosts<T extends Prisma.Subject$campusFeedPostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$campusFeedPostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CampusFeedPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignments<T extends Prisma.Subject$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   divisionSubjects<T extends Prisma.Subject$divisionSubjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$divisionSubjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionSubjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  taskQuestions<T extends Prisma.Subject$taskQuestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskQuestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  marksheetColumns<T extends Prisma.Subject$marksheetColumnsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$marksheetColumnsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetExamColumnPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  marksheetConfigs<T extends Prisma.Subject$marksheetConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$marksheetConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetSubjectConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  standard<T extends Prisma.StandardDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StandardDefaultArgs<ExtArgs>>): Prisma.Prisma__StandardClient<runtime.Types.Result.GetResult<Prisma.$StandardPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  taskAssignments<T extends Prisma.Subject$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskContainers<T extends Prisma.Subject$taskContainersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskContainersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskContainerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskModules<T extends Prisma.Subject$taskModulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskModulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskQuestions<T extends Prisma.Subject$taskQuestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskQuestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskTests<T extends Prisma.Subject$taskTestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskTestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  taskAssignments<T extends Prisma.Subject$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  marksheetConfigs<T extends Prisma.Subject$marksheetConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$marksheetConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetSubjectConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  marksheetColumns<T extends Prisma.Subject$marksheetColumnsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$marksheetColumnsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetExamColumnPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  campusFeedPosts<T extends Prisma.Subject$campusFeedPostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$campusFeedPostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CampusFeedPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2524,7 +2524,6 @@ export interface Prisma__SubjectClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface SubjectFieldRefs {
   readonly id: Prisma.FieldRef<"Subject", 'String'>
-  readonly standardId: Prisma.FieldRef<"Subject", 'String'>
   readonly institutionId: Prisma.FieldRef<"Subject", 'String'>
   readonly name: Prisma.FieldRef<"Subject", 'String'>
   readonly code: Prisma.FieldRef<"Subject", 'String'>
@@ -2532,6 +2531,7 @@ export interface SubjectFieldRefs {
   readonly order: Prisma.FieldRef<"Subject", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Subject", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Subject", 'DateTime'>
+  readonly standardId: Prisma.FieldRef<"Subject", 'String'>
 }
     
 
@@ -2933,6 +2933,30 @@ export type SubjectDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * Subject.campusFeedPosts
+ */
+export type Subject$campusFeedPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CampusFeedPost
+   */
+  select?: Prisma.CampusFeedPostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CampusFeedPost
+   */
+  omit?: Prisma.CampusFeedPostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CampusFeedPostInclude<ExtArgs> | null
+  where?: Prisma.CampusFeedPostWhereInput
+  orderBy?: Prisma.CampusFeedPostOrderByWithRelationInput | Prisma.CampusFeedPostOrderByWithRelationInput[]
+  cursor?: Prisma.CampusFeedPostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CampusFeedPostScalarFieldEnum | Prisma.CampusFeedPostScalarFieldEnum[]
+}
+
+/**
  * Subject.assignments
  */
 export type Subject$assignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2981,27 +3005,75 @@ export type Subject$divisionSubjectsArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
- * Subject.taskQuestions
+ * Subject.marksheetColumns
  */
-export type Subject$taskQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Subject$marksheetColumnsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the TaskQuestion
+   * Select specific fields to fetch from the MarksheetExamColumn
    */
-  select?: Prisma.TaskQuestionSelect<ExtArgs> | null
+  select?: Prisma.MarksheetExamColumnSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the TaskQuestion
+   * Omit specific fields from the MarksheetExamColumn
    */
-  omit?: Prisma.TaskQuestionOmit<ExtArgs> | null
+  omit?: Prisma.MarksheetExamColumnOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TaskQuestionInclude<ExtArgs> | null
-  where?: Prisma.TaskQuestionWhereInput
-  orderBy?: Prisma.TaskQuestionOrderByWithRelationInput | Prisma.TaskQuestionOrderByWithRelationInput[]
-  cursor?: Prisma.TaskQuestionWhereUniqueInput
+  include?: Prisma.MarksheetExamColumnInclude<ExtArgs> | null
+  where?: Prisma.MarksheetExamColumnWhereInput
+  orderBy?: Prisma.MarksheetExamColumnOrderByWithRelationInput | Prisma.MarksheetExamColumnOrderByWithRelationInput[]
+  cursor?: Prisma.MarksheetExamColumnWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.TaskQuestionScalarFieldEnum | Prisma.TaskQuestionScalarFieldEnum[]
+  distinct?: Prisma.MarksheetExamColumnScalarFieldEnum | Prisma.MarksheetExamColumnScalarFieldEnum[]
+}
+
+/**
+ * Subject.marksheetConfigs
+ */
+export type Subject$marksheetConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MarksheetSubjectConfig
+   */
+  select?: Prisma.MarksheetSubjectConfigSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MarksheetSubjectConfig
+   */
+  omit?: Prisma.MarksheetSubjectConfigOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MarksheetSubjectConfigInclude<ExtArgs> | null
+  where?: Prisma.MarksheetSubjectConfigWhereInput
+  orderBy?: Prisma.MarksheetSubjectConfigOrderByWithRelationInput | Prisma.MarksheetSubjectConfigOrderByWithRelationInput[]
+  cursor?: Prisma.MarksheetSubjectConfigWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MarksheetSubjectConfigScalarFieldEnum | Prisma.MarksheetSubjectConfigScalarFieldEnum[]
+}
+
+/**
+ * Subject.taskAssignments
+ */
+export type Subject$taskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskAssignment
+   */
+  select?: Prisma.TaskAssignmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskAssignment
+   */
+  omit?: Prisma.TaskAssignmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskAssignmentInclude<ExtArgs> | null
+  where?: Prisma.TaskAssignmentWhereInput
+  orderBy?: Prisma.TaskAssignmentOrderByWithRelationInput | Prisma.TaskAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssignmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[]
 }
 
 /**
@@ -3053,6 +3125,30 @@ export type Subject$taskModulesArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
+ * Subject.taskQuestions
+ */
+export type Subject$taskQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskQuestion
+   */
+  select?: Prisma.TaskQuestionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskQuestion
+   */
+  omit?: Prisma.TaskQuestionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskQuestionInclude<ExtArgs> | null
+  where?: Prisma.TaskQuestionWhereInput
+  orderBy?: Prisma.TaskQuestionOrderByWithRelationInput | Prisma.TaskQuestionOrderByWithRelationInput[]
+  cursor?: Prisma.TaskQuestionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskQuestionScalarFieldEnum | Prisma.TaskQuestionScalarFieldEnum[]
+}
+
+/**
  * Subject.taskTests
  */
 export type Subject$taskTestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3074,102 +3170,6 @@ export type Subject$taskTestsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.TaskTestScalarFieldEnum | Prisma.TaskTestScalarFieldEnum[]
-}
-
-/**
- * Subject.taskAssignments
- */
-export type Subject$taskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TaskAssignment
-   */
-  select?: Prisma.TaskAssignmentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TaskAssignment
-   */
-  omit?: Prisma.TaskAssignmentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskAssignmentInclude<ExtArgs> | null
-  where?: Prisma.TaskAssignmentWhereInput
-  orderBy?: Prisma.TaskAssignmentOrderByWithRelationInput | Prisma.TaskAssignmentOrderByWithRelationInput[]
-  cursor?: Prisma.TaskAssignmentWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[]
-}
-
-/**
- * Subject.marksheetConfigs
- */
-export type Subject$marksheetConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MarksheetSubjectConfig
-   */
-  select?: Prisma.MarksheetSubjectConfigSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MarksheetSubjectConfig
-   */
-  omit?: Prisma.MarksheetSubjectConfigOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MarksheetSubjectConfigInclude<ExtArgs> | null
-  where?: Prisma.MarksheetSubjectConfigWhereInput
-  orderBy?: Prisma.MarksheetSubjectConfigOrderByWithRelationInput | Prisma.MarksheetSubjectConfigOrderByWithRelationInput[]
-  cursor?: Prisma.MarksheetSubjectConfigWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MarksheetSubjectConfigScalarFieldEnum | Prisma.MarksheetSubjectConfigScalarFieldEnum[]
-}
-
-/**
- * Subject.marksheetColumns
- */
-export type Subject$marksheetColumnsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MarksheetExamColumn
-   */
-  select?: Prisma.MarksheetExamColumnSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MarksheetExamColumn
-   */
-  omit?: Prisma.MarksheetExamColumnOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MarksheetExamColumnInclude<ExtArgs> | null
-  where?: Prisma.MarksheetExamColumnWhereInput
-  orderBy?: Prisma.MarksheetExamColumnOrderByWithRelationInput | Prisma.MarksheetExamColumnOrderByWithRelationInput[]
-  cursor?: Prisma.MarksheetExamColumnWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MarksheetExamColumnScalarFieldEnum | Prisma.MarksheetExamColumnScalarFieldEnum[]
-}
-
-/**
- * Subject.campusFeedPosts
- */
-export type Subject$campusFeedPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the CampusFeedPost
-   */
-  select?: Prisma.CampusFeedPostSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the CampusFeedPost
-   */
-  omit?: Prisma.CampusFeedPostOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.CampusFeedPostInclude<ExtArgs> | null
-  where?: Prisma.CampusFeedPostWhereInput
-  orderBy?: Prisma.CampusFeedPostOrderByWithRelationInput | Prisma.CampusFeedPostOrderByWithRelationInput[]
-  cursor?: Prisma.CampusFeedPostWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.CampusFeedPostScalarFieldEnum | Prisma.CampusFeedPostScalarFieldEnum[]
 }
 
 /**

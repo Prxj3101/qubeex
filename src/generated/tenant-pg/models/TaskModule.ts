@@ -41,9 +41,9 @@ export type TaskModuleMinAggregateOutputType = {
   subjectId: string | null
   name: string | null
   description: string | null
-  order: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  order: number | null
 }
 
 export type TaskModuleMaxAggregateOutputType = {
@@ -53,9 +53,9 @@ export type TaskModuleMaxAggregateOutputType = {
   subjectId: string | null
   name: string | null
   description: string | null
-  order: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  order: number | null
 }
 
 export type TaskModuleCountAggregateOutputType = {
@@ -65,9 +65,9 @@ export type TaskModuleCountAggregateOutputType = {
   subjectId: number
   name: number
   description: number
-  order: number
   createdAt: number
   updatedAt: number
+  order: number
   _all: number
 }
 
@@ -87,9 +87,9 @@ export type TaskModuleMinAggregateInputType = {
   subjectId?: true
   name?: true
   description?: true
-  order?: true
   createdAt?: true
   updatedAt?: true
+  order?: true
 }
 
 export type TaskModuleMaxAggregateInputType = {
@@ -99,9 +99,9 @@ export type TaskModuleMaxAggregateInputType = {
   subjectId?: true
   name?: true
   description?: true
-  order?: true
   createdAt?: true
   updatedAt?: true
+  order?: true
 }
 
 export type TaskModuleCountAggregateInputType = {
@@ -111,9 +111,9 @@ export type TaskModuleCountAggregateInputType = {
   subjectId?: true
   name?: true
   description?: true
-  order?: true
   createdAt?: true
   updatedAt?: true
+  order?: true
   _all?: true
 }
 
@@ -210,9 +210,9 @@ export type TaskModuleGroupByOutputType = {
   subjectId: string
   name: string
   description: string | null
-  order: number
   createdAt: Date
   updatedAt: Date
+  order: number
   _count: TaskModuleCountAggregateOutputType | null
   _avg: TaskModuleAvgAggregateOutputType | null
   _sum: TaskModuleSumAggregateOutputType | null
@@ -245,11 +245,11 @@ export type TaskModuleWhereInput = {
   subjectId?: Prisma.StringFilter<"TaskModule"> | string
   name?: Prisma.StringFilter<"TaskModule"> | string
   description?: Prisma.StringNullableFilter<"TaskModule"> | string | null
-  order?: Prisma.IntFilter<"TaskModule"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskModule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskModule"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
+  order?: Prisma.IntFilter<"TaskModule"> | number
   subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   questions?: Prisma.TaskModuleQuestionListRelationFilter
 }
 
@@ -260,11 +260,11 @@ export type TaskModuleOrderByWithRelationInput = {
   subjectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  teacher?: Prisma.TeacherOrderByWithRelationInput
+  order?: Prisma.SortOrder
   subject?: Prisma.SubjectOrderByWithRelationInput
+  teacher?: Prisma.TeacherOrderByWithRelationInput
   questions?: Prisma.TaskModuleQuestionOrderByRelationAggregateInput
 }
 
@@ -278,11 +278,11 @@ export type TaskModuleWhereUniqueInput = Prisma.AtLeast<{
   subjectId?: Prisma.StringFilter<"TaskModule"> | string
   name?: Prisma.StringFilter<"TaskModule"> | string
   description?: Prisma.StringNullableFilter<"TaskModule"> | string | null
-  order?: Prisma.IntFilter<"TaskModule"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskModule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskModule"> | Date | string
-  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
+  order?: Prisma.IntFilter<"TaskModule"> | number
   subject?: Prisma.XOR<Prisma.SubjectScalarRelationFilter, Prisma.SubjectWhereInput>
+  teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   questions?: Prisma.TaskModuleQuestionListRelationFilter
 }, "id">
 
@@ -293,9 +293,9 @@ export type TaskModuleOrderByWithAggregationInput = {
   subjectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   _count?: Prisma.TaskModuleCountOrderByAggregateInput
   _avg?: Prisma.TaskModuleAvgOrderByAggregateInput
   _max?: Prisma.TaskModuleMaxOrderByAggregateInput
@@ -313,9 +313,9 @@ export type TaskModuleScalarWhereWithAggregatesInput = {
   subjectId?: Prisma.StringWithAggregatesFilter<"TaskModule"> | string
   name?: Prisma.StringWithAggregatesFilter<"TaskModule"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"TaskModule"> | string | null
-  order?: Prisma.IntWithAggregatesFilter<"TaskModule"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskModule"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskModule"> | Date | string
+  order?: Prisma.IntWithAggregatesFilter<"TaskModule"> | number
 }
 
 export type TaskModuleCreateInput = {
@@ -323,11 +323,11 @@ export type TaskModuleCreateInput = {
   institutionId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskModulesInput
+  order?: number
   subject: Prisma.SubjectCreateNestedOneWithoutTaskModulesInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskModulesInput
   questions?: Prisma.TaskModuleQuestionCreateNestedManyWithoutModuleInput
 }
 
@@ -338,9 +338,9 @@ export type TaskModuleUncheckedCreateInput = {
   subjectId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
   questions?: Prisma.TaskModuleQuestionUncheckedCreateNestedManyWithoutModuleInput
 }
 
@@ -349,11 +349,11 @@ export type TaskModuleUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskModulesNestedInput
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskModulesNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskModulesNestedInput
   questions?: Prisma.TaskModuleQuestionUpdateManyWithoutModuleNestedInput
 }
 
@@ -364,9 +364,9 @@ export type TaskModuleUncheckedUpdateInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   questions?: Prisma.TaskModuleQuestionUncheckedUpdateManyWithoutModuleNestedInput
 }
 
@@ -377,9 +377,9 @@ export type TaskModuleCreateManyInput = {
   subjectId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleUpdateManyMutationInput = {
@@ -387,9 +387,9 @@ export type TaskModuleUpdateManyMutationInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleUncheckedUpdateManyInput = {
@@ -399,9 +399,9 @@ export type TaskModuleUncheckedUpdateManyInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleListRelationFilter = {
@@ -421,9 +421,9 @@ export type TaskModuleCountOrderByAggregateInput = {
   subjectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskModuleAvgOrderByAggregateInput = {
@@ -437,9 +437,9 @@ export type TaskModuleMaxOrderByAggregateInput = {
   subjectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskModuleMinOrderByAggregateInput = {
@@ -449,9 +449,9 @@ export type TaskModuleMinOrderByAggregateInput = {
   subjectId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskModuleSumOrderByAggregateInput = {
@@ -566,9 +566,9 @@ export type TaskModuleCreateWithoutTeacherInput = {
   institutionId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
   subject: Prisma.SubjectCreateNestedOneWithoutTaskModulesInput
   questions?: Prisma.TaskModuleQuestionCreateNestedManyWithoutModuleInput
 }
@@ -579,9 +579,9 @@ export type TaskModuleUncheckedCreateWithoutTeacherInput = {
   subjectId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
   questions?: Prisma.TaskModuleQuestionUncheckedCreateNestedManyWithoutModuleInput
 }
 
@@ -621,9 +621,9 @@ export type TaskModuleScalarWhereInput = {
   subjectId?: Prisma.StringFilter<"TaskModule"> | string
   name?: Prisma.StringFilter<"TaskModule"> | string
   description?: Prisma.StringNullableFilter<"TaskModule"> | string | null
-  order?: Prisma.IntFilter<"TaskModule"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskModule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskModule"> | Date | string
+  order?: Prisma.IntFilter<"TaskModule"> | number
 }
 
 export type TaskModuleCreateWithoutSubjectInput = {
@@ -631,9 +631,9 @@ export type TaskModuleCreateWithoutSubjectInput = {
   institutionId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
   teacher: Prisma.TeacherCreateNestedOneWithoutTaskModulesInput
   questions?: Prisma.TaskModuleQuestionCreateNestedManyWithoutModuleInput
 }
@@ -644,9 +644,9 @@ export type TaskModuleUncheckedCreateWithoutSubjectInput = {
   teacherId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
   questions?: Prisma.TaskModuleQuestionUncheckedCreateNestedManyWithoutModuleInput
 }
 
@@ -681,11 +681,11 @@ export type TaskModuleCreateWithoutQuestionsInput = {
   institutionId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  teacher: Prisma.TeacherCreateNestedOneWithoutTaskModulesInput
+  order?: number
   subject: Prisma.SubjectCreateNestedOneWithoutTaskModulesInput
+  teacher: Prisma.TeacherCreateNestedOneWithoutTaskModulesInput
 }
 
 export type TaskModuleUncheckedCreateWithoutQuestionsInput = {
@@ -695,9 +695,9 @@ export type TaskModuleUncheckedCreateWithoutQuestionsInput = {
   subjectId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleCreateOrConnectWithoutQuestionsInput = {
@@ -721,11 +721,11 @@ export type TaskModuleUpdateWithoutQuestionsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskModulesNestedInput
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskModulesNestedInput
+  teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskModulesNestedInput
 }
 
 export type TaskModuleUncheckedUpdateWithoutQuestionsInput = {
@@ -735,9 +735,9 @@ export type TaskModuleUncheckedUpdateWithoutQuestionsInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleCreateManyTeacherInput = {
@@ -746,9 +746,9 @@ export type TaskModuleCreateManyTeacherInput = {
   subjectId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleUpdateWithoutTeacherInput = {
@@ -756,9 +756,9 @@ export type TaskModuleUpdateWithoutTeacherInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   subject?: Prisma.SubjectUpdateOneRequiredWithoutTaskModulesNestedInput
   questions?: Prisma.TaskModuleQuestionUpdateManyWithoutModuleNestedInput
 }
@@ -769,9 +769,9 @@ export type TaskModuleUncheckedUpdateWithoutTeacherInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   questions?: Prisma.TaskModuleQuestionUncheckedUpdateManyWithoutModuleNestedInput
 }
 
@@ -781,9 +781,9 @@ export type TaskModuleUncheckedUpdateManyWithoutTeacherInput = {
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleCreateManySubjectInput = {
@@ -792,9 +792,9 @@ export type TaskModuleCreateManySubjectInput = {
   teacherId: string
   name: string
   description?: string | null
-  order?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleUpdateWithoutSubjectInput = {
@@ -802,9 +802,9 @@ export type TaskModuleUpdateWithoutSubjectInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutTaskModulesNestedInput
   questions?: Prisma.TaskModuleQuestionUpdateManyWithoutModuleNestedInput
 }
@@ -815,9 +815,9 @@ export type TaskModuleUncheckedUpdateWithoutSubjectInput = {
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   questions?: Prisma.TaskModuleQuestionUncheckedUpdateManyWithoutModuleNestedInput
 }
 
@@ -827,9 +827,9 @@ export type TaskModuleUncheckedUpdateManyWithoutSubjectInput = {
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -870,11 +870,11 @@ export type TaskModuleSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   subjectId?: boolean
   name?: boolean
   description?: boolean
-  order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
+  order?: boolean
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   questions?: boolean | Prisma.TaskModule$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskModuleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskModule"]>
@@ -886,11 +886,11 @@ export type TaskModuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   subjectId?: boolean
   name?: boolean
   description?: boolean
-  order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
+  order?: boolean
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskModule"]>
 
 export type TaskModuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -900,11 +900,11 @@ export type TaskModuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   subjectId?: boolean
   name?: boolean
   description?: boolean
-  order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
+  order?: boolean
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskModule"]>
 
 export type TaskModuleSelectScalar = {
@@ -914,32 +914,32 @@ export type TaskModuleSelectScalar = {
   subjectId?: boolean
   name?: boolean
   description?: boolean
-  order?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  order?: boolean
 }
 
-export type TaskModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "name" | "description" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["taskModule"]>
+export type TaskModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "teacherId" | "subjectId" | "name" | "description" | "createdAt" | "updatedAt" | "order", ExtArgs["result"]["taskModule"]>
 export type TaskModuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   questions?: boolean | Prisma.TaskModule$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskModuleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskModuleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 export type TaskModuleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
+  teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
 }
 
 export type $TaskModulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskModule"
   objects: {
-    teacher: Prisma.$TeacherPayload<ExtArgs>
     subject: Prisma.$SubjectPayload<ExtArgs>
+    teacher: Prisma.$TeacherPayload<ExtArgs>
     questions: Prisma.$TaskModuleQuestionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -949,9 +949,9 @@ export type $TaskModulePayload<ExtArgs extends runtime.Types.Extensions.Internal
     subjectId: string
     name: string
     description: string | null
-    order: number
     createdAt: Date
     updatedAt: Date
+    order: number
   }, ExtArgs["result"]["taskModule"]>
   composites: {}
 }
@@ -1346,8 +1346,8 @@ readonly fields: TaskModuleFieldRefs;
  */
 export interface Prisma__TaskModuleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   subject<T extends Prisma.SubjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubjectDefaultArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   questions<T extends Prisma.TaskModule$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskModule$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskModuleQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1384,9 +1384,9 @@ export interface TaskModuleFieldRefs {
   readonly subjectId: Prisma.FieldRef<"TaskModule", 'String'>
   readonly name: Prisma.FieldRef<"TaskModule", 'String'>
   readonly description: Prisma.FieldRef<"TaskModule", 'String'>
-  readonly order: Prisma.FieldRef<"TaskModule", 'Int'>
   readonly createdAt: Prisma.FieldRef<"TaskModule", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaskModule", 'DateTime'>
+  readonly order: Prisma.FieldRef<"TaskModule", 'Int'>
 }
     
 

@@ -54,8 +54,8 @@ export type TaskTestAttemptMinAggregateOutputType = {
   status: string | null
   tabChangeCount: number | null
   malpracticeFlag: boolean | null
-  activeClientId: string | null
   activeClientAt: Date | null
+  activeClientId: string | null
 }
 
 export type TaskTestAttemptMaxAggregateOutputType = {
@@ -72,8 +72,8 @@ export type TaskTestAttemptMaxAggregateOutputType = {
   status: string | null
   tabChangeCount: number | null
   malpracticeFlag: boolean | null
-  activeClientId: string | null
   activeClientAt: Date | null
+  activeClientId: string | null
 }
 
 export type TaskTestAttemptCountAggregateOutputType = {
@@ -90,8 +90,8 @@ export type TaskTestAttemptCountAggregateOutputType = {
   status: number
   tabChangeCount: number
   malpracticeFlag: number
-  activeClientId: number
   activeClientAt: number
+  activeClientId: number
   _all: number
 }
 
@@ -124,8 +124,8 @@ export type TaskTestAttemptMinAggregateInputType = {
   status?: true
   tabChangeCount?: true
   malpracticeFlag?: true
-  activeClientId?: true
   activeClientAt?: true
+  activeClientId?: true
 }
 
 export type TaskTestAttemptMaxAggregateInputType = {
@@ -142,8 +142,8 @@ export type TaskTestAttemptMaxAggregateInputType = {
   status?: true
   tabChangeCount?: true
   malpracticeFlag?: true
-  activeClientId?: true
   activeClientAt?: true
+  activeClientId?: true
 }
 
 export type TaskTestAttemptCountAggregateInputType = {
@@ -160,8 +160,8 @@ export type TaskTestAttemptCountAggregateInputType = {
   status?: true
   tabChangeCount?: true
   malpracticeFlag?: true
-  activeClientId?: true
   activeClientAt?: true
+  activeClientId?: true
   _all?: true
 }
 
@@ -265,8 +265,8 @@ export type TaskTestAttemptGroupByOutputType = {
   status: string
   tabChangeCount: number
   malpracticeFlag: boolean
-  activeClientId: string | null
   activeClientAt: Date | null
+  activeClientId: string | null
   _count: TaskTestAttemptCountAggregateOutputType | null
   _avg: TaskTestAttemptAvgAggregateOutputType | null
   _sum: TaskTestAttemptSumAggregateOutputType | null
@@ -306,11 +306,11 @@ export type TaskTestAttemptWhereInput = {
   status?: Prisma.StringFilter<"TaskTestAttempt"> | string
   tabChangeCount?: Prisma.IntFilter<"TaskTestAttempt"> | number
   malpracticeFlag?: Prisma.BoolFilter<"TaskTestAttempt"> | boolean
-  activeClientId?: Prisma.StringNullableFilter<"TaskTestAttempt"> | string | null
   activeClientAt?: Prisma.DateTimeNullableFilter<"TaskTestAttempt"> | Date | string | null
-  test?: Prisma.XOR<Prisma.TaskTestScalarRelationFilter, Prisma.TaskTestWhereInput>
-  student?: Prisma.XOR<Prisma.StudentNullableScalarRelationFilter, Prisma.StudentWhereInput> | null
+  activeClientId?: Prisma.StringNullableFilter<"TaskTestAttempt"> | string | null
   answers?: Prisma.TaskStudentAnswerListRelationFilter
+  student?: Prisma.XOR<Prisma.StudentNullableScalarRelationFilter, Prisma.StudentWhereInput> | null
+  test?: Prisma.XOR<Prisma.TaskTestScalarRelationFilter, Prisma.TaskTestWhereInput>
 }
 
 export type TaskTestAttemptOrderByWithRelationInput = {
@@ -327,11 +327,11 @@ export type TaskTestAttemptOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   tabChangeCount?: Prisma.SortOrder
   malpracticeFlag?: Prisma.SortOrder
-  activeClientId?: Prisma.SortOrderInput | Prisma.SortOrder
   activeClientAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  test?: Prisma.TaskTestOrderByWithRelationInput
-  student?: Prisma.StudentOrderByWithRelationInput
+  activeClientId?: Prisma.SortOrderInput | Prisma.SortOrder
   answers?: Prisma.TaskStudentAnswerOrderByRelationAggregateInput
+  student?: Prisma.StudentOrderByWithRelationInput
+  test?: Prisma.TaskTestOrderByWithRelationInput
 }
 
 export type TaskTestAttemptWhereUniqueInput = Prisma.AtLeast<{
@@ -351,11 +351,11 @@ export type TaskTestAttemptWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"TaskTestAttempt"> | string
   tabChangeCount?: Prisma.IntFilter<"TaskTestAttempt"> | number
   malpracticeFlag?: Prisma.BoolFilter<"TaskTestAttempt"> | boolean
-  activeClientId?: Prisma.StringNullableFilter<"TaskTestAttempt"> | string | null
   activeClientAt?: Prisma.DateTimeNullableFilter<"TaskTestAttempt"> | Date | string | null
-  test?: Prisma.XOR<Prisma.TaskTestScalarRelationFilter, Prisma.TaskTestWhereInput>
-  student?: Prisma.XOR<Prisma.StudentNullableScalarRelationFilter, Prisma.StudentWhereInput> | null
+  activeClientId?: Prisma.StringNullableFilter<"TaskTestAttempt"> | string | null
   answers?: Prisma.TaskStudentAnswerListRelationFilter
+  student?: Prisma.XOR<Prisma.StudentNullableScalarRelationFilter, Prisma.StudentWhereInput> | null
+  test?: Prisma.XOR<Prisma.TaskTestScalarRelationFilter, Prisma.TaskTestWhereInput>
 }, "id">
 
 export type TaskTestAttemptOrderByWithAggregationInput = {
@@ -372,8 +372,8 @@ export type TaskTestAttemptOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   tabChangeCount?: Prisma.SortOrder
   malpracticeFlag?: Prisma.SortOrder
-  activeClientId?: Prisma.SortOrderInput | Prisma.SortOrder
   activeClientAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  activeClientId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TaskTestAttemptCountOrderByAggregateInput
   _avg?: Prisma.TaskTestAttemptAvgOrderByAggregateInput
   _max?: Prisma.TaskTestAttemptMaxOrderByAggregateInput
@@ -398,8 +398,8 @@ export type TaskTestAttemptScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"TaskTestAttempt"> | string
   tabChangeCount?: Prisma.IntWithAggregatesFilter<"TaskTestAttempt"> | number
   malpracticeFlag?: Prisma.BoolWithAggregatesFilter<"TaskTestAttempt"> | boolean
-  activeClientId?: Prisma.StringNullableWithAggregatesFilter<"TaskTestAttempt"> | string | null
   activeClientAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskTestAttempt"> | Date | string | null
+  activeClientId?: Prisma.StringNullableWithAggregatesFilter<"TaskTestAttempt"> | string | null
 }
 
 export type TaskTestAttemptCreateInput = {
@@ -414,11 +414,11 @@ export type TaskTestAttemptCreateInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
-  test: Prisma.TaskTestCreateNestedOneWithoutAttemptsInput
-  student?: Prisma.StudentCreateNestedOneWithoutTaskTestAttemptsInput
+  activeClientId?: string | null
   answers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutAttemptInput
+  student?: Prisma.StudentCreateNestedOneWithoutTaskTestAttemptsInput
+  test: Prisma.TaskTestCreateNestedOneWithoutAttemptsInput
 }
 
 export type TaskTestAttemptUncheckedCreateInput = {
@@ -435,8 +435,8 @@ export type TaskTestAttemptUncheckedCreateInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
+  activeClientId?: string | null
   answers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutAttemptInput
 }
 
@@ -452,11 +452,11 @@ export type TaskTestAttemptUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  test?: Prisma.TaskTestUpdateOneRequiredWithoutAttemptsNestedInput
-  student?: Prisma.StudentUpdateOneWithoutTaskTestAttemptsNestedInput
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.TaskStudentAnswerUpdateManyWithoutAttemptNestedInput
+  student?: Prisma.StudentUpdateOneWithoutTaskTestAttemptsNestedInput
+  test?: Prisma.TaskTestUpdateOneRequiredWithoutAttemptsNestedInput
 }
 
 export type TaskTestAttemptUncheckedUpdateInput = {
@@ -473,8 +473,8 @@ export type TaskTestAttemptUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutAttemptNestedInput
 }
 
@@ -492,8 +492,8 @@ export type TaskTestAttemptCreateManyInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
+  activeClientId?: string | null
 }
 
 export type TaskTestAttemptUpdateManyMutationInput = {
@@ -508,8 +508,8 @@ export type TaskTestAttemptUpdateManyMutationInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestAttemptUncheckedUpdateManyInput = {
@@ -526,8 +526,8 @@ export type TaskTestAttemptUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestAttemptListRelationFilter = {
@@ -554,8 +554,8 @@ export type TaskTestAttemptCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   tabChangeCount?: Prisma.SortOrder
   malpracticeFlag?: Prisma.SortOrder
-  activeClientId?: Prisma.SortOrder
   activeClientAt?: Prisma.SortOrder
+  activeClientId?: Prisma.SortOrder
 }
 
 export type TaskTestAttemptAvgOrderByAggregateInput = {
@@ -579,8 +579,8 @@ export type TaskTestAttemptMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   tabChangeCount?: Prisma.SortOrder
   malpracticeFlag?: Prisma.SortOrder
-  activeClientId?: Prisma.SortOrder
   activeClientAt?: Prisma.SortOrder
+  activeClientId?: Prisma.SortOrder
 }
 
 export type TaskTestAttemptMinOrderByAggregateInput = {
@@ -597,8 +597,8 @@ export type TaskTestAttemptMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   tabChangeCount?: Prisma.SortOrder
   malpracticeFlag?: Prisma.SortOrder
-  activeClientId?: Prisma.SortOrder
   activeClientAt?: Prisma.SortOrder
+  activeClientId?: Prisma.SortOrder
 }
 
 export type TaskTestAttemptSumOrderByAggregateInput = {
@@ -723,10 +723,10 @@ export type TaskTestAttemptCreateWithoutStudentInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
-  test: Prisma.TaskTestCreateNestedOneWithoutAttemptsInput
+  activeClientId?: string | null
   answers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutAttemptInput
+  test: Prisma.TaskTestCreateNestedOneWithoutAttemptsInput
 }
 
 export type TaskTestAttemptUncheckedCreateWithoutStudentInput = {
@@ -742,8 +742,8 @@ export type TaskTestAttemptUncheckedCreateWithoutStudentInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
+  activeClientId?: string | null
   answers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutAttemptInput
 }
 
@@ -790,8 +790,8 @@ export type TaskTestAttemptScalarWhereInput = {
   status?: Prisma.StringFilter<"TaskTestAttempt"> | string
   tabChangeCount?: Prisma.IntFilter<"TaskTestAttempt"> | number
   malpracticeFlag?: Prisma.BoolFilter<"TaskTestAttempt"> | boolean
-  activeClientId?: Prisma.StringNullableFilter<"TaskTestAttempt"> | string | null
   activeClientAt?: Prisma.DateTimeNullableFilter<"TaskTestAttempt"> | Date | string | null
+  activeClientId?: Prisma.StringNullableFilter<"TaskTestAttempt"> | string | null
 }
 
 export type TaskTestAttemptCreateWithoutTestInput = {
@@ -806,10 +806,10 @@ export type TaskTestAttemptCreateWithoutTestInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
-  student?: Prisma.StudentCreateNestedOneWithoutTaskTestAttemptsInput
+  activeClientId?: string | null
   answers?: Prisma.TaskStudentAnswerCreateNestedManyWithoutAttemptInput
+  student?: Prisma.StudentCreateNestedOneWithoutTaskTestAttemptsInput
 }
 
 export type TaskTestAttemptUncheckedCreateWithoutTestInput = {
@@ -825,8 +825,8 @@ export type TaskTestAttemptUncheckedCreateWithoutTestInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
+  activeClientId?: string | null
   answers?: Prisma.TaskStudentAnswerUncheckedCreateNestedManyWithoutAttemptInput
 }
 
@@ -868,10 +868,10 @@ export type TaskTestAttemptCreateWithoutAnswersInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
-  test: Prisma.TaskTestCreateNestedOneWithoutAttemptsInput
+  activeClientId?: string | null
   student?: Prisma.StudentCreateNestedOneWithoutTaskTestAttemptsInput
+  test: Prisma.TaskTestCreateNestedOneWithoutAttemptsInput
 }
 
 export type TaskTestAttemptUncheckedCreateWithoutAnswersInput = {
@@ -888,8 +888,8 @@ export type TaskTestAttemptUncheckedCreateWithoutAnswersInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
+  activeClientId?: string | null
 }
 
 export type TaskTestAttemptCreateOrConnectWithoutAnswersInput = {
@@ -920,10 +920,10 @@ export type TaskTestAttemptUpdateWithoutAnswersInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  test?: Prisma.TaskTestUpdateOneRequiredWithoutAttemptsNestedInput
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   student?: Prisma.StudentUpdateOneWithoutTaskTestAttemptsNestedInput
+  test?: Prisma.TaskTestUpdateOneRequiredWithoutAttemptsNestedInput
 }
 
 export type TaskTestAttemptUncheckedUpdateWithoutAnswersInput = {
@@ -940,8 +940,8 @@ export type TaskTestAttemptUncheckedUpdateWithoutAnswersInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestAttemptCreateManyStudentInput = {
@@ -957,8 +957,8 @@ export type TaskTestAttemptCreateManyStudentInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
+  activeClientId?: string | null
 }
 
 export type TaskTestAttemptUpdateWithoutStudentInput = {
@@ -973,10 +973,10 @@ export type TaskTestAttemptUpdateWithoutStudentInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  test?: Prisma.TaskTestUpdateOneRequiredWithoutAttemptsNestedInput
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.TaskStudentAnswerUpdateManyWithoutAttemptNestedInput
+  test?: Prisma.TaskTestUpdateOneRequiredWithoutAttemptsNestedInput
 }
 
 export type TaskTestAttemptUncheckedUpdateWithoutStudentInput = {
@@ -992,8 +992,8 @@ export type TaskTestAttemptUncheckedUpdateWithoutStudentInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutAttemptNestedInput
 }
 
@@ -1010,8 +1010,8 @@ export type TaskTestAttemptUncheckedUpdateManyWithoutStudentInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TaskTestAttemptCreateManyTestInput = {
@@ -1027,8 +1027,8 @@ export type TaskTestAttemptCreateManyTestInput = {
   status?: string
   tabChangeCount?: number
   malpracticeFlag?: boolean
-  activeClientId?: string | null
   activeClientAt?: Date | string | null
+  activeClientId?: string | null
 }
 
 export type TaskTestAttemptUpdateWithoutTestInput = {
@@ -1043,10 +1043,10 @@ export type TaskTestAttemptUpdateWithoutTestInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  student?: Prisma.StudentUpdateOneWithoutTaskTestAttemptsNestedInput
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.TaskStudentAnswerUpdateManyWithoutAttemptNestedInput
+  student?: Prisma.StudentUpdateOneWithoutTaskTestAttemptsNestedInput
 }
 
 export type TaskTestAttemptUncheckedUpdateWithoutTestInput = {
@@ -1062,8 +1062,8 @@ export type TaskTestAttemptUncheckedUpdateWithoutTestInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.TaskStudentAnswerUncheckedUpdateManyWithoutAttemptNestedInput
 }
 
@@ -1080,8 +1080,8 @@ export type TaskTestAttemptUncheckedUpdateManyWithoutTestInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   tabChangeCount?: Prisma.IntFieldUpdateOperationsInput | number
   malpracticeFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activeClientAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activeClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1129,11 +1129,11 @@ export type TaskTestAttemptSelect<ExtArgs extends runtime.Types.Extensions.Inter
   status?: boolean
   tabChangeCount?: boolean
   malpracticeFlag?: boolean
-  activeClientId?: boolean
   activeClientAt?: boolean
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
-  student?: boolean | Prisma.TaskTestAttempt$studentArgs<ExtArgs>
+  activeClientId?: boolean
   answers?: boolean | Prisma.TaskTestAttempt$answersArgs<ExtArgs>
+  student?: boolean | Prisma.TaskTestAttempt$studentArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.TaskTestAttemptCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTestAttempt"]>
 
@@ -1151,10 +1151,10 @@ export type TaskTestAttemptSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   status?: boolean
   tabChangeCount?: boolean
   malpracticeFlag?: boolean
-  activeClientId?: boolean
   activeClientAt?: boolean
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
+  activeClientId?: boolean
   student?: boolean | Prisma.TaskTestAttempt$studentArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTestAttempt"]>
 
 export type TaskTestAttemptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1171,10 +1171,10 @@ export type TaskTestAttemptSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   status?: boolean
   tabChangeCount?: boolean
   malpracticeFlag?: boolean
-  activeClientId?: boolean
   activeClientAt?: boolean
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
+  activeClientId?: boolean
   student?: boolean | Prisma.TaskTestAttempt$studentArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskTestAttempt"]>
 
 export type TaskTestAttemptSelectScalar = {
@@ -1191,32 +1191,32 @@ export type TaskTestAttemptSelectScalar = {
   status?: boolean
   tabChangeCount?: boolean
   malpracticeFlag?: boolean
-  activeClientId?: boolean
   activeClientAt?: boolean
+  activeClientId?: boolean
 }
 
-export type TaskTestAttemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "testId" | "studentId" | "studentName" | "rollNo" | "attemptNumber" | "startTime" | "endTime" | "totalScore" | "maxScore" | "status" | "tabChangeCount" | "malpracticeFlag" | "activeClientId" | "activeClientAt", ExtArgs["result"]["taskTestAttempt"]>
+export type TaskTestAttemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "testId" | "studentId" | "studentName" | "rollNo" | "attemptNumber" | "startTime" | "endTime" | "totalScore" | "maxScore" | "status" | "tabChangeCount" | "malpracticeFlag" | "activeClientAt" | "activeClientId", ExtArgs["result"]["taskTestAttempt"]>
 export type TaskTestAttemptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
-  student?: boolean | Prisma.TaskTestAttempt$studentArgs<ExtArgs>
   answers?: boolean | Prisma.TaskTestAttempt$answersArgs<ExtArgs>
+  student?: boolean | Prisma.TaskTestAttempt$studentArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.TaskTestAttemptCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskTestAttemptIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
   student?: boolean | Prisma.TaskTestAttempt$studentArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }
 export type TaskTestAttemptIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
   student?: boolean | Prisma.TaskTestAttempt$studentArgs<ExtArgs>
+  test?: boolean | Prisma.TaskTestDefaultArgs<ExtArgs>
 }
 
 export type $TaskTestAttemptPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskTestAttempt"
   objects: {
-    test: Prisma.$TaskTestPayload<ExtArgs>
-    student: Prisma.$StudentPayload<ExtArgs> | null
     answers: Prisma.$TaskStudentAnswerPayload<ExtArgs>[]
+    student: Prisma.$StudentPayload<ExtArgs> | null
+    test: Prisma.$TaskTestPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1232,8 +1232,8 @@ export type $TaskTestAttemptPayload<ExtArgs extends runtime.Types.Extensions.Int
     status: string
     tabChangeCount: number
     malpracticeFlag: boolean
-    activeClientId: string | null
     activeClientAt: Date | null
+    activeClientId: string | null
   }, ExtArgs["result"]["taskTestAttempt"]>
   composites: {}
 }
@@ -1628,9 +1628,9 @@ readonly fields: TaskTestAttemptFieldRefs;
  */
 export interface Prisma__TaskTestAttemptClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  test<T extends Prisma.TaskTestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTestDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskTestClient<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  student<T extends Prisma.TaskTestAttempt$studentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTestAttempt$studentArgs<ExtArgs>>): Prisma.Prisma__StudentClient<runtime.Types.Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   answers<T extends Prisma.TaskTestAttempt$answersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTestAttempt$answersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskStudentAnswerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  student<T extends Prisma.TaskTestAttempt$studentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTestAttempt$studentArgs<ExtArgs>>): Prisma.Prisma__StudentClient<runtime.Types.Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  test<T extends Prisma.TaskTestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskTestDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskTestClient<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1673,8 +1673,8 @@ export interface TaskTestAttemptFieldRefs {
   readonly status: Prisma.FieldRef<"TaskTestAttempt", 'String'>
   readonly tabChangeCount: Prisma.FieldRef<"TaskTestAttempt", 'Int'>
   readonly malpracticeFlag: Prisma.FieldRef<"TaskTestAttempt", 'Boolean'>
-  readonly activeClientId: Prisma.FieldRef<"TaskTestAttempt", 'String'>
   readonly activeClientAt: Prisma.FieldRef<"TaskTestAttempt", 'DateTime'>
+  readonly activeClientId: Prisma.FieldRef<"TaskTestAttempt", 'String'>
 }
     
 
@@ -2076,25 +2076,6 @@ export type TaskTestAttemptDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
- * TaskTestAttempt.student
- */
-export type TaskTestAttempt$studentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Student
-   */
-  select?: Prisma.StudentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Student
-   */
-  omit?: Prisma.StudentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StudentInclude<ExtArgs> | null
-  where?: Prisma.StudentWhereInput
-}
-
-/**
  * TaskTestAttempt.answers
  */
 export type TaskTestAttempt$answersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2116,6 +2097,25 @@ export type TaskTestAttempt$answersArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.TaskStudentAnswerScalarFieldEnum | Prisma.TaskStudentAnswerScalarFieldEnum[]
+}
+
+/**
+ * TaskTestAttempt.student
+ */
+export type TaskTestAttempt$studentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Student
+   */
+  select?: Prisma.StudentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Student
+   */
+  omit?: Prisma.StudentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StudentInclude<ExtArgs> | null
+  where?: Prisma.StudentWhereInput
 }
 
 /**

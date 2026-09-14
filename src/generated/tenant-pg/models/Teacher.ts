@@ -50,13 +50,13 @@ export type TeacherMinAggregateOutputType = {
   country: string | null
   qualification: string | null
   experience: string | null
-  prefix: string | null
-  title: string | null
-  aiSoftLimitTokens: number | null
   status: $Enums.TeacherStatus | null
   joinedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  prefix: string | null
+  title: string | null
+  aiSoftLimitTokens: number | null
 }
 
 export type TeacherMaxAggregateOutputType = {
@@ -75,13 +75,13 @@ export type TeacherMaxAggregateOutputType = {
   country: string | null
   qualification: string | null
   experience: string | null
-  prefix: string | null
-  title: string | null
-  aiSoftLimitTokens: number | null
   status: $Enums.TeacherStatus | null
   joinedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  prefix: string | null
+  title: string | null
+  aiSoftLimitTokens: number | null
 }
 
 export type TeacherCountAggregateOutputType = {
@@ -100,13 +100,13 @@ export type TeacherCountAggregateOutputType = {
   country: number
   qualification: number
   experience: number
-  prefix: number
-  title: number
-  aiSoftLimitTokens: number
   status: number
   joinedAt: number
   createdAt: number
   updatedAt: number
+  prefix: number
+  title: number
+  aiSoftLimitTokens: number
   _all: number
 }
 
@@ -135,13 +135,13 @@ export type TeacherMinAggregateInputType = {
   country?: true
   qualification?: true
   experience?: true
-  prefix?: true
-  title?: true
-  aiSoftLimitTokens?: true
   status?: true
   joinedAt?: true
   createdAt?: true
   updatedAt?: true
+  prefix?: true
+  title?: true
+  aiSoftLimitTokens?: true
 }
 
 export type TeacherMaxAggregateInputType = {
@@ -160,13 +160,13 @@ export type TeacherMaxAggregateInputType = {
   country?: true
   qualification?: true
   experience?: true
-  prefix?: true
-  title?: true
-  aiSoftLimitTokens?: true
   status?: true
   joinedAt?: true
   createdAt?: true
   updatedAt?: true
+  prefix?: true
+  title?: true
+  aiSoftLimitTokens?: true
 }
 
 export type TeacherCountAggregateInputType = {
@@ -185,13 +185,13 @@ export type TeacherCountAggregateInputType = {
   country?: true
   qualification?: true
   experience?: true
-  prefix?: true
-  title?: true
-  aiSoftLimitTokens?: true
   status?: true
   joinedAt?: true
   createdAt?: true
   updatedAt?: true
+  prefix?: true
+  title?: true
+  aiSoftLimitTokens?: true
   _all?: true
 }
 
@@ -297,13 +297,13 @@ export type TeacherGroupByOutputType = {
   country: string | null
   qualification: string | null
   experience: string | null
-  prefix: string | null
-  title: string | null
-  aiSoftLimitTokens: number | null
   status: $Enums.TeacherStatus
   joinedAt: Date
   createdAt: Date
   updatedAt: Date
+  prefix: string | null
+  title: string | null
+  aiSoftLimitTokens: number | null
   _count: TeacherCountAggregateOutputType | null
   _avg: TeacherAvgAggregateOutputType | null
   _sum: TeacherSumAggregateOutputType | null
@@ -345,26 +345,26 @@ export type TeacherWhereInput = {
   country?: Prisma.StringNullableFilter<"Teacher"> | string | null
   qualification?: Prisma.StringNullableFilter<"Teacher"> | string | null
   experience?: Prisma.StringNullableFilter<"Teacher"> | string | null
-  prefix?: Prisma.StringNullableFilter<"Teacher"> | string | null
-  title?: Prisma.StringNullableFilter<"Teacher"> | string | null
-  aiSoftLimitTokens?: Prisma.IntNullableFilter<"Teacher"> | number | null
   status?: Prisma.EnumTeacherStatusFilter<"Teacher"> | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
-  assignments?: Prisma.DivisionAssignmentListRelationFilter
-  classDivisions?: Prisma.DivisionListRelationFilter
-  createdMarksheets?: Prisma.MarksheetListRelationFilter
+  prefix?: Prisma.StringNullableFilter<"Teacher"> | string | null
+  title?: Prisma.StringNullableFilter<"Teacher"> | string | null
+  aiSoftLimitTokens?: Prisma.IntNullableFilter<"Teacher"> | number | null
   blackboardFolders?: Prisma.BlackboardFolderListRelationFilter
   blackboardMaterials?: Prisma.BlackboardMaterialListRelationFilter
+  classDivisions?: Prisma.DivisionListRelationFilter
+  assignments?: Prisma.DivisionAssignmentListRelationFilter
+  createdMarksheets?: Prisma.MarksheetListRelationFilter
   mindmaps?: Prisma.MindmapListRelationFilter
-  taskQuestions?: Prisma.TaskQuestionListRelationFilter
+  questionShareTokens?: Prisma.QuestionShareTokenListRelationFilter
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   taskContainers?: Prisma.TaskContainerListRelationFilter
   taskModules?: Prisma.TaskModuleListRelationFilter
-  taskTests?: Prisma.TaskTestListRelationFilter
-  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
-  questionShareTokens?: Prisma.QuestionShareTokenListRelationFilter
   taskPdfUploads?: Prisma.TaskPdfUploadListRelationFilter
+  taskQuestions?: Prisma.TaskQuestionListRelationFilter
+  taskTests?: Prisma.TaskTestListRelationFilter
   teacherNotes?: Prisma.TeacherNoteListRelationFilter
   teacherTasks?: Prisma.TeacherTaskListRelationFilter
 }
@@ -385,26 +385,26 @@ export type TeacherOrderByWithRelationInput = {
   country?: Prisma.SortOrderInput | Prisma.SortOrder
   qualification?: Prisma.SortOrderInput | Prisma.SortOrder
   experience?: Prisma.SortOrderInput | Prisma.SortOrder
-  prefix?: Prisma.SortOrderInput | Prisma.SortOrder
-  title?: Prisma.SortOrderInput | Prisma.SortOrder
-  aiSoftLimitTokens?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  assignments?: Prisma.DivisionAssignmentOrderByRelationAggregateInput
-  classDivisions?: Prisma.DivisionOrderByRelationAggregateInput
-  createdMarksheets?: Prisma.MarksheetOrderByRelationAggregateInput
+  prefix?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrderInput | Prisma.SortOrder
   blackboardFolders?: Prisma.BlackboardFolderOrderByRelationAggregateInput
   blackboardMaterials?: Prisma.BlackboardMaterialOrderByRelationAggregateInput
+  classDivisions?: Prisma.DivisionOrderByRelationAggregateInput
+  assignments?: Prisma.DivisionAssignmentOrderByRelationAggregateInput
+  createdMarksheets?: Prisma.MarksheetOrderByRelationAggregateInput
   mindmaps?: Prisma.MindmapOrderByRelationAggregateInput
-  taskQuestions?: Prisma.TaskQuestionOrderByRelationAggregateInput
+  questionShareTokens?: Prisma.QuestionShareTokenOrderByRelationAggregateInput
+  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
   taskContainers?: Prisma.TaskContainerOrderByRelationAggregateInput
   taskModules?: Prisma.TaskModuleOrderByRelationAggregateInput
-  taskTests?: Prisma.TaskTestOrderByRelationAggregateInput
-  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
-  questionShareTokens?: Prisma.QuestionShareTokenOrderByRelationAggregateInput
   taskPdfUploads?: Prisma.TaskPdfUploadOrderByRelationAggregateInput
+  taskQuestions?: Prisma.TaskQuestionOrderByRelationAggregateInput
+  taskTests?: Prisma.TaskTestOrderByRelationAggregateInput
   teacherNotes?: Prisma.TeacherNoteOrderByRelationAggregateInput
   teacherTasks?: Prisma.TeacherTaskOrderByRelationAggregateInput
 }
@@ -429,26 +429,26 @@ export type TeacherWhereUniqueInput = Prisma.AtLeast<{
   country?: Prisma.StringNullableFilter<"Teacher"> | string | null
   qualification?: Prisma.StringNullableFilter<"Teacher"> | string | null
   experience?: Prisma.StringNullableFilter<"Teacher"> | string | null
-  prefix?: Prisma.StringNullableFilter<"Teacher"> | string | null
-  title?: Prisma.StringNullableFilter<"Teacher"> | string | null
-  aiSoftLimitTokens?: Prisma.IntNullableFilter<"Teacher"> | number | null
   status?: Prisma.EnumTeacherStatusFilter<"Teacher"> | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Teacher"> | Date | string
-  assignments?: Prisma.DivisionAssignmentListRelationFilter
-  classDivisions?: Prisma.DivisionListRelationFilter
-  createdMarksheets?: Prisma.MarksheetListRelationFilter
+  prefix?: Prisma.StringNullableFilter<"Teacher"> | string | null
+  title?: Prisma.StringNullableFilter<"Teacher"> | string | null
+  aiSoftLimitTokens?: Prisma.IntNullableFilter<"Teacher"> | number | null
   blackboardFolders?: Prisma.BlackboardFolderListRelationFilter
   blackboardMaterials?: Prisma.BlackboardMaterialListRelationFilter
+  classDivisions?: Prisma.DivisionListRelationFilter
+  assignments?: Prisma.DivisionAssignmentListRelationFilter
+  createdMarksheets?: Prisma.MarksheetListRelationFilter
   mindmaps?: Prisma.MindmapListRelationFilter
-  taskQuestions?: Prisma.TaskQuestionListRelationFilter
+  questionShareTokens?: Prisma.QuestionShareTokenListRelationFilter
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   taskContainers?: Prisma.TaskContainerListRelationFilter
   taskModules?: Prisma.TaskModuleListRelationFilter
-  taskTests?: Prisma.TaskTestListRelationFilter
-  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
-  questionShareTokens?: Prisma.QuestionShareTokenListRelationFilter
   taskPdfUploads?: Prisma.TaskPdfUploadListRelationFilter
+  taskQuestions?: Prisma.TaskQuestionListRelationFilter
+  taskTests?: Prisma.TaskTestListRelationFilter
   teacherNotes?: Prisma.TeacherNoteListRelationFilter
   teacherTasks?: Prisma.TeacherTaskListRelationFilter
 }, "id" | "userId" | "teacherId_institutionId">
@@ -469,13 +469,13 @@ export type TeacherOrderByWithAggregationInput = {
   country?: Prisma.SortOrderInput | Prisma.SortOrder
   qualification?: Prisma.SortOrderInput | Prisma.SortOrder
   experience?: Prisma.SortOrderInput | Prisma.SortOrder
-  prefix?: Prisma.SortOrderInput | Prisma.SortOrder
-  title?: Prisma.SortOrderInput | Prisma.SortOrder
-  aiSoftLimitTokens?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  prefix?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TeacherCountOrderByAggregateInput
   _avg?: Prisma.TeacherAvgOrderByAggregateInput
   _max?: Prisma.TeacherMaxOrderByAggregateInput
@@ -502,13 +502,13 @@ export type TeacherScalarWhereWithAggregatesInput = {
   country?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
   qualification?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
   experience?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
-  prefix?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
-  title?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
-  aiSoftLimitTokens?: Prisma.IntNullableWithAggregatesFilter<"Teacher"> | number | null
   status?: Prisma.EnumTeacherStatusWithAggregatesFilter<"Teacher"> | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeWithAggregatesFilter<"Teacher"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Teacher"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Teacher"> | Date | string
+  prefix?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
+  title?: Prisma.StringNullableWithAggregatesFilter<"Teacher"> | string | null
+  aiSoftLimitTokens?: Prisma.IntNullableWithAggregatesFilter<"Teacher"> | number | null
 }
 
 export type TeacherCreateInput = {
@@ -527,26 +527,26 @@ export type TeacherCreateInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -567,26 +567,26 @@ export type TeacherUncheckedCreateInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -607,26 +607,26 @@ export type TeacherUpdateInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -647,26 +647,26 @@ export type TeacherUncheckedUpdateInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -687,13 +687,13 @@ export type TeacherCreateManyInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
 }
 
 export type TeacherUpdateManyMutationInput = {
@@ -712,13 +712,13 @@ export type TeacherUpdateManyMutationInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type TeacherUncheckedUpdateManyInput = {
@@ -737,13 +737,13 @@ export type TeacherUncheckedUpdateManyInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type TeacherTeacherIdInstitutionIdCompoundUniqueInput = {
@@ -767,13 +767,13 @@ export type TeacherCountOrderByAggregateInput = {
   country?: Prisma.SortOrder
   qualification?: Prisma.SortOrder
   experience?: Prisma.SortOrder
-  prefix?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  aiSoftLimitTokens?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  prefix?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrder
 }
 
 export type TeacherAvgOrderByAggregateInput = {
@@ -796,13 +796,13 @@ export type TeacherMaxOrderByAggregateInput = {
   country?: Prisma.SortOrder
   qualification?: Prisma.SortOrder
   experience?: Prisma.SortOrder
-  prefix?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  aiSoftLimitTokens?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  prefix?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrder
 }
 
 export type TeacherMinOrderByAggregateInput = {
@@ -821,13 +821,13 @@ export type TeacherMinOrderByAggregateInput = {
   country?: Prisma.SortOrder
   qualification?: Prisma.SortOrder
   experience?: Prisma.SortOrder
-  prefix?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  aiSoftLimitTokens?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  prefix?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  aiSoftLimitTokens?: Prisma.SortOrder
 }
 
 export type TeacherSumOrderByAggregateInput = {
@@ -852,20 +852,20 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type EnumTeacherStatusFieldUpdateOperationsInput = {
   set?: $Enums.TeacherStatus
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type TeacherCreateNestedOneWithoutTeacherNotesInput = {
@@ -1096,26 +1096,26 @@ export type TeacherCreateWithoutTeacherNotesInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
 
@@ -1135,26 +1135,26 @@ export type TeacherUncheckedCreateWithoutTeacherNotesInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
 
@@ -1190,26 +1190,26 @@ export type TeacherUpdateWithoutTeacherNotesInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
 
@@ -1229,26 +1229,26 @@ export type TeacherUncheckedUpdateWithoutTeacherNotesInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
 
@@ -1268,26 +1268,26 @@ export type TeacherCreateWithoutTeacherTasksInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
 }
 
@@ -1307,26 +1307,26 @@ export type TeacherUncheckedCreateWithoutTeacherTasksInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
 }
 
@@ -1362,26 +1362,26 @@ export type TeacherUpdateWithoutTeacherTasksInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
 }
 
@@ -1401,26 +1401,26 @@ export type TeacherUncheckedUpdateWithoutTeacherTasksInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
 }
 
@@ -1440,25 +1440,25 @@ export type TeacherCreateWithoutClassDivisionsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -1479,25 +1479,25 @@ export type TeacherUncheckedCreateWithoutClassDivisionsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -1534,25 +1534,25 @@ export type TeacherUpdateWithoutClassDivisionsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -1573,25 +1573,25 @@ export type TeacherUncheckedUpdateWithoutClassDivisionsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -1612,25 +1612,25 @@ export type TeacherCreateWithoutAssignmentsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -1651,25 +1651,25 @@ export type TeacherUncheckedCreateWithoutAssignmentsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -1706,25 +1706,25 @@ export type TeacherUpdateWithoutAssignmentsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -1745,25 +1745,25 @@ export type TeacherUncheckedUpdateWithoutAssignmentsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -1784,25 +1784,25 @@ export type TeacherCreateWithoutBlackboardFoldersInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -1823,25 +1823,25 @@ export type TeacherUncheckedCreateWithoutBlackboardFoldersInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -1878,25 +1878,25 @@ export type TeacherUpdateWithoutBlackboardFoldersInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -1917,25 +1917,25 @@ export type TeacherUncheckedUpdateWithoutBlackboardFoldersInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -1956,25 +1956,25 @@ export type TeacherCreateWithoutBlackboardMaterialsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -1995,25 +1995,25 @@ export type TeacherUncheckedCreateWithoutBlackboardMaterialsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -2050,25 +2050,25 @@ export type TeacherUpdateWithoutBlackboardMaterialsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -2089,25 +2089,25 @@ export type TeacherUncheckedUpdateWithoutBlackboardMaterialsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -2128,25 +2128,25 @@ export type TeacherCreateWithoutMindmapsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -2167,25 +2167,25 @@ export type TeacherUncheckedCreateWithoutMindmapsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -2222,25 +2222,25 @@ export type TeacherUpdateWithoutMindmapsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -2261,25 +2261,25 @@ export type TeacherUncheckedUpdateWithoutMindmapsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -2300,25 +2300,25 @@ export type TeacherCreateWithoutTaskContainersInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
-  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -2339,25 +2339,25 @@ export type TeacherUncheckedCreateWithoutTaskContainersInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
-  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -2394,25 +2394,25 @@ export type TeacherUpdateWithoutTaskContainersInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
-  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -2433,25 +2433,25 @@ export type TeacherUncheckedUpdateWithoutTaskContainersInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
-  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -2472,25 +2472,25 @@ export type TeacherCreateWithoutTaskQuestionsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -2511,25 +2511,25 @@ export type TeacherUncheckedCreateWithoutTaskQuestionsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -2566,25 +2566,25 @@ export type TeacherUpdateWithoutTaskQuestionsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -2605,25 +2605,25 @@ export type TeacherUncheckedUpdateWithoutTaskQuestionsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -2644,25 +2644,25 @@ export type TeacherCreateWithoutTaskModulesInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
-  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -2683,25 +2683,25 @@ export type TeacherUncheckedCreateWithoutTaskModulesInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
-  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -2738,25 +2738,25 @@ export type TeacherUpdateWithoutTaskModulesInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
-  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -2777,25 +2777,25 @@ export type TeacherUncheckedUpdateWithoutTaskModulesInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
-  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -2816,25 +2816,25 @@ export type TeacherCreateWithoutTaskTestsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -2855,25 +2855,25 @@ export type TeacherUncheckedCreateWithoutTaskTestsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -2910,25 +2910,25 @@ export type TeacherUpdateWithoutTaskTestsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -2949,25 +2949,25 @@ export type TeacherUncheckedUpdateWithoutTaskTestsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -2988,25 +2988,25 @@ export type TeacherCreateWithoutTaskPdfUploadsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -3027,25 +3027,25 @@ export type TeacherUncheckedCreateWithoutTaskPdfUploadsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -3082,25 +3082,25 @@ export type TeacherUpdateWithoutTaskPdfUploadsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -3121,25 +3121,25 @@ export type TeacherUncheckedUpdateWithoutTaskPdfUploadsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -3160,25 +3160,25 @@ export type TeacherCreateWithoutQuestionShareTokensInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -3199,25 +3199,25 @@ export type TeacherUncheckedCreateWithoutQuestionShareTokensInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -3254,25 +3254,25 @@ export type TeacherUpdateWithoutQuestionShareTokensInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -3293,25 +3293,25 @@ export type TeacherUncheckedUpdateWithoutQuestionShareTokensInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -3332,25 +3332,25 @@ export type TeacherCreateWithoutTaskAssignmentsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -3371,25 +3371,25 @@ export type TeacherUncheckedCreateWithoutTaskAssignmentsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
-  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -3426,25 +3426,25 @@ export type TeacherUpdateWithoutTaskAssignmentsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -3465,25 +3465,25 @@ export type TeacherUncheckedUpdateWithoutTaskAssignmentsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
-  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -3504,25 +3504,25 @@ export type TeacherCreateWithoutCreatedMarksheetsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
 }
@@ -3543,25 +3543,25 @@ export type TeacherUncheckedCreateWithoutCreatedMarksheetsInput = {
   country?: string | null
   qualification?: string | null
   experience?: string | null
-  prefix?: string | null
-  title?: string | null
-  aiSoftLimitTokens?: number | null
   status?: $Enums.TeacherStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
-  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
 }
@@ -3598,25 +3598,25 @@ export type TeacherUpdateWithoutCreatedMarksheetsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
 }
@@ -3637,25 +3637,25 @@ export type TeacherUncheckedUpdateWithoutCreatedMarksheetsInput = {
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
   blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
-  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
-  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
-  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
 }
@@ -3666,37 +3666,37 @@ export type TeacherUncheckedUpdateWithoutCreatedMarksheetsInput = {
  */
 
 export type TeacherCountOutputType = {
-  assignments: number
-  classDivisions: number
-  createdMarksheets: number
   blackboardFolders: number
   blackboardMaterials: number
+  classDivisions: number
+  assignments: number
+  createdMarksheets: number
   mindmaps: number
-  taskQuestions: number
+  questionShareTokens: number
+  taskAssignments: number
   taskContainers: number
   taskModules: number
-  taskTests: number
-  taskAssignments: number
-  questionShareTokens: number
   taskPdfUploads: number
+  taskQuestions: number
+  taskTests: number
   teacherNotes: number
   teacherTasks: number
 }
 
 export type TeacherCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  assignments?: boolean | TeacherCountOutputTypeCountAssignmentsArgs
-  classDivisions?: boolean | TeacherCountOutputTypeCountClassDivisionsArgs
-  createdMarksheets?: boolean | TeacherCountOutputTypeCountCreatedMarksheetsArgs
   blackboardFolders?: boolean | TeacherCountOutputTypeCountBlackboardFoldersArgs
   blackboardMaterials?: boolean | TeacherCountOutputTypeCountBlackboardMaterialsArgs
+  classDivisions?: boolean | TeacherCountOutputTypeCountClassDivisionsArgs
+  assignments?: boolean | TeacherCountOutputTypeCountAssignmentsArgs
+  createdMarksheets?: boolean | TeacherCountOutputTypeCountCreatedMarksheetsArgs
   mindmaps?: boolean | TeacherCountOutputTypeCountMindmapsArgs
-  taskQuestions?: boolean | TeacherCountOutputTypeCountTaskQuestionsArgs
+  questionShareTokens?: boolean | TeacherCountOutputTypeCountQuestionShareTokensArgs
+  taskAssignments?: boolean | TeacherCountOutputTypeCountTaskAssignmentsArgs
   taskContainers?: boolean | TeacherCountOutputTypeCountTaskContainersArgs
   taskModules?: boolean | TeacherCountOutputTypeCountTaskModulesArgs
-  taskTests?: boolean | TeacherCountOutputTypeCountTaskTestsArgs
-  taskAssignments?: boolean | TeacherCountOutputTypeCountTaskAssignmentsArgs
-  questionShareTokens?: boolean | TeacherCountOutputTypeCountQuestionShareTokensArgs
   taskPdfUploads?: boolean | TeacherCountOutputTypeCountTaskPdfUploadsArgs
+  taskQuestions?: boolean | TeacherCountOutputTypeCountTaskQuestionsArgs
+  taskTests?: boolean | TeacherCountOutputTypeCountTaskTestsArgs
   teacherNotes?: boolean | TeacherCountOutputTypeCountTeacherNotesArgs
   teacherTasks?: boolean | TeacherCountOutputTypeCountTeacherTasksArgs
 }
@@ -3709,27 +3709,6 @@ export type TeacherCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
    * Select specific fields to fetch from the TeacherCountOutputType
    */
   select?: Prisma.TeacherCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * TeacherCountOutputType without action
- */
-export type TeacherCountOutputTypeCountAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.DivisionAssignmentWhereInput
-}
-
-/**
- * TeacherCountOutputType without action
- */
-export type TeacherCountOutputTypeCountClassDivisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.DivisionWhereInput
-}
-
-/**
- * TeacherCountOutputType without action
- */
-export type TeacherCountOutputTypeCountCreatedMarksheetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MarksheetWhereInput
 }
 
 /**
@@ -3749,6 +3728,27 @@ export type TeacherCountOutputTypeCountBlackboardMaterialsArgs<ExtArgs extends r
 /**
  * TeacherCountOutputType without action
  */
+export type TeacherCountOutputTypeCountClassDivisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DivisionWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DivisionAssignmentWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountCreatedMarksheetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MarksheetWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
 export type TeacherCountOutputTypeCountMindmapsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MindmapWhereInput
 }
@@ -3756,8 +3756,15 @@ export type TeacherCountOutputTypeCountMindmapsArgs<ExtArgs extends runtime.Type
 /**
  * TeacherCountOutputType without action
  */
-export type TeacherCountOutputTypeCountTaskQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskQuestionWhereInput
+export type TeacherCountOutputTypeCountQuestionShareTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.QuestionShareTokenWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssignmentWhereInput
 }
 
 /**
@@ -3777,29 +3784,22 @@ export type TeacherCountOutputTypeCountTaskModulesArgs<ExtArgs extends runtime.T
 /**
  * TeacherCountOutputType without action
  */
-export type TeacherCountOutputTypeCountTaskTestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskTestWhereInput
-}
-
-/**
- * TeacherCountOutputType without action
- */
-export type TeacherCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskAssignmentWhereInput
-}
-
-/**
- * TeacherCountOutputType without action
- */
-export type TeacherCountOutputTypeCountQuestionShareTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.QuestionShareTokenWhereInput
-}
-
-/**
- * TeacherCountOutputType without action
- */
 export type TeacherCountOutputTypeCountTaskPdfUploadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TaskPdfUploadWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountTaskQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskQuestionWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountTaskTestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskTestWhereInput
 }
 
 /**
@@ -3833,26 +3833,26 @@ export type TeacherSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   country?: boolean
   qualification?: boolean
   experience?: boolean
-  prefix?: boolean
-  title?: boolean
-  aiSoftLimitTokens?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  assignments?: boolean | Prisma.Teacher$assignmentsArgs<ExtArgs>
-  classDivisions?: boolean | Prisma.Teacher$classDivisionsArgs<ExtArgs>
-  createdMarksheets?: boolean | Prisma.Teacher$createdMarksheetsArgs<ExtArgs>
+  prefix?: boolean
+  title?: boolean
+  aiSoftLimitTokens?: boolean
   blackboardFolders?: boolean | Prisma.Teacher$blackboardFoldersArgs<ExtArgs>
   blackboardMaterials?: boolean | Prisma.Teacher$blackboardMaterialsArgs<ExtArgs>
+  classDivisions?: boolean | Prisma.Teacher$classDivisionsArgs<ExtArgs>
+  assignments?: boolean | Prisma.Teacher$assignmentsArgs<ExtArgs>
+  createdMarksheets?: boolean | Prisma.Teacher$createdMarksheetsArgs<ExtArgs>
   mindmaps?: boolean | Prisma.Teacher$mindmapsArgs<ExtArgs>
-  taskQuestions?: boolean | Prisma.Teacher$taskQuestionsArgs<ExtArgs>
+  questionShareTokens?: boolean | Prisma.Teacher$questionShareTokensArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.Teacher$taskAssignmentsArgs<ExtArgs>
   taskContainers?: boolean | Prisma.Teacher$taskContainersArgs<ExtArgs>
   taskModules?: boolean | Prisma.Teacher$taskModulesArgs<ExtArgs>
-  taskTests?: boolean | Prisma.Teacher$taskTestsArgs<ExtArgs>
-  taskAssignments?: boolean | Prisma.Teacher$taskAssignmentsArgs<ExtArgs>
-  questionShareTokens?: boolean | Prisma.Teacher$questionShareTokensArgs<ExtArgs>
   taskPdfUploads?: boolean | Prisma.Teacher$taskPdfUploadsArgs<ExtArgs>
+  taskQuestions?: boolean | Prisma.Teacher$taskQuestionsArgs<ExtArgs>
+  taskTests?: boolean | Prisma.Teacher$taskTestsArgs<ExtArgs>
   teacherNotes?: boolean | Prisma.Teacher$teacherNotesArgs<ExtArgs>
   teacherTasks?: boolean | Prisma.Teacher$teacherTasksArgs<ExtArgs>
   _count?: boolean | Prisma.TeacherCountOutputTypeDefaultArgs<ExtArgs>
@@ -3874,13 +3874,13 @@ export type TeacherSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   country?: boolean
   qualification?: boolean
   experience?: boolean
-  prefix?: boolean
-  title?: boolean
-  aiSoftLimitTokens?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  prefix?: boolean
+  title?: boolean
+  aiSoftLimitTokens?: boolean
 }, ExtArgs["result"]["teacher"]>
 
 export type TeacherSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -3899,13 +3899,13 @@ export type TeacherSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   country?: boolean
   qualification?: boolean
   experience?: boolean
-  prefix?: boolean
-  title?: boolean
-  aiSoftLimitTokens?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  prefix?: boolean
+  title?: boolean
+  aiSoftLimitTokens?: boolean
 }, ExtArgs["result"]["teacher"]>
 
 export type TeacherSelectScalar = {
@@ -3924,30 +3924,30 @@ export type TeacherSelectScalar = {
   country?: boolean
   qualification?: boolean
   experience?: boolean
-  prefix?: boolean
-  title?: boolean
-  aiSoftLimitTokens?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  prefix?: boolean
+  title?: boolean
+  aiSoftLimitTokens?: boolean
 }
 
-export type TeacherOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "teacherId" | "userId" | "institutionId" | "phone" | "avatarUrl" | "dob" | "gender" | "address" | "city" | "state" | "pincode" | "country" | "qualification" | "experience" | "prefix" | "title" | "aiSoftLimitTokens" | "status" | "joinedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["teacher"]>
+export type TeacherOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "teacherId" | "userId" | "institutionId" | "phone" | "avatarUrl" | "dob" | "gender" | "address" | "city" | "state" | "pincode" | "country" | "qualification" | "experience" | "status" | "joinedAt" | "createdAt" | "updatedAt" | "prefix" | "title" | "aiSoftLimitTokens", ExtArgs["result"]["teacher"]>
 export type TeacherInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  assignments?: boolean | Prisma.Teacher$assignmentsArgs<ExtArgs>
-  classDivisions?: boolean | Prisma.Teacher$classDivisionsArgs<ExtArgs>
-  createdMarksheets?: boolean | Prisma.Teacher$createdMarksheetsArgs<ExtArgs>
   blackboardFolders?: boolean | Prisma.Teacher$blackboardFoldersArgs<ExtArgs>
   blackboardMaterials?: boolean | Prisma.Teacher$blackboardMaterialsArgs<ExtArgs>
+  classDivisions?: boolean | Prisma.Teacher$classDivisionsArgs<ExtArgs>
+  assignments?: boolean | Prisma.Teacher$assignmentsArgs<ExtArgs>
+  createdMarksheets?: boolean | Prisma.Teacher$createdMarksheetsArgs<ExtArgs>
   mindmaps?: boolean | Prisma.Teacher$mindmapsArgs<ExtArgs>
-  taskQuestions?: boolean | Prisma.Teacher$taskQuestionsArgs<ExtArgs>
+  questionShareTokens?: boolean | Prisma.Teacher$questionShareTokensArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.Teacher$taskAssignmentsArgs<ExtArgs>
   taskContainers?: boolean | Prisma.Teacher$taskContainersArgs<ExtArgs>
   taskModules?: boolean | Prisma.Teacher$taskModulesArgs<ExtArgs>
-  taskTests?: boolean | Prisma.Teacher$taskTestsArgs<ExtArgs>
-  taskAssignments?: boolean | Prisma.Teacher$taskAssignmentsArgs<ExtArgs>
-  questionShareTokens?: boolean | Prisma.Teacher$questionShareTokensArgs<ExtArgs>
   taskPdfUploads?: boolean | Prisma.Teacher$taskPdfUploadsArgs<ExtArgs>
+  taskQuestions?: boolean | Prisma.Teacher$taskQuestionsArgs<ExtArgs>
+  taskTests?: boolean | Prisma.Teacher$taskTestsArgs<ExtArgs>
   teacherNotes?: boolean | Prisma.Teacher$teacherNotesArgs<ExtArgs>
   teacherTasks?: boolean | Prisma.Teacher$teacherTasksArgs<ExtArgs>
   _count?: boolean | Prisma.TeacherCountOutputTypeDefaultArgs<ExtArgs>
@@ -3958,19 +3958,19 @@ export type TeacherIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $TeacherPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Teacher"
   objects: {
-    assignments: Prisma.$DivisionAssignmentPayload<ExtArgs>[]
-    classDivisions: Prisma.$DivisionPayload<ExtArgs>[]
-    createdMarksheets: Prisma.$MarksheetPayload<ExtArgs>[]
     blackboardFolders: Prisma.$BlackboardFolderPayload<ExtArgs>[]
     blackboardMaterials: Prisma.$BlackboardMaterialPayload<ExtArgs>[]
+    classDivisions: Prisma.$DivisionPayload<ExtArgs>[]
+    assignments: Prisma.$DivisionAssignmentPayload<ExtArgs>[]
+    createdMarksheets: Prisma.$MarksheetPayload<ExtArgs>[]
     mindmaps: Prisma.$MindmapPayload<ExtArgs>[]
-    taskQuestions: Prisma.$TaskQuestionPayload<ExtArgs>[]
+    questionShareTokens: Prisma.$QuestionShareTokenPayload<ExtArgs>[]
+    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
     taskContainers: Prisma.$TaskContainerPayload<ExtArgs>[]
     taskModules: Prisma.$TaskModulePayload<ExtArgs>[]
-    taskTests: Prisma.$TaskTestPayload<ExtArgs>[]
-    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
-    questionShareTokens: Prisma.$QuestionShareTokenPayload<ExtArgs>[]
     taskPdfUploads: Prisma.$TaskPdfUploadPayload<ExtArgs>[]
+    taskQuestions: Prisma.$TaskQuestionPayload<ExtArgs>[]
+    taskTests: Prisma.$TaskTestPayload<ExtArgs>[]
     teacherNotes: Prisma.$TeacherNotePayload<ExtArgs>[]
     teacherTasks: Prisma.$TeacherTaskPayload<ExtArgs>[]
   }
@@ -3990,13 +3990,13 @@ export type $TeacherPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     country: string | null
     qualification: string | null
     experience: string | null
-    prefix: string | null
-    title: string | null
-    aiSoftLimitTokens: number | null
     status: $Enums.TeacherStatus
     joinedAt: Date
     createdAt: Date
     updatedAt: Date
+    prefix: string | null
+    title: string | null
+    aiSoftLimitTokens: number | null
   }, ExtArgs["result"]["teacher"]>
   composites: {}
 }
@@ -4391,19 +4391,19 @@ readonly fields: TeacherFieldRefs;
  */
 export interface Prisma__TeacherClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  assignments<T extends Prisma.Teacher$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  classDivisions<T extends Prisma.Teacher$classDivisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$classDivisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  createdMarksheets<T extends Prisma.Teacher$createdMarksheetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$createdMarksheetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blackboardFolders<T extends Prisma.Teacher$blackboardFoldersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$blackboardFoldersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlackboardFolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blackboardMaterials<T extends Prisma.Teacher$blackboardMaterialsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$blackboardMaterialsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlackboardMaterialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  classDivisions<T extends Prisma.Teacher$classDivisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$classDivisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assignments<T extends Prisma.Teacher$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdMarksheets<T extends Prisma.Teacher$createdMarksheetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$createdMarksheetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mindmaps<T extends Prisma.Teacher$mindmapsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$mindmapsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MindmapPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  taskQuestions<T extends Prisma.Teacher$taskQuestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskQuestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  questionShareTokens<T extends Prisma.Teacher$questionShareTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$questionShareTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionShareTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskAssignments<T extends Prisma.Teacher$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskContainers<T extends Prisma.Teacher$taskContainersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskContainersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskContainerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskModules<T extends Prisma.Teacher$taskModulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskModulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  taskTests<T extends Prisma.Teacher$taskTestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskTestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  taskAssignments<T extends Prisma.Teacher$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  questionShareTokens<T extends Prisma.Teacher$questionShareTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$questionShareTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionShareTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskPdfUploads<T extends Prisma.Teacher$taskPdfUploadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskPdfUploadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPdfUploadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskQuestions<T extends Prisma.Teacher$taskQuestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskQuestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskTests<T extends Prisma.Teacher$taskTestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskTestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   teacherNotes<T extends Prisma.Teacher$teacherNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$teacherNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   teacherTasks<T extends Prisma.Teacher$teacherTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$teacherTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -4450,13 +4450,13 @@ export interface TeacherFieldRefs {
   readonly country: Prisma.FieldRef<"Teacher", 'String'>
   readonly qualification: Prisma.FieldRef<"Teacher", 'String'>
   readonly experience: Prisma.FieldRef<"Teacher", 'String'>
-  readonly prefix: Prisma.FieldRef<"Teacher", 'String'>
-  readonly title: Prisma.FieldRef<"Teacher", 'String'>
-  readonly aiSoftLimitTokens: Prisma.FieldRef<"Teacher", 'Int'>
   readonly status: Prisma.FieldRef<"Teacher", 'TeacherStatus'>
   readonly joinedAt: Prisma.FieldRef<"Teacher", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Teacher", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Teacher", 'DateTime'>
+  readonly prefix: Prisma.FieldRef<"Teacher", 'String'>
+  readonly title: Prisma.FieldRef<"Teacher", 'String'>
+  readonly aiSoftLimitTokens: Prisma.FieldRef<"Teacher", 'Int'>
 }
     
 
@@ -4850,78 +4850,6 @@ export type TeacherDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Teacher.assignments
- */
-export type Teacher$assignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the DivisionAssignment
-   */
-  select?: Prisma.DivisionAssignmentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the DivisionAssignment
-   */
-  omit?: Prisma.DivisionAssignmentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DivisionAssignmentInclude<ExtArgs> | null
-  where?: Prisma.DivisionAssignmentWhereInput
-  orderBy?: Prisma.DivisionAssignmentOrderByWithRelationInput | Prisma.DivisionAssignmentOrderByWithRelationInput[]
-  cursor?: Prisma.DivisionAssignmentWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.DivisionAssignmentScalarFieldEnum | Prisma.DivisionAssignmentScalarFieldEnum[]
-}
-
-/**
- * Teacher.classDivisions
- */
-export type Teacher$classDivisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Division
-   */
-  select?: Prisma.DivisionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Division
-   */
-  omit?: Prisma.DivisionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DivisionInclude<ExtArgs> | null
-  where?: Prisma.DivisionWhereInput
-  orderBy?: Prisma.DivisionOrderByWithRelationInput | Prisma.DivisionOrderByWithRelationInput[]
-  cursor?: Prisma.DivisionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.DivisionScalarFieldEnum | Prisma.DivisionScalarFieldEnum[]
-}
-
-/**
- * Teacher.createdMarksheets
- */
-export type Teacher$createdMarksheetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Marksheet
-   */
-  select?: Prisma.MarksheetSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Marksheet
-   */
-  omit?: Prisma.MarksheetOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MarksheetInclude<ExtArgs> | null
-  where?: Prisma.MarksheetWhereInput
-  orderBy?: Prisma.MarksheetOrderByWithRelationInput | Prisma.MarksheetOrderByWithRelationInput[]
-  cursor?: Prisma.MarksheetWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MarksheetScalarFieldEnum | Prisma.MarksheetScalarFieldEnum[]
-}
-
-/**
  * Teacher.blackboardFolders
  */
 export type Teacher$blackboardFoldersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4970,6 +4898,78 @@ export type Teacher$blackboardMaterialsArgs<ExtArgs extends runtime.Types.Extens
 }
 
 /**
+ * Teacher.classDivisions
+ */
+export type Teacher$classDivisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Division
+   */
+  select?: Prisma.DivisionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Division
+   */
+  omit?: Prisma.DivisionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DivisionInclude<ExtArgs> | null
+  where?: Prisma.DivisionWhereInput
+  orderBy?: Prisma.DivisionOrderByWithRelationInput | Prisma.DivisionOrderByWithRelationInput[]
+  cursor?: Prisma.DivisionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DivisionScalarFieldEnum | Prisma.DivisionScalarFieldEnum[]
+}
+
+/**
+ * Teacher.assignments
+ */
+export type Teacher$assignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DivisionAssignment
+   */
+  select?: Prisma.DivisionAssignmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DivisionAssignment
+   */
+  omit?: Prisma.DivisionAssignmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DivisionAssignmentInclude<ExtArgs> | null
+  where?: Prisma.DivisionAssignmentWhereInput
+  orderBy?: Prisma.DivisionAssignmentOrderByWithRelationInput | Prisma.DivisionAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.DivisionAssignmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DivisionAssignmentScalarFieldEnum | Prisma.DivisionAssignmentScalarFieldEnum[]
+}
+
+/**
+ * Teacher.createdMarksheets
+ */
+export type Teacher$createdMarksheetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Marksheet
+   */
+  select?: Prisma.MarksheetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Marksheet
+   */
+  omit?: Prisma.MarksheetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MarksheetInclude<ExtArgs> | null
+  where?: Prisma.MarksheetWhereInput
+  orderBy?: Prisma.MarksheetOrderByWithRelationInput | Prisma.MarksheetOrderByWithRelationInput[]
+  cursor?: Prisma.MarksheetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MarksheetScalarFieldEnum | Prisma.MarksheetScalarFieldEnum[]
+}
+
+/**
  * Teacher.mindmaps
  */
 export type Teacher$mindmapsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4994,27 +4994,51 @@ export type Teacher$mindmapsArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * Teacher.taskQuestions
+ * Teacher.questionShareTokens
  */
-export type Teacher$taskQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Teacher$questionShareTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the TaskQuestion
+   * Select specific fields to fetch from the QuestionShareToken
    */
-  select?: Prisma.TaskQuestionSelect<ExtArgs> | null
+  select?: Prisma.QuestionShareTokenSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the TaskQuestion
+   * Omit specific fields from the QuestionShareToken
    */
-  omit?: Prisma.TaskQuestionOmit<ExtArgs> | null
+  omit?: Prisma.QuestionShareTokenOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TaskQuestionInclude<ExtArgs> | null
-  where?: Prisma.TaskQuestionWhereInput
-  orderBy?: Prisma.TaskQuestionOrderByWithRelationInput | Prisma.TaskQuestionOrderByWithRelationInput[]
-  cursor?: Prisma.TaskQuestionWhereUniqueInput
+  include?: Prisma.QuestionShareTokenInclude<ExtArgs> | null
+  where?: Prisma.QuestionShareTokenWhereInput
+  orderBy?: Prisma.QuestionShareTokenOrderByWithRelationInput | Prisma.QuestionShareTokenOrderByWithRelationInput[]
+  cursor?: Prisma.QuestionShareTokenWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.TaskQuestionScalarFieldEnum | Prisma.TaskQuestionScalarFieldEnum[]
+  distinct?: Prisma.QuestionShareTokenScalarFieldEnum | Prisma.QuestionShareTokenScalarFieldEnum[]
+}
+
+/**
+ * Teacher.taskAssignments
+ */
+export type Teacher$taskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskAssignment
+   */
+  select?: Prisma.TaskAssignmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskAssignment
+   */
+  omit?: Prisma.TaskAssignmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskAssignmentInclude<ExtArgs> | null
+  where?: Prisma.TaskAssignmentWhereInput
+  orderBy?: Prisma.TaskAssignmentOrderByWithRelationInput | Prisma.TaskAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssignmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[]
 }
 
 /**
@@ -5066,78 +5090,6 @@ export type Teacher$taskModulesArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * Teacher.taskTests
- */
-export type Teacher$taskTestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TaskTest
-   */
-  select?: Prisma.TaskTestSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TaskTest
-   */
-  omit?: Prisma.TaskTestOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskTestInclude<ExtArgs> | null
-  where?: Prisma.TaskTestWhereInput
-  orderBy?: Prisma.TaskTestOrderByWithRelationInput | Prisma.TaskTestOrderByWithRelationInput[]
-  cursor?: Prisma.TaskTestWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TaskTestScalarFieldEnum | Prisma.TaskTestScalarFieldEnum[]
-}
-
-/**
- * Teacher.taskAssignments
- */
-export type Teacher$taskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TaskAssignment
-   */
-  select?: Prisma.TaskAssignmentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TaskAssignment
-   */
-  omit?: Prisma.TaskAssignmentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskAssignmentInclude<ExtArgs> | null
-  where?: Prisma.TaskAssignmentWhereInput
-  orderBy?: Prisma.TaskAssignmentOrderByWithRelationInput | Prisma.TaskAssignmentOrderByWithRelationInput[]
-  cursor?: Prisma.TaskAssignmentWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[]
-}
-
-/**
- * Teacher.questionShareTokens
- */
-export type Teacher$questionShareTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the QuestionShareToken
-   */
-  select?: Prisma.QuestionShareTokenSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the QuestionShareToken
-   */
-  omit?: Prisma.QuestionShareTokenOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.QuestionShareTokenInclude<ExtArgs> | null
-  where?: Prisma.QuestionShareTokenWhereInput
-  orderBy?: Prisma.QuestionShareTokenOrderByWithRelationInput | Prisma.QuestionShareTokenOrderByWithRelationInput[]
-  cursor?: Prisma.QuestionShareTokenWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.QuestionShareTokenScalarFieldEnum | Prisma.QuestionShareTokenScalarFieldEnum[]
-}
-
-/**
  * Teacher.taskPdfUploads
  */
 export type Teacher$taskPdfUploadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5159,6 +5111,54 @@ export type Teacher$taskPdfUploadsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.TaskPdfUploadScalarFieldEnum | Prisma.TaskPdfUploadScalarFieldEnum[]
+}
+
+/**
+ * Teacher.taskQuestions
+ */
+export type Teacher$taskQuestionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskQuestion
+   */
+  select?: Prisma.TaskQuestionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskQuestion
+   */
+  omit?: Prisma.TaskQuestionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskQuestionInclude<ExtArgs> | null
+  where?: Prisma.TaskQuestionWhereInput
+  orderBy?: Prisma.TaskQuestionOrderByWithRelationInput | Prisma.TaskQuestionOrderByWithRelationInput[]
+  cursor?: Prisma.TaskQuestionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskQuestionScalarFieldEnum | Prisma.TaskQuestionScalarFieldEnum[]
+}
+
+/**
+ * Teacher.taskTests
+ */
+export type Teacher$taskTestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskTest
+   */
+  select?: Prisma.TaskTestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskTest
+   */
+  omit?: Prisma.TaskTestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskTestInclude<ExtArgs> | null
+  where?: Prisma.TaskTestWhereInput
+  orderBy?: Prisma.TaskTestOrderByWithRelationInput | Prisma.TaskTestOrderByWithRelationInput[]
+  cursor?: Prisma.TaskTestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskTestScalarFieldEnum | Prisma.TaskTestScalarFieldEnum[]
 }
 
 /**

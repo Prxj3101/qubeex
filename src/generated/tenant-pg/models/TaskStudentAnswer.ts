@@ -42,8 +42,8 @@ export type TaskStudentAnswerMinAggregateOutputType = {
   studentAnswer: string | null
   correctAnswer: string | null
   isCorrect: boolean | null
-  order: number | null
   createdAt: Date | null
+  order: number | null
 }
 
 export type TaskStudentAnswerMaxAggregateOutputType = {
@@ -54,8 +54,8 @@ export type TaskStudentAnswerMaxAggregateOutputType = {
   studentAnswer: string | null
   correctAnswer: string | null
   isCorrect: boolean | null
-  order: number | null
   createdAt: Date | null
+  order: number | null
 }
 
 export type TaskStudentAnswerCountAggregateOutputType = {
@@ -67,8 +67,8 @@ export type TaskStudentAnswerCountAggregateOutputType = {
   studentAnswer: number
   correctAnswer: number
   isCorrect: number
-  order: number
   createdAt: number
+  order: number
   _all: number
 }
 
@@ -89,8 +89,8 @@ export type TaskStudentAnswerMinAggregateInputType = {
   studentAnswer?: true
   correctAnswer?: true
   isCorrect?: true
-  order?: true
   createdAt?: true
+  order?: true
 }
 
 export type TaskStudentAnswerMaxAggregateInputType = {
@@ -101,8 +101,8 @@ export type TaskStudentAnswerMaxAggregateInputType = {
   studentAnswer?: true
   correctAnswer?: true
   isCorrect?: true
-  order?: true
   createdAt?: true
+  order?: true
 }
 
 export type TaskStudentAnswerCountAggregateInputType = {
@@ -114,8 +114,8 @@ export type TaskStudentAnswerCountAggregateInputType = {
   studentAnswer?: true
   correctAnswer?: true
   isCorrect?: true
-  order?: true
   createdAt?: true
+  order?: true
   _all?: true
 }
 
@@ -214,8 +214,8 @@ export type TaskStudentAnswerGroupByOutputType = {
   studentAnswer: string | null
   correctAnswer: string
   isCorrect: boolean
-  order: number
   createdAt: Date
+  order: number
   _count: TaskStudentAnswerCountAggregateOutputType | null
   _avg: TaskStudentAnswerAvgAggregateOutputType | null
   _sum: TaskStudentAnswerSumAggregateOutputType | null
@@ -250,8 +250,8 @@ export type TaskStudentAnswerWhereInput = {
   studentAnswer?: Prisma.StringNullableFilter<"TaskStudentAnswer"> | string | null
   correctAnswer?: Prisma.StringFilter<"TaskStudentAnswer"> | string
   isCorrect?: Prisma.BoolFilter<"TaskStudentAnswer"> | boolean
-  order?: Prisma.IntFilter<"TaskStudentAnswer"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskStudentAnswer"> | Date | string
+  order?: Prisma.IntFilter<"TaskStudentAnswer"> | number
   attempt?: Prisma.XOR<Prisma.TaskTestAttemptScalarRelationFilter, Prisma.TaskTestAttemptWhereInput>
   question?: Prisma.XOR<Prisma.TaskQuestionScalarRelationFilter, Prisma.TaskQuestionWhereInput>
 }
@@ -265,8 +265,8 @@ export type TaskStudentAnswerOrderByWithRelationInput = {
   studentAnswer?: Prisma.SortOrderInput | Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   isCorrect?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   attempt?: Prisma.TaskTestAttemptOrderByWithRelationInput
   question?: Prisma.TaskQuestionOrderByWithRelationInput
 }
@@ -283,8 +283,8 @@ export type TaskStudentAnswerWhereUniqueInput = Prisma.AtLeast<{
   studentAnswer?: Prisma.StringNullableFilter<"TaskStudentAnswer"> | string | null
   correctAnswer?: Prisma.StringFilter<"TaskStudentAnswer"> | string
   isCorrect?: Prisma.BoolFilter<"TaskStudentAnswer"> | boolean
-  order?: Prisma.IntFilter<"TaskStudentAnswer"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskStudentAnswer"> | Date | string
+  order?: Prisma.IntFilter<"TaskStudentAnswer"> | number
   attempt?: Prisma.XOR<Prisma.TaskTestAttemptScalarRelationFilter, Prisma.TaskTestAttemptWhereInput>
   question?: Prisma.XOR<Prisma.TaskQuestionScalarRelationFilter, Prisma.TaskQuestionWhereInput>
 }, "id">
@@ -298,8 +298,8 @@ export type TaskStudentAnswerOrderByWithAggregationInput = {
   studentAnswer?: Prisma.SortOrderInput | Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   isCorrect?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   _count?: Prisma.TaskStudentAnswerCountOrderByAggregateInput
   _avg?: Prisma.TaskStudentAnswerAvgOrderByAggregateInput
   _max?: Prisma.TaskStudentAnswerMaxOrderByAggregateInput
@@ -319,8 +319,8 @@ export type TaskStudentAnswerScalarWhereWithAggregatesInput = {
   studentAnswer?: Prisma.StringNullableWithAggregatesFilter<"TaskStudentAnswer"> | string | null
   correctAnswer?: Prisma.StringWithAggregatesFilter<"TaskStudentAnswer"> | string
   isCorrect?: Prisma.BoolWithAggregatesFilter<"TaskStudentAnswer"> | boolean
-  order?: Prisma.IntWithAggregatesFilter<"TaskStudentAnswer"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskStudentAnswer"> | Date | string
+  order?: Prisma.IntWithAggregatesFilter<"TaskStudentAnswer"> | number
 }
 
 export type TaskStudentAnswerCreateInput = {
@@ -330,8 +330,8 @@ export type TaskStudentAnswerCreateInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
   attempt: Prisma.TaskTestAttemptCreateNestedOneWithoutAnswersInput
   question: Prisma.TaskQuestionCreateNestedOneWithoutStudentAnswersInput
 }
@@ -345,8 +345,8 @@ export type TaskStudentAnswerUncheckedCreateInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
 }
 
 export type TaskStudentAnswerUpdateInput = {
@@ -356,8 +356,8 @@ export type TaskStudentAnswerUpdateInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   attempt?: Prisma.TaskTestAttemptUpdateOneRequiredWithoutAnswersNestedInput
   question?: Prisma.TaskQuestionUpdateOneRequiredWithoutStudentAnswersNestedInput
 }
@@ -371,8 +371,8 @@ export type TaskStudentAnswerUncheckedUpdateInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskStudentAnswerCreateManyInput = {
@@ -384,8 +384,8 @@ export type TaskStudentAnswerCreateManyInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
 }
 
 export type TaskStudentAnswerUpdateManyMutationInput = {
@@ -395,8 +395,8 @@ export type TaskStudentAnswerUpdateManyMutationInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskStudentAnswerUncheckedUpdateManyInput = {
@@ -408,8 +408,8 @@ export type TaskStudentAnswerUncheckedUpdateManyInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskStudentAnswerListRelationFilter = {
@@ -431,8 +431,8 @@ export type TaskStudentAnswerCountOrderByAggregateInput = {
   studentAnswer?: Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   isCorrect?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskStudentAnswerAvgOrderByAggregateInput = {
@@ -447,8 +447,8 @@ export type TaskStudentAnswerMaxOrderByAggregateInput = {
   studentAnswer?: Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   isCorrect?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskStudentAnswerMinOrderByAggregateInput = {
@@ -459,8 +459,8 @@ export type TaskStudentAnswerMinOrderByAggregateInput = {
   studentAnswer?: Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   isCorrect?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskStudentAnswerSumOrderByAggregateInput = {
@@ -558,8 +558,8 @@ export type TaskStudentAnswerCreateWithoutQuestionInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
   attempt: Prisma.TaskTestAttemptCreateNestedOneWithoutAnswersInput
 }
 
@@ -571,8 +571,8 @@ export type TaskStudentAnswerUncheckedCreateWithoutQuestionInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
 }
 
 export type TaskStudentAnswerCreateOrConnectWithoutQuestionInput = {
@@ -613,8 +613,8 @@ export type TaskStudentAnswerScalarWhereInput = {
   studentAnswer?: Prisma.StringNullableFilter<"TaskStudentAnswer"> | string | null
   correctAnswer?: Prisma.StringFilter<"TaskStudentAnswer"> | string
   isCorrect?: Prisma.BoolFilter<"TaskStudentAnswer"> | boolean
-  order?: Prisma.IntFilter<"TaskStudentAnswer"> | number
   createdAt?: Prisma.DateTimeFilter<"TaskStudentAnswer"> | Date | string
+  order?: Prisma.IntFilter<"TaskStudentAnswer"> | number
 }
 
 export type TaskStudentAnswerCreateWithoutAttemptInput = {
@@ -624,8 +624,8 @@ export type TaskStudentAnswerCreateWithoutAttemptInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
   question: Prisma.TaskQuestionCreateNestedOneWithoutStudentAnswersInput
 }
 
@@ -637,8 +637,8 @@ export type TaskStudentAnswerUncheckedCreateWithoutAttemptInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
 }
 
 export type TaskStudentAnswerCreateOrConnectWithoutAttemptInput = {
@@ -675,8 +675,8 @@ export type TaskStudentAnswerCreateManyQuestionInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
 }
 
 export type TaskStudentAnswerUpdateWithoutQuestionInput = {
@@ -686,8 +686,8 @@ export type TaskStudentAnswerUpdateWithoutQuestionInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   attempt?: Prisma.TaskTestAttemptUpdateOneRequiredWithoutAnswersNestedInput
 }
 
@@ -699,8 +699,8 @@ export type TaskStudentAnswerUncheckedUpdateWithoutQuestionInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskStudentAnswerUncheckedUpdateManyWithoutQuestionInput = {
@@ -711,8 +711,8 @@ export type TaskStudentAnswerUncheckedUpdateManyWithoutQuestionInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskStudentAnswerCreateManyAttemptInput = {
@@ -723,8 +723,8 @@ export type TaskStudentAnswerCreateManyAttemptInput = {
   studentAnswer?: string | null
   correctAnswer: string
   isCorrect: boolean
-  order?: number
   createdAt?: Date | string
+  order?: number
 }
 
 export type TaskStudentAnswerUpdateWithoutAttemptInput = {
@@ -734,8 +734,8 @@ export type TaskStudentAnswerUpdateWithoutAttemptInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   question?: Prisma.TaskQuestionUpdateOneRequiredWithoutStudentAnswersNestedInput
 }
 
@@ -747,8 +747,8 @@ export type TaskStudentAnswerUncheckedUpdateWithoutAttemptInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskStudentAnswerUncheckedUpdateManyWithoutAttemptInput = {
@@ -759,8 +759,8 @@ export type TaskStudentAnswerUncheckedUpdateManyWithoutAttemptInput = {
   studentAnswer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -774,8 +774,8 @@ export type TaskStudentAnswerSelect<ExtArgs extends runtime.Types.Extensions.Int
   studentAnswer?: boolean
   correctAnswer?: boolean
   isCorrect?: boolean
-  order?: boolean
   createdAt?: boolean
+  order?: boolean
   attempt?: boolean | Prisma.TaskTestAttemptDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskStudentAnswer"]>
@@ -789,8 +789,8 @@ export type TaskStudentAnswerSelectCreateManyAndReturn<ExtArgs extends runtime.T
   studentAnswer?: boolean
   correctAnswer?: boolean
   isCorrect?: boolean
-  order?: boolean
   createdAt?: boolean
+  order?: boolean
   attempt?: boolean | Prisma.TaskTestAttemptDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskStudentAnswer"]>
@@ -804,8 +804,8 @@ export type TaskStudentAnswerSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   studentAnswer?: boolean
   correctAnswer?: boolean
   isCorrect?: boolean
-  order?: boolean
   createdAt?: boolean
+  order?: boolean
   attempt?: boolean | Prisma.TaskTestAttemptDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskStudentAnswer"]>
@@ -819,11 +819,11 @@ export type TaskStudentAnswerSelectScalar = {
   studentAnswer?: boolean
   correctAnswer?: boolean
   isCorrect?: boolean
-  order?: boolean
   createdAt?: boolean
+  order?: boolean
 }
 
-export type TaskStudentAnswerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "attemptId" | "questionId" | "generatedQuestion" | "generatedOptions" | "studentAnswer" | "correctAnswer" | "isCorrect" | "order" | "createdAt", ExtArgs["result"]["taskStudentAnswer"]>
+export type TaskStudentAnswerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "attemptId" | "questionId" | "generatedQuestion" | "generatedOptions" | "studentAnswer" | "correctAnswer" | "isCorrect" | "createdAt" | "order", ExtArgs["result"]["taskStudentAnswer"]>
 export type TaskStudentAnswerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   attempt?: boolean | Prisma.TaskTestAttemptDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
@@ -852,8 +852,8 @@ export type $TaskStudentAnswerPayload<ExtArgs extends runtime.Types.Extensions.I
     studentAnswer: string | null
     correctAnswer: string
     isCorrect: boolean
-    order: number
     createdAt: Date
+    order: number
   }, ExtArgs["result"]["taskStudentAnswer"]>
   composites: {}
 }
@@ -1287,8 +1287,8 @@ export interface TaskStudentAnswerFieldRefs {
   readonly studentAnswer: Prisma.FieldRef<"TaskStudentAnswer", 'String'>
   readonly correctAnswer: Prisma.FieldRef<"TaskStudentAnswer", 'String'>
   readonly isCorrect: Prisma.FieldRef<"TaskStudentAnswer", 'Boolean'>
-  readonly order: Prisma.FieldRef<"TaskStudentAnswer", 'Int'>
   readonly createdAt: Prisma.FieldRef<"TaskStudentAnswer", 'DateTime'>
+  readonly order: Prisma.FieldRef<"TaskStudentAnswer", 'Int'>
 }
     
 

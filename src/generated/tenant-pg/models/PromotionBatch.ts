@@ -427,10 +427,6 @@ export type PromotionBatchScalarRelationFilter = {
   isNot?: Prisma.PromotionBatchWhereInput
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type PromotionBatchCreateNestedOneWithoutOutcomesInput = {
   create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutOutcomesInput, Prisma.PromotionBatchUncheckedCreateWithoutOutcomesInput>
   connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutOutcomesInput

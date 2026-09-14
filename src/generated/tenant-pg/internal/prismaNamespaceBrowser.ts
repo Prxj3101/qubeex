@@ -136,13 +136,13 @@ export const TeacherScalarFieldEnum = {
   country: 'country',
   qualification: 'qualification',
   experience: 'experience',
-  prefix: 'prefix',
-  title: 'title',
-  aiSoftLimitTokens: 'aiSoftLimitTokens',
   status: 'status',
   joinedAt: 'joinedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  prefix: 'prefix',
+  title: 'title',
+  aiSoftLimitTokens: 'aiSoftLimitTokens'
 } as const
 
 export type TeacherScalarFieldEnum = (typeof TeacherScalarFieldEnum)[keyof typeof TeacherScalarFieldEnum]
@@ -194,7 +194,8 @@ export const AdminTaskScalarFieldEnum = {
   text: 'text',
   done: 'done',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  dueAt: 'dueAt'
 } as const
 
 export type AdminTaskScalarFieldEnum = (typeof AdminTaskScalarFieldEnum)[keyof typeof AdminTaskScalarFieldEnum]
@@ -218,10 +219,10 @@ export const DivisionScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   capacity: 'capacity',
-  timetableUrl: 'timetableUrl',
-  classTeacherId: 'classTeacherId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  classTeacherId: 'classTeacherId',
+  timetableUrl: 'timetableUrl'
 } as const
 
 export type DivisionScalarFieldEnum = (typeof DivisionScalarFieldEnum)[keyof typeof DivisionScalarFieldEnum]
@@ -229,14 +230,14 @@ export type DivisionScalarFieldEnum = (typeof DivisionScalarFieldEnum)[keyof typ
 
 export const SubjectScalarFieldEnum = {
   id: 'id',
-  standardId: 'standardId',
   institutionId: 'institutionId',
   name: 'name',
   code: 'code',
   color: 'color',
   order: 'order',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  standardId: 'standardId'
 } as const
 
 export type SubjectScalarFieldEnum = (typeof SubjectScalarFieldEnum)[keyof typeof SubjectScalarFieldEnum]
@@ -280,24 +281,24 @@ export const StudentScalarFieldEnum = {
   state: 'state',
   pincode: 'pincode',
   country: 'country',
-  rollNo: 'rollNo',
-  houseColor: 'houseColor',
-  bloodGroup: 'bloodGroup',
-  aadharNo: 'aadharNo',
-  panNo: 'panNo',
-  emergencyContact: 'emergencyContact',
-  religion: 'religion',
-  category: 'category',
-  nationality: 'nationality',
-  admissionYear: 'admissionYear',
-  guardians: 'guardians',
-  extraDetailFields: 'extraDetailFields',
-  tempPassword: 'tempPassword',
-  hasLoggedIn: 'hasLoggedIn',
   status: 'status',
   joinedAt: 'joinedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  aadharNo: 'aadharNo',
+  bloodGroup: 'bloodGroup',
+  category: 'category',
+  emergencyContact: 'emergencyContact',
+  guardians: 'guardians',
+  houseColor: 'houseColor',
+  panNo: 'panNo',
+  religion: 'religion',
+  rollNo: 'rollNo',
+  tempPassword: 'tempPassword',
+  admissionYear: 'admissionYear',
+  nationality: 'nationality',
+  hasLoggedIn: 'hasLoggedIn',
+  extraDetailFields: 'extraDetailFields'
 } as const
 
 export type StudentScalarFieldEnum = (typeof StudentScalarFieldEnum)[keyof typeof StudentScalarFieldEnum]
@@ -349,21 +350,21 @@ export const StudentRemarkScalarFieldEnum = {
   institutionId: 'institutionId',
   studentId: 'studentId',
   type: 'type',
-  severity: 'severity',
   category: 'category',
   title: 'title',
   detail: 'detail',
   subject: 'subject',
   actionTaken: 'actionTaken',
   status: 'status',
-  attachments: 'attachments',
   reportedByUserId: 'reportedByUserId',
   reportedByRole: 'reportedByRole',
+  createdAt: 'createdAt',
   assignedToUserId: 'assignedToUserId',
   reviewRemark: 'reviewRemark',
-  reviewedByUserId: 'reviewedByUserId',
   reviewedAt: 'reviewedAt',
-  createdAt: 'createdAt'
+  reviewedByUserId: 'reviewedByUserId',
+  severity: 'severity',
+  attachments: 'attachments'
 } as const
 
 export type StudentRemarkScalarFieldEnum = (typeof StudentRemarkScalarFieldEnum)[keyof typeof StudentRemarkScalarFieldEnum]
@@ -426,9 +427,7 @@ export const StaffPostScalarFieldEnum = {
   institutionId: 'institutionId',
   authorId: 'authorId',
   text: 'text',
-  attachmentUrl: 'attachmentUrl',
-  attachmentType: 'attachmentType',
-  attachmentName: 'attachmentName',
+  attachments: 'attachments',
   createdAt: 'createdAt'
 } as const
 
@@ -463,9 +462,7 @@ export const StaffMessageScalarFieldEnum = {
   senderId: 'senderId',
   receiverId: 'receiverId',
   text: 'text',
-  attachmentUrl: 'attachmentUrl',
-  attachmentType: 'attachmentType',
-  attachmentName: 'attachmentName',
+  attachments: 'attachments',
   readAt: 'readAt',
   createdAt: 'createdAt'
 } as const
@@ -477,8 +474,6 @@ export const CampusFeedPostScalarFieldEnum = {
   id: 'id',
   institutionId: 'institutionId',
   authorId: 'authorId',
-  divisionId: 'divisionId',
-  subjectId: 'subjectId',
   type: 'type',
   title: 'title',
   body: 'body',
@@ -486,7 +481,9 @@ export const CampusFeedPostScalarFieldEnum = {
   attachmentUrl: 'attachmentUrl',
   attachmentType: 'attachmentType',
   attachmentName: 'attachmentName',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  divisionId: 'divisionId',
+  subjectId: 'subjectId'
 } as const
 
 export type CampusFeedPostScalarFieldEnum = (typeof CampusFeedPostScalarFieldEnum)[keyof typeof CampusFeedPostScalarFieldEnum]
@@ -496,10 +493,10 @@ export const CalendarEventScalarFieldEnum = {
   id: 'id',
   institutionId: 'institutionId',
   createdById: 'createdById',
-  divisionId: 'divisionId',
   type: 'type',
   label: 'label',
-  date: 'date'
+  date: 'date',
+  divisionId: 'divisionId'
 } as const
 
 export type CalendarEventScalarFieldEnum = (typeof CalendarEventScalarFieldEnum)[keyof typeof CalendarEventScalarFieldEnum]
@@ -509,19 +506,19 @@ export const DivisionFeeStructureScalarFieldEnum = {
   id: 'id',
   divisionId: 'divisionId',
   institutionId: 'institutionId',
-  feeStructures: 'feeStructures',
   feeMonths: 'feeMonths',
   bankDetails: 'bankDetails',
   qrImageUrl: 'qrImageUrl',
   extraColumns: 'extraColumns',
   extraStudentFields: 'extraStudentFields',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  feeStructures: 'feeStructures',
   generalRemark: 'generalRemark',
   feeCardTheme: 'feeCardTheme',
   schoolLogoUrl: 'schoolLogoUrl',
   schoolName: 'schoolName',
-  rulesAndRegs: 'rulesAndRegs',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  rulesAndRegs: 'rulesAndRegs'
 } as const
 
 export type DivisionFeeStructureScalarFieldEnum = (typeof DivisionFeeStructureScalarFieldEnum)[keyof typeof DivisionFeeStructureScalarFieldEnum]
@@ -534,11 +531,11 @@ export const StudentFeePaymentScalarFieldEnum = {
   feeMonthId: 'feeMonthId',
   status: 'status',
   paidDate: 'paidDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   remark: 'remark',
   extraFields: 'extraFields',
-  extraStructureIds: 'extraStructureIds',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  extraStructureIds: 'extraStructureIds'
 } as const
 
 export type StudentFeePaymentScalarFieldEnum = (typeof StudentFeePaymentScalarFieldEnum)[keyof typeof StudentFeePaymentScalarFieldEnum]
@@ -603,21 +600,21 @@ export const TaskQuestionScalarFieldEnum = {
   institutionId: 'institutionId',
   teacherId: 'teacherId',
   subjectId: 'subjectId',
-  containerId: 'containerId',
   type: 'type',
+  question: 'question',
+  options: 'options',
+  answer: 'answer',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  category: 'category',
+  details: 'details',
+  questionTemplate: 'questionTemplate',
   status: 'status',
+  containerId: 'containerId',
   source: 'source',
   sourceFile: 'sourceFile',
   uploadBatchId: 'uploadBatchId',
-  question: 'question',
-  questionTemplate: 'questionTemplate',
-  options: 'options',
-  answer: 'answer',
-  details: 'details',
-  category: 'category',
-  images: 'images',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  images: 'images'
 } as const
 
 export type TaskQuestionScalarFieldEnum = (typeof TaskQuestionScalarFieldEnum)[keyof typeof TaskQuestionScalarFieldEnum]
@@ -630,9 +627,9 @@ export const TaskModuleScalarFieldEnum = {
   subjectId: 'subjectId',
   name: 'name',
   description: 'description',
-  order: 'order',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  order: 'order'
 } as const
 
 export type TaskModuleScalarFieldEnum = (typeof TaskModuleScalarFieldEnum)[keyof typeof TaskModuleScalarFieldEnum]
@@ -642,8 +639,8 @@ export const TaskModuleQuestionScalarFieldEnum = {
   id: 'id',
   moduleId: 'moduleId',
   questionId: 'questionId',
-  order: 'order',
-  assignedAt: 'assignedAt'
+  assignedAt: 'assignedAt',
+  order: 'order'
 } as const
 
 export type TaskModuleQuestionScalarFieldEnum = (typeof TaskModuleQuestionScalarFieldEnum)[keyof typeof TaskModuleQuestionScalarFieldEnum]
@@ -659,18 +656,19 @@ export const TaskTestScalarFieldEnum = {
   description: 'description',
   testLink: 'testLink',
   status: 'status',
-  paperType: 'paperType',
-  isRandomized: 'isRandomized',
-  answerSpace: 'answerSpace',
-  sections: 'sections',
   durationMinutes: 'durationMinutes',
-  totalMarks: 'totalMarks',
   numberOfQuestions: 'numberOfQuestions',
   maxAttempts: 'maxAttempts',
-  startDate: 'startDate',
   validUntil: 'validUntil',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  isRandomized: 'isRandomized',
+  paperType: 'paperType',
+  sections: 'sections',
+  totalMarks: 'totalMarks',
+  answerSpace: 'answerSpace',
+  startDate: 'startDate',
+  deadlineReminderSent: 'deadlineReminderSent'
 } as const
 
 export type TaskTestScalarFieldEnum = (typeof TaskTestScalarFieldEnum)[keyof typeof TaskTestScalarFieldEnum]
@@ -681,9 +679,9 @@ export const TaskTestQuestionScalarFieldEnum = {
   testId: 'testId',
   questionId: 'questionId',
   isCompulsory: 'isCompulsory',
-  sectionId: 'sectionId',
   marks: 'marks',
-  order: 'order'
+  order: 'order',
+  sectionId: 'sectionId'
 } as const
 
 export type TaskTestQuestionScalarFieldEnum = (typeof TaskTestQuestionScalarFieldEnum)[keyof typeof TaskTestQuestionScalarFieldEnum]
@@ -703,8 +701,8 @@ export const TaskTestAttemptScalarFieldEnum = {
   status: 'status',
   tabChangeCount: 'tabChangeCount',
   malpracticeFlag: 'malpracticeFlag',
-  activeClientId: 'activeClientId',
-  activeClientAt: 'activeClientAt'
+  activeClientAt: 'activeClientAt',
+  activeClientId: 'activeClientId'
 } as const
 
 export type TaskTestAttemptScalarFieldEnum = (typeof TaskTestAttemptScalarFieldEnum)[keyof typeof TaskTestAttemptScalarFieldEnum]
@@ -719,8 +717,8 @@ export const TaskStudentAnswerScalarFieldEnum = {
   studentAnswer: 'studentAnswer',
   correctAnswer: 'correctAnswer',
   isCorrect: 'isCorrect',
-  order: 'order',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  order: 'order'
 } as const
 
 export type TaskStudentAnswerScalarFieldEnum = (typeof TaskStudentAnswerScalarFieldEnum)[keyof typeof TaskStudentAnswerScalarFieldEnum]
@@ -731,13 +729,13 @@ export const TaskPdfUploadScalarFieldEnum = {
   institutionId: 'institutionId',
   teacherId: 'teacherId',
   divisionId: 'divisionId',
-  containerId: 'containerId',
   displayName: 'displayName',
   originalName: 'originalName',
   status: 'status',
   questionCount: 'questionCount',
   errorMessage: 'errorMessage',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  containerId: 'containerId'
 } as const
 
 export type TaskPdfUploadScalarFieldEnum = (typeof TaskPdfUploadScalarFieldEnum)[keyof typeof TaskPdfUploadScalarFieldEnum]
@@ -767,15 +765,16 @@ export const TaskAssignmentScalarFieldEnum = {
   totalMarks: 'totalMarks',
   dueDate: 'dueDate',
   status: 'status',
-  completedAt: 'completedAt',
-  submissionType: 'submissionType',
-  sections: 'sections',
-  questions: 'questions',
-  isRandomized: 'isRandomized',
-  answerSpace: 'answerSpace',
-  numberOfQuestions: 'numberOfQuestions',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  answerSpace: 'answerSpace',
+  isRandomized: 'isRandomized',
+  numberOfQuestions: 'numberOfQuestions',
+  questions: 'questions',
+  sections: 'sections',
+  submissionType: 'submissionType',
+  completedAt: 'completedAt',
+  deadlineReminderSent: 'deadlineReminderSent'
 } as const
 
 export type TaskAssignmentScalarFieldEnum = (typeof TaskAssignmentScalarFieldEnum)[keyof typeof TaskAssignmentScalarFieldEnum]
@@ -796,9 +795,9 @@ export const TaskAssignmentSubmissionScalarFieldEnum = {
   reviewedByTeacherId: 'reviewedByTeacherId',
   offlineSubmittedAt: 'offlineSubmittedAt',
   offlineMarkedByTeacherId: 'offlineMarkedByTeacherId',
-  offlineMarkedLate: 'offlineMarkedLate',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  offlineMarkedLate: 'offlineMarkedLate'
 } as const
 
 export type TaskAssignmentSubmissionScalarFieldEnum = (typeof TaskAssignmentSubmissionScalarFieldEnum)[keyof typeof TaskAssignmentSubmissionScalarFieldEnum]
@@ -834,12 +833,12 @@ export const MarksheetScalarFieldEnum = {
   pdfR2Key: 'pdfR2Key',
   shareToken: 'shareToken',
   gradedSectionTitle: 'gradedSectionTitle',
-  gradeScale: 'gradeScale',
-  publishedSnapshot: 'publishedSnapshot',
-  publishedAt: 'publishedAt',
-  hasUnpublishedChanges: 'hasUnpublishedChanges',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  gradeScale: 'gradeScale',
+  publishedAt: 'publishedAt',
+  publishedSnapshot: 'publishedSnapshot',
+  hasUnpublishedChanges: 'hasUnpublishedChanges'
 } as const
 
 export type MarksheetScalarFieldEnum = (typeof MarksheetScalarFieldEnum)[keyof typeof MarksheetScalarFieldEnum]

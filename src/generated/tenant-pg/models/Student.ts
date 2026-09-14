@@ -40,22 +40,22 @@ export type StudentMinAggregateOutputType = {
   state: string | null
   pincode: string | null
   country: string | null
-  rollNo: string | null
-  houseColor: string | null
-  bloodGroup: string | null
-  aadharNo: string | null
-  panNo: string | null
-  emergencyContact: string | null
-  religion: string | null
-  category: string | null
-  nationality: string | null
-  admissionYear: string | null
-  tempPassword: string | null
-  hasLoggedIn: boolean | null
   status: $Enums.StudentStatus | null
   joinedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  aadharNo: string | null
+  bloodGroup: string | null
+  category: string | null
+  emergencyContact: string | null
+  houseColor: string | null
+  panNo: string | null
+  religion: string | null
+  rollNo: string | null
+  tempPassword: string | null
+  admissionYear: string | null
+  nationality: string | null
+  hasLoggedIn: boolean | null
 }
 
 export type StudentMaxAggregateOutputType = {
@@ -74,22 +74,22 @@ export type StudentMaxAggregateOutputType = {
   state: string | null
   pincode: string | null
   country: string | null
-  rollNo: string | null
-  houseColor: string | null
-  bloodGroup: string | null
-  aadharNo: string | null
-  panNo: string | null
-  emergencyContact: string | null
-  religion: string | null
-  category: string | null
-  nationality: string | null
-  admissionYear: string | null
-  tempPassword: string | null
-  hasLoggedIn: boolean | null
   status: $Enums.StudentStatus | null
   joinedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  aadharNo: string | null
+  bloodGroup: string | null
+  category: string | null
+  emergencyContact: string | null
+  houseColor: string | null
+  panNo: string | null
+  religion: string | null
+  rollNo: string | null
+  tempPassword: string | null
+  admissionYear: string | null
+  nationality: string | null
+  hasLoggedIn: boolean | null
 }
 
 export type StudentCountAggregateOutputType = {
@@ -108,24 +108,24 @@ export type StudentCountAggregateOutputType = {
   state: number
   pincode: number
   country: number
-  rollNo: number
-  houseColor: number
-  bloodGroup: number
-  aadharNo: number
-  panNo: number
-  emergencyContact: number
-  religion: number
-  category: number
-  nationality: number
-  admissionYear: number
-  guardians: number
-  extraDetailFields: number
-  tempPassword: number
-  hasLoggedIn: number
   status: number
   joinedAt: number
   createdAt: number
   updatedAt: number
+  aadharNo: number
+  bloodGroup: number
+  category: number
+  emergencyContact: number
+  guardians: number
+  houseColor: number
+  panNo: number
+  religion: number
+  rollNo: number
+  tempPassword: number
+  admissionYear: number
+  nationality: number
+  hasLoggedIn: number
+  extraDetailFields: number
   _all: number
 }
 
@@ -146,22 +146,22 @@ export type StudentMinAggregateInputType = {
   state?: true
   pincode?: true
   country?: true
-  rollNo?: true
-  houseColor?: true
-  bloodGroup?: true
-  aadharNo?: true
-  panNo?: true
-  emergencyContact?: true
-  religion?: true
-  category?: true
-  nationality?: true
-  admissionYear?: true
-  tempPassword?: true
-  hasLoggedIn?: true
   status?: true
   joinedAt?: true
   createdAt?: true
   updatedAt?: true
+  aadharNo?: true
+  bloodGroup?: true
+  category?: true
+  emergencyContact?: true
+  houseColor?: true
+  panNo?: true
+  religion?: true
+  rollNo?: true
+  tempPassword?: true
+  admissionYear?: true
+  nationality?: true
+  hasLoggedIn?: true
 }
 
 export type StudentMaxAggregateInputType = {
@@ -180,22 +180,22 @@ export type StudentMaxAggregateInputType = {
   state?: true
   pincode?: true
   country?: true
-  rollNo?: true
-  houseColor?: true
-  bloodGroup?: true
-  aadharNo?: true
-  panNo?: true
-  emergencyContact?: true
-  religion?: true
-  category?: true
-  nationality?: true
-  admissionYear?: true
-  tempPassword?: true
-  hasLoggedIn?: true
   status?: true
   joinedAt?: true
   createdAt?: true
   updatedAt?: true
+  aadharNo?: true
+  bloodGroup?: true
+  category?: true
+  emergencyContact?: true
+  houseColor?: true
+  panNo?: true
+  religion?: true
+  rollNo?: true
+  tempPassword?: true
+  admissionYear?: true
+  nationality?: true
+  hasLoggedIn?: true
 }
 
 export type StudentCountAggregateInputType = {
@@ -214,24 +214,24 @@ export type StudentCountAggregateInputType = {
   state?: true
   pincode?: true
   country?: true
-  rollNo?: true
-  houseColor?: true
-  bloodGroup?: true
-  aadharNo?: true
-  panNo?: true
-  emergencyContact?: true
-  religion?: true
-  category?: true
-  nationality?: true
-  admissionYear?: true
-  guardians?: true
-  extraDetailFields?: true
-  tempPassword?: true
-  hasLoggedIn?: true
   status?: true
   joinedAt?: true
   createdAt?: true
   updatedAt?: true
+  aadharNo?: true
+  bloodGroup?: true
+  category?: true
+  emergencyContact?: true
+  guardians?: true
+  houseColor?: true
+  panNo?: true
+  religion?: true
+  rollNo?: true
+  tempPassword?: true
+  admissionYear?: true
+  nationality?: true
+  hasLoggedIn?: true
+  extraDetailFields?: true
   _all?: true
 }
 
@@ -323,24 +323,24 @@ export type StudentGroupByOutputType = {
   state: string | null
   pincode: string | null
   country: string | null
-  rollNo: string | null
-  houseColor: string | null
-  bloodGroup: string | null
-  aadharNo: string | null
-  panNo: string | null
-  emergencyContact: string | null
-  religion: string | null
-  category: string | null
-  nationality: string | null
-  admissionYear: string | null
-  guardians: runtime.JsonValue | null
-  extraDetailFields: runtime.JsonValue | null
-  tempPassword: string | null
-  hasLoggedIn: boolean
   status: $Enums.StudentStatus
   joinedAt: Date
   createdAt: Date
   updatedAt: Date
+  aadharNo: string | null
+  bloodGroup: string | null
+  category: string | null
+  emergencyContact: string | null
+  guardians: runtime.JsonValue | null
+  houseColor: string | null
+  panNo: string | null
+  religion: string | null
+  rollNo: string | null
+  tempPassword: string | null
+  admissionYear: string | null
+  nationality: string | null
+  hasLoggedIn: boolean
+  extraDetailFields: runtime.JsonValue | null
   _count: StudentCountAggregateOutputType | null
   _min: StudentMinAggregateOutputType | null
   _max: StudentMaxAggregateOutputType | null
@@ -380,38 +380,38 @@ export type StudentWhereInput = {
   state?: Prisma.StringNullableFilter<"Student"> | string | null
   pincode?: Prisma.StringNullableFilter<"Student"> | string | null
   country?: Prisma.StringNullableFilter<"Student"> | string | null
-  rollNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  houseColor?: Prisma.StringNullableFilter<"Student"> | string | null
-  bloodGroup?: Prisma.StringNullableFilter<"Student"> | string | null
-  aadharNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  panNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  emergencyContact?: Prisma.StringNullableFilter<"Student"> | string | null
-  religion?: Prisma.StringNullableFilter<"Student"> | string | null
-  category?: Prisma.StringNullableFilter<"Student"> | string | null
-  nationality?: Prisma.StringNullableFilter<"Student"> | string | null
-  admissionYear?: Prisma.StringNullableFilter<"Student"> | string | null
-  guardians?: Prisma.JsonNullableFilter<"Student">
-  extraDetailFields?: Prisma.JsonNullableFilter<"Student">
-  tempPassword?: Prisma.StringNullableFilter<"Student"> | string | null
-  hasLoggedIn?: Prisma.BoolFilter<"Student"> | boolean
   status?: Prisma.EnumStudentStatusFilter<"Student"> | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFilter<"Student"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Student"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Student"> | Date | string
-  standard?: Prisma.XOR<Prisma.StandardNullableScalarRelationFilter, Prisma.StandardWhereInput> | null
-  division?: Prisma.XOR<Prisma.DivisionNullableScalarRelationFilter, Prisma.DivisionWhereInput> | null
+  aadharNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  bloodGroup?: Prisma.StringNullableFilter<"Student"> | string | null
+  category?: Prisma.StringNullableFilter<"Student"> | string | null
+  emergencyContact?: Prisma.StringNullableFilter<"Student"> | string | null
+  guardians?: Prisma.JsonNullableFilter<"Student">
+  houseColor?: Prisma.StringNullableFilter<"Student"> | string | null
+  panNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  religion?: Prisma.StringNullableFilter<"Student"> | string | null
+  rollNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  tempPassword?: Prisma.StringNullableFilter<"Student"> | string | null
+  admissionYear?: Prisma.StringNullableFilter<"Student"> | string | null
+  nationality?: Prisma.StringNullableFilter<"Student"> | string | null
+  hasLoggedIn?: Prisma.BoolFilter<"Student"> | boolean
+  extraDetailFields?: Prisma.JsonNullableFilter<"Student">
   attendances?: Prisma.AttendanceListRelationFilter
-  taskTestAttempts?: Prisma.TaskTestAttemptListRelationFilter
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
-  marksheetScores?: Prisma.MarksheetScoreListRelationFilter
   marksheetGradedScores?: Prisma.MarksheetGradedScoreListRelationFilter
   marksheetRemarks?: Prisma.MarksheetRemarkListRelationFilter
-  remarks?: Prisma.StudentRemarkListRelationFilter
-  feePayments?: Prisma.StudentFeePaymentListRelationFilter
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeListRelationFilter
+  marksheetScores?: Prisma.MarksheetScoreListRelationFilter
   ptmNotes?: Prisma.PTMNoteListRelationFilter
   parentModeEvents?: Prisma.ParentModeEventListRelationFilter
+  division?: Prisma.XOR<Prisma.DivisionNullableScalarRelationFilter, Prisma.DivisionWhereInput> | null
+  standard?: Prisma.XOR<Prisma.StandardNullableScalarRelationFilter, Prisma.StandardWhereInput> | null
+  feePayments?: Prisma.StudentFeePaymentListRelationFilter
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeListRelationFilter
+  remarks?: Prisma.StudentRemarkListRelationFilter
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
+  taskTestAttempts?: Prisma.TaskTestAttemptListRelationFilter
 }
 
 export type StudentOrderByWithRelationInput = {
@@ -430,38 +430,38 @@ export type StudentOrderByWithRelationInput = {
   state?: Prisma.SortOrderInput | Prisma.SortOrder
   pincode?: Prisma.SortOrderInput | Prisma.SortOrder
   country?: Prisma.SortOrderInput | Prisma.SortOrder
-  rollNo?: Prisma.SortOrderInput | Prisma.SortOrder
-  houseColor?: Prisma.SortOrderInput | Prisma.SortOrder
-  bloodGroup?: Prisma.SortOrderInput | Prisma.SortOrder
-  aadharNo?: Prisma.SortOrderInput | Prisma.SortOrder
-  panNo?: Prisma.SortOrderInput | Prisma.SortOrder
-  emergencyContact?: Prisma.SortOrderInput | Prisma.SortOrder
-  religion?: Prisma.SortOrderInput | Prisma.SortOrder
-  category?: Prisma.SortOrderInput | Prisma.SortOrder
-  nationality?: Prisma.SortOrderInput | Prisma.SortOrder
-  admissionYear?: Prisma.SortOrderInput | Prisma.SortOrder
-  guardians?: Prisma.SortOrderInput | Prisma.SortOrder
-  extraDetailFields?: Prisma.SortOrderInput | Prisma.SortOrder
-  tempPassword?: Prisma.SortOrderInput | Prisma.SortOrder
-  hasLoggedIn?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  standard?: Prisma.StandardOrderByWithRelationInput
-  division?: Prisma.DivisionOrderByWithRelationInput
+  aadharNo?: Prisma.SortOrderInput | Prisma.SortOrder
+  bloodGroup?: Prisma.SortOrderInput | Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
+  emergencyContact?: Prisma.SortOrderInput | Prisma.SortOrder
+  guardians?: Prisma.SortOrderInput | Prisma.SortOrder
+  houseColor?: Prisma.SortOrderInput | Prisma.SortOrder
+  panNo?: Prisma.SortOrderInput | Prisma.SortOrder
+  religion?: Prisma.SortOrderInput | Prisma.SortOrder
+  rollNo?: Prisma.SortOrderInput | Prisma.SortOrder
+  tempPassword?: Prisma.SortOrderInput | Prisma.SortOrder
+  admissionYear?: Prisma.SortOrderInput | Prisma.SortOrder
+  nationality?: Prisma.SortOrderInput | Prisma.SortOrder
+  hasLoggedIn?: Prisma.SortOrder
+  extraDetailFields?: Prisma.SortOrderInput | Prisma.SortOrder
   attendances?: Prisma.AttendanceOrderByRelationAggregateInput
-  taskTestAttempts?: Prisma.TaskTestAttemptOrderByRelationAggregateInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionOrderByRelationAggregateInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptOrderByRelationAggregateInput
-  marksheetScores?: Prisma.MarksheetScoreOrderByRelationAggregateInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreOrderByRelationAggregateInput
   marksheetRemarks?: Prisma.MarksheetRemarkOrderByRelationAggregateInput
-  remarks?: Prisma.StudentRemarkOrderByRelationAggregateInput
-  feePayments?: Prisma.StudentFeePaymentOrderByRelationAggregateInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeOrderByRelationAggregateInput
+  marksheetScores?: Prisma.MarksheetScoreOrderByRelationAggregateInput
   ptmNotes?: Prisma.PTMNoteOrderByRelationAggregateInput
   parentModeEvents?: Prisma.ParentModeEventOrderByRelationAggregateInput
+  division?: Prisma.DivisionOrderByWithRelationInput
+  standard?: Prisma.StandardOrderByWithRelationInput
+  feePayments?: Prisma.StudentFeePaymentOrderByRelationAggregateInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeOrderByRelationAggregateInput
+  remarks?: Prisma.StudentRemarkOrderByRelationAggregateInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionOrderByRelationAggregateInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptOrderByRelationAggregateInput
+  taskTestAttempts?: Prisma.TaskTestAttemptOrderByRelationAggregateInput
 }
 
 export type StudentWhereUniqueInput = Prisma.AtLeast<{
@@ -484,38 +484,38 @@ export type StudentWhereUniqueInput = Prisma.AtLeast<{
   state?: Prisma.StringNullableFilter<"Student"> | string | null
   pincode?: Prisma.StringNullableFilter<"Student"> | string | null
   country?: Prisma.StringNullableFilter<"Student"> | string | null
-  rollNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  houseColor?: Prisma.StringNullableFilter<"Student"> | string | null
-  bloodGroup?: Prisma.StringNullableFilter<"Student"> | string | null
-  aadharNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  panNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  emergencyContact?: Prisma.StringNullableFilter<"Student"> | string | null
-  religion?: Prisma.StringNullableFilter<"Student"> | string | null
-  category?: Prisma.StringNullableFilter<"Student"> | string | null
-  nationality?: Prisma.StringNullableFilter<"Student"> | string | null
-  admissionYear?: Prisma.StringNullableFilter<"Student"> | string | null
-  guardians?: Prisma.JsonNullableFilter<"Student">
-  extraDetailFields?: Prisma.JsonNullableFilter<"Student">
-  tempPassword?: Prisma.StringNullableFilter<"Student"> | string | null
-  hasLoggedIn?: Prisma.BoolFilter<"Student"> | boolean
   status?: Prisma.EnumStudentStatusFilter<"Student"> | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFilter<"Student"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Student"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Student"> | Date | string
-  standard?: Prisma.XOR<Prisma.StandardNullableScalarRelationFilter, Prisma.StandardWhereInput> | null
-  division?: Prisma.XOR<Prisma.DivisionNullableScalarRelationFilter, Prisma.DivisionWhereInput> | null
+  aadharNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  bloodGroup?: Prisma.StringNullableFilter<"Student"> | string | null
+  category?: Prisma.StringNullableFilter<"Student"> | string | null
+  emergencyContact?: Prisma.StringNullableFilter<"Student"> | string | null
+  guardians?: Prisma.JsonNullableFilter<"Student">
+  houseColor?: Prisma.StringNullableFilter<"Student"> | string | null
+  panNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  religion?: Prisma.StringNullableFilter<"Student"> | string | null
+  rollNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  tempPassword?: Prisma.StringNullableFilter<"Student"> | string | null
+  admissionYear?: Prisma.StringNullableFilter<"Student"> | string | null
+  nationality?: Prisma.StringNullableFilter<"Student"> | string | null
+  hasLoggedIn?: Prisma.BoolFilter<"Student"> | boolean
+  extraDetailFields?: Prisma.JsonNullableFilter<"Student">
   attendances?: Prisma.AttendanceListRelationFilter
-  taskTestAttempts?: Prisma.TaskTestAttemptListRelationFilter
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
-  marksheetScores?: Prisma.MarksheetScoreListRelationFilter
   marksheetGradedScores?: Prisma.MarksheetGradedScoreListRelationFilter
   marksheetRemarks?: Prisma.MarksheetRemarkListRelationFilter
-  remarks?: Prisma.StudentRemarkListRelationFilter
-  feePayments?: Prisma.StudentFeePaymentListRelationFilter
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeListRelationFilter
+  marksheetScores?: Prisma.MarksheetScoreListRelationFilter
   ptmNotes?: Prisma.PTMNoteListRelationFilter
   parentModeEvents?: Prisma.ParentModeEventListRelationFilter
+  division?: Prisma.XOR<Prisma.DivisionNullableScalarRelationFilter, Prisma.DivisionWhereInput> | null
+  standard?: Prisma.XOR<Prisma.StandardNullableScalarRelationFilter, Prisma.StandardWhereInput> | null
+  feePayments?: Prisma.StudentFeePaymentListRelationFilter
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeListRelationFilter
+  remarks?: Prisma.StudentRemarkListRelationFilter
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionListRelationFilter
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptListRelationFilter
+  taskTestAttempts?: Prisma.TaskTestAttemptListRelationFilter
 }, "id" | "userId" | "studentId_institutionId">
 
 export type StudentOrderByWithAggregationInput = {
@@ -534,24 +534,24 @@ export type StudentOrderByWithAggregationInput = {
   state?: Prisma.SortOrderInput | Prisma.SortOrder
   pincode?: Prisma.SortOrderInput | Prisma.SortOrder
   country?: Prisma.SortOrderInput | Prisma.SortOrder
-  rollNo?: Prisma.SortOrderInput | Prisma.SortOrder
-  houseColor?: Prisma.SortOrderInput | Prisma.SortOrder
-  bloodGroup?: Prisma.SortOrderInput | Prisma.SortOrder
-  aadharNo?: Prisma.SortOrderInput | Prisma.SortOrder
-  panNo?: Prisma.SortOrderInput | Prisma.SortOrder
-  emergencyContact?: Prisma.SortOrderInput | Prisma.SortOrder
-  religion?: Prisma.SortOrderInput | Prisma.SortOrder
-  category?: Prisma.SortOrderInput | Prisma.SortOrder
-  nationality?: Prisma.SortOrderInput | Prisma.SortOrder
-  admissionYear?: Prisma.SortOrderInput | Prisma.SortOrder
-  guardians?: Prisma.SortOrderInput | Prisma.SortOrder
-  extraDetailFields?: Prisma.SortOrderInput | Prisma.SortOrder
-  tempPassword?: Prisma.SortOrderInput | Prisma.SortOrder
-  hasLoggedIn?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  aadharNo?: Prisma.SortOrderInput | Prisma.SortOrder
+  bloodGroup?: Prisma.SortOrderInput | Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
+  emergencyContact?: Prisma.SortOrderInput | Prisma.SortOrder
+  guardians?: Prisma.SortOrderInput | Prisma.SortOrder
+  houseColor?: Prisma.SortOrderInput | Prisma.SortOrder
+  panNo?: Prisma.SortOrderInput | Prisma.SortOrder
+  religion?: Prisma.SortOrderInput | Prisma.SortOrder
+  rollNo?: Prisma.SortOrderInput | Prisma.SortOrder
+  tempPassword?: Prisma.SortOrderInput | Prisma.SortOrder
+  admissionYear?: Prisma.SortOrderInput | Prisma.SortOrder
+  nationality?: Prisma.SortOrderInput | Prisma.SortOrder
+  hasLoggedIn?: Prisma.SortOrder
+  extraDetailFields?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.StudentCountOrderByAggregateInput
   _max?: Prisma.StudentMaxOrderByAggregateInput
   _min?: Prisma.StudentMinOrderByAggregateInput
@@ -576,24 +576,24 @@ export type StudentScalarWhereWithAggregatesInput = {
   state?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
   pincode?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
   country?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  rollNo?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  houseColor?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  bloodGroup?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  aadharNo?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  panNo?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  emergencyContact?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  religion?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  category?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  nationality?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  admissionYear?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  guardians?: Prisma.JsonNullableWithAggregatesFilter<"Student">
-  extraDetailFields?: Prisma.JsonNullableWithAggregatesFilter<"Student">
-  tempPassword?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
-  hasLoggedIn?: Prisma.BoolWithAggregatesFilter<"Student"> | boolean
   status?: Prisma.EnumStudentStatusWithAggregatesFilter<"Student"> | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeWithAggregatesFilter<"Student"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Student"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Student"> | Date | string
+  aadharNo?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  bloodGroup?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  category?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  emergencyContact?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  guardians?: Prisma.JsonNullableWithAggregatesFilter<"Student">
+  houseColor?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  panNo?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  religion?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  rollNo?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  tempPassword?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  admissionYear?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  nationality?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
+  hasLoggedIn?: Prisma.BoolWithAggregatesFilter<"Student"> | boolean
+  extraDetailFields?: Prisma.JsonNullableWithAggregatesFilter<"Student">
 }
 
 export type StudentCreateInput = {
@@ -610,38 +610,38 @@ export type StudentCreateInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateInput = {
@@ -660,36 +660,36 @@ export type StudentUncheckedCreateInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUpdateInput = {
@@ -706,38 +706,38 @@ export type StudentUpdateInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateInput = {
@@ -756,36 +756,36 @@ export type StudentUncheckedUpdateInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateManyInput = {
@@ -804,24 +804,24 @@ export type StudentCreateManyInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentUpdateManyMutationInput = {
@@ -838,24 +838,24 @@ export type StudentUpdateManyMutationInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentUncheckedUpdateManyInput = {
@@ -874,24 +874,24 @@ export type StudentUncheckedUpdateManyInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentListRelationFilter = {
@@ -925,24 +925,24 @@ export type StudentCountOrderByAggregateInput = {
   state?: Prisma.SortOrder
   pincode?: Prisma.SortOrder
   country?: Prisma.SortOrder
-  rollNo?: Prisma.SortOrder
-  houseColor?: Prisma.SortOrder
-  bloodGroup?: Prisma.SortOrder
-  aadharNo?: Prisma.SortOrder
-  panNo?: Prisma.SortOrder
-  emergencyContact?: Prisma.SortOrder
-  religion?: Prisma.SortOrder
-  category?: Prisma.SortOrder
-  nationality?: Prisma.SortOrder
-  admissionYear?: Prisma.SortOrder
-  guardians?: Prisma.SortOrder
-  extraDetailFields?: Prisma.SortOrder
-  tempPassword?: Prisma.SortOrder
-  hasLoggedIn?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  aadharNo?: Prisma.SortOrder
+  bloodGroup?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  emergencyContact?: Prisma.SortOrder
+  guardians?: Prisma.SortOrder
+  houseColor?: Prisma.SortOrder
+  panNo?: Prisma.SortOrder
+  religion?: Prisma.SortOrder
+  rollNo?: Prisma.SortOrder
+  tempPassword?: Prisma.SortOrder
+  admissionYear?: Prisma.SortOrder
+  nationality?: Prisma.SortOrder
+  hasLoggedIn?: Prisma.SortOrder
+  extraDetailFields?: Prisma.SortOrder
 }
 
 export type StudentMaxOrderByAggregateInput = {
@@ -961,22 +961,22 @@ export type StudentMaxOrderByAggregateInput = {
   state?: Prisma.SortOrder
   pincode?: Prisma.SortOrder
   country?: Prisma.SortOrder
-  rollNo?: Prisma.SortOrder
-  houseColor?: Prisma.SortOrder
-  bloodGroup?: Prisma.SortOrder
-  aadharNo?: Prisma.SortOrder
-  panNo?: Prisma.SortOrder
-  emergencyContact?: Prisma.SortOrder
-  religion?: Prisma.SortOrder
-  category?: Prisma.SortOrder
-  nationality?: Prisma.SortOrder
-  admissionYear?: Prisma.SortOrder
-  tempPassword?: Prisma.SortOrder
-  hasLoggedIn?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  aadharNo?: Prisma.SortOrder
+  bloodGroup?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  emergencyContact?: Prisma.SortOrder
+  houseColor?: Prisma.SortOrder
+  panNo?: Prisma.SortOrder
+  religion?: Prisma.SortOrder
+  rollNo?: Prisma.SortOrder
+  tempPassword?: Prisma.SortOrder
+  admissionYear?: Prisma.SortOrder
+  nationality?: Prisma.SortOrder
+  hasLoggedIn?: Prisma.SortOrder
 }
 
 export type StudentMinOrderByAggregateInput = {
@@ -995,22 +995,22 @@ export type StudentMinOrderByAggregateInput = {
   state?: Prisma.SortOrder
   pincode?: Prisma.SortOrder
   country?: Prisma.SortOrder
-  rollNo?: Prisma.SortOrder
-  houseColor?: Prisma.SortOrder
-  bloodGroup?: Prisma.SortOrder
-  aadharNo?: Prisma.SortOrder
-  panNo?: Prisma.SortOrder
-  emergencyContact?: Prisma.SortOrder
-  religion?: Prisma.SortOrder
-  category?: Prisma.SortOrder
-  nationality?: Prisma.SortOrder
-  admissionYear?: Prisma.SortOrder
-  tempPassword?: Prisma.SortOrder
-  hasLoggedIn?: Prisma.SortOrder
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  aadharNo?: Prisma.SortOrder
+  bloodGroup?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  emergencyContact?: Prisma.SortOrder
+  houseColor?: Prisma.SortOrder
+  panNo?: Prisma.SortOrder
+  religion?: Prisma.SortOrder
+  rollNo?: Prisma.SortOrder
+  tempPassword?: Prisma.SortOrder
+  admissionYear?: Prisma.SortOrder
+  nationality?: Prisma.SortOrder
+  hasLoggedIn?: Prisma.SortOrder
 }
 
 export type StudentScalarRelationFilter = {
@@ -1295,37 +1295,37 @@ export type StudentCreateWithoutStandardInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutStandardInput = {
@@ -1343,36 +1343,36 @@ export type StudentUncheckedCreateWithoutStandardInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutStandardInput = {
@@ -1420,24 +1420,24 @@ export type StudentScalarWhereInput = {
   state?: Prisma.StringNullableFilter<"Student"> | string | null
   pincode?: Prisma.StringNullableFilter<"Student"> | string | null
   country?: Prisma.StringNullableFilter<"Student"> | string | null
-  rollNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  houseColor?: Prisma.StringNullableFilter<"Student"> | string | null
-  bloodGroup?: Prisma.StringNullableFilter<"Student"> | string | null
-  aadharNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  panNo?: Prisma.StringNullableFilter<"Student"> | string | null
-  emergencyContact?: Prisma.StringNullableFilter<"Student"> | string | null
-  religion?: Prisma.StringNullableFilter<"Student"> | string | null
-  category?: Prisma.StringNullableFilter<"Student"> | string | null
-  nationality?: Prisma.StringNullableFilter<"Student"> | string | null
-  admissionYear?: Prisma.StringNullableFilter<"Student"> | string | null
-  guardians?: Prisma.JsonNullableFilter<"Student">
-  extraDetailFields?: Prisma.JsonNullableFilter<"Student">
-  tempPassword?: Prisma.StringNullableFilter<"Student"> | string | null
-  hasLoggedIn?: Prisma.BoolFilter<"Student"> | boolean
   status?: Prisma.EnumStudentStatusFilter<"Student"> | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFilter<"Student"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Student"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Student"> | Date | string
+  aadharNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  bloodGroup?: Prisma.StringNullableFilter<"Student"> | string | null
+  category?: Prisma.StringNullableFilter<"Student"> | string | null
+  emergencyContact?: Prisma.StringNullableFilter<"Student"> | string | null
+  guardians?: Prisma.JsonNullableFilter<"Student">
+  houseColor?: Prisma.StringNullableFilter<"Student"> | string | null
+  panNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  religion?: Prisma.StringNullableFilter<"Student"> | string | null
+  rollNo?: Prisma.StringNullableFilter<"Student"> | string | null
+  tempPassword?: Prisma.StringNullableFilter<"Student"> | string | null
+  admissionYear?: Prisma.StringNullableFilter<"Student"> | string | null
+  nationality?: Prisma.StringNullableFilter<"Student"> | string | null
+  hasLoggedIn?: Prisma.BoolFilter<"Student"> | boolean
+  extraDetailFields?: Prisma.JsonNullableFilter<"Student">
 }
 
 export type StudentCreateWithoutDivisionInput = {
@@ -1454,37 +1454,37 @@ export type StudentCreateWithoutDivisionInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutDivisionInput = {
@@ -1502,36 +1502,36 @@ export type StudentUncheckedCreateWithoutDivisionInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutDivisionInput = {
@@ -1574,37 +1574,37 @@ export type StudentCreateWithoutParentModeEventsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
+  ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
-  ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutParentModeEventsInput = {
@@ -1623,35 +1623,35 @@ export type StudentUncheckedCreateWithoutParentModeEventsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
+  ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
-  ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutParentModeEventsInput = {
@@ -1684,37 +1684,37 @@ export type StudentUpdateWithoutParentModeEventsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
+  ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
-  ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutParentModeEventsInput = {
@@ -1733,35 +1733,35 @@ export type StudentUncheckedUpdateWithoutParentModeEventsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
+  ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
-  ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutPromotionOutcomesInput = {
@@ -1778,37 +1778,37 @@ export type StudentCreateWithoutPromotionOutcomesInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutPromotionOutcomesInput = {
@@ -1827,35 +1827,35 @@ export type StudentUncheckedCreateWithoutPromotionOutcomesInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutPromotionOutcomesInput = {
@@ -1888,37 +1888,37 @@ export type StudentUpdateWithoutPromotionOutcomesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutPromotionOutcomesInput = {
@@ -1937,35 +1937,35 @@ export type StudentUncheckedUpdateWithoutPromotionOutcomesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutRemarksInput = {
@@ -1982,37 +1982,37 @@ export type StudentCreateWithoutRemarksInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutRemarksInput = {
@@ -2031,35 +2031,35 @@ export type StudentUncheckedCreateWithoutRemarksInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutRemarksInput = {
@@ -2092,37 +2092,37 @@ export type StudentUpdateWithoutRemarksInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutRemarksInput = {
@@ -2141,35 +2141,35 @@ export type StudentUncheckedUpdateWithoutRemarksInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutPtmNotesInput = {
@@ -2186,37 +2186,37 @@ export type StudentCreateWithoutPtmNotesInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
+  parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
   feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
-  parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutPtmNotesInput = {
@@ -2235,35 +2235,35 @@ export type StudentUncheckedCreateWithoutPtmNotesInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
+  parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
   feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
-  parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutPtmNotesInput = {
@@ -2296,37 +2296,37 @@ export type StudentUpdateWithoutPtmNotesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
+  parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
   feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
-  parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutPtmNotesInput = {
@@ -2345,35 +2345,35 @@ export type StudentUncheckedUpdateWithoutPtmNotesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
+  parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
   feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
   promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
-  parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutAttendancesInput = {
@@ -2390,37 +2390,37 @@ export type StudentCreateWithoutAttendancesInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutAttendancesInput = {
@@ -2439,35 +2439,35 @@ export type StudentUncheckedCreateWithoutAttendancesInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutAttendancesInput = {
@@ -2500,37 +2500,37 @@ export type StudentUpdateWithoutAttendancesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutAttendancesInput = {
@@ -2549,35 +2549,35 @@ export type StudentUncheckedUpdateWithoutAttendancesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutFeePaymentsInput = {
@@ -2594,37 +2594,37 @@ export type StudentCreateWithoutFeePaymentsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutFeePaymentsInput = {
@@ -2643,35 +2643,35 @@ export type StudentUncheckedCreateWithoutFeePaymentsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutFeePaymentsInput = {
@@ -2704,37 +2704,37 @@ export type StudentUpdateWithoutFeePaymentsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutFeePaymentsInput = {
@@ -2753,35 +2753,35 @@ export type StudentUncheckedUpdateWithoutFeePaymentsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutTaskTestAttemptsInput = {
@@ -2798,37 +2798,37 @@ export type StudentCreateWithoutTaskTestAttemptsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutTaskTestAttemptsInput = {
@@ -2847,35 +2847,35 @@ export type StudentUncheckedCreateWithoutTaskTestAttemptsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutTaskTestAttemptsInput = {
@@ -2908,37 +2908,37 @@ export type StudentUpdateWithoutTaskTestAttemptsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutTaskTestAttemptsInput = {
@@ -2957,35 +2957,35 @@ export type StudentUncheckedUpdateWithoutTaskTestAttemptsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutTaskAssignmentSubmissionsInput = {
@@ -3002,37 +3002,37 @@ export type StudentCreateWithoutTaskAssignmentSubmissionsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutTaskAssignmentSubmissionsInput = {
@@ -3051,35 +3051,35 @@ export type StudentUncheckedCreateWithoutTaskAssignmentSubmissionsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutTaskAssignmentSubmissionsInput = {
@@ -3112,37 +3112,37 @@ export type StudentUpdateWithoutTaskAssignmentSubmissionsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutTaskAssignmentSubmissionsInput = {
@@ -3161,35 +3161,35 @@ export type StudentUncheckedUpdateWithoutTaskAssignmentSubmissionsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutTaskAssignmentSubmissionAttemptsInput = {
@@ -3206,37 +3206,37 @@ export type StudentCreateWithoutTaskAssignmentSubmissionAttemptsInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutTaskAssignmentSubmissionAttemptsInput = {
@@ -3255,35 +3255,35 @@ export type StudentUncheckedCreateWithoutTaskAssignmentSubmissionAttemptsInput =
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutTaskAssignmentSubmissionAttemptsInput = {
@@ -3316,37 +3316,37 @@ export type StudentUpdateWithoutTaskAssignmentSubmissionAttemptsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutTaskAssignmentSubmissionAttemptsInput = {
@@ -3365,35 +3365,35 @@ export type StudentUncheckedUpdateWithoutTaskAssignmentSubmissionAttemptsInput =
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutMarksheetScoresInput = {
@@ -3410,37 +3410,37 @@ export type StudentCreateWithoutMarksheetScoresInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutMarksheetScoresInput = {
@@ -3459,35 +3459,35 @@ export type StudentUncheckedCreateWithoutMarksheetScoresInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutMarksheetScoresInput = {
@@ -3520,37 +3520,37 @@ export type StudentUpdateWithoutMarksheetScoresInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutMarksheetScoresInput = {
@@ -3569,35 +3569,35 @@ export type StudentUncheckedUpdateWithoutMarksheetScoresInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutMarksheetGradedScoresInput = {
@@ -3614,37 +3614,37 @@ export type StudentCreateWithoutMarksheetGradedScoresInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutMarksheetGradedScoresInput = {
@@ -3663,35 +3663,35 @@ export type StudentUncheckedCreateWithoutMarksheetGradedScoresInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutMarksheetGradedScoresInput = {
@@ -3724,37 +3724,37 @@ export type StudentUpdateWithoutMarksheetGradedScoresInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutMarksheetGradedScoresInput = {
@@ -3773,35 +3773,35 @@ export type StudentUncheckedUpdateWithoutMarksheetGradedScoresInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateWithoutMarksheetRemarksInput = {
@@ -3818,37 +3818,37 @@ export type StudentCreateWithoutMarksheetRemarksInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
-  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventCreateNestedManyWithoutStudentInput
+  division?: Prisma.DivisionCreateNestedOneWithoutStudentsInput
+  standard?: Prisma.StandardCreateNestedOneWithoutStudentsInput
+  feePayments?: Prisma.StudentFeePaymentCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type StudentUncheckedCreateWithoutMarksheetRemarksInput = {
@@ -3867,35 +3867,35 @@ export type StudentUncheckedCreateWithoutMarksheetRemarksInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutStudentInput
-  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutStudentInput
   ptmNotes?: Prisma.PTMNoteUncheckedCreateNestedManyWithoutStudentInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedCreateNestedManyWithoutStudentInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedCreateNestedManyWithoutStudentInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutStudentInput
+  remarks?: Prisma.StudentRemarkUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedCreateNestedManyWithoutStudentInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type StudentCreateOrConnectWithoutMarksheetRemarksInput = {
@@ -3928,37 +3928,37 @@ export type StudentUpdateWithoutMarksheetRemarksInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutMarksheetRemarksInput = {
@@ -3977,35 +3977,35 @@ export type StudentUncheckedUpdateWithoutMarksheetRemarksInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentCreateManyStandardInput = {
@@ -4023,24 +4023,24 @@ export type StudentCreateManyStandardInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentUpdateWithoutStandardInput = {
@@ -4057,37 +4057,37 @@ export type StudentUpdateWithoutStandardInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  division?: Prisma.DivisionUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutStandardInput = {
@@ -4105,36 +4105,36 @@ export type StudentUncheckedUpdateWithoutStandardInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateManyWithoutStandardInput = {
@@ -4152,24 +4152,24 @@ export type StudentUncheckedUpdateManyWithoutStandardInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentCreateManyDivisionInput = {
@@ -4187,24 +4187,24 @@ export type StudentCreateManyDivisionInput = {
   state?: string | null
   pincode?: string | null
   country?: string | null
-  rollNo?: string | null
-  houseColor?: string | null
-  bloodGroup?: string | null
-  aadharNo?: string | null
-  panNo?: string | null
-  emergencyContact?: string | null
-  religion?: string | null
-  category?: string | null
-  nationality?: string | null
-  admissionYear?: string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: string | null
-  hasLoggedIn?: boolean
   status?: $Enums.StudentStatus
   joinedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  aadharNo?: string | null
+  bloodGroup?: string | null
+  category?: string | null
+  emergencyContact?: string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: string | null
+  panNo?: string | null
+  religion?: string | null
+  rollNo?: string | null
+  tempPassword?: string | null
+  admissionYear?: string | null
+  nationality?: string | null
+  hasLoggedIn?: boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentUpdateWithoutDivisionInput = {
@@ -4221,37 +4221,37 @@ export type StudentUpdateWithoutDivisionInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUpdateManyWithoutStudentNestedInput
+  standard?: Prisma.StandardUpdateOneWithoutStudentsNestedInput
+  feePayments?: Prisma.StudentFeePaymentUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateWithoutDivisionInput = {
@@ -4269,36 +4269,36 @@ export type StudentUncheckedUpdateWithoutDivisionInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
-  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetGradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutStudentNestedInput
   marksheetRemarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
-  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
-  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  marksheetScores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutStudentNestedInput
   ptmNotes?: Prisma.PTMNoteUncheckedUpdateManyWithoutStudentNestedInput
   parentModeEvents?: Prisma.ParentModeEventUncheckedUpdateManyWithoutStudentNestedInput
+  feePayments?: Prisma.StudentFeePaymentUncheckedUpdateManyWithoutStudentNestedInput
+  promotionOutcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutStudentNestedInput
+  remarks?: Prisma.StudentRemarkUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissions?: Prisma.TaskAssignmentSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignmentSubmissionAttempts?: Prisma.TaskAssignmentSubmissionAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  taskTestAttempts?: Prisma.TaskTestAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type StudentUncheckedUpdateManyWithoutDivisionInput = {
@@ -4316,24 +4316,24 @@ export type StudentUncheckedUpdateManyWithoutDivisionInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumStudentStatusFieldUpdateOperationsInput | $Enums.StudentStatus
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aadharNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardians?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  houseColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  panNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rollNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tempPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasLoggedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  extraDetailFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -4343,32 +4343,32 @@ export type StudentUncheckedUpdateManyWithoutDivisionInput = {
 
 export type StudentCountOutputType = {
   attendances: number
-  taskTestAttempts: number
-  taskAssignmentSubmissions: number
-  taskAssignmentSubmissionAttempts: number
-  marksheetScores: number
   marksheetGradedScores: number
   marksheetRemarks: number
-  remarks: number
-  feePayments: number
-  promotionOutcomes: number
+  marksheetScores: number
   ptmNotes: number
   parentModeEvents: number
+  feePayments: number
+  promotionOutcomes: number
+  remarks: number
+  taskAssignmentSubmissions: number
+  taskAssignmentSubmissionAttempts: number
+  taskTestAttempts: number
 }
 
 export type StudentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   attendances?: boolean | StudentCountOutputTypeCountAttendancesArgs
-  taskTestAttempts?: boolean | StudentCountOutputTypeCountTaskTestAttemptsArgs
-  taskAssignmentSubmissions?: boolean | StudentCountOutputTypeCountTaskAssignmentSubmissionsArgs
-  taskAssignmentSubmissionAttempts?: boolean | StudentCountOutputTypeCountTaskAssignmentSubmissionAttemptsArgs
-  marksheetScores?: boolean | StudentCountOutputTypeCountMarksheetScoresArgs
   marksheetGradedScores?: boolean | StudentCountOutputTypeCountMarksheetGradedScoresArgs
   marksheetRemarks?: boolean | StudentCountOutputTypeCountMarksheetRemarksArgs
-  remarks?: boolean | StudentCountOutputTypeCountRemarksArgs
-  feePayments?: boolean | StudentCountOutputTypeCountFeePaymentsArgs
-  promotionOutcomes?: boolean | StudentCountOutputTypeCountPromotionOutcomesArgs
+  marksheetScores?: boolean | StudentCountOutputTypeCountMarksheetScoresArgs
   ptmNotes?: boolean | StudentCountOutputTypeCountPtmNotesArgs
   parentModeEvents?: boolean | StudentCountOutputTypeCountParentModeEventsArgs
+  feePayments?: boolean | StudentCountOutputTypeCountFeePaymentsArgs
+  promotionOutcomes?: boolean | StudentCountOutputTypeCountPromotionOutcomesArgs
+  remarks?: boolean | StudentCountOutputTypeCountRemarksArgs
+  taskAssignmentSubmissions?: boolean | StudentCountOutputTypeCountTaskAssignmentSubmissionsArgs
+  taskAssignmentSubmissionAttempts?: boolean | StudentCountOutputTypeCountTaskAssignmentSubmissionAttemptsArgs
+  taskTestAttempts?: boolean | StudentCountOutputTypeCountTaskTestAttemptsArgs
 }
 
 /**
@@ -4391,34 +4391,6 @@ export type StudentCountOutputTypeCountAttendancesArgs<ExtArgs extends runtime.T
 /**
  * StudentCountOutputType without action
  */
-export type StudentCountOutputTypeCountTaskTestAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskTestAttemptWhereInput
-}
-
-/**
- * StudentCountOutputType without action
- */
-export type StudentCountOutputTypeCountTaskAssignmentSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskAssignmentSubmissionWhereInput
-}
-
-/**
- * StudentCountOutputType without action
- */
-export type StudentCountOutputTypeCountTaskAssignmentSubmissionAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskAssignmentSubmissionAttemptWhereInput
-}
-
-/**
- * StudentCountOutputType without action
- */
-export type StudentCountOutputTypeCountMarksheetScoresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MarksheetScoreWhereInput
-}
-
-/**
- * StudentCountOutputType without action
- */
 export type StudentCountOutputTypeCountMarksheetGradedScoresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MarksheetGradedScoreWhereInput
 }
@@ -4433,8 +4405,22 @@ export type StudentCountOutputTypeCountMarksheetRemarksArgs<ExtArgs extends runt
 /**
  * StudentCountOutputType without action
  */
-export type StudentCountOutputTypeCountRemarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StudentRemarkWhereInput
+export type StudentCountOutputTypeCountMarksheetScoresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MarksheetScoreWhereInput
+}
+
+/**
+ * StudentCountOutputType without action
+ */
+export type StudentCountOutputTypeCountPtmNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PTMNoteWhereInput
+}
+
+/**
+ * StudentCountOutputType without action
+ */
+export type StudentCountOutputTypeCountParentModeEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ParentModeEventWhereInput
 }
 
 /**
@@ -4454,15 +4440,29 @@ export type StudentCountOutputTypeCountPromotionOutcomesArgs<ExtArgs extends run
 /**
  * StudentCountOutputType without action
  */
-export type StudentCountOutputTypeCountPtmNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PTMNoteWhereInput
+export type StudentCountOutputTypeCountRemarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StudentRemarkWhereInput
 }
 
 /**
  * StudentCountOutputType without action
  */
-export type StudentCountOutputTypeCountParentModeEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ParentModeEventWhereInput
+export type StudentCountOutputTypeCountTaskAssignmentSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssignmentSubmissionWhereInput
+}
+
+/**
+ * StudentCountOutputType without action
+ */
+export type StudentCountOutputTypeCountTaskAssignmentSubmissionAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssignmentSubmissionAttemptWhereInput
+}
+
+/**
+ * StudentCountOutputType without action
+ */
+export type StudentCountOutputTypeCountTaskTestAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskTestAttemptWhereInput
 }
 
 
@@ -4482,38 +4482,38 @@ export type StudentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   state?: boolean
   pincode?: boolean
   country?: boolean
-  rollNo?: boolean
-  houseColor?: boolean
-  bloodGroup?: boolean
-  aadharNo?: boolean
-  panNo?: boolean
-  emergencyContact?: boolean
-  religion?: boolean
-  category?: boolean
-  nationality?: boolean
-  admissionYear?: boolean
-  guardians?: boolean
-  extraDetailFields?: boolean
-  tempPassword?: boolean
-  hasLoggedIn?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
-  division?: boolean | Prisma.Student$divisionArgs<ExtArgs>
+  aadharNo?: boolean
+  bloodGroup?: boolean
+  category?: boolean
+  emergencyContact?: boolean
+  guardians?: boolean
+  houseColor?: boolean
+  panNo?: boolean
+  religion?: boolean
+  rollNo?: boolean
+  tempPassword?: boolean
+  admissionYear?: boolean
+  nationality?: boolean
+  hasLoggedIn?: boolean
+  extraDetailFields?: boolean
   attendances?: boolean | Prisma.Student$attendancesArgs<ExtArgs>
-  taskTestAttempts?: boolean | Prisma.Student$taskTestAttemptsArgs<ExtArgs>
-  taskAssignmentSubmissions?: boolean | Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>
-  taskAssignmentSubmissionAttempts?: boolean | Prisma.Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs>
-  marksheetScores?: boolean | Prisma.Student$marksheetScoresArgs<ExtArgs>
   marksheetGradedScores?: boolean | Prisma.Student$marksheetGradedScoresArgs<ExtArgs>
   marksheetRemarks?: boolean | Prisma.Student$marksheetRemarksArgs<ExtArgs>
-  remarks?: boolean | Prisma.Student$remarksArgs<ExtArgs>
-  feePayments?: boolean | Prisma.Student$feePaymentsArgs<ExtArgs>
-  promotionOutcomes?: boolean | Prisma.Student$promotionOutcomesArgs<ExtArgs>
+  marksheetScores?: boolean | Prisma.Student$marksheetScoresArgs<ExtArgs>
   ptmNotes?: boolean | Prisma.Student$ptmNotesArgs<ExtArgs>
   parentModeEvents?: boolean | Prisma.Student$parentModeEventsArgs<ExtArgs>
+  division?: boolean | Prisma.Student$divisionArgs<ExtArgs>
+  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
+  feePayments?: boolean | Prisma.Student$feePaymentsArgs<ExtArgs>
+  promotionOutcomes?: boolean | Prisma.Student$promotionOutcomesArgs<ExtArgs>
+  remarks?: boolean | Prisma.Student$remarksArgs<ExtArgs>
+  taskAssignmentSubmissions?: boolean | Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>
+  taskAssignmentSubmissionAttempts?: boolean | Prisma.Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs>
+  taskTestAttempts?: boolean | Prisma.Student$taskTestAttemptsArgs<ExtArgs>
   _count?: boolean | Prisma.StudentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["student"]>
 
@@ -4533,26 +4533,26 @@ export type StudentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   state?: boolean
   pincode?: boolean
   country?: boolean
-  rollNo?: boolean
-  houseColor?: boolean
-  bloodGroup?: boolean
-  aadharNo?: boolean
-  panNo?: boolean
-  emergencyContact?: boolean
-  religion?: boolean
-  category?: boolean
-  nationality?: boolean
-  admissionYear?: boolean
-  guardians?: boolean
-  extraDetailFields?: boolean
-  tempPassword?: boolean
-  hasLoggedIn?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
+  aadharNo?: boolean
+  bloodGroup?: boolean
+  category?: boolean
+  emergencyContact?: boolean
+  guardians?: boolean
+  houseColor?: boolean
+  panNo?: boolean
+  religion?: boolean
+  rollNo?: boolean
+  tempPassword?: boolean
+  admissionYear?: boolean
+  nationality?: boolean
+  hasLoggedIn?: boolean
+  extraDetailFields?: boolean
   division?: boolean | Prisma.Student$divisionArgs<ExtArgs>
+  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
 }, ExtArgs["result"]["student"]>
 
 export type StudentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -4571,26 +4571,26 @@ export type StudentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   state?: boolean
   pincode?: boolean
   country?: boolean
-  rollNo?: boolean
-  houseColor?: boolean
-  bloodGroup?: boolean
-  aadharNo?: boolean
-  panNo?: boolean
-  emergencyContact?: boolean
-  religion?: boolean
-  category?: boolean
-  nationality?: boolean
-  admissionYear?: boolean
-  guardians?: boolean
-  extraDetailFields?: boolean
-  tempPassword?: boolean
-  hasLoggedIn?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
+  aadharNo?: boolean
+  bloodGroup?: boolean
+  category?: boolean
+  emergencyContact?: boolean
+  guardians?: boolean
+  houseColor?: boolean
+  panNo?: boolean
+  religion?: boolean
+  rollNo?: boolean
+  tempPassword?: boolean
+  admissionYear?: boolean
+  nationality?: boolean
+  hasLoggedIn?: boolean
+  extraDetailFields?: boolean
   division?: boolean | Prisma.Student$divisionArgs<ExtArgs>
+  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
 }, ExtArgs["result"]["student"]>
 
 export type StudentSelectScalar = {
@@ -4609,70 +4609,70 @@ export type StudentSelectScalar = {
   state?: boolean
   pincode?: boolean
   country?: boolean
-  rollNo?: boolean
-  houseColor?: boolean
-  bloodGroup?: boolean
-  aadharNo?: boolean
-  panNo?: boolean
-  emergencyContact?: boolean
-  religion?: boolean
-  category?: boolean
-  nationality?: boolean
-  admissionYear?: boolean
-  guardians?: boolean
-  extraDetailFields?: boolean
-  tempPassword?: boolean
-  hasLoggedIn?: boolean
   status?: boolean
   joinedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  aadharNo?: boolean
+  bloodGroup?: boolean
+  category?: boolean
+  emergencyContact?: boolean
+  guardians?: boolean
+  houseColor?: boolean
+  panNo?: boolean
+  religion?: boolean
+  rollNo?: boolean
+  tempPassword?: boolean
+  admissionYear?: boolean
+  nationality?: boolean
+  hasLoggedIn?: boolean
+  extraDetailFields?: boolean
 }
 
-export type StudentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "userId" | "institutionId" | "standardId" | "divisionId" | "phone" | "avatarUrl" | "dob" | "gender" | "address" | "city" | "state" | "pincode" | "country" | "rollNo" | "houseColor" | "bloodGroup" | "aadharNo" | "panNo" | "emergencyContact" | "religion" | "category" | "nationality" | "admissionYear" | "guardians" | "extraDetailFields" | "tempPassword" | "hasLoggedIn" | "status" | "joinedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["student"]>
+export type StudentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "userId" | "institutionId" | "standardId" | "divisionId" | "phone" | "avatarUrl" | "dob" | "gender" | "address" | "city" | "state" | "pincode" | "country" | "status" | "joinedAt" | "createdAt" | "updatedAt" | "aadharNo" | "bloodGroup" | "category" | "emergencyContact" | "guardians" | "houseColor" | "panNo" | "religion" | "rollNo" | "tempPassword" | "admissionYear" | "nationality" | "hasLoggedIn" | "extraDetailFields", ExtArgs["result"]["student"]>
 export type StudentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
-  division?: boolean | Prisma.Student$divisionArgs<ExtArgs>
   attendances?: boolean | Prisma.Student$attendancesArgs<ExtArgs>
-  taskTestAttempts?: boolean | Prisma.Student$taskTestAttemptsArgs<ExtArgs>
-  taskAssignmentSubmissions?: boolean | Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>
-  taskAssignmentSubmissionAttempts?: boolean | Prisma.Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs>
-  marksheetScores?: boolean | Prisma.Student$marksheetScoresArgs<ExtArgs>
   marksheetGradedScores?: boolean | Prisma.Student$marksheetGradedScoresArgs<ExtArgs>
   marksheetRemarks?: boolean | Prisma.Student$marksheetRemarksArgs<ExtArgs>
-  remarks?: boolean | Prisma.Student$remarksArgs<ExtArgs>
-  feePayments?: boolean | Prisma.Student$feePaymentsArgs<ExtArgs>
-  promotionOutcomes?: boolean | Prisma.Student$promotionOutcomesArgs<ExtArgs>
+  marksheetScores?: boolean | Prisma.Student$marksheetScoresArgs<ExtArgs>
   ptmNotes?: boolean | Prisma.Student$ptmNotesArgs<ExtArgs>
   parentModeEvents?: boolean | Prisma.Student$parentModeEventsArgs<ExtArgs>
+  division?: boolean | Prisma.Student$divisionArgs<ExtArgs>
+  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
+  feePayments?: boolean | Prisma.Student$feePaymentsArgs<ExtArgs>
+  promotionOutcomes?: boolean | Prisma.Student$promotionOutcomesArgs<ExtArgs>
+  remarks?: boolean | Prisma.Student$remarksArgs<ExtArgs>
+  taskAssignmentSubmissions?: boolean | Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>
+  taskAssignmentSubmissionAttempts?: boolean | Prisma.Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs>
+  taskTestAttempts?: boolean | Prisma.Student$taskTestAttemptsArgs<ExtArgs>
   _count?: boolean | Prisma.StudentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StudentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
   division?: boolean | Prisma.Student$divisionArgs<ExtArgs>
+  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
 }
 export type StudentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
   division?: boolean | Prisma.Student$divisionArgs<ExtArgs>
+  standard?: boolean | Prisma.Student$standardArgs<ExtArgs>
 }
 
 export type $StudentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Student"
   objects: {
-    standard: Prisma.$StandardPayload<ExtArgs> | null
-    division: Prisma.$DivisionPayload<ExtArgs> | null
     attendances: Prisma.$AttendancePayload<ExtArgs>[]
-    taskTestAttempts: Prisma.$TaskTestAttemptPayload<ExtArgs>[]
-    taskAssignmentSubmissions: Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>[]
-    taskAssignmentSubmissionAttempts: Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>[]
-    marksheetScores: Prisma.$MarksheetScorePayload<ExtArgs>[]
     marksheetGradedScores: Prisma.$MarksheetGradedScorePayload<ExtArgs>[]
     marksheetRemarks: Prisma.$MarksheetRemarkPayload<ExtArgs>[]
-    remarks: Prisma.$StudentRemarkPayload<ExtArgs>[]
-    feePayments: Prisma.$StudentFeePaymentPayload<ExtArgs>[]
-    promotionOutcomes: Prisma.$StudentPromotionOutcomePayload<ExtArgs>[]
+    marksheetScores: Prisma.$MarksheetScorePayload<ExtArgs>[]
     ptmNotes: Prisma.$PTMNotePayload<ExtArgs>[]
     parentModeEvents: Prisma.$ParentModeEventPayload<ExtArgs>[]
+    division: Prisma.$DivisionPayload<ExtArgs> | null
+    standard: Prisma.$StandardPayload<ExtArgs> | null
+    feePayments: Prisma.$StudentFeePaymentPayload<ExtArgs>[]
+    promotionOutcomes: Prisma.$StudentPromotionOutcomePayload<ExtArgs>[]
+    remarks: Prisma.$StudentRemarkPayload<ExtArgs>[]
+    taskAssignmentSubmissions: Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>[]
+    taskAssignmentSubmissionAttempts: Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>[]
+    taskTestAttempts: Prisma.$TaskTestAttemptPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4690,24 +4690,24 @@ export type $StudentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     state: string | null
     pincode: string | null
     country: string | null
-    rollNo: string | null
-    houseColor: string | null
-    bloodGroup: string | null
-    aadharNo: string | null
-    panNo: string | null
-    emergencyContact: string | null
-    religion: string | null
-    category: string | null
-    nationality: string | null
-    admissionYear: string | null
-    guardians: runtime.JsonValue | null
-    extraDetailFields: runtime.JsonValue | null
-    tempPassword: string | null
-    hasLoggedIn: boolean
     status: $Enums.StudentStatus
     joinedAt: Date
     createdAt: Date
     updatedAt: Date
+    aadharNo: string | null
+    bloodGroup: string | null
+    category: string | null
+    emergencyContact: string | null
+    guardians: runtime.JsonValue | null
+    houseColor: string | null
+    panNo: string | null
+    religion: string | null
+    rollNo: string | null
+    tempPassword: string | null
+    admissionYear: string | null
+    nationality: string | null
+    hasLoggedIn: boolean
+    extraDetailFields: runtime.JsonValue | null
   }, ExtArgs["result"]["student"]>
   composites: {}
 }
@@ -5102,20 +5102,20 @@ readonly fields: StudentFieldRefs;
  */
 export interface Prisma__StudentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  standard<T extends Prisma.Student$standardArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$standardArgs<ExtArgs>>): Prisma.Prisma__StandardClient<runtime.Types.Result.GetResult<Prisma.$StandardPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  division<T extends Prisma.Student$divisionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$divisionArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   attendances<T extends Prisma.Student$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  taskTestAttempts<T extends Prisma.Student$taskTestAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$taskTestAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  taskAssignmentSubmissions<T extends Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  taskAssignmentSubmissionAttempts<T extends Prisma.Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  marksheetScores<T extends Prisma.Student$marksheetScoresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$marksheetScoresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marksheetGradedScores<T extends Prisma.Student$marksheetGradedScoresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$marksheetGradedScoresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetGradedScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marksheetRemarks<T extends Prisma.Student$marksheetRemarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$marksheetRemarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetRemarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  remarks<T extends Prisma.Student$remarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$remarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentRemarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  feePayments<T extends Prisma.Student$feePaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$feePaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentFeePaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  promotionOutcomes<T extends Prisma.Student$promotionOutcomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$promotionOutcomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentPromotionOutcomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  marksheetScores<T extends Prisma.Student$marksheetScoresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$marksheetScoresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ptmNotes<T extends Prisma.Student$ptmNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$ptmNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PTMNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   parentModeEvents<T extends Prisma.Student$parentModeEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$parentModeEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParentModeEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  division<T extends Prisma.Student$divisionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$divisionArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  standard<T extends Prisma.Student$standardArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$standardArgs<ExtArgs>>): Prisma.Prisma__StandardClient<runtime.Types.Result.GetResult<Prisma.$StandardPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  feePayments<T extends Prisma.Student$feePaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$feePaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentFeePaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  promotionOutcomes<T extends Prisma.Student$promotionOutcomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$promotionOutcomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentPromotionOutcomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  remarks<T extends Prisma.Student$remarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$remarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentRemarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskAssignmentSubmissions<T extends Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$taskAssignmentSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskAssignmentSubmissionAttempts<T extends Prisma.Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentSubmissionAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskTestAttempts<T extends Prisma.Student$taskTestAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Student$taskTestAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5160,24 +5160,24 @@ export interface StudentFieldRefs {
   readonly state: Prisma.FieldRef<"Student", 'String'>
   readonly pincode: Prisma.FieldRef<"Student", 'String'>
   readonly country: Prisma.FieldRef<"Student", 'String'>
-  readonly rollNo: Prisma.FieldRef<"Student", 'String'>
-  readonly houseColor: Prisma.FieldRef<"Student", 'String'>
-  readonly bloodGroup: Prisma.FieldRef<"Student", 'String'>
-  readonly aadharNo: Prisma.FieldRef<"Student", 'String'>
-  readonly panNo: Prisma.FieldRef<"Student", 'String'>
-  readonly emergencyContact: Prisma.FieldRef<"Student", 'String'>
-  readonly religion: Prisma.FieldRef<"Student", 'String'>
-  readonly category: Prisma.FieldRef<"Student", 'String'>
-  readonly nationality: Prisma.FieldRef<"Student", 'String'>
-  readonly admissionYear: Prisma.FieldRef<"Student", 'String'>
-  readonly guardians: Prisma.FieldRef<"Student", 'Json'>
-  readonly extraDetailFields: Prisma.FieldRef<"Student", 'Json'>
-  readonly tempPassword: Prisma.FieldRef<"Student", 'String'>
-  readonly hasLoggedIn: Prisma.FieldRef<"Student", 'Boolean'>
   readonly status: Prisma.FieldRef<"Student", 'StudentStatus'>
   readonly joinedAt: Prisma.FieldRef<"Student", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Student", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Student", 'DateTime'>
+  readonly aadharNo: Prisma.FieldRef<"Student", 'String'>
+  readonly bloodGroup: Prisma.FieldRef<"Student", 'String'>
+  readonly category: Prisma.FieldRef<"Student", 'String'>
+  readonly emergencyContact: Prisma.FieldRef<"Student", 'String'>
+  readonly guardians: Prisma.FieldRef<"Student", 'Json'>
+  readonly houseColor: Prisma.FieldRef<"Student", 'String'>
+  readonly panNo: Prisma.FieldRef<"Student", 'String'>
+  readonly religion: Prisma.FieldRef<"Student", 'String'>
+  readonly rollNo: Prisma.FieldRef<"Student", 'String'>
+  readonly tempPassword: Prisma.FieldRef<"Student", 'String'>
+  readonly admissionYear: Prisma.FieldRef<"Student", 'String'>
+  readonly nationality: Prisma.FieldRef<"Student", 'String'>
+  readonly hasLoggedIn: Prisma.FieldRef<"Student", 'Boolean'>
+  readonly extraDetailFields: Prisma.FieldRef<"Student", 'Json'>
 }
     
 
@@ -5579,44 +5579,6 @@ export type StudentDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Student.standard
- */
-export type Student$standardArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Standard
-   */
-  select?: Prisma.StandardSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Standard
-   */
-  omit?: Prisma.StandardOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StandardInclude<ExtArgs> | null
-  where?: Prisma.StandardWhereInput
-}
-
-/**
- * Student.division
- */
-export type Student$divisionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Division
-   */
-  select?: Prisma.DivisionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Division
-   */
-  omit?: Prisma.DivisionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DivisionInclude<ExtArgs> | null
-  where?: Prisma.DivisionWhereInput
-}
-
-/**
  * Student.attendances
  */
 export type Student$attendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5638,102 +5600,6 @@ export type Student$attendancesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.AttendanceScalarFieldEnum | Prisma.AttendanceScalarFieldEnum[]
-}
-
-/**
- * Student.taskTestAttempts
- */
-export type Student$taskTestAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TaskTestAttempt
-   */
-  select?: Prisma.TaskTestAttemptSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TaskTestAttempt
-   */
-  omit?: Prisma.TaskTestAttemptOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskTestAttemptInclude<ExtArgs> | null
-  where?: Prisma.TaskTestAttemptWhereInput
-  orderBy?: Prisma.TaskTestAttemptOrderByWithRelationInput | Prisma.TaskTestAttemptOrderByWithRelationInput[]
-  cursor?: Prisma.TaskTestAttemptWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TaskTestAttemptScalarFieldEnum | Prisma.TaskTestAttemptScalarFieldEnum[]
-}
-
-/**
- * Student.taskAssignmentSubmissions
- */
-export type Student$taskAssignmentSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TaskAssignmentSubmission
-   */
-  select?: Prisma.TaskAssignmentSubmissionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TaskAssignmentSubmission
-   */
-  omit?: Prisma.TaskAssignmentSubmissionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskAssignmentSubmissionInclude<ExtArgs> | null
-  where?: Prisma.TaskAssignmentSubmissionWhereInput
-  orderBy?: Prisma.TaskAssignmentSubmissionOrderByWithRelationInput | Prisma.TaskAssignmentSubmissionOrderByWithRelationInput[]
-  cursor?: Prisma.TaskAssignmentSubmissionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TaskAssignmentSubmissionScalarFieldEnum | Prisma.TaskAssignmentSubmissionScalarFieldEnum[]
-}
-
-/**
- * Student.taskAssignmentSubmissionAttempts
- */
-export type Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TaskAssignmentSubmissionAttempt
-   */
-  select?: Prisma.TaskAssignmentSubmissionAttemptSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TaskAssignmentSubmissionAttempt
-   */
-  omit?: Prisma.TaskAssignmentSubmissionAttemptOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskAssignmentSubmissionAttemptInclude<ExtArgs> | null
-  where?: Prisma.TaskAssignmentSubmissionAttemptWhereInput
-  orderBy?: Prisma.TaskAssignmentSubmissionAttemptOrderByWithRelationInput | Prisma.TaskAssignmentSubmissionAttemptOrderByWithRelationInput[]
-  cursor?: Prisma.TaskAssignmentSubmissionAttemptWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TaskAssignmentSubmissionAttemptScalarFieldEnum | Prisma.TaskAssignmentSubmissionAttemptScalarFieldEnum[]
-}
-
-/**
- * Student.marksheetScores
- */
-export type Student$marksheetScoresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MarksheetScore
-   */
-  select?: Prisma.MarksheetScoreSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MarksheetScore
-   */
-  omit?: Prisma.MarksheetScoreOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MarksheetScoreInclude<ExtArgs> | null
-  where?: Prisma.MarksheetScoreWhereInput
-  orderBy?: Prisma.MarksheetScoreOrderByWithRelationInput | Prisma.MarksheetScoreOrderByWithRelationInput[]
-  cursor?: Prisma.MarksheetScoreWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MarksheetScoreScalarFieldEnum | Prisma.MarksheetScoreScalarFieldEnum[]
 }
 
 /**
@@ -5785,27 +5651,113 @@ export type Student$marksheetRemarksArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
- * Student.remarks
+ * Student.marksheetScores
  */
-export type Student$remarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Student$marksheetScoresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StudentRemark
+   * Select specific fields to fetch from the MarksheetScore
    */
-  select?: Prisma.StudentRemarkSelect<ExtArgs> | null
+  select?: Prisma.MarksheetScoreSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StudentRemark
+   * Omit specific fields from the MarksheetScore
    */
-  omit?: Prisma.StudentRemarkOmit<ExtArgs> | null
+  omit?: Prisma.MarksheetScoreOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StudentRemarkInclude<ExtArgs> | null
-  where?: Prisma.StudentRemarkWhereInput
-  orderBy?: Prisma.StudentRemarkOrderByWithRelationInput | Prisma.StudentRemarkOrderByWithRelationInput[]
-  cursor?: Prisma.StudentRemarkWhereUniqueInput
+  include?: Prisma.MarksheetScoreInclude<ExtArgs> | null
+  where?: Prisma.MarksheetScoreWhereInput
+  orderBy?: Prisma.MarksheetScoreOrderByWithRelationInput | Prisma.MarksheetScoreOrderByWithRelationInput[]
+  cursor?: Prisma.MarksheetScoreWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StudentRemarkScalarFieldEnum | Prisma.StudentRemarkScalarFieldEnum[]
+  distinct?: Prisma.MarksheetScoreScalarFieldEnum | Prisma.MarksheetScoreScalarFieldEnum[]
+}
+
+/**
+ * Student.ptmNotes
+ */
+export type Student$ptmNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PTMNote
+   */
+  select?: Prisma.PTMNoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PTMNote
+   */
+  omit?: Prisma.PTMNoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PTMNoteInclude<ExtArgs> | null
+  where?: Prisma.PTMNoteWhereInput
+  orderBy?: Prisma.PTMNoteOrderByWithRelationInput | Prisma.PTMNoteOrderByWithRelationInput[]
+  cursor?: Prisma.PTMNoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PTMNoteScalarFieldEnum | Prisma.PTMNoteScalarFieldEnum[]
+}
+
+/**
+ * Student.parentModeEvents
+ */
+export type Student$parentModeEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ParentModeEvent
+   */
+  select?: Prisma.ParentModeEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ParentModeEvent
+   */
+  omit?: Prisma.ParentModeEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParentModeEventInclude<ExtArgs> | null
+  where?: Prisma.ParentModeEventWhereInput
+  orderBy?: Prisma.ParentModeEventOrderByWithRelationInput | Prisma.ParentModeEventOrderByWithRelationInput[]
+  cursor?: Prisma.ParentModeEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ParentModeEventScalarFieldEnum | Prisma.ParentModeEventScalarFieldEnum[]
+}
+
+/**
+ * Student.division
+ */
+export type Student$divisionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Division
+   */
+  select?: Prisma.DivisionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Division
+   */
+  omit?: Prisma.DivisionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DivisionInclude<ExtArgs> | null
+  where?: Prisma.DivisionWhereInput
+}
+
+/**
+ * Student.standard
+ */
+export type Student$standardArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Standard
+   */
+  select?: Prisma.StandardSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Standard
+   */
+  omit?: Prisma.StandardOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StandardInclude<ExtArgs> | null
+  where?: Prisma.StandardWhereInput
 }
 
 /**
@@ -5857,51 +5809,99 @@ export type Student$promotionOutcomesArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
- * Student.ptmNotes
+ * Student.remarks
  */
-export type Student$ptmNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Student$remarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the PTMNote
+   * Select specific fields to fetch from the StudentRemark
    */
-  select?: Prisma.PTMNoteSelect<ExtArgs> | null
+  select?: Prisma.StudentRemarkSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the PTMNote
+   * Omit specific fields from the StudentRemark
    */
-  omit?: Prisma.PTMNoteOmit<ExtArgs> | null
+  omit?: Prisma.StudentRemarkOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.PTMNoteInclude<ExtArgs> | null
-  where?: Prisma.PTMNoteWhereInput
-  orderBy?: Prisma.PTMNoteOrderByWithRelationInput | Prisma.PTMNoteOrderByWithRelationInput[]
-  cursor?: Prisma.PTMNoteWhereUniqueInput
+  include?: Prisma.StudentRemarkInclude<ExtArgs> | null
+  where?: Prisma.StudentRemarkWhereInput
+  orderBy?: Prisma.StudentRemarkOrderByWithRelationInput | Prisma.StudentRemarkOrderByWithRelationInput[]
+  cursor?: Prisma.StudentRemarkWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.PTMNoteScalarFieldEnum | Prisma.PTMNoteScalarFieldEnum[]
+  distinct?: Prisma.StudentRemarkScalarFieldEnum | Prisma.StudentRemarkScalarFieldEnum[]
 }
 
 /**
- * Student.parentModeEvents
+ * Student.taskAssignmentSubmissions
  */
-export type Student$parentModeEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Student$taskAssignmentSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ParentModeEvent
+   * Select specific fields to fetch from the TaskAssignmentSubmission
    */
-  select?: Prisma.ParentModeEventSelect<ExtArgs> | null
+  select?: Prisma.TaskAssignmentSubmissionSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ParentModeEvent
+   * Omit specific fields from the TaskAssignmentSubmission
    */
-  omit?: Prisma.ParentModeEventOmit<ExtArgs> | null
+  omit?: Prisma.TaskAssignmentSubmissionOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ParentModeEventInclude<ExtArgs> | null
-  where?: Prisma.ParentModeEventWhereInput
-  orderBy?: Prisma.ParentModeEventOrderByWithRelationInput | Prisma.ParentModeEventOrderByWithRelationInput[]
-  cursor?: Prisma.ParentModeEventWhereUniqueInput
+  include?: Prisma.TaskAssignmentSubmissionInclude<ExtArgs> | null
+  where?: Prisma.TaskAssignmentSubmissionWhereInput
+  orderBy?: Prisma.TaskAssignmentSubmissionOrderByWithRelationInput | Prisma.TaskAssignmentSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssignmentSubmissionWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ParentModeEventScalarFieldEnum | Prisma.ParentModeEventScalarFieldEnum[]
+  distinct?: Prisma.TaskAssignmentSubmissionScalarFieldEnum | Prisma.TaskAssignmentSubmissionScalarFieldEnum[]
+}
+
+/**
+ * Student.taskAssignmentSubmissionAttempts
+ */
+export type Student$taskAssignmentSubmissionAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskAssignmentSubmissionAttempt
+   */
+  select?: Prisma.TaskAssignmentSubmissionAttemptSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskAssignmentSubmissionAttempt
+   */
+  omit?: Prisma.TaskAssignmentSubmissionAttemptOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskAssignmentSubmissionAttemptInclude<ExtArgs> | null
+  where?: Prisma.TaskAssignmentSubmissionAttemptWhereInput
+  orderBy?: Prisma.TaskAssignmentSubmissionAttemptOrderByWithRelationInput | Prisma.TaskAssignmentSubmissionAttemptOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssignmentSubmissionAttemptWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskAssignmentSubmissionAttemptScalarFieldEnum | Prisma.TaskAssignmentSubmissionAttemptScalarFieldEnum[]
+}
+
+/**
+ * Student.taskTestAttempts
+ */
+export type Student$taskTestAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskTestAttempt
+   */
+  select?: Prisma.TaskTestAttemptSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskTestAttempt
+   */
+  omit?: Prisma.TaskTestAttemptOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskTestAttemptInclude<ExtArgs> | null
+  where?: Prisma.TaskTestAttemptWhereInput
+  orderBy?: Prisma.TaskTestAttemptOrderByWithRelationInput | Prisma.TaskTestAttemptOrderByWithRelationInput[]
+  cursor?: Prisma.TaskTestAttemptWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskTestAttemptScalarFieldEnum | Prisma.TaskTestAttemptScalarFieldEnum[]
 }
 
 /**

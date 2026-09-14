@@ -29,7 +29,6 @@ export type StudentRemarkMinAggregateOutputType = {
   institutionId: string | null
   studentId: string | null
   type: $Enums.RemarkCardType | null
-  severity: $Enums.RemarkSeverity | null
   category: string | null
   title: string | null
   detail: string | null
@@ -38,11 +37,12 @@ export type StudentRemarkMinAggregateOutputType = {
   status: $Enums.RemarkStatus | null
   reportedByUserId: string | null
   reportedByRole: string | null
+  createdAt: Date | null
   assignedToUserId: string | null
   reviewRemark: string | null
-  reviewedByUserId: string | null
   reviewedAt: Date | null
-  createdAt: Date | null
+  reviewedByUserId: string | null
+  severity: $Enums.RemarkSeverity | null
 }
 
 export type StudentRemarkMaxAggregateOutputType = {
@@ -50,7 +50,6 @@ export type StudentRemarkMaxAggregateOutputType = {
   institutionId: string | null
   studentId: string | null
   type: $Enums.RemarkCardType | null
-  severity: $Enums.RemarkSeverity | null
   category: string | null
   title: string | null
   detail: string | null
@@ -59,11 +58,12 @@ export type StudentRemarkMaxAggregateOutputType = {
   status: $Enums.RemarkStatus | null
   reportedByUserId: string | null
   reportedByRole: string | null
+  createdAt: Date | null
   assignedToUserId: string | null
   reviewRemark: string | null
-  reviewedByUserId: string | null
   reviewedAt: Date | null
-  createdAt: Date | null
+  reviewedByUserId: string | null
+  severity: $Enums.RemarkSeverity | null
 }
 
 export type StudentRemarkCountAggregateOutputType = {
@@ -71,21 +71,21 @@ export type StudentRemarkCountAggregateOutputType = {
   institutionId: number
   studentId: number
   type: number
-  severity: number
   category: number
   title: number
   detail: number
   subject: number
   actionTaken: number
   status: number
-  attachments: number
   reportedByUserId: number
   reportedByRole: number
+  createdAt: number
   assignedToUserId: number
   reviewRemark: number
-  reviewedByUserId: number
   reviewedAt: number
-  createdAt: number
+  reviewedByUserId: number
+  severity: number
+  attachments: number
   _all: number
 }
 
@@ -95,7 +95,6 @@ export type StudentRemarkMinAggregateInputType = {
   institutionId?: true
   studentId?: true
   type?: true
-  severity?: true
   category?: true
   title?: true
   detail?: true
@@ -104,11 +103,12 @@ export type StudentRemarkMinAggregateInputType = {
   status?: true
   reportedByUserId?: true
   reportedByRole?: true
+  createdAt?: true
   assignedToUserId?: true
   reviewRemark?: true
-  reviewedByUserId?: true
   reviewedAt?: true
-  createdAt?: true
+  reviewedByUserId?: true
+  severity?: true
 }
 
 export type StudentRemarkMaxAggregateInputType = {
@@ -116,7 +116,6 @@ export type StudentRemarkMaxAggregateInputType = {
   institutionId?: true
   studentId?: true
   type?: true
-  severity?: true
   category?: true
   title?: true
   detail?: true
@@ -125,11 +124,12 @@ export type StudentRemarkMaxAggregateInputType = {
   status?: true
   reportedByUserId?: true
   reportedByRole?: true
+  createdAt?: true
   assignedToUserId?: true
   reviewRemark?: true
-  reviewedByUserId?: true
   reviewedAt?: true
-  createdAt?: true
+  reviewedByUserId?: true
+  severity?: true
 }
 
 export type StudentRemarkCountAggregateInputType = {
@@ -137,21 +137,21 @@ export type StudentRemarkCountAggregateInputType = {
   institutionId?: true
   studentId?: true
   type?: true
-  severity?: true
   category?: true
   title?: true
   detail?: true
   subject?: true
   actionTaken?: true
   status?: true
-  attachments?: true
   reportedByUserId?: true
   reportedByRole?: true
+  createdAt?: true
   assignedToUserId?: true
   reviewRemark?: true
-  reviewedByUserId?: true
   reviewedAt?: true
-  createdAt?: true
+  reviewedByUserId?: true
+  severity?: true
+  attachments?: true
   _all?: true
 }
 
@@ -232,21 +232,21 @@ export type StudentRemarkGroupByOutputType = {
   institutionId: string
   studentId: string
   type: $Enums.RemarkCardType
-  severity: $Enums.RemarkSeverity
   category: string
   title: string
   detail: string
   subject: string | null
   actionTaken: string | null
   status: $Enums.RemarkStatus
-  attachments: runtime.JsonValue
   reportedByUserId: string
   reportedByRole: string
+  createdAt: Date
   assignedToUserId: string | null
   reviewRemark: string | null
-  reviewedByUserId: string | null
   reviewedAt: Date | null
-  createdAt: Date
+  reviewedByUserId: string | null
+  severity: $Enums.RemarkSeverity
+  attachments: runtime.JsonValue
   _count: StudentRemarkCountAggregateOutputType | null
   _min: StudentRemarkMinAggregateOutputType | null
   _max: StudentRemarkMaxAggregateOutputType | null
@@ -275,21 +275,21 @@ export type StudentRemarkWhereInput = {
   institutionId?: Prisma.StringFilter<"StudentRemark"> | string
   studentId?: Prisma.StringFilter<"StudentRemark"> | string
   type?: Prisma.EnumRemarkCardTypeFilter<"StudentRemark"> | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFilter<"StudentRemark"> | $Enums.RemarkSeverity
   category?: Prisma.StringFilter<"StudentRemark"> | string
   title?: Prisma.StringFilter<"StudentRemark"> | string
   detail?: Prisma.StringFilter<"StudentRemark"> | string
   subject?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   actionTaken?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   status?: Prisma.EnumRemarkStatusFilter<"StudentRemark"> | $Enums.RemarkStatus
-  attachments?: Prisma.JsonFilter<"StudentRemark">
   reportedByUserId?: Prisma.StringFilter<"StudentRemark"> | string
   reportedByRole?: Prisma.StringFilter<"StudentRemark"> | string
+  createdAt?: Prisma.DateTimeFilter<"StudentRemark"> | Date | string
   assignedToUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   reviewRemark?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
-  reviewedByUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   reviewedAt?: Prisma.DateTimeNullableFilter<"StudentRemark"> | Date | string | null
-  createdAt?: Prisma.DateTimeFilter<"StudentRemark"> | Date | string
+  reviewedByUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
+  severity?: Prisma.EnumRemarkSeverityFilter<"StudentRemark"> | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonFilter<"StudentRemark">
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
 }
 
@@ -298,21 +298,21 @@ export type StudentRemarkOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
   detail?: Prisma.SortOrder
   subject?: Prisma.SortOrderInput | Prisma.SortOrder
   actionTaken?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  attachments?: Prisma.SortOrder
   reportedByUserId?: Prisma.SortOrder
   reportedByRole?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   assignedToUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewRemark?: Prisma.SortOrderInput | Prisma.SortOrder
-  reviewedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  reviewedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  attachments?: Prisma.SortOrder
   student?: Prisma.StudentOrderByWithRelationInput
 }
 
@@ -324,21 +324,21 @@ export type StudentRemarkWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"StudentRemark"> | string
   studentId?: Prisma.StringFilter<"StudentRemark"> | string
   type?: Prisma.EnumRemarkCardTypeFilter<"StudentRemark"> | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFilter<"StudentRemark"> | $Enums.RemarkSeverity
   category?: Prisma.StringFilter<"StudentRemark"> | string
   title?: Prisma.StringFilter<"StudentRemark"> | string
   detail?: Prisma.StringFilter<"StudentRemark"> | string
   subject?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   actionTaken?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   status?: Prisma.EnumRemarkStatusFilter<"StudentRemark"> | $Enums.RemarkStatus
-  attachments?: Prisma.JsonFilter<"StudentRemark">
   reportedByUserId?: Prisma.StringFilter<"StudentRemark"> | string
   reportedByRole?: Prisma.StringFilter<"StudentRemark"> | string
+  createdAt?: Prisma.DateTimeFilter<"StudentRemark"> | Date | string
   assignedToUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   reviewRemark?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
-  reviewedByUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   reviewedAt?: Prisma.DateTimeNullableFilter<"StudentRemark"> | Date | string | null
-  createdAt?: Prisma.DateTimeFilter<"StudentRemark"> | Date | string
+  reviewedByUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
+  severity?: Prisma.EnumRemarkSeverityFilter<"StudentRemark"> | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonFilter<"StudentRemark">
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
 }, "id">
 
@@ -347,21 +347,21 @@ export type StudentRemarkOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
   detail?: Prisma.SortOrder
   subject?: Prisma.SortOrderInput | Prisma.SortOrder
   actionTaken?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  attachments?: Prisma.SortOrder
   reportedByUserId?: Prisma.SortOrder
   reportedByRole?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   assignedToUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewRemark?: Prisma.SortOrderInput | Prisma.SortOrder
-  reviewedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  reviewedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  attachments?: Prisma.SortOrder
   _count?: Prisma.StudentRemarkCountOrderByAggregateInput
   _max?: Prisma.StudentRemarkMaxOrderByAggregateInput
   _min?: Prisma.StudentRemarkMinOrderByAggregateInput
@@ -375,42 +375,42 @@ export type StudentRemarkScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"StudentRemark"> | string
   studentId?: Prisma.StringWithAggregatesFilter<"StudentRemark"> | string
   type?: Prisma.EnumRemarkCardTypeWithAggregatesFilter<"StudentRemark"> | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityWithAggregatesFilter<"StudentRemark"> | $Enums.RemarkSeverity
   category?: Prisma.StringWithAggregatesFilter<"StudentRemark"> | string
   title?: Prisma.StringWithAggregatesFilter<"StudentRemark"> | string
   detail?: Prisma.StringWithAggregatesFilter<"StudentRemark"> | string
   subject?: Prisma.StringNullableWithAggregatesFilter<"StudentRemark"> | string | null
   actionTaken?: Prisma.StringNullableWithAggregatesFilter<"StudentRemark"> | string | null
   status?: Prisma.EnumRemarkStatusWithAggregatesFilter<"StudentRemark"> | $Enums.RemarkStatus
-  attachments?: Prisma.JsonWithAggregatesFilter<"StudentRemark">
   reportedByUserId?: Prisma.StringWithAggregatesFilter<"StudentRemark"> | string
   reportedByRole?: Prisma.StringWithAggregatesFilter<"StudentRemark"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentRemark"> | Date | string
   assignedToUserId?: Prisma.StringNullableWithAggregatesFilter<"StudentRemark"> | string | null
   reviewRemark?: Prisma.StringNullableWithAggregatesFilter<"StudentRemark"> | string | null
-  reviewedByUserId?: Prisma.StringNullableWithAggregatesFilter<"StudentRemark"> | string | null
   reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentRemark"> | Date | string | null
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentRemark"> | Date | string
+  reviewedByUserId?: Prisma.StringNullableWithAggregatesFilter<"StudentRemark"> | string | null
+  severity?: Prisma.EnumRemarkSeverityWithAggregatesFilter<"StudentRemark"> | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonWithAggregatesFilter<"StudentRemark">
 }
 
 export type StudentRemarkCreateInput = {
   id?: string
   institutionId: string
   type: $Enums.RemarkCardType
-  severity?: $Enums.RemarkSeverity
   category: string
   title: string
   detail: string
   subject?: string | null
   actionTaken?: string | null
   status?: $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId: string
   reportedByRole: string
+  createdAt?: Date | string
   assignedToUserId?: string | null
   reviewRemark?: string | null
-  reviewedByUserId?: string | null
   reviewedAt?: Date | string | null
-  createdAt?: Date | string
+  reviewedByUserId?: string | null
+  severity?: $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   student: Prisma.StudentCreateNestedOneWithoutRemarksInput
 }
 
@@ -419,42 +419,42 @@ export type StudentRemarkUncheckedCreateInput = {
   institutionId: string
   studentId: string
   type: $Enums.RemarkCardType
-  severity?: $Enums.RemarkSeverity
   category: string
   title: string
   detail: string
   subject?: string | null
   actionTaken?: string | null
   status?: $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId: string
   reportedByRole: string
+  createdAt?: Date | string
   assignedToUserId?: string | null
   reviewRemark?: string | null
-  reviewedByUserId?: string | null
   reviewedAt?: Date | string | null
-  createdAt?: Date | string
+  reviewedByUserId?: string | null
+  severity?: $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumRemarkCardTypeFieldUpdateOperationsInput | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
   category?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   detail?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionTaken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRemarkStatusFieldUpdateOperationsInput | $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   reportedByRole?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewRemark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   student?: Prisma.StudentUpdateOneRequiredWithoutRemarksNestedInput
 }
 
@@ -463,21 +463,21 @@ export type StudentRemarkUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumRemarkCardTypeFieldUpdateOperationsInput | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
   category?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   detail?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionTaken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRemarkStatusFieldUpdateOperationsInput | $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   reportedByRole?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewRemark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkCreateManyInput = {
@@ -485,42 +485,42 @@ export type StudentRemarkCreateManyInput = {
   institutionId: string
   studentId: string
   type: $Enums.RemarkCardType
-  severity?: $Enums.RemarkSeverity
   category: string
   title: string
   detail: string
   subject?: string | null
   actionTaken?: string | null
   status?: $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId: string
   reportedByRole: string
+  createdAt?: Date | string
   assignedToUserId?: string | null
   reviewRemark?: string | null
-  reviewedByUserId?: string | null
   reviewedAt?: Date | string | null
-  createdAt?: Date | string
+  reviewedByUserId?: string | null
+  severity?: $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumRemarkCardTypeFieldUpdateOperationsInput | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
   category?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   detail?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionTaken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRemarkStatusFieldUpdateOperationsInput | $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   reportedByRole?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewRemark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkUncheckedUpdateManyInput = {
@@ -528,21 +528,21 @@ export type StudentRemarkUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumRemarkCardTypeFieldUpdateOperationsInput | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
   category?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   detail?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionTaken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRemarkStatusFieldUpdateOperationsInput | $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   reportedByRole?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewRemark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkListRelationFilter = {
@@ -560,21 +560,21 @@ export type StudentRemarkCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
   detail?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   actionTaken?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  attachments?: Prisma.SortOrder
   reportedByUserId?: Prisma.SortOrder
   reportedByRole?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   assignedToUserId?: Prisma.SortOrder
   reviewRemark?: Prisma.SortOrder
-  reviewedByUserId?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  reviewedByUserId?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  attachments?: Prisma.SortOrder
 }
 
 export type StudentRemarkMaxOrderByAggregateInput = {
@@ -582,7 +582,6 @@ export type StudentRemarkMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
   detail?: Prisma.SortOrder
@@ -591,11 +590,12 @@ export type StudentRemarkMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   reportedByUserId?: Prisma.SortOrder
   reportedByRole?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   assignedToUserId?: Prisma.SortOrder
   reviewRemark?: Prisma.SortOrder
-  reviewedByUserId?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  reviewedByUserId?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
 }
 
 export type StudentRemarkMinOrderByAggregateInput = {
@@ -603,7 +603,6 @@ export type StudentRemarkMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
   detail?: Prisma.SortOrder
@@ -612,11 +611,12 @@ export type StudentRemarkMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   reportedByUserId?: Prisma.SortOrder
   reportedByRole?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   assignedToUserId?: Prisma.SortOrder
   reviewRemark?: Prisma.SortOrder
-  reviewedByUserId?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  reviewedByUserId?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
 }
 
 export type StudentRemarkCreateNestedManyWithoutStudentInput = {
@@ -665,54 +665,54 @@ export type EnumRemarkCardTypeFieldUpdateOperationsInput = {
   set?: $Enums.RemarkCardType
 }
 
-export type EnumRemarkSeverityFieldUpdateOperationsInput = {
-  set?: $Enums.RemarkSeverity
-}
-
 export type EnumRemarkStatusFieldUpdateOperationsInput = {
   set?: $Enums.RemarkStatus
+}
+
+export type EnumRemarkSeverityFieldUpdateOperationsInput = {
+  set?: $Enums.RemarkSeverity
 }
 
 export type StudentRemarkCreateWithoutStudentInput = {
   id?: string
   institutionId: string
   type: $Enums.RemarkCardType
-  severity?: $Enums.RemarkSeverity
   category: string
   title: string
   detail: string
   subject?: string | null
   actionTaken?: string | null
   status?: $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId: string
   reportedByRole: string
+  createdAt?: Date | string
   assignedToUserId?: string | null
   reviewRemark?: string | null
-  reviewedByUserId?: string | null
   reviewedAt?: Date | string | null
-  createdAt?: Date | string
+  reviewedByUserId?: string | null
+  severity?: $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkUncheckedCreateWithoutStudentInput = {
   id?: string
   institutionId: string
   type: $Enums.RemarkCardType
-  severity?: $Enums.RemarkSeverity
   category: string
   title: string
   detail: string
   subject?: string | null
   actionTaken?: string | null
   status?: $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId: string
   reportedByRole: string
+  createdAt?: Date | string
   assignedToUserId?: string | null
   reviewRemark?: string | null
-  reviewedByUserId?: string | null
   reviewedAt?: Date | string | null
-  createdAt?: Date | string
+  reviewedByUserId?: string | null
+  severity?: $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkCreateOrConnectWithoutStudentInput = {
@@ -749,105 +749,105 @@ export type StudentRemarkScalarWhereInput = {
   institutionId?: Prisma.StringFilter<"StudentRemark"> | string
   studentId?: Prisma.StringFilter<"StudentRemark"> | string
   type?: Prisma.EnumRemarkCardTypeFilter<"StudentRemark"> | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFilter<"StudentRemark"> | $Enums.RemarkSeverity
   category?: Prisma.StringFilter<"StudentRemark"> | string
   title?: Prisma.StringFilter<"StudentRemark"> | string
   detail?: Prisma.StringFilter<"StudentRemark"> | string
   subject?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   actionTaken?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   status?: Prisma.EnumRemarkStatusFilter<"StudentRemark"> | $Enums.RemarkStatus
-  attachments?: Prisma.JsonFilter<"StudentRemark">
   reportedByUserId?: Prisma.StringFilter<"StudentRemark"> | string
   reportedByRole?: Prisma.StringFilter<"StudentRemark"> | string
+  createdAt?: Prisma.DateTimeFilter<"StudentRemark"> | Date | string
   assignedToUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   reviewRemark?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
-  reviewedByUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
   reviewedAt?: Prisma.DateTimeNullableFilter<"StudentRemark"> | Date | string | null
-  createdAt?: Prisma.DateTimeFilter<"StudentRemark"> | Date | string
+  reviewedByUserId?: Prisma.StringNullableFilter<"StudentRemark"> | string | null
+  severity?: Prisma.EnumRemarkSeverityFilter<"StudentRemark"> | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonFilter<"StudentRemark">
 }
 
 export type StudentRemarkCreateManyStudentInput = {
   id?: string
   institutionId: string
   type: $Enums.RemarkCardType
-  severity?: $Enums.RemarkSeverity
   category: string
   title: string
   detail: string
   subject?: string | null
   actionTaken?: string | null
   status?: $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId: string
   reportedByRole: string
+  createdAt?: Date | string
   assignedToUserId?: string | null
   reviewRemark?: string | null
-  reviewedByUserId?: string | null
   reviewedAt?: Date | string | null
-  createdAt?: Date | string
+  reviewedByUserId?: string | null
+  severity?: $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumRemarkCardTypeFieldUpdateOperationsInput | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
   category?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   detail?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionTaken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRemarkStatusFieldUpdateOperationsInput | $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   reportedByRole?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewRemark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkUncheckedUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumRemarkCardTypeFieldUpdateOperationsInput | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
   category?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   detail?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionTaken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRemarkStatusFieldUpdateOperationsInput | $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   reportedByRole?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewRemark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type StudentRemarkUncheckedUpdateManyWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumRemarkCardTypeFieldUpdateOperationsInput | $Enums.RemarkCardType
-  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
   category?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   detail?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   actionTaken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumRemarkStatusFieldUpdateOperationsInput | $Enums.RemarkStatus
-  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   reportedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   reportedByRole?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewRemark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumRemarkSeverityFieldUpdateOperationsInput | $Enums.RemarkSeverity
+  attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -857,21 +857,21 @@ export type StudentRemarkSelect<ExtArgs extends runtime.Types.Extensions.Interna
   institutionId?: boolean
   studentId?: boolean
   type?: boolean
-  severity?: boolean
   category?: boolean
   title?: boolean
   detail?: boolean
   subject?: boolean
   actionTaken?: boolean
   status?: boolean
-  attachments?: boolean
   reportedByUserId?: boolean
   reportedByRole?: boolean
+  createdAt?: boolean
   assignedToUserId?: boolean
   reviewRemark?: boolean
-  reviewedByUserId?: boolean
   reviewedAt?: boolean
-  createdAt?: boolean
+  reviewedByUserId?: boolean
+  severity?: boolean
+  attachments?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentRemark"]>
 
@@ -880,21 +880,21 @@ export type StudentRemarkSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   institutionId?: boolean
   studentId?: boolean
   type?: boolean
-  severity?: boolean
   category?: boolean
   title?: boolean
   detail?: boolean
   subject?: boolean
   actionTaken?: boolean
   status?: boolean
-  attachments?: boolean
   reportedByUserId?: boolean
   reportedByRole?: boolean
+  createdAt?: boolean
   assignedToUserId?: boolean
   reviewRemark?: boolean
-  reviewedByUserId?: boolean
   reviewedAt?: boolean
-  createdAt?: boolean
+  reviewedByUserId?: boolean
+  severity?: boolean
+  attachments?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentRemark"]>
 
@@ -903,21 +903,21 @@ export type StudentRemarkSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   institutionId?: boolean
   studentId?: boolean
   type?: boolean
-  severity?: boolean
   category?: boolean
   title?: boolean
   detail?: boolean
   subject?: boolean
   actionTaken?: boolean
   status?: boolean
-  attachments?: boolean
   reportedByUserId?: boolean
   reportedByRole?: boolean
+  createdAt?: boolean
   assignedToUserId?: boolean
   reviewRemark?: boolean
-  reviewedByUserId?: boolean
   reviewedAt?: boolean
-  createdAt?: boolean
+  reviewedByUserId?: boolean
+  severity?: boolean
+  attachments?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentRemark"]>
 
@@ -926,24 +926,24 @@ export type StudentRemarkSelectScalar = {
   institutionId?: boolean
   studentId?: boolean
   type?: boolean
-  severity?: boolean
   category?: boolean
   title?: boolean
   detail?: boolean
   subject?: boolean
   actionTaken?: boolean
   status?: boolean
-  attachments?: boolean
   reportedByUserId?: boolean
   reportedByRole?: boolean
+  createdAt?: boolean
   assignedToUserId?: boolean
   reviewRemark?: boolean
-  reviewedByUserId?: boolean
   reviewedAt?: boolean
-  createdAt?: boolean
+  reviewedByUserId?: boolean
+  severity?: boolean
+  attachments?: boolean
 }
 
-export type StudentRemarkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "studentId" | "type" | "severity" | "category" | "title" | "detail" | "subject" | "actionTaken" | "status" | "attachments" | "reportedByUserId" | "reportedByRole" | "assignedToUserId" | "reviewRemark" | "reviewedByUserId" | "reviewedAt" | "createdAt", ExtArgs["result"]["studentRemark"]>
+export type StudentRemarkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "studentId" | "type" | "category" | "title" | "detail" | "subject" | "actionTaken" | "status" | "reportedByUserId" | "reportedByRole" | "createdAt" | "assignedToUserId" | "reviewRemark" | "reviewedAt" | "reviewedByUserId" | "severity" | "attachments", ExtArgs["result"]["studentRemark"]>
 export type StudentRemarkInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
 }
@@ -964,21 +964,21 @@ export type $StudentRemarkPayload<ExtArgs extends runtime.Types.Extensions.Inter
     institutionId: string
     studentId: string
     type: $Enums.RemarkCardType
-    severity: $Enums.RemarkSeverity
     category: string
     title: string
     detail: string
     subject: string | null
     actionTaken: string | null
     status: $Enums.RemarkStatus
-    attachments: runtime.JsonValue
     reportedByUserId: string
     reportedByRole: string
+    createdAt: Date
     assignedToUserId: string | null
     reviewRemark: string | null
-    reviewedByUserId: string | null
     reviewedAt: Date | null
-    createdAt: Date
+    reviewedByUserId: string | null
+    severity: $Enums.RemarkSeverity
+    attachments: runtime.JsonValue
   }, ExtArgs["result"]["studentRemark"]>
   composites: {}
 }
@@ -1407,21 +1407,21 @@ export interface StudentRemarkFieldRefs {
   readonly institutionId: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly studentId: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly type: Prisma.FieldRef<"StudentRemark", 'RemarkCardType'>
-  readonly severity: Prisma.FieldRef<"StudentRemark", 'RemarkSeverity'>
   readonly category: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly title: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly detail: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly subject: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly actionTaken: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly status: Prisma.FieldRef<"StudentRemark", 'RemarkStatus'>
-  readonly attachments: Prisma.FieldRef<"StudentRemark", 'Json'>
   readonly reportedByUserId: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly reportedByRole: Prisma.FieldRef<"StudentRemark", 'String'>
+  readonly createdAt: Prisma.FieldRef<"StudentRemark", 'DateTime'>
   readonly assignedToUserId: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly reviewRemark: Prisma.FieldRef<"StudentRemark", 'String'>
-  readonly reviewedByUserId: Prisma.FieldRef<"StudentRemark", 'String'>
   readonly reviewedAt: Prisma.FieldRef<"StudentRemark", 'DateTime'>
-  readonly createdAt: Prisma.FieldRef<"StudentRemark", 'DateTime'>
+  readonly reviewedByUserId: Prisma.FieldRef<"StudentRemark", 'String'>
+  readonly severity: Prisma.FieldRef<"StudentRemark", 'RemarkSeverity'>
+  readonly attachments: Prisma.FieldRef<"StudentRemark", 'Json'>
 }
     
 

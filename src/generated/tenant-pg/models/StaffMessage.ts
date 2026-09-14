@@ -30,9 +30,6 @@ export type StaffMessageMinAggregateOutputType = {
   senderId: string | null
   receiverId: string | null
   text: string | null
-  attachmentUrl: string | null
-  attachmentType: string | null
-  attachmentName: string | null
   readAt: Date | null
   createdAt: Date | null
 }
@@ -43,9 +40,6 @@ export type StaffMessageMaxAggregateOutputType = {
   senderId: string | null
   receiverId: string | null
   text: string | null
-  attachmentUrl: string | null
-  attachmentType: string | null
-  attachmentName: string | null
   readAt: Date | null
   createdAt: Date | null
 }
@@ -56,9 +50,7 @@ export type StaffMessageCountAggregateOutputType = {
   senderId: number
   receiverId: number
   text: number
-  attachmentUrl: number
-  attachmentType: number
-  attachmentName: number
+  attachments: number
   readAt: number
   createdAt: number
   _all: number
@@ -71,9 +63,6 @@ export type StaffMessageMinAggregateInputType = {
   senderId?: true
   receiverId?: true
   text?: true
-  attachmentUrl?: true
-  attachmentType?: true
-  attachmentName?: true
   readAt?: true
   createdAt?: true
 }
@@ -84,9 +73,6 @@ export type StaffMessageMaxAggregateInputType = {
   senderId?: true
   receiverId?: true
   text?: true
-  attachmentUrl?: true
-  attachmentType?: true
-  attachmentName?: true
   readAt?: true
   createdAt?: true
 }
@@ -97,9 +83,7 @@ export type StaffMessageCountAggregateInputType = {
   senderId?: true
   receiverId?: true
   text?: true
-  attachmentUrl?: true
-  attachmentType?: true
-  attachmentName?: true
+  attachments?: true
   readAt?: true
   createdAt?: true
   _all?: true
@@ -183,9 +167,7 @@ export type StaffMessageGroupByOutputType = {
   senderId: string
   receiverId: string
   text: string | null
-  attachmentUrl: string | null
-  attachmentType: string | null
-  attachmentName: string | null
+  attachments: runtime.JsonValue | null
   readAt: Date | null
   createdAt: Date
   _count: StaffMessageCountAggregateOutputType | null
@@ -217,9 +199,7 @@ export type StaffMessageWhereInput = {
   senderId?: Prisma.StringFilter<"StaffMessage"> | string
   receiverId?: Prisma.StringFilter<"StaffMessage"> | string
   text?: Prisma.StringNullableFilter<"StaffMessage"> | string | null
-  attachmentUrl?: Prisma.StringNullableFilter<"StaffMessage"> | string | null
-  attachmentType?: Prisma.StringNullableFilter<"StaffMessage"> | string | null
-  attachmentName?: Prisma.StringNullableFilter<"StaffMessage"> | string | null
+  attachments?: Prisma.JsonNullableFilter<"StaffMessage">
   readAt?: Prisma.DateTimeNullableFilter<"StaffMessage"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"StaffMessage"> | Date | string
 }
@@ -230,9 +210,7 @@ export type StaffMessageOrderByWithRelationInput = {
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
   text?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentType?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentName?: Prisma.SortOrderInput | Prisma.SortOrder
+  attachments?: Prisma.SortOrderInput | Prisma.SortOrder
   readAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -246,9 +224,7 @@ export type StaffMessageWhereUniqueInput = Prisma.AtLeast<{
   senderId?: Prisma.StringFilter<"StaffMessage"> | string
   receiverId?: Prisma.StringFilter<"StaffMessage"> | string
   text?: Prisma.StringNullableFilter<"StaffMessage"> | string | null
-  attachmentUrl?: Prisma.StringNullableFilter<"StaffMessage"> | string | null
-  attachmentType?: Prisma.StringNullableFilter<"StaffMessage"> | string | null
-  attachmentName?: Prisma.StringNullableFilter<"StaffMessage"> | string | null
+  attachments?: Prisma.JsonNullableFilter<"StaffMessage">
   readAt?: Prisma.DateTimeNullableFilter<"StaffMessage"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"StaffMessage"> | Date | string
 }, "id">
@@ -259,9 +235,7 @@ export type StaffMessageOrderByWithAggregationInput = {
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
   text?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentType?: Prisma.SortOrderInput | Prisma.SortOrder
-  attachmentName?: Prisma.SortOrderInput | Prisma.SortOrder
+  attachments?: Prisma.SortOrderInput | Prisma.SortOrder
   readAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.StaffMessageCountOrderByAggregateInput
@@ -278,9 +252,7 @@ export type StaffMessageScalarWhereWithAggregatesInput = {
   senderId?: Prisma.StringWithAggregatesFilter<"StaffMessage"> | string
   receiverId?: Prisma.StringWithAggregatesFilter<"StaffMessage"> | string
   text?: Prisma.StringNullableWithAggregatesFilter<"StaffMessage"> | string | null
-  attachmentUrl?: Prisma.StringNullableWithAggregatesFilter<"StaffMessage"> | string | null
-  attachmentType?: Prisma.StringNullableWithAggregatesFilter<"StaffMessage"> | string | null
-  attachmentName?: Prisma.StringNullableWithAggregatesFilter<"StaffMessage"> | string | null
+  attachments?: Prisma.JsonNullableWithAggregatesFilter<"StaffMessage">
   readAt?: Prisma.DateTimeNullableWithAggregatesFilter<"StaffMessage"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StaffMessage"> | Date | string
 }
@@ -291,9 +263,7 @@ export type StaffMessageCreateInput = {
   senderId: string
   receiverId: string
   text?: string | null
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   readAt?: Date | string | null
   createdAt?: Date | string
 }
@@ -304,9 +274,7 @@ export type StaffMessageUncheckedCreateInput = {
   senderId: string
   receiverId: string
   text?: string | null
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   readAt?: Date | string | null
   createdAt?: Date | string
 }
@@ -317,9 +285,7 @@ export type StaffMessageUpdateInput = {
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   receiverId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -330,9 +296,7 @@ export type StaffMessageUncheckedUpdateInput = {
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   receiverId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -343,9 +307,7 @@ export type StaffMessageCreateManyInput = {
   senderId: string
   receiverId: string
   text?: string | null
-  attachmentUrl?: string | null
-  attachmentType?: string | null
-  attachmentName?: string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   readAt?: Date | string | null
   createdAt?: Date | string
 }
@@ -356,9 +318,7 @@ export type StaffMessageUpdateManyMutationInput = {
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   receiverId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -369,9 +329,7 @@ export type StaffMessageUncheckedUpdateManyInput = {
   senderId?: Prisma.StringFieldUpdateOperationsInput | string
   receiverId?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attachmentName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   readAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -382,9 +340,7 @@ export type StaffMessageCountOrderByAggregateInput = {
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrder
-  attachmentType?: Prisma.SortOrder
-  attachmentName?: Prisma.SortOrder
+  attachments?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -395,9 +351,6 @@ export type StaffMessageMaxOrderByAggregateInput = {
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrder
-  attachmentType?: Prisma.SortOrder
-  attachmentName?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -408,9 +361,6 @@ export type StaffMessageMinOrderByAggregateInput = {
   senderId?: Prisma.SortOrder
   receiverId?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  attachmentUrl?: Prisma.SortOrder
-  attachmentType?: Prisma.SortOrder
-  attachmentName?: Prisma.SortOrder
   readAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -423,9 +373,7 @@ export type StaffMessageSelect<ExtArgs extends runtime.Types.Extensions.Internal
   senderId?: boolean
   receiverId?: boolean
   text?: boolean
-  attachmentUrl?: boolean
-  attachmentType?: boolean
-  attachmentName?: boolean
+  attachments?: boolean
   readAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["staffMessage"]>
@@ -436,9 +384,7 @@ export type StaffMessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   senderId?: boolean
   receiverId?: boolean
   text?: boolean
-  attachmentUrl?: boolean
-  attachmentType?: boolean
-  attachmentName?: boolean
+  attachments?: boolean
   readAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["staffMessage"]>
@@ -449,9 +395,7 @@ export type StaffMessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   senderId?: boolean
   receiverId?: boolean
   text?: boolean
-  attachmentUrl?: boolean
-  attachmentType?: boolean
-  attachmentName?: boolean
+  attachments?: boolean
   readAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["staffMessage"]>
@@ -462,14 +406,12 @@ export type StaffMessageSelectScalar = {
   senderId?: boolean
   receiverId?: boolean
   text?: boolean
-  attachmentUrl?: boolean
-  attachmentType?: boolean
-  attachmentName?: boolean
+  attachments?: boolean
   readAt?: boolean
   createdAt?: boolean
 }
 
-export type StaffMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "senderId" | "receiverId" | "text" | "attachmentUrl" | "attachmentType" | "attachmentName" | "readAt" | "createdAt", ExtArgs["result"]["staffMessage"]>
+export type StaffMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "senderId" | "receiverId" | "text" | "attachments" | "readAt" | "createdAt", ExtArgs["result"]["staffMessage"]>
 
 export type $StaffMessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StaffMessage"
@@ -480,9 +422,7 @@ export type $StaffMessagePayload<ExtArgs extends runtime.Types.Extensions.Intern
     senderId: string
     receiverId: string
     text: string | null
-    attachmentUrl: string | null
-    attachmentType: string | null
-    attachmentName: string | null
+    attachments: runtime.JsonValue | null
     readAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["staffMessage"]>
@@ -913,9 +853,7 @@ export interface StaffMessageFieldRefs {
   readonly senderId: Prisma.FieldRef<"StaffMessage", 'String'>
   readonly receiverId: Prisma.FieldRef<"StaffMessage", 'String'>
   readonly text: Prisma.FieldRef<"StaffMessage", 'String'>
-  readonly attachmentUrl: Prisma.FieldRef<"StaffMessage", 'String'>
-  readonly attachmentType: Prisma.FieldRef<"StaffMessage", 'String'>
-  readonly attachmentName: Prisma.FieldRef<"StaffMessage", 'String'>
+  readonly attachments: Prisma.FieldRef<"StaffMessage", 'Json'>
   readonly readAt: Prisma.FieldRef<"StaffMessage", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"StaffMessage", 'DateTime'>
 }

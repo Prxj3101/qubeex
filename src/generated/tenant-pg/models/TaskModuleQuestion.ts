@@ -38,24 +38,24 @@ export type TaskModuleQuestionMinAggregateOutputType = {
   id: string | null
   moduleId: string | null
   questionId: string | null
-  order: number | null
   assignedAt: Date | null
+  order: number | null
 }
 
 export type TaskModuleQuestionMaxAggregateOutputType = {
   id: string | null
   moduleId: string | null
   questionId: string | null
-  order: number | null
   assignedAt: Date | null
+  order: number | null
 }
 
 export type TaskModuleQuestionCountAggregateOutputType = {
   id: number
   moduleId: number
   questionId: number
-  order: number
   assignedAt: number
+  order: number
   _all: number
 }
 
@@ -72,24 +72,24 @@ export type TaskModuleQuestionMinAggregateInputType = {
   id?: true
   moduleId?: true
   questionId?: true
-  order?: true
   assignedAt?: true
+  order?: true
 }
 
 export type TaskModuleQuestionMaxAggregateInputType = {
   id?: true
   moduleId?: true
   questionId?: true
-  order?: true
   assignedAt?: true
+  order?: true
 }
 
 export type TaskModuleQuestionCountAggregateInputType = {
   id?: true
   moduleId?: true
   questionId?: true
-  order?: true
   assignedAt?: true
+  order?: true
   _all?: true
 }
 
@@ -183,8 +183,8 @@ export type TaskModuleQuestionGroupByOutputType = {
   id: string
   moduleId: string
   questionId: string
-  order: number
   assignedAt: Date
+  order: number
   _count: TaskModuleQuestionCountAggregateOutputType | null
   _avg: TaskModuleQuestionAvgAggregateOutputType | null
   _sum: TaskModuleQuestionSumAggregateOutputType | null
@@ -214,8 +214,8 @@ export type TaskModuleQuestionWhereInput = {
   id?: Prisma.StringFilter<"TaskModuleQuestion"> | string
   moduleId?: Prisma.StringFilter<"TaskModuleQuestion"> | string
   questionId?: Prisma.StringFilter<"TaskModuleQuestion"> | string
-  order?: Prisma.IntFilter<"TaskModuleQuestion"> | number
   assignedAt?: Prisma.DateTimeFilter<"TaskModuleQuestion"> | Date | string
+  order?: Prisma.IntFilter<"TaskModuleQuestion"> | number
   module?: Prisma.XOR<Prisma.TaskModuleScalarRelationFilter, Prisma.TaskModuleWhereInput>
   question?: Prisma.XOR<Prisma.TaskQuestionScalarRelationFilter, Prisma.TaskQuestionWhereInput>
 }
@@ -224,8 +224,8 @@ export type TaskModuleQuestionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   assignedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   module?: Prisma.TaskModuleOrderByWithRelationInput
   question?: Prisma.TaskQuestionOrderByWithRelationInput
 }
@@ -237,8 +237,8 @@ export type TaskModuleQuestionWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.TaskModuleQuestionWhereInput[]
   NOT?: Prisma.TaskModuleQuestionWhereInput | Prisma.TaskModuleQuestionWhereInput[]
   moduleId?: Prisma.StringFilter<"TaskModuleQuestion"> | string
-  order?: Prisma.IntFilter<"TaskModuleQuestion"> | number
   assignedAt?: Prisma.DateTimeFilter<"TaskModuleQuestion"> | Date | string
+  order?: Prisma.IntFilter<"TaskModuleQuestion"> | number
   module?: Prisma.XOR<Prisma.TaskModuleScalarRelationFilter, Prisma.TaskModuleWhereInput>
   question?: Prisma.XOR<Prisma.TaskQuestionScalarRelationFilter, Prisma.TaskQuestionWhereInput>
 }, "id" | "questionId">
@@ -247,8 +247,8 @@ export type TaskModuleQuestionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   assignedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
   _count?: Prisma.TaskModuleQuestionCountOrderByAggregateInput
   _avg?: Prisma.TaskModuleQuestionAvgOrderByAggregateInput
   _max?: Prisma.TaskModuleQuestionMaxOrderByAggregateInput
@@ -263,14 +263,14 @@ export type TaskModuleQuestionScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"TaskModuleQuestion"> | string
   moduleId?: Prisma.StringWithAggregatesFilter<"TaskModuleQuestion"> | string
   questionId?: Prisma.StringWithAggregatesFilter<"TaskModuleQuestion"> | string
-  order?: Prisma.IntWithAggregatesFilter<"TaskModuleQuestion"> | number
   assignedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskModuleQuestion"> | Date | string
+  order?: Prisma.IntWithAggregatesFilter<"TaskModuleQuestion"> | number
 }
 
 export type TaskModuleQuestionCreateInput = {
   id?: string
-  order?: number
   assignedAt?: Date | string
+  order?: number
   module: Prisma.TaskModuleCreateNestedOneWithoutQuestionsInput
   question: Prisma.TaskQuestionCreateNestedOneWithoutModuleAssignmentInput
 }
@@ -279,14 +279,14 @@ export type TaskModuleQuestionUncheckedCreateInput = {
   id?: string
   moduleId: string
   questionId: string
-  order?: number
   assignedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleQuestionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   module?: Prisma.TaskModuleUpdateOneRequiredWithoutQuestionsNestedInput
   question?: Prisma.TaskQuestionUpdateOneRequiredWithoutModuleAssignmentNestedInput
 }
@@ -295,30 +295,30 @@ export type TaskModuleQuestionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   questionId?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleQuestionCreateManyInput = {
   id?: string
   moduleId: string
   questionId: string
-  order?: number
   assignedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleQuestionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleQuestionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
   questionId?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleQuestionNullableScalarRelationFilter = {
@@ -340,8 +340,8 @@ export type TaskModuleQuestionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   assignedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskModuleQuestionAvgOrderByAggregateInput = {
@@ -352,16 +352,16 @@ export type TaskModuleQuestionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   assignedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskModuleQuestionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   moduleId?: Prisma.SortOrder
   questionId?: Prisma.SortOrder
-  order?: Prisma.SortOrder
   assignedAt?: Prisma.SortOrder
+  order?: Prisma.SortOrder
 }
 
 export type TaskModuleQuestionSumOrderByAggregateInput = {
@@ -444,16 +444,16 @@ export type TaskModuleQuestionUncheckedUpdateManyWithoutModuleNestedInput = {
 
 export type TaskModuleQuestionCreateWithoutQuestionInput = {
   id?: string
-  order?: number
   assignedAt?: Date | string
+  order?: number
   module: Prisma.TaskModuleCreateNestedOneWithoutQuestionsInput
 }
 
 export type TaskModuleQuestionUncheckedCreateWithoutQuestionInput = {
   id?: string
   moduleId: string
-  order?: number
   assignedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleQuestionCreateOrConnectWithoutQuestionInput = {
@@ -474,30 +474,30 @@ export type TaskModuleQuestionUpdateToOneWithWhereWithoutQuestionInput = {
 
 export type TaskModuleQuestionUpdateWithoutQuestionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   module?: Prisma.TaskModuleUpdateOneRequiredWithoutQuestionsNestedInput
 }
 
 export type TaskModuleQuestionUncheckedUpdateWithoutQuestionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   moduleId?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleQuestionCreateWithoutModuleInput = {
   id?: string
-  order?: number
   assignedAt?: Date | string
+  order?: number
   question: Prisma.TaskQuestionCreateNestedOneWithoutModuleAssignmentInput
 }
 
 export type TaskModuleQuestionUncheckedCreateWithoutModuleInput = {
   id?: string
   questionId: string
-  order?: number
   assignedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleQuestionCreateOrConnectWithoutModuleInput = {
@@ -533,36 +533,36 @@ export type TaskModuleQuestionScalarWhereInput = {
   id?: Prisma.StringFilter<"TaskModuleQuestion"> | string
   moduleId?: Prisma.StringFilter<"TaskModuleQuestion"> | string
   questionId?: Prisma.StringFilter<"TaskModuleQuestion"> | string
-  order?: Prisma.IntFilter<"TaskModuleQuestion"> | number
   assignedAt?: Prisma.DateTimeFilter<"TaskModuleQuestion"> | Date | string
+  order?: Prisma.IntFilter<"TaskModuleQuestion"> | number
 }
 
 export type TaskModuleQuestionCreateManyModuleInput = {
   id?: string
   questionId: string
-  order?: number
   assignedAt?: Date | string
+  order?: number
 }
 
 export type TaskModuleQuestionUpdateWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
   question?: Prisma.TaskQuestionUpdateOneRequiredWithoutModuleAssignmentNestedInput
 }
 
 export type TaskModuleQuestionUncheckedUpdateWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   questionId?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskModuleQuestionUncheckedUpdateManyWithoutModuleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   questionId?: Prisma.StringFieldUpdateOperationsInput | string
-  order?: Prisma.IntFieldUpdateOperationsInput | number
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -571,8 +571,8 @@ export type TaskModuleQuestionSelect<ExtArgs extends runtime.Types.Extensions.In
   id?: boolean
   moduleId?: boolean
   questionId?: boolean
-  order?: boolean
   assignedAt?: boolean
+  order?: boolean
   module?: boolean | Prisma.TaskModuleDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskModuleQuestion"]>
@@ -581,8 +581,8 @@ export type TaskModuleQuestionSelectCreateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   moduleId?: boolean
   questionId?: boolean
-  order?: boolean
   assignedAt?: boolean
+  order?: boolean
   module?: boolean | Prisma.TaskModuleDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskModuleQuestion"]>
@@ -591,8 +591,8 @@ export type TaskModuleQuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   moduleId?: boolean
   questionId?: boolean
-  order?: boolean
   assignedAt?: boolean
+  order?: boolean
   module?: boolean | Prisma.TaskModuleDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskModuleQuestion"]>
@@ -601,11 +601,11 @@ export type TaskModuleQuestionSelectScalar = {
   id?: boolean
   moduleId?: boolean
   questionId?: boolean
-  order?: boolean
   assignedAt?: boolean
+  order?: boolean
 }
 
-export type TaskModuleQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "moduleId" | "questionId" | "order" | "assignedAt", ExtArgs["result"]["taskModuleQuestion"]>
+export type TaskModuleQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "moduleId" | "questionId" | "assignedAt" | "order", ExtArgs["result"]["taskModuleQuestion"]>
 export type TaskModuleQuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   module?: boolean | Prisma.TaskModuleDefaultArgs<ExtArgs>
   question?: boolean | Prisma.TaskQuestionDefaultArgs<ExtArgs>
@@ -629,8 +629,8 @@ export type $TaskModuleQuestionPayload<ExtArgs extends runtime.Types.Extensions.
     id: string
     moduleId: string
     questionId: string
-    order: number
     assignedAt: Date
+    order: number
   }, ExtArgs["result"]["taskModuleQuestion"]>
   composites: {}
 }
@@ -1059,8 +1059,8 @@ export interface TaskModuleQuestionFieldRefs {
   readonly id: Prisma.FieldRef<"TaskModuleQuestion", 'String'>
   readonly moduleId: Prisma.FieldRef<"TaskModuleQuestion", 'String'>
   readonly questionId: Prisma.FieldRef<"TaskModuleQuestion", 'String'>
-  readonly order: Prisma.FieldRef<"TaskModuleQuestion", 'Int'>
   readonly assignedAt: Prisma.FieldRef<"TaskModuleQuestion", 'DateTime'>
+  readonly order: Prisma.FieldRef<"TaskModuleQuestion", 'Int'>
 }
     
 

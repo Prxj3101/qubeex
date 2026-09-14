@@ -28,30 +28,30 @@ export type CalendarEventMinAggregateOutputType = {
   id: string | null
   institutionId: string | null
   createdById: string | null
-  divisionId: string | null
   type: $Enums.CalendarEventType | null
   label: string | null
   date: Date | null
+  divisionId: string | null
 }
 
 export type CalendarEventMaxAggregateOutputType = {
   id: string | null
   institutionId: string | null
   createdById: string | null
-  divisionId: string | null
   type: $Enums.CalendarEventType | null
   label: string | null
   date: Date | null
+  divisionId: string | null
 }
 
 export type CalendarEventCountAggregateOutputType = {
   id: number
   institutionId: number
   createdById: number
-  divisionId: number
   type: number
   label: number
   date: number
+  divisionId: number
   _all: number
 }
 
@@ -60,30 +60,30 @@ export type CalendarEventMinAggregateInputType = {
   id?: true
   institutionId?: true
   createdById?: true
-  divisionId?: true
   type?: true
   label?: true
   date?: true
+  divisionId?: true
 }
 
 export type CalendarEventMaxAggregateInputType = {
   id?: true
   institutionId?: true
   createdById?: true
-  divisionId?: true
   type?: true
   label?: true
   date?: true
+  divisionId?: true
 }
 
 export type CalendarEventCountAggregateInputType = {
   id?: true
   institutionId?: true
   createdById?: true
-  divisionId?: true
   type?: true
   label?: true
   date?: true
+  divisionId?: true
   _all?: true
 }
 
@@ -163,10 +163,10 @@ export type CalendarEventGroupByOutputType = {
   id: string
   institutionId: string
   createdById: string
-  divisionId: string | null
   type: $Enums.CalendarEventType
   label: string
   date: Date
+  divisionId: string | null
   _count: CalendarEventCountAggregateOutputType | null
   _min: CalendarEventMinAggregateOutputType | null
   _max: CalendarEventMaxAggregateOutputType | null
@@ -194,10 +194,10 @@ export type CalendarEventWhereInput = {
   id?: Prisma.StringFilter<"CalendarEvent"> | string
   institutionId?: Prisma.StringFilter<"CalendarEvent"> | string
   createdById?: Prisma.StringFilter<"CalendarEvent"> | string
-  divisionId?: Prisma.StringNullableFilter<"CalendarEvent"> | string | null
   type?: Prisma.EnumCalendarEventTypeFilter<"CalendarEvent"> | $Enums.CalendarEventType
   label?: Prisma.StringFilter<"CalendarEvent"> | string
   date?: Prisma.DateTimeFilter<"CalendarEvent"> | Date | string
+  divisionId?: Prisma.StringNullableFilter<"CalendarEvent"> | string | null
   division?: Prisma.XOR<Prisma.DivisionNullableScalarRelationFilter, Prisma.DivisionWhereInput> | null
 }
 
@@ -205,10 +205,10 @@ export type CalendarEventOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   label?: Prisma.SortOrder
   date?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrderInput | Prisma.SortOrder
   division?: Prisma.DivisionOrderByWithRelationInput
 }
 
@@ -219,10 +219,10 @@ export type CalendarEventWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CalendarEventWhereInput | Prisma.CalendarEventWhereInput[]
   institutionId?: Prisma.StringFilter<"CalendarEvent"> | string
   createdById?: Prisma.StringFilter<"CalendarEvent"> | string
-  divisionId?: Prisma.StringNullableFilter<"CalendarEvent"> | string | null
   type?: Prisma.EnumCalendarEventTypeFilter<"CalendarEvent"> | $Enums.CalendarEventType
   label?: Prisma.StringFilter<"CalendarEvent"> | string
   date?: Prisma.DateTimeFilter<"CalendarEvent"> | Date | string
+  divisionId?: Prisma.StringNullableFilter<"CalendarEvent"> | string | null
   division?: Prisma.XOR<Prisma.DivisionNullableScalarRelationFilter, Prisma.DivisionWhereInput> | null
 }, "id">
 
@@ -230,10 +230,10 @@ export type CalendarEventOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   label?: Prisma.SortOrder
   date?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CalendarEventCountOrderByAggregateInput
   _max?: Prisma.CalendarEventMaxOrderByAggregateInput
   _min?: Prisma.CalendarEventMinOrderByAggregateInput
@@ -246,10 +246,10 @@ export type CalendarEventScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"CalendarEvent"> | string
   institutionId?: Prisma.StringWithAggregatesFilter<"CalendarEvent"> | string
   createdById?: Prisma.StringWithAggregatesFilter<"CalendarEvent"> | string
-  divisionId?: Prisma.StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
   type?: Prisma.EnumCalendarEventTypeWithAggregatesFilter<"CalendarEvent"> | $Enums.CalendarEventType
   label?: Prisma.StringWithAggregatesFilter<"CalendarEvent"> | string
   date?: Prisma.DateTimeWithAggregatesFilter<"CalendarEvent"> | Date | string
+  divisionId?: Prisma.StringNullableWithAggregatesFilter<"CalendarEvent"> | string | null
 }
 
 export type CalendarEventCreateInput = {
@@ -266,10 +266,10 @@ export type CalendarEventUncheckedCreateInput = {
   id?: string
   institutionId: string
   createdById: string
-  divisionId?: string | null
   type: $Enums.CalendarEventType
   label: string
   date: Date | string
+  divisionId?: string | null
 }
 
 export type CalendarEventUpdateInput = {
@@ -286,20 +286,20 @@ export type CalendarEventUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
-  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumCalendarEventTypeFieldUpdateOperationsInput | $Enums.CalendarEventType
   label?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CalendarEventCreateManyInput = {
   id?: string
   institutionId: string
   createdById: string
-  divisionId?: string | null
   type: $Enums.CalendarEventType
   label: string
   date: Date | string
+  divisionId?: string | null
 }
 
 export type CalendarEventUpdateManyMutationInput = {
@@ -315,10 +315,10 @@ export type CalendarEventUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
-  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumCalendarEventTypeFieldUpdateOperationsInput | $Enums.CalendarEventType
   label?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  divisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CalendarEventListRelationFilter = {
@@ -335,30 +335,30 @@ export type CalendarEventCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   label?: Prisma.SortOrder
   date?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrder
 }
 
 export type CalendarEventMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   label?: Prisma.SortOrder
   date?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrder
 }
 
 export type CalendarEventMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
-  divisionId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   label?: Prisma.SortOrder
   date?: Prisma.SortOrder
+  divisionId?: Prisma.SortOrder
 }
 
 export type CalendarEventCreateNestedManyWithoutDivisionInput = {
@@ -458,10 +458,10 @@ export type CalendarEventScalarWhereInput = {
   id?: Prisma.StringFilter<"CalendarEvent"> | string
   institutionId?: Prisma.StringFilter<"CalendarEvent"> | string
   createdById?: Prisma.StringFilter<"CalendarEvent"> | string
-  divisionId?: Prisma.StringNullableFilter<"CalendarEvent"> | string | null
   type?: Prisma.EnumCalendarEventTypeFilter<"CalendarEvent"> | $Enums.CalendarEventType
   label?: Prisma.StringFilter<"CalendarEvent"> | string
   date?: Prisma.DateTimeFilter<"CalendarEvent"> | Date | string
+  divisionId?: Prisma.StringNullableFilter<"CalendarEvent"> | string | null
 }
 
 export type CalendarEventCreateManyDivisionInput = {
@@ -506,10 +506,10 @@ export type CalendarEventSelect<ExtArgs extends runtime.Types.Extensions.Interna
   id?: boolean
   institutionId?: boolean
   createdById?: boolean
-  divisionId?: boolean
   type?: boolean
   label?: boolean
   date?: boolean
+  divisionId?: boolean
   division?: boolean | Prisma.CalendarEvent$divisionArgs<ExtArgs>
 }, ExtArgs["result"]["calendarEvent"]>
 
@@ -517,10 +517,10 @@ export type CalendarEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   institutionId?: boolean
   createdById?: boolean
-  divisionId?: boolean
   type?: boolean
   label?: boolean
   date?: boolean
+  divisionId?: boolean
   division?: boolean | Prisma.CalendarEvent$divisionArgs<ExtArgs>
 }, ExtArgs["result"]["calendarEvent"]>
 
@@ -528,10 +528,10 @@ export type CalendarEventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   institutionId?: boolean
   createdById?: boolean
-  divisionId?: boolean
   type?: boolean
   label?: boolean
   date?: boolean
+  divisionId?: boolean
   division?: boolean | Prisma.CalendarEvent$divisionArgs<ExtArgs>
 }, ExtArgs["result"]["calendarEvent"]>
 
@@ -539,13 +539,13 @@ export type CalendarEventSelectScalar = {
   id?: boolean
   institutionId?: boolean
   createdById?: boolean
-  divisionId?: boolean
   type?: boolean
   label?: boolean
   date?: boolean
+  divisionId?: boolean
 }
 
-export type CalendarEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "createdById" | "divisionId" | "type" | "label" | "date", ExtArgs["result"]["calendarEvent"]>
+export type CalendarEventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "createdById" | "type" | "label" | "date" | "divisionId", ExtArgs["result"]["calendarEvent"]>
 export type CalendarEventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.CalendarEvent$divisionArgs<ExtArgs>
 }
@@ -565,10 +565,10 @@ export type $CalendarEventPayload<ExtArgs extends runtime.Types.Extensions.Inter
     id: string
     institutionId: string
     createdById: string
-    divisionId: string | null
     type: $Enums.CalendarEventType
     label: string
     date: Date
+    divisionId: string | null
   }, ExtArgs["result"]["calendarEvent"]>
   composites: {}
 }
@@ -996,10 +996,10 @@ export interface CalendarEventFieldRefs {
   readonly id: Prisma.FieldRef<"CalendarEvent", 'String'>
   readonly institutionId: Prisma.FieldRef<"CalendarEvent", 'String'>
   readonly createdById: Prisma.FieldRef<"CalendarEvent", 'String'>
-  readonly divisionId: Prisma.FieldRef<"CalendarEvent", 'String'>
   readonly type: Prisma.FieldRef<"CalendarEvent", 'CalendarEventType'>
   readonly label: Prisma.FieldRef<"CalendarEvent", 'String'>
   readonly date: Prisma.FieldRef<"CalendarEvent", 'DateTime'>
+  readonly divisionId: Prisma.FieldRef<"CalendarEvent", 'String'>
 }
     
 

@@ -7,6 +7,7 @@ import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 import { resolveAuthorDisplay, DisplayInfo } from "../../utils/authorDisplay";
 import { resolveUsers } from "../../services/userLookup.service";
+import { createNotification } from "../../services/notification.service";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const multer = require("multer");
 
@@ -227,10 +228,72 @@ export const createPost = async (req: AuthRequest, res: Response, next: NextFunc
       category: "ADMIN_ACTION",
       severity: "INFO",
     });
+
+    // Notify everyone who'd see this post — the whole institution for a
+    // general post, or just that division's students + assigned teachers for
+    // a division-scoped one. Fire-and-forget after the response so a slow
+    // notification/push dispatch never delays the post itself appearing.
+    void notifyFeedPost({
+      institutionId,
+      authorId: userId,
+      authorName: postWithAuthor.author.name,
+      divisionId: data.divisionId ?? null,
+      type: data.type,
+      title: data.title,
+      body: data.body,
+    }).catch((err) => console.error("Feed post notification failed (non-blocking):", err.message));
   } catch (err) {
     next(err);
   }
 };
+
+const FEED_NOTIFICATION_TAG: Record<string, string> = {
+  ANNOUNCEMENT: "ANNOUNCEMENT",
+  NOTICE: "ANNOUNCEMENT",
+  MATERIAL: "ANNOUNCEMENT",
+  RESULT: "RESULT_PUBLISHED",
+};
+
+async function notifyFeedPost(post: {
+  institutionId: string;
+  authorId: string;
+  authorName: string | null;
+  divisionId: string | null;
+  type: string;
+  title: string;
+  body: string;
+}) {
+  let recipients: { institutionId: string; userId?: string }[];
+
+  if (post.divisionId) {
+    const [students, assignments] = await Promise.all([
+      academicDb().student.findMany({ where: { divisionId: post.divisionId, institutionId: post.institutionId }, select: { userId: true } }),
+      academicDb().divisionAssignment.findMany({ where: { divisionId: post.divisionId, institutionId: post.institutionId }, select: { teacherId: true } }),
+    ]);
+    const teacherIds = [...new Set(assignments.map((a) => a.teacherId))];
+    const teachers = teacherIds.length
+      ? await academicDb().teacher.findMany({ where: { id: { in: teacherIds } }, select: { userId: true } })
+      : [];
+    const audienceUserIds = [...new Set([...students.map((s) => s.userId), ...teachers.map((t) => t.userId)])]
+      .filter((uid) => uid !== post.authorId);
+    if (audienceUserIds.length === 0) return;
+    recipients = audienceUserIds.map((userId) => ({ institutionId: post.institutionId, userId }));
+  } else {
+    // Whole-institution broadcast — matches every role (admin/teacher/student),
+    // including the author themselves; acceptable, not worth the extra query
+    // to exclude just one person from an institution-wide notice.
+    recipients = [{ institutionId: post.institutionId }];
+  }
+
+  await createNotification({
+    title: `${post.authorName ?? "Someone"} posted: ${post.title}`,
+    message: post.body?.slice(0, 200) || `New ${post.type.toLowerCase()} in the campus feed`,
+    tag: FEED_NOTIFICATION_TAG[post.type] ?? "ANNOUNCEMENT",
+    recipientType: post.divisionId ? "SPECIFIC" : "SYSTEM",
+    sentById: post.authorId,
+    recipients,
+  });
+}
 
 export const deletePost = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

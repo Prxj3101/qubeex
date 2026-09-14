@@ -68,6 +68,11 @@ describe("Campus feed materials — subjectId-based tagging", () => {
 
   afterAll(async () => {
     if (!institutionId) { await prisma.$disconnect(); return; }
+    // createPost now also notifies the division's audience (notification.service.ts),
+    // which creates NotificationRecipient rows referencing these users — must
+    // clear those before the user deleteMany below, or it hits the same FK
+    // violation the SubAdmin/User delete flows hit for the same reason.
+    await prisma.notificationRecipient.deleteMany({ where: { institutionId } });
     await prisma.campusFeedPost.deleteMany({ where: { institutionId } });
     await prisma.student.deleteMany({ where: { institutionId } });
     await prisma.divisionAssignment.deleteMany({ where: { institutionId } });

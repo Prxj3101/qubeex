@@ -7,6 +7,7 @@ import {
   listStandards,
   createStandard,
   updateStandard,
+  reorderStandards,
   deleteStandard,
   createDivision,
   updateDivision,
@@ -89,6 +90,10 @@ const CAMPUS_FEES_PERM = [...A, requirePermission("CAMPUS_FEES")];
 // Standards — list is needed for any classes tab
 router.get("/standards", ...ANY_CAMPUS, listStandards);
 router.post("/standards", ...CAMPUS_MANAGE_PERM, createStandard);
+// Must stay above "/standards/:id" — otherwise Express matches this as a
+// standard whose id is literally "reorder", and the handler 404s with
+// "Standard not found" instead of reordering anything.
+router.patch("/standards/reorder", ...CAMPUS_MANAGE_PERM, reorderStandards);
 router.patch("/standards/:id", ...CAMPUS_MANAGE_PERM, updateStandard);
 router.delete("/standards/:id", ...CAMPUS_MANAGE_PERM, deleteStandard);
 

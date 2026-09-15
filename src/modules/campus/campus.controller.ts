@@ -52,50 +52,84 @@ function requireInstitution(req: AuthRequest) {
 
 // ── Standards ─────────────────────────────────────────────────────────────────
 
+// The classes page replaces its whole standards list with whatever the server
+// last returned, so every endpoint that hands standards back has to return this
+// same fully-nested shape — hence one loader shared by the list and the
+// reorder rather than each building its own.
+async function loadStandards(institutionId: string) {
+  const standards = await academicDb().standard.findMany({
+    where: { institutionId },
+    orderBy: { order: "asc" },
+    include: {
+      subjects: { orderBy: { order: "asc" } },
+      divisions: {
+        orderBy: { name: "asc" },
+        include: {
+          divisionSubjects: { select: { subjectId: true } },
+          assignments: {
+            include: {
+              teacher: true,
+              subject: true,
+            },
+          },
+          _count: { select: { students: { where: { status: "ACTIVE" } } } },
+        },
+      },
+    },
+  });
+
+  // Teacher names are central (Teacher may be in a tenant DB under BYOD).
+  const teacherUserIds = standards.flatMap((s) =>
+    s.divisions.flatMap((d) => d.assignments.map((a) => a.teacher.userId))
+  );
+  const users = await resolveUsers(teacherUserIds, { id: true, name: true });
+
+  return standards.map((standard) => ({
+    ...standard,
+    divisions: standard.divisions.map((division) => ({
+      ...division,
+      assignments: division.assignments.map((a) => {
+        const u = users.get(a.teacher.userId);
+        return { ...a, teacher: { ...a.teacher, user: u ? { id: u.id, name: u.name } : null } };
+      }),
+      studentCount: division._count.students,
+    })),
+  }));
+}
+
 export const listStandards = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const institutionId = requireInstitution(req);
+    res.json({ success: true, data: await loadStandards(institutionId) });
+  } catch (err) {
+    next(err);
+  }
+};
 
-    const standards = await academicDb().standard.findMany({
-      where: { institutionId },
-      orderBy: { order: "asc" },
-      include: {
-        subjects: { orderBy: { order: "asc" } },
-        divisions: {
-          orderBy: { name: "asc" },
-          include: {
-            divisionSubjects: { select: { subjectId: true } },
-            assignments: {
-              include: {
-                teacher: true,
-                subject: true,
-              },
-            },
-            _count: { select: { students: { where: { status: "ACTIVE" } } } },
-          },
-        },
-      },
-    });
+export const reorderStandards = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const { orderedIds } = reorderSubjectsSchema.parse(req.body);
 
-    // Teacher names are central (Teacher may be in a tenant DB under BYOD).
-    const teacherUserIds = standards.flatMap((s) =>
-      s.divisions.flatMap((d) => d.assignments.map((a) => a.teacher.userId))
+    const standards = await academicDb().standard.findMany({ where: { institutionId }, select: { id: true } });
+    const ids = new Set(standards.map((s) => s.id));
+    if (orderedIds.length !== standards.length || !orderedIds.every((id) => ids.has(id))) {
+      throw new BadRequestError("orderedIds must include every standard exactly once");
+    }
+
+    await academicDb().$transaction(
+      orderedIds.map((id, index) => academicDb().standard.update({ where: { id }, data: { order: index } }))
     );
-    const users = await resolveUsers(teacherUserIds, { id: true, name: true });
 
-    const data = standards.map((standard) => ({
-      ...standard,
-      divisions: standard.divisions.map((division) => ({
-        ...division,
-        assignments: division.assignments.map((a) => {
-          const u = users.get(a.teacher.userId);
-          return { ...a, teacher: { ...a.teacher, user: u ? { id: u.id, name: u.name } : null } };
-        }),
-        studentCount: division._count.students,
-      })),
-    }));
-
-    res.json({ success: true, data });
+    res.json({ success: true, data: await loadStandards(institutionId) });
+    logAudit("CLASS_UPDATED", {
+      userId: req.user!.userId,
+      actorRole: req.user!.role,
+      institutionId,
+      details: "Classes reordered",
+      category: "ADMIN_ACTION",
+      severity: "INFO",
+    });
   } catch (err) {
     next(err);
   }
@@ -163,6 +197,29 @@ export const updateStandard = async (req: AuthRequest, res: Response, next: Next
   }
 };
 
+// Everything that hangs off a Division, in dependency order, ready to drop into
+// a $transaction. Only the top of each tree is listed: the rows underneath —
+// marksheet scores and remarks, test questions and attempts and answers,
+// assignment submissions — are declared onDelete: Cascade in the tenant schema,
+// so removing the parent takes them with it. Campus posts and calendar events
+// link to a division optionally, so Prisma nulls those out by itself and they
+// simply become institution-wide.
+const divisionCleanupOps = (divisionIds: string[]) => {
+  const db = academicDb();
+  const where = { divisionId: { in: divisionIds } };
+  return [
+    db.marksheet.deleteMany({ where }),
+    db.attendance.deleteMany({ where }),
+    db.attendanceDayNote.deleteMany({ where }),
+    db.divisionFeeStructure.deleteMany({ where }),
+    db.taskAssignment.deleteMany({ where }),
+    db.taskTest.deleteMany({ where }),
+    db.taskContainer.deleteMany({ where }),
+    db.divisionAssignment.deleteMany({ where }),
+    db.divisionSubject.deleteMany({ where }),
+  ];
+};
+
 export const deleteStandard = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const institutionId = requireInstitution(req);
@@ -171,7 +228,45 @@ export const deleteStandard = async (req: AuthRequest, res: Response, next: Next
     const standard = await academicDb().standard.findFirst({ where: { id, institutionId } });
     if (!standard) throw new NotFoundError("Standard not found");
 
-    await academicDb().standard.delete({ where: { id } });
+    // Divisions are never taken down along with their class — they're their own
+    // thing, each potentially holding a year of attendance and marksheets, so
+    // deleting one has to be a deliberate act. The class delete stops here and
+    // names them instead. Students are checked too, in case any are attached to
+    // the class without sitting in a division.
+    const [divisions, students] = await Promise.all([
+      academicDb().division.findMany({ where: { standardId: id }, select: { name: true }, orderBy: { name: "asc" } }),
+      academicDb().student.count({ where: { standardId: id } }),
+    ]);
+
+    if (divisions.length > 0) {
+      const names = divisions.map((d) => d.name).join(", ");
+      throw new ConflictError(
+        `This class still has division${divisions.length === 1 ? "" : "s"} ${names}. Delete ${divisions.length === 1 ? "it" : "them"} first, then the class.`
+      );
+    }
+    if (students > 0) {
+      throw new ConflictError(
+        `This class still has ${students} student${students === 1 ? "" : "s"}. Move or remove them before deleting it.`
+      );
+    }
+
+    // With no divisions left, all that's holding the class are its subjects —
+    // configuration rather than records — and whatever hangs off them. Those go
+    // quietly, otherwise the delete would just trip Subject_standardId_fkey next.
+    const subjects = await academicDb().subject.findMany({ where: { standardId: id }, select: { id: true } });
+    const bySubject = { subjectId: { in: subjects.map((s) => s.id) } };
+
+    await academicDb().$transaction([
+      academicDb().taskModule.deleteMany({ where: bySubject }),
+      academicDb().taskAssignment.deleteMany({ where: bySubject }),
+      academicDb().taskTest.deleteMany({ where: bySubject }),
+      academicDb().taskContainer.deleteMany({ where: bySubject }),
+      academicDb().divisionAssignment.deleteMany({ where: bySubject }),
+      academicDb().divisionSubject.deleteMany({ where: bySubject }),
+      academicDb().subject.deleteMany({ where: { standardId: id } }),
+      academicDb().standard.delete({ where: { id } }),
+    ]);
+
     res.json({ success: true });
     logAudit("CLASS_DELETED", {
       userId: req.user!.userId,
@@ -260,7 +355,23 @@ export const deleteDivision = async (req: AuthRequest, res: Response, next: Next
     const division = await academicDb().division.findFirst({ where: { id, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
-    await academicDb().division.delete({ where: { id } });
+    // Students are the only thing that stops a division being deleted —
+    // everything else it owns goes with it (see divisionCleanupOps). A dozen
+    // tables reference a Division and none of those relations cascade, which is
+    // why deleting one outright used to crash on whichever foreign key tripped
+    // first (DivisionAssignment, in practice).
+    const students = await academicDb().student.count({ where: { divisionId: id } });
+    if (students > 0) {
+      throw new ConflictError(
+        `This division still has ${students} student${students === 1 ? "" : "s"}. Move or remove them before deleting it.`
+      );
+    }
+
+    await academicDb().$transaction([
+      ...divisionCleanupOps([id]),
+      academicDb().division.delete({ where: { id } }),
+    ]);
+
     res.json({ success: true });
     logAudit("CLASS_DELETED", {
       userId: req.user!.userId,

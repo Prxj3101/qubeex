@@ -63,8 +63,11 @@ export interface AssistantResult {
 // saves tokens on the (common) case of an obviously single-topic question.
 const TOOL_KEYWORDS: Record<string, string[]> = {
   getAttendanceOverview: ["attendance", "present", "absent", "absentee"],
-  getFeeOverview: ["fee", "fees", "collection", "payment", "paid", "dues", "due"],
-  getFeeDefaultersByClass: ["fee", "fees", "pending", "unpaid", "due", "defaulter"],
+  // "bill"/"invoice" added after a real question ("what is the bill this
+  // month") matched nothing and fell back to sending all 12 tool schemas —
+  // unambiguous synonyms for fees in this context, safe to add confidently.
+  getFeeOverview: ["fee", "fees", "collection", "payment", "paid", "dues", "due", "bill", "invoice"],
+  getFeeDefaultersByClass: ["fee", "fees", "pending", "unpaid", "due", "defaulter", "bill", "invoice"],
   getDisengagedParents: ["parent", "parents", "engagement", "disengaged", "family", "families"],
   getStaffAiUsage: ["ai usage", "ai tool", "blackboard", "token", "tokens"],
   getInstitutionProfile: ["institution", "school profile", "board", "medium", "address", "established", "about the school", "about our school"],

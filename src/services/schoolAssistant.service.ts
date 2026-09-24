@@ -71,9 +71,15 @@ const TOOL_KEYWORDS: Record<string, string[]> = {
   getDisengagedParents: ["parent", "parents", "engagement", "disengaged", "family", "families"],
   getStaffAiUsage: ["ai usage", "ai tool", "blackboard", "token", "tokens"],
   getInstitutionProfile: ["institution", "school profile", "board", "medium", "address", "established", "about the school", "about our school"],
-  getStaffDirectory: ["teacher", "teachers", "admin", "sub-admin", "subadmin", "staff", "teaches", "designation", "principal"],
+  // "who is"/"who's"/"tell me about" added after a real question ("can you
+  // tell me about virat kohli" — a person's name) matched nothing and fell
+  // back to all 12 tools: a name can't be a fixed keyword, but the PATTERN of
+  // asking about a specific person can be — route it straight to both
+  // person-lookup tools instead of guessing which one and instead of the
+  // full-tool-list fallback.
+  getStaffDirectory: ["teacher", "teachers", "admin", "sub-admin", "subadmin", "staff", "teaches", "designation", "principal", "who is", "who's", "tell me about"],
   getClassStructure: ["class", "standard", "division", "section", "subject", "subjects", "grade"],
-  getStudentLookup: ["student", "roll", "roll no", "rollno"],
+  getStudentLookup: ["student", "roll", "roll no", "rollno", "who is", "who's", "tell me about"],
   getUpcomingHolidays: ["holiday", "holidays", "vacation", "leave day"],
   getRecentCampusFeedPosts: ["feed", "post", "posts", "announcement", "notice", "notices"],
   getUpcomingCalendarEvents: ["calendar", "event", "events", "ptm", "exam schedule", "function", "upcoming"],

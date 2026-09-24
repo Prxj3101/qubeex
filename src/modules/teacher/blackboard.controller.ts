@@ -1681,22 +1681,22 @@ const PHOTO_REQUEST_PATTERN =
 //
 // Fails open: any error, refusal or unusable response leaves the original
 // ordering untouched. Image relevance must never be able to fail a scan.
-// Deliberately far larger than MAX_IMAGES_PER_SCAN. Relevance comes from the
-// RATIO, not the raw count: picking 24 of 48 filters half, picking 40 of 48
-// filters almost nothing. At 120 the selector still discards two of every
-// three candidates even while returning 40, so raising the number of images a
-// teacher sees does not cost relevance.
-const IMAGE_POOL_SIZE = 120;
+// Larger than MAX_IMAGES_PER_SCAN so the selector has something to filter —
+// relevance comes from the RATIO, not the raw count. Was 120 (discarding two
+// of every three candidates at 40 returned); cut to 60 to roughly halve the
+// ranking call's input tokens (~2.7k -> ~1.5k per scan), accepting that the
+// selector now discards about one in three at the 40-image ceiling, and that
+// a candidate ranked 61st+ in retrieval order is never considered.
+const IMAGE_POOL_SIZE = 60;
 // Fraction of the pool Wikipedia articles may fill; the remainder is held for
 // web search, Commons and animations.
 const ARTICLE_POOL_SHARE = 0.55;
-// Trimmed for the pool size: 120 captions at 110 chars is ~3.5k input tokens
-// per scan, and the tail of a long caption rarely changes the judgement.
+// The tail of a long caption rarely changes the judgement.
 const MAX_CAPTION_CHARS = 85;
 // How many candidates the one retry falls back to after a completion-budget
-// failure. Fewer captions means less to reason about, so the same budget goes
-// much further.
-const SELECTOR_RETRY_CANDIDATES = 60;
+// failure — half the pool, so the retry still triggers (it only fires when
+// the pool is larger than this).
+const SELECTOR_RETRY_CANDIDATES = 30;
 
 async function selectRelevantImages(
   candidates: { url: string; caption: string }[],
@@ -2611,7 +2611,7 @@ export const aiScan = async (req: AuthRequest, res: Response, next: NextFunction
       userContent =
         `SOURCE MATERIAL — the selected pages, verbatim. This is the only permitted source of facts:\n"""\n${data.pageText}\n"""\n` +
         (context
-          ? `\nStructured analysis of that same material, for orientation only. Where it differs from the text above, the text wins:\n${JSON.stringify(context, null, 2)}\n`
+          ? `\nStructured analysis of that same material, for orientation only. Where it differs from the text above, the text wins:\n${JSON.stringify(context)}\n`
           : "") +
         scanInstructionBlock +
         refinementBlock;
@@ -2989,7 +2989,7 @@ export const aiQuiz = async (req: AuthRequest, res: Response, next: NextFunction
 
     const userContent = data.pageText
       ? [
-          quizContext ? `Document analysis:\n${JSON.stringify(quizContext, null, 2)}\n` : "",
+          quizContext ? `Document analysis:\n${JSON.stringify(quizContext)}\n` : "",
           `Material to base the questions on:\n${data.pageText}`,
           instructionBlock,
           avoidBlock,

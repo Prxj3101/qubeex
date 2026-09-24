@@ -168,9 +168,14 @@ export async function getServiceAvgLatency24h(service: string): Promise<number |
 // Health chart nobody may even be looking at — that's what blew through
 // Upstash's request quota. Instead, accumulate deltas in memory and flush one
 // pipelined write per hour-bucket on a fixed interval (see startApiMetricsFlusher
-// below) — same "within ~1 min" freshness on the dashboard, a small fraction of
-// the Redis command volume.
+// below). Even that — ~6 commands every 20s whenever any client was polling —
+// ran ~18 commands/min on its own, more than Upstash's free-tier budget
+// (500k/month ≈ 11.5/min) by itself, so the flush now runs every 5 minutes and
+// each key's expiry is set only on its first write instead of every flush.
 const pendingApiMetrics = new Map<string, { count: number; sum: number; errors: number }>();
+// Keys whose 48h expiry has already been set by this process. Re-setting it
+// each flush only extended the TTL by minutes and cost a command per key.
+const expiryAlreadySet = new Set<string>();
 
 export function recordApiRequest(durationMs: number, isServerError: boolean): void {
   const bucket = hourBucket();
@@ -193,21 +198,32 @@ export async function flushApiMetrics(): Promise<void> {
   pendingApiMetrics.clear();
   try {
     const pipeline = redis.pipeline();
+    const newlyExpired: string[] = [];
     for (const [bucket, { count, sum, errors }] of toFlush) {
-      pipeline.incrby(`health:api:${bucket}:count`, count);
-      pipeline.incrby(`health:api:${bucket}:sum`, sum);
-      if (errors > 0) pipeline.incrby(`health:api:${bucket}:errors`, errors);
-      for (const suffix of ["count", "sum", "errors"]) {
-        pipeline.expire(`health:api:${bucket}:${suffix}`, BUCKET_TTL_SECONDS);
+      const written: string[] = [`health:api:${bucket}:count`, `health:api:${bucket}:sum`];
+      pipeline.incrby(written[0], count);
+      pipeline.incrby(written[1], sum);
+      if (errors > 0) {
+        written.push(`health:api:${bucket}:errors`);
+        pipeline.incrby(written[2], errors);
+      }
+      for (const key of written) {
+        if (expiryAlreadySet.has(key)) continue;
+        pipeline.expire(key, BUCKET_TTL_SECONDS);
+        newlyExpired.push(key);
       }
     }
     await pipeline.exec();
+    // Hourly buckets mean only a handful of keys are ever live; reset rather
+    // than track per-bucket age — worst case is one redundant EXPIRE.
+    if (expiryAlreadySet.size > 50) expiryAlreadySet.clear();
+    for (const key of newlyExpired) expiryAlreadySet.add(key);
   } catch {
     // Best-effort — lost metrics for this flush window are fine, never crash the app for it.
   }
 }
 
-const API_METRICS_FLUSH_INTERVAL_MS = 20_000;
+const API_METRICS_FLUSH_INTERVAL_MS = 5 * 60_000;
 
 /** Starts the periodic flush of in-memory API metrics to Redis. Call once at server startup. */
 export function startApiMetricsFlusher(): void {

@@ -489,6 +489,13 @@ async function processPdfInBackground(
             { role: "user", content: userMessage },
           ],
           temperature: 0.2,
+          // The prompt asks for 15-20 questions — this is the only AI call
+          // site in the app with no ceiling at all, unlike every sibling call
+          // in blackboard.controller.ts. Sized generously above what 20
+          // questions (incl. long_answer/numerical detail) actually need, so
+          // it only guards against runaway/looping output, never truncates
+          // a legitimate response.
+          max_tokens: 4000,
           ...(AI_PROVIDER === "groq" ? { reasoning_effort: "low" as const } : {}),
         });
       } catch (err) {

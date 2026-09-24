@@ -188,6 +188,7 @@ import {
 import { getOverview, getMyAiUsage } from "./overview.controller";
 import { listMyPayslips, redirectToMyPayslipPdf } from "./payroll.controller";
 import { getProfile, updateProfile, changePassword, getLoginActivity } from "../shared/profile.controller";
+import { listMyAuditLogs } from "./audit.controller";
 import {
   listNotifications,
   markNotificationRead,
@@ -205,6 +206,9 @@ router.get("/profile", ...T, getProfile);
 router.put("/profile", ...T, updateProfile);
 router.put("/profile/password", ...T, changePassword);
 router.get("/profile/login-activity", ...T, getLoginActivity);
+
+// ── Audit logs (this teacher's own activity only) ─────────────────────────────
+router.get("/audit-logs", ...T, listMyAuditLogs);
 
 // ── Presence heartbeat ────────────────────────────────────────────────────────
 router.post("/presence", ...T, async (req: AuthRequest, res: Response, next: NextFunction) => {

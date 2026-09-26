@@ -294,3 +294,38 @@ export type MarksheetRemark = Prisma.MarksheetRemarkModel
  * 
  */
 export type TranslationCache = Prisma.TranslationCacheModel
+/**
+ * Model PayrollSettings
+ * 
+ */
+export type PayrollSettings = Prisma.PayrollSettingsModel
+/**
+ * Model SalaryComponent
+ * 
+ */
+export type SalaryComponent = Prisma.SalaryComponentModel
+/**
+ * Model SalaryTemplate
+ * 
+ */
+export type SalaryTemplate = Prisma.SalaryTemplateModel
+/**
+ * Model Staff
+ * 
+ */
+export type Staff = Prisma.StaffModel
+/**
+ * Model StaffSalaryStructure
+ * 
+ */
+export type StaffSalaryStructure = Prisma.StaffSalaryStructureModel
+/**
+ * Model PayrollRun
+ * 
+ */
+export type PayrollRun = Prisma.PayrollRunModel
+/**
+ * Model Payslip
+ * 
+ */
+export type Payslip = Prisma.PayslipModel

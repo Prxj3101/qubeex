@@ -1486,13 +1486,49 @@ model WhiteLabelConfig {
   institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 }
 
+// ── Payroll ─────────────────────────────────────────────────────────────────
+// All money is stored as integer PAISE (₹1 = 100) — never Float — so salary
+// maths never picks up floating-point rounding errors.
+
+// One row per institution. How a day's salary is worked out for LOP /
+// mid-month joiners, and which day salary is normally paid.
+model PayrollSettings {
+  id            String @id @default(uuid())
+  institutionId String @unique
+  dayBasis      String @default("CALENDAR") // CALENDAR (actual days in month) | FIXED_30 | FIXED_26
+  payDay        Int    @default(1) // day of month salary is usually paid (1-28)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// The institution's own catalog of salary heads (Basic, HRA, DA, PT...).
+// Staff structures / templates pick from this list and give each a value.
+model SalaryComponent {
+  id            String  @id @default(uuid())
+  institutionId String
+  name          String
+  type          String // EARNING | DEDUCTION
+  calcType      String  @default("FIXED") // FIXED (value = paise) | PERCENT_OF_BASIC (value = basis points, 4000 = 40%)
+  isBasic       Boolean @default(false) // the one EARNING that PERCENT_OF_BASIC components are calculated from
+  lopApplicable Boolean @default(true) // reduced for loss-of-pay days / partial months
+  defaultValue  Int     @default(0) // pre-filled value when added to a structure/template
+  sortOrder     Int     @default(0)
+  isActive      Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([institutionId, name])
+  @@index([institutionId])
+}
+
 model SalaryTemplate {
   id            String      @id @default(uuid())
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
   name          String
-  earnings      Json // [{ label: "Basic", amount: 30000 }, ...]
-  deductions    Json // [{ label: "PF", amount: 1200 }, ...]
+  items         Json // [{ componentId, value }] — value in paise (FIXED) or basis points (PERCENT_OF_BASIC)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1506,19 +1542,26 @@ model Staff {
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
 
-  name        String
-  email       String
-  phone       String?
-  designation String?
-  staffType   String // TEACHER | ADMIN | SUB_ADMIN | HELPER | OTHER
-  status      String   @default("ACTIVE") // ACTIVE | INACTIVE
-  joinedAt    DateTime @default(now())
+  name         String
+  email        String? // optional for payroll-only staff (peon/driver without email) - no payslip email then
+  phone        String?
+  designation  String?
+  staffType    String // TEACHER | ADMIN | SUB_ADMIN | HELPER | OTHER
+  status       String    @default("ACTIVE") // ACTIVE | INACTIVE
+  joinedAt     DateTime? // actual SCHOOL joining date, only filled for new joiners. Null = already on staff -> full salary
+  exitDate     DateTime? // last working day, set when someone leaves
+  employeeCode String?
+  pan          String?
+  uan          String? // PF Universal Account Number
+  paymentMode  String    @default("BANK") // BANK | CASH | CHEQUE
+  bankDetails  String? // AES-GCM encrypted JSON {accountName, accountNumber, ifsc, bankName} (fieldEncryption.service)
+  sortOrder    Int       @default(0) // admin-chosen list order (drag to reorder); new staff go to the end
 
   userId String? @unique // optional link to an existing Teacher/Admin/Sub-Admin User. Null = payroll-only staff.
   user   User?   @relation(fields: [userId], references: [id])
 
-  salaryStructure StaffSalaryStructure?
-  payslips        Payslip[]
+  salaryStructures StaffSalaryStructure[]
+  payslips         Payslip[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1526,22 +1569,25 @@ model Staff {
   @@index([institutionId])
 }
 
+// Versioned — a raise adds a NEW row with a later effectiveFrom instead of
+// overwriting, so salary history is kept. The structure in force for a month
+// is the latest row whose effectiveFrom is on/before that month's last day.
 model StaffSalaryStructure {
   id            String      @id @default(uuid())
-  staffId       String      @unique
+  staffId       String
   staff         Staff       @relation(fields: [staffId], references: [id])
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
   templateId    String?
-  earnings      Json
-  deductions    Json
-  bankDetails   Json?
+  items         Json // [{ componentId, value }] — value in paise (FIXED) or basis points (PERCENT_OF_BASIC)
   effectiveFrom DateTime
+  note          String? // e.g. "Annual increment 2026"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([institutionId])
+  @@index([staffId, effectiveFrom])
 }
 
 model PayrollRun {
@@ -1549,9 +1595,35 @@ model PayrollRun {
   institutionId String
   institution   Institution @relation(fields: [institutionId], references: [id])
   month         String // "2026-10"
-  status        String      @default("DRAFT") // DRAFT | PUBLISHED
+  // DRAFT -> PENDING_APPROVAL (accountant sends) -> APPROVED (admin) -> PUBLISHED.
+  // Admin can send back to DRAFT with a note; admin may also publish directly.
+  status        String      @default("DRAFT") // DRAFT | PENDING_APPROVAL | APPROVED | PUBLISHED
+  // Set when someone has gone through the LOP / bonus grid (saved it, or
+  // confirmed "nothing to add"). Needed before sending for approval / publishing.
+  inputsCheckedAt   DateTime?
+  inputsCheckedById String?
+  submittedAt   DateTime?
+  submittedById String?
+  approvedAt    DateTime?
+  approvedById  String?
+  reviewNote    String? // admin's note when sending the run back
+  reviewNoteAt  DateTime?
   publishedAt   DateTime?
   publishedBy   String?
+
+  // Background publish (PDFs + emails run on the server, page can be closed).
+  publishState       String? // null | RUNNING | FAILED
+  publishTotal       Int       @default(0)
+  publishDone        Int       @default(0)
+  publishError       String?
+  publishStartedAt   DateTime?
+  publishHeartbeatAt DateTime? // updated after every payslip; a stale one means the server restarted mid-way
+
+  // Last "AI review" of this payroll (on demand). aiReviewHash = fingerprint of
+  // the payslip numbers it looked at, so the UI can say when it's out of date.
+  aiReview     Json?
+  aiReviewAt   DateTime?
+  aiReviewHash String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1575,18 +1647,29 @@ model Payslip {
   // profile to join against later, and a published payslip must keep the
   // name/email it was actually generated for even if the Staff row changes.
   staffName  String
-  staffEmail String
+  staffEmail String?
 
-  earnings   Json
-  deductions Json
-  grossPay   Float
-  netPay     Float
+  earnings   Json // [{ label, amount }] — amount in paise
+  deductions Json // [{ label, amount }] — amount in paise
+  grossPay   Int // paise
+  netPay     Int // paise
+
+  // Attendance-driven inputs/results for the month.
+  lopDays   Float @default(0) // loss-of-pay days entered for this month (half days allowed)
+  paidDays  Float @default(0) // days actually paid after LOP + joining/exit proration
+  basisDays Int   @default(0) // day count one day's salary was based on (per PayrollSettings.dayBasis)
+
+  // Monthly inputs entered in the LOP / bonus grid (draft only), in paise.
+  bonus          Int     @default(0)
+  otherDeduction Int     @default(0)
+  inputNote      String? // e.g. "Diwali bonus", "Advance recovery"
 
   status        String    @default("PENDING") // PENDING | PAID
   paidAt        DateTime?
   paymentMethod String?
   paymentRef    String?
   pdfUrl        String?
+  notifiedAt    DateTime? // payslip email + in-app notification sent (so a retried publish never sends twice)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

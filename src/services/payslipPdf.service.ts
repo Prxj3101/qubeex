@@ -7,10 +7,14 @@ export interface PayslipPdfParams {
   staffName: string;
   staffDesignation: string;
   month: string; // "2026-10"
+  // All amounts are integer paise (₹1 = 100).
   earnings: { label: string; amount: number }[];
   deductions: { label: string; amount: number }[];
   grossPay: number;
   netPay: number;
+  paidDays?: number;
+  basisDays?: number;
+  lopDays?: number;
   bankDetails?: { accountName: string; accountNumber: string; ifsc: string; bankName: string } | null;
 }
 
@@ -19,8 +23,8 @@ function monthLabel(month: string): string {
   return new Date(y, m - 1, 1).toLocaleDateString("en-IN", { month: "long", year: "numeric" });
 }
 
-function formatRupees(amount: number): string {
-  return `Rs. ${amount.toLocaleString("en-IN")}`;
+function formatRupees(paise: number): string {
+  return `Rs. ${(paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 // Standard single-page payslip — earnings/deductions side by side, gross/net
@@ -49,6 +53,10 @@ export async function generatePayslipPdf(params: PayslipPdfParams): Promise<Buff
     doc.font("Helvetica").text(`  ${params.staffName}`);
     doc.font("Helvetica-Bold").text("Designation:", startX, doc.y, { continued: true });
     doc.font("Helvetica").text(`  ${params.staffDesignation || "—"}`);
+    if (params.basisDays) {
+      doc.font("Helvetica-Bold").text("Paid Days:", startX, doc.y, { continued: true });
+      doc.font("Helvetica").text(`  ${params.paidDays ?? params.basisDays} / ${params.basisDays}${params.lopDays ? `   (LOP: ${params.lopDays})` : ""}`);
+    }
     doc.moveDown(1);
 
     const colWidth = pageWidth / 2 - 10;

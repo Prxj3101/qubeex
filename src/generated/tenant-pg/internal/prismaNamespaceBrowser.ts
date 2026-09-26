@@ -101,7 +101,14 @@ export const ModelName = {
   MarksheetGradedSubject: 'MarksheetGradedSubject',
   MarksheetGradedScore: 'MarksheetGradedScore',
   MarksheetRemark: 'MarksheetRemark',
-  TranslationCache: 'TranslationCache'
+  TranslationCache: 'TranslationCache',
+  PayrollSettings: 'PayrollSettings',
+  SalaryComponent: 'SalaryComponent',
+  SalaryTemplate: 'SalaryTemplate',
+  Staff: 'Staff',
+  StaffSalaryStructure: 'StaffSalaryStructure',
+  PayrollRun: 'PayrollRun',
+  Payslip: 'Payslip'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -934,6 +941,149 @@ export const TranslationCacheScalarFieldEnum = {
 } as const
 
 export type TranslationCacheScalarFieldEnum = (typeof TranslationCacheScalarFieldEnum)[keyof typeof TranslationCacheScalarFieldEnum]
+
+
+export const PayrollSettingsScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  dayBasis: 'dayBasis',
+  payDay: 'payDay',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayrollSettingsScalarFieldEnum = (typeof PayrollSettingsScalarFieldEnum)[keyof typeof PayrollSettingsScalarFieldEnum]
+
+
+export const SalaryComponentScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  type: 'type',
+  calcType: 'calcType',
+  isBasic: 'isBasic',
+  lopApplicable: 'lopApplicable',
+  defaultValue: 'defaultValue',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SalaryComponentScalarFieldEnum = (typeof SalaryComponentScalarFieldEnum)[keyof typeof SalaryComponentScalarFieldEnum]
+
+
+export const SalaryTemplateScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  items: 'items',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SalaryTemplateScalarFieldEnum = (typeof SalaryTemplateScalarFieldEnum)[keyof typeof SalaryTemplateScalarFieldEnum]
+
+
+export const StaffScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  designation: 'designation',
+  staffType: 'staffType',
+  status: 'status',
+  joinedAt: 'joinedAt',
+  exitDate: 'exitDate',
+  employeeCode: 'employeeCode',
+  pan: 'pan',
+  uan: 'uan',
+  paymentMode: 'paymentMode',
+  bankDetails: 'bankDetails',
+  sortOrder: 'sortOrder',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffScalarFieldEnum = (typeof StaffScalarFieldEnum)[keyof typeof StaffScalarFieldEnum]
+
+
+export const StaffSalaryStructureScalarFieldEnum = {
+  id: 'id',
+  staffId: 'staffId',
+  institutionId: 'institutionId',
+  templateId: 'templateId',
+  items: 'items',
+  effectiveFrom: 'effectiveFrom',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffSalaryStructureScalarFieldEnum = (typeof StaffSalaryStructureScalarFieldEnum)[keyof typeof StaffSalaryStructureScalarFieldEnum]
+
+
+export const PayrollRunScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  month: 'month',
+  status: 'status',
+  inputsCheckedAt: 'inputsCheckedAt',
+  inputsCheckedById: 'inputsCheckedById',
+  submittedAt: 'submittedAt',
+  submittedById: 'submittedById',
+  approvedAt: 'approvedAt',
+  approvedById: 'approvedById',
+  reviewNote: 'reviewNote',
+  reviewNoteAt: 'reviewNoteAt',
+  publishedAt: 'publishedAt',
+  publishedBy: 'publishedBy',
+  publishState: 'publishState',
+  publishTotal: 'publishTotal',
+  publishDone: 'publishDone',
+  publishError: 'publishError',
+  publishStartedAt: 'publishStartedAt',
+  publishHeartbeatAt: 'publishHeartbeatAt',
+  aiReview: 'aiReview',
+  aiReviewAt: 'aiReviewAt',
+  aiReviewHash: 'aiReviewHash',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayrollRunScalarFieldEnum = (typeof PayrollRunScalarFieldEnum)[keyof typeof PayrollRunScalarFieldEnum]
+
+
+export const PayslipScalarFieldEnum = {
+  id: 'id',
+  payrollRunId: 'payrollRunId',
+  staffId: 'staffId',
+  institutionId: 'institutionId',
+  staffName: 'staffName',
+  staffEmail: 'staffEmail',
+  earnings: 'earnings',
+  deductions: 'deductions',
+  grossPay: 'grossPay',
+  netPay: 'netPay',
+  lopDays: 'lopDays',
+  paidDays: 'paidDays',
+  basisDays: 'basisDays',
+  bonus: 'bonus',
+  otherDeduction: 'otherDeduction',
+  inputNote: 'inputNote',
+  status: 'status',
+  paidAt: 'paidAt',
+  paymentMethod: 'paymentMethod',
+  paymentRef: 'paymentRef',
+  pdfUrl: 'pdfUrl',
+  notifiedAt: 'notifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayslipScalarFieldEnum = (typeof PayslipScalarFieldEnum)[keyof typeof PayslipScalarFieldEnum]
 
 
 export const SortOrder = {

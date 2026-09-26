@@ -447,7 +447,14 @@ export const ModelName = {
   MarksheetGradedSubject: 'MarksheetGradedSubject',
   MarksheetGradedScore: 'MarksheetGradedScore',
   MarksheetRemark: 'MarksheetRemark',
-  TranslationCache: 'TranslationCache'
+  TranslationCache: 'TranslationCache',
+  PayrollSettings: 'PayrollSettings',
+  SalaryComponent: 'SalaryComponent',
+  SalaryTemplate: 'SalaryTemplate',
+  Staff: 'Staff',
+  StaffSalaryStructure: 'StaffSalaryStructure',
+  PayrollRun: 'PayrollRun',
+  Payslip: 'Payslip'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -463,7 +470,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4241,6 +4248,524 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PayrollSettings: {
+      payload: Prisma.$PayrollSettingsPayload<ExtArgs>
+      fields: Prisma.PayrollSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PayrollSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PayrollSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.PayrollSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PayrollSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.PayrollSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.PayrollSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.PayrollSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PayrollSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.PayrollSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>
+        }
+        update: {
+          args: Prisma.PayrollSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.PayrollSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PayrollSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PayrollSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.PayrollSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.PayrollSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePayrollSettings>
+        }
+        groupBy: {
+          args: Prisma.PayrollSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayrollSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PayrollSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayrollSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    SalaryComponent: {
+      payload: Prisma.$SalaryComponentPayload<ExtArgs>
+      fields: Prisma.SalaryComponentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SalaryComponentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SalaryComponentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>
+        }
+        findFirst: {
+          args: Prisma.SalaryComponentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SalaryComponentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>
+        }
+        findMany: {
+          args: Prisma.SalaryComponentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>[]
+        }
+        create: {
+          args: Prisma.SalaryComponentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>
+        }
+        createMany: {
+          args: Prisma.SalaryComponentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SalaryComponentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>[]
+        }
+        delete: {
+          args: Prisma.SalaryComponentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>
+        }
+        update: {
+          args: Prisma.SalaryComponentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>
+        }
+        deleteMany: {
+          args: Prisma.SalaryComponentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SalaryComponentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SalaryComponentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>[]
+        }
+        upsert: {
+          args: Prisma.SalaryComponentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryComponentPayload>
+        }
+        aggregate: {
+          args: Prisma.SalaryComponentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSalaryComponent>
+        }
+        groupBy: {
+          args: Prisma.SalaryComponentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SalaryComponentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SalaryComponentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SalaryComponentCountAggregateOutputType> | number
+        }
+      }
+    }
+    SalaryTemplate: {
+      payload: Prisma.$SalaryTemplatePayload<ExtArgs>
+      fields: Prisma.SalaryTemplateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SalaryTemplateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SalaryTemplateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>
+        }
+        findFirst: {
+          args: Prisma.SalaryTemplateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SalaryTemplateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>
+        }
+        findMany: {
+          args: Prisma.SalaryTemplateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>[]
+        }
+        create: {
+          args: Prisma.SalaryTemplateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>
+        }
+        createMany: {
+          args: Prisma.SalaryTemplateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SalaryTemplateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>[]
+        }
+        delete: {
+          args: Prisma.SalaryTemplateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>
+        }
+        update: {
+          args: Prisma.SalaryTemplateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>
+        }
+        deleteMany: {
+          args: Prisma.SalaryTemplateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SalaryTemplateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SalaryTemplateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>[]
+        }
+        upsert: {
+          args: Prisma.SalaryTemplateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalaryTemplatePayload>
+        }
+        aggregate: {
+          args: Prisma.SalaryTemplateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSalaryTemplate>
+        }
+        groupBy: {
+          args: Prisma.SalaryTemplateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SalaryTemplateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SalaryTemplateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SalaryTemplateCountAggregateOutputType> | number
+        }
+      }
+    }
+    Staff: {
+      payload: Prisma.$StaffPayload<ExtArgs>
+      fields: Prisma.StaffFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>
+        }
+        findFirst: {
+          args: Prisma.StaffFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>
+        }
+        findMany: {
+          args: Prisma.StaffFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>[]
+        }
+        create: {
+          args: Prisma.StaffCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>
+        }
+        createMany: {
+          args: Prisma.StaffCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StaffCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>[]
+        }
+        delete: {
+          args: Prisma.StaffDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>
+        }
+        update: {
+          args: Prisma.StaffUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StaffUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>[]
+        }
+        upsert: {
+          args: Prisma.StaffUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPayload>
+        }
+        aggregate: {
+          args: Prisma.StaffAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaff>
+        }
+        groupBy: {
+          args: Prisma.StaffGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffCountAggregateOutputType> | number
+        }
+      }
+    }
+    StaffSalaryStructure: {
+      payload: Prisma.$StaffSalaryStructurePayload<ExtArgs>
+      fields: Prisma.StaffSalaryStructureFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffSalaryStructureFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffSalaryStructureFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>
+        }
+        findFirst: {
+          args: Prisma.StaffSalaryStructureFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffSalaryStructureFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>
+        }
+        findMany: {
+          args: Prisma.StaffSalaryStructureFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>[]
+        }
+        create: {
+          args: Prisma.StaffSalaryStructureCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>
+        }
+        createMany: {
+          args: Prisma.StaffSalaryStructureCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StaffSalaryStructureCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>[]
+        }
+        delete: {
+          args: Prisma.StaffSalaryStructureDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>
+        }
+        update: {
+          args: Prisma.StaffSalaryStructureUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffSalaryStructureDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffSalaryStructureUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StaffSalaryStructureUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>[]
+        }
+        upsert: {
+          args: Prisma.StaffSalaryStructureUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffSalaryStructurePayload>
+        }
+        aggregate: {
+          args: Prisma.StaffSalaryStructureAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaffSalaryStructure>
+        }
+        groupBy: {
+          args: Prisma.StaffSalaryStructureGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffSalaryStructureGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffSalaryStructureCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffSalaryStructureCountAggregateOutputType> | number
+        }
+      }
+    }
+    PayrollRun: {
+      payload: Prisma.$PayrollRunPayload<ExtArgs>
+      fields: Prisma.PayrollRunFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PayrollRunFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PayrollRunFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>
+        }
+        findFirst: {
+          args: Prisma.PayrollRunFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PayrollRunFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>
+        }
+        findMany: {
+          args: Prisma.PayrollRunFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>[]
+        }
+        create: {
+          args: Prisma.PayrollRunCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>
+        }
+        createMany: {
+          args: Prisma.PayrollRunCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PayrollRunCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>[]
+        }
+        delete: {
+          args: Prisma.PayrollRunDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>
+        }
+        update: {
+          args: Prisma.PayrollRunUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>
+        }
+        deleteMany: {
+          args: Prisma.PayrollRunDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PayrollRunUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PayrollRunUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>[]
+        }
+        upsert: {
+          args: Prisma.PayrollRunUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayrollRunPayload>
+        }
+        aggregate: {
+          args: Prisma.PayrollRunAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePayrollRun>
+        }
+        groupBy: {
+          args: Prisma.PayrollRunGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayrollRunGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PayrollRunCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayrollRunCountAggregateOutputType> | number
+        }
+      }
+    }
+    Payslip: {
+      payload: Prisma.$PayslipPayload<ExtArgs>
+      fields: Prisma.PayslipFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PayslipFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PayslipFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>
+        }
+        findFirst: {
+          args: Prisma.PayslipFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PayslipFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>
+        }
+        findMany: {
+          args: Prisma.PayslipFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>[]
+        }
+        create: {
+          args: Prisma.PayslipCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>
+        }
+        createMany: {
+          args: Prisma.PayslipCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PayslipCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>[]
+        }
+        delete: {
+          args: Prisma.PayslipDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>
+        }
+        update: {
+          args: Prisma.PayslipUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>
+        }
+        deleteMany: {
+          args: Prisma.PayslipDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PayslipUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PayslipUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>[]
+        }
+        upsert: {
+          args: Prisma.PayslipUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipPayload>
+        }
+        aggregate: {
+          args: Prisma.PayslipAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePayslip>
+        }
+        groupBy: {
+          args: Prisma.PayslipGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayslipGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PayslipCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayslipCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -5096,6 +5621,149 @@ export const TranslationCacheScalarFieldEnum = {
 export type TranslationCacheScalarFieldEnum = (typeof TranslationCacheScalarFieldEnum)[keyof typeof TranslationCacheScalarFieldEnum]
 
 
+export const PayrollSettingsScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  dayBasis: 'dayBasis',
+  payDay: 'payDay',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayrollSettingsScalarFieldEnum = (typeof PayrollSettingsScalarFieldEnum)[keyof typeof PayrollSettingsScalarFieldEnum]
+
+
+export const SalaryComponentScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  type: 'type',
+  calcType: 'calcType',
+  isBasic: 'isBasic',
+  lopApplicable: 'lopApplicable',
+  defaultValue: 'defaultValue',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SalaryComponentScalarFieldEnum = (typeof SalaryComponentScalarFieldEnum)[keyof typeof SalaryComponentScalarFieldEnum]
+
+
+export const SalaryTemplateScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  items: 'items',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SalaryTemplateScalarFieldEnum = (typeof SalaryTemplateScalarFieldEnum)[keyof typeof SalaryTemplateScalarFieldEnum]
+
+
+export const StaffScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  designation: 'designation',
+  staffType: 'staffType',
+  status: 'status',
+  joinedAt: 'joinedAt',
+  exitDate: 'exitDate',
+  employeeCode: 'employeeCode',
+  pan: 'pan',
+  uan: 'uan',
+  paymentMode: 'paymentMode',
+  bankDetails: 'bankDetails',
+  sortOrder: 'sortOrder',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffScalarFieldEnum = (typeof StaffScalarFieldEnum)[keyof typeof StaffScalarFieldEnum]
+
+
+export const StaffSalaryStructureScalarFieldEnum = {
+  id: 'id',
+  staffId: 'staffId',
+  institutionId: 'institutionId',
+  templateId: 'templateId',
+  items: 'items',
+  effectiveFrom: 'effectiveFrom',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffSalaryStructureScalarFieldEnum = (typeof StaffSalaryStructureScalarFieldEnum)[keyof typeof StaffSalaryStructureScalarFieldEnum]
+
+
+export const PayrollRunScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  month: 'month',
+  status: 'status',
+  inputsCheckedAt: 'inputsCheckedAt',
+  inputsCheckedById: 'inputsCheckedById',
+  submittedAt: 'submittedAt',
+  submittedById: 'submittedById',
+  approvedAt: 'approvedAt',
+  approvedById: 'approvedById',
+  reviewNote: 'reviewNote',
+  reviewNoteAt: 'reviewNoteAt',
+  publishedAt: 'publishedAt',
+  publishedBy: 'publishedBy',
+  publishState: 'publishState',
+  publishTotal: 'publishTotal',
+  publishDone: 'publishDone',
+  publishError: 'publishError',
+  publishStartedAt: 'publishStartedAt',
+  publishHeartbeatAt: 'publishHeartbeatAt',
+  aiReview: 'aiReview',
+  aiReviewAt: 'aiReviewAt',
+  aiReviewHash: 'aiReviewHash',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayrollRunScalarFieldEnum = (typeof PayrollRunScalarFieldEnum)[keyof typeof PayrollRunScalarFieldEnum]
+
+
+export const PayslipScalarFieldEnum = {
+  id: 'id',
+  payrollRunId: 'payrollRunId',
+  staffId: 'staffId',
+  institutionId: 'institutionId',
+  staffName: 'staffName',
+  staffEmail: 'staffEmail',
+  earnings: 'earnings',
+  deductions: 'deductions',
+  grossPay: 'grossPay',
+  netPay: 'netPay',
+  lopDays: 'lopDays',
+  paidDays: 'paidDays',
+  basisDays: 'basisDays',
+  bonus: 'bonus',
+  otherDeduction: 'otherDeduction',
+  inputNote: 'inputNote',
+  status: 'status',
+  paidAt: 'paidAt',
+  paymentMethod: 'paymentMethod',
+  paymentRef: 'paymentRef',
+  pdfUrl: 'pdfUrl',
+  notifiedAt: 'notifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayslipScalarFieldEnum = (typeof PayslipScalarFieldEnum)[keyof typeof PayslipScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -5624,6 +6292,13 @@ export type GlobalOmitConfig = {
   marksheetGradedScore?: Prisma.MarksheetGradedScoreOmit
   marksheetRemark?: Prisma.MarksheetRemarkOmit
   translationCache?: Prisma.TranslationCacheOmit
+  payrollSettings?: Prisma.PayrollSettingsOmit
+  salaryComponent?: Prisma.SalaryComponentOmit
+  salaryTemplate?: Prisma.SalaryTemplateOmit
+  staff?: Prisma.StaffOmit
+  staffSalaryStructure?: Prisma.StaffSalaryStructureOmit
+  payrollRun?: Prisma.PayrollRunOmit
+  payslip?: Prisma.PayslipOmit
 }
 
 /* Types for Logging */

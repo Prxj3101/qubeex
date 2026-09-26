@@ -7,6 +7,9 @@ describe("Salary Template CRUD", () => {
   const suffix = `${Date.now()}-payroll-tpl`;
   let institutionId: string;
   let adminToken: string;
+  let basicId: string;
+  let hraId: string;
+  let pfId: string;
 
   beforeAll(async () => {
     const institution = await prisma.institution.create({
@@ -20,10 +23,15 @@ describe("Salary Template CRUD", () => {
       data: { name: "Test Admin", email: `admin-${suffix}@example.com`, role: "ADMIN", institutionId, isActive: true },
     });
     adminToken = jwt.sign({ userId: adminUser.id, role: "ADMIN", institutionId }, process.env.JWT_SECRET!);
+    const basic = await prisma.salaryComponent.create({ data: { institutionId, name: "Basic", type: "EARNING", calcType: "FIXED", isBasic: true } });
+    const hra = await prisma.salaryComponent.create({ data: { institutionId, name: "HRA", type: "EARNING", calcType: "PERCENT_OF_BASIC" } });
+    const pf = await prisma.salaryComponent.create({ data: { institutionId, name: "PF", type: "DEDUCTION", calcType: "FIXED" } });
+    basicId = basic.id; hraId = hra.id; pfId = pf.id;
   });
 
   afterAll(async () => {
     await prisma.salaryTemplate.deleteMany({ where: { institutionId } });
+    await prisma.salaryComponent.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } }).catch(() => {});
     await prisma.$disconnect();
@@ -37,12 +45,11 @@ describe("Salary Template CRUD", () => {
       .set("Authorization", `Bearer ${adminToken}`)
       .send({
         name: "Senior Teacher",
-        earnings: [{ label: "Basic", amount: 30000 }, { label: "HRA", amount: 8000 }],
-        deductions: [{ label: "PF", amount: 1200 }],
+        items: [{ componentId: basicId, value: 3000000 }, { componentId: hraId, value: 4000 }, { componentId: pfId, value: 120000 }],
       });
     expect(res.status).toBe(201);
     expect(res.body.data.name).toBe("Senior Teacher");
-    expect(res.body.data.earnings).toHaveLength(2);
+    expect(res.body.data.items).toHaveLength(3);
     templateId = res.body.data.id;
   });
 
@@ -50,7 +57,7 @@ describe("Salary Template CRUD", () => {
     const res = await request(app)
       .post("/api/admin/payroll/templates")
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ name: "Senior Teacher", earnings: [{ label: "Basic", amount: 1 }], deductions: [] });
+      .send({ name: "Senior Teacher", items: [{ componentId: basicId, value: 100 }] });
     expect(res.status).toBe(409);
   });
 
@@ -66,9 +73,17 @@ describe("Salary Template CRUD", () => {
     const res = await request(app)
       .patch(`/api/admin/payroll/templates/${templateId}`)
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ name: "Senior Teacher", earnings: [{ label: "Basic", amount: 35000 }], deductions: [] });
+      .send({ name: "Senior Teacher", items: [{ componentId: basicId, value: 3500000 }] });
     expect(res.status).toBe(200);
-    expect(res.body.data.earnings[0].amount).toBe(35000);
+    expect(res.body.data.items[0].value).toBe(3500000);
+  });
+
+  it("rejects a percentage component without Basic", async () => {
+    const res = await request(app)
+      .post("/api/admin/payroll/templates")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ name: "No Basic", items: [{ componentId: hraId, value: 4000 }] });
+    expect(res.status).toBe(400);
   });
 
   it("deletes a template", async () => {
@@ -84,7 +99,7 @@ describe("Salary Template CRUD", () => {
     const res = await request(app)
       .patch(`/api/admin/payroll/templates/does-not-exist`)
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ name: "X", earnings: [], deductions: [] });
+      .send({ name: "X", items: [] });
     expect(res.status).toBe(404);
   });
 });

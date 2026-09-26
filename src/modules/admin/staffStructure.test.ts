@@ -10,6 +10,7 @@ describe("Staff salary structure", () => {
   let staffId: string;
   let otherInstitutionId: string;
   let otherStaffId: string;
+  let wageId: string;
 
   beforeAll(async () => {
     const institution = await prisma.institution.create({
@@ -20,6 +21,8 @@ describe("Staff salary structure", () => {
     adminToken = jwt.sign({ userId: adminUser.id, role: "ADMIN", institutionId }, process.env.JWT_SECRET!);
     const staff = await prisma.staff.create({ data: { institutionId, name: "Helper Staff", email: `h-${suffix}@example.com`, staffType: "HELPER" } });
     staffId = staff.id;
+    const wage = await prisma.salaryComponent.create({ data: { institutionId, name: "Monthly Wage", type: "EARNING", calcType: "FIXED", isBasic: true } });
+    wageId = wage.id;
 
     const otherInst = await prisma.institution.create({
       data: { name: `Other Struct Inst ${suffix}`, email: `other-struct-${suffix}@example.com`, type: "SCHOOL", institutionCode: `OSTR-${suffix.slice(-6)}`, userIdPrefix: "OSTR", status: "ACTIVE" },
@@ -31,6 +34,7 @@ describe("Staff salary structure", () => {
 
   afterAll(async () => {
     await prisma.staffSalaryStructure.deleteMany({ where: { institutionId: { in: [institutionId, otherInstitutionId] } } });
+    await prisma.salaryComponent.deleteMany({ where: { institutionId } });
     await prisma.staff.deleteMany({ where: { institutionId: { in: [institutionId, otherInstitutionId] } } });
     await prisma.user.deleteMany({ where: { institutionId } });
     await prisma.institution.deleteMany({ where: { id: { in: [institutionId, otherInstitutionId] } } });
@@ -40,7 +44,8 @@ describe("Staff salary structure", () => {
   it("returns null before any structure is saved", async () => {
     const res = await request(app).get(`/api/admin/payroll/staff/${staffId}/structure`).set("Authorization", `Bearer ${adminToken}`);
     expect(res.status).toBe(200);
-    expect(res.body.data).toBeNull();
+    expect(res.body.data.current).toBeNull();
+    expect(res.body.data.history).toHaveLength(0);
   });
 
   it("saves a new structure", async () => {
@@ -48,26 +53,35 @@ describe("Staff salary structure", () => {
       .put(`/api/admin/payroll/staff/${staffId}/structure`)
       .set("Authorization", `Bearer ${adminToken}`)
       .send({
-        earnings: [{ label: "Monthly Wage", amount: 12000 }],
-        deductions: [],
-        bankDetails: { accountName: "Helper Staff", accountNumber: "111222333", ifsc: "TEST0001", bankName: "Test Bank" },
-        effectiveFrom: new Date().toISOString(),
+        items: [{ componentId: wageId, value: 1200000 }],
+        effectiveFrom: "2026-04-01",
       });
     expect(res.status).toBe(200);
     expect(res.body.data.staffId).toBe(staffId);
-    expect(res.body.data.earnings[0].amount).toBe(12000);
+    expect(res.body.data.items[0].value).toBe(1200000);
   });
 
-  it("updates the existing structure on a second save (upsert)", async () => {
+  it("edits the same version when saved again with the same effective date", async () => {
     const res = await request(app)
       .put(`/api/admin/payroll/staff/${staffId}/structure`)
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ earnings: [{ label: "Monthly Wage", amount: 13000 }], deductions: [], effectiveFrom: new Date().toISOString() });
+      .send({ items: [{ componentId: wageId, value: 1300000 }], effectiveFrom: "2026-04-01" });
     expect(res.status).toBe(200);
-    expect(res.body.data.earnings[0].amount).toBe(13000);
+    expect(res.body.data.items[0].value).toBe(1300000);
 
     const count = await prisma.staffSalaryStructure.count({ where: { staffId } });
     expect(count).toBe(1);
+  });
+
+  it("keeps history: a later effective date adds a new version", async () => {
+    const res = await request(app)
+      .put(`/api/admin/payroll/staff/${staffId}/structure`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ items: [{ componentId: wageId, value: 1400000 }], effectiveFrom: "2026-06-01", note: "Increment" });
+    expect(res.status).toBe(200);
+
+    const count = await prisma.staffSalaryStructure.count({ where: { staffId } });
+    expect(count).toBe(2);
   });
 
   it("404s for a staff member in another institution", async () => {
@@ -77,7 +91,7 @@ describe("Staff salary structure", () => {
     const putRes = await request(app)
       .put(`/api/admin/payroll/staff/${otherStaffId}/structure`)
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ earnings: [], deductions: [], effectiveFrom: new Date().toISOString() });
+      .send({ items: [{ componentId: wageId, value: 100 }], effectiveFrom: "2026-04-01" });
     expect(putRes.status).toBe(404);
   });
 });

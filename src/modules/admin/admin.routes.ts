@@ -21,8 +21,16 @@ import {
   deleteTask,
 } from "./notepad.controller";
 import { adminListMarksheets, adminGetDivisionMarksheet, adminGetDivisionOnlineMarksheet, assignClassTeacher } from "./marksheet.controller";
-import { listSalaryTemplates, createSalaryTemplate, updateSalaryTemplate, deleteSalaryTemplate, getStaffSalaryStructure, saveStaffSalaryStructure, listPayrollRuns, createPayrollRun, getPayrollRun, updatePayslipLineItems, removePayslipFromRun, publishPayrollRun, markPayslipPaid } from "./payroll.controller";
-import { listStaff, searchLinkableProfiles, createStaff, updateStaff, deleteStaff } from "./staff.controller";
+import {
+  getPayrollSettings, savePayrollSettings,
+  listSalaryComponents, createSalaryComponent, updateSalaryComponent, deleteSalaryComponent, addDefaultSalaryComponents,
+  listSalaryTemplates, createSalaryTemplate, updateSalaryTemplate, deleteSalaryTemplate,
+  getStaffSalaryStructure, saveStaffSalaryStructure, deleteStaffSalaryVersion,
+  listPayrollRuns, createPayrollRun, getPayrollRun, deletePayrollRun, updatePayslipLineItems, removePayslipFromRun, publishPayrollRun,
+  markAllPayslipsPaid, markPayslipPaid, markPayslipUnpaid,
+  saveRunInputs, markRunInputsChecked, aiReviewPayrollRun, submitPayrollRun, exportRunPayments, markPayslipsPaidBulk, recallPayrollRun, approvePayrollRun, sendBackPayrollRun,
+} from "./payroll.controller";
+import { listStaff, searchLinkableProfiles, importLinkableProfiles, reorderStaff, createStaff, updateStaff, deleteStaff } from "./staff.controller";
 import { listMyPayslips, redirectToMyPayslipPdf } from "./myPayslips.controller";
 import { listBills, getPaymentLink, getPlanHistory, getPaymentSettings } from "./bills.controller";
 import { getAttendanceInsights, getFeeInsights, getFeeAiInsights, getAiUsageInsights, getUsersInsights, getTeacherAiUsage, getParentEngagementInsights, askAssistant, getAssistantHistory, clearAssistantHistory } from "./insights.controller";
@@ -49,6 +57,9 @@ const SUPPORT_PERM = [...A, requirePermission("SUPPORT")];
 
 // SUB_ADMIN needs AUDIT_LOGS permission
 const AUDIT_PERM = [...A, requirePermission("AUDIT_LOGS")];
+
+// SUB_ADMIN needs PAYROLL permission (e.g. the school accountant)
+const PAYROLL_PERM = [...A, requirePermission("PAYROLL")];
 
 // SUB_ADMIN needs STAFF_SUBADMINS to view subadmin list
 const SUBADMINS_READ = [...A, requirePermission("STAFF_SUBADMINS")];
@@ -233,24 +244,46 @@ router.delete("/insights/assistant/history", ...INSIGHTS_ANALYTICS_PERM, clearAs
 router.get("/insights/users", ...A, getUsersInsights);
 
 // ── Payroll ──────────────────────────────────────────────────────────────────
-router.get("/payroll/staff", ...ADMIN_ONLY, listStaff);
-router.get("/payroll/staff/search-profiles", ...ADMIN_ONLY, searchLinkableProfiles);
-router.post("/payroll/staff", ...ADMIN_ONLY, createStaff);
-router.patch("/payroll/staff/:id", ...ADMIN_ONLY, updateStaff);
-router.delete("/payroll/staff/:id", ...ADMIN_ONLY, deleteStaff);
-router.get("/payroll/templates", ...ADMIN_ONLY, listSalaryTemplates);
-router.post("/payroll/templates", ...ADMIN_ONLY, createSalaryTemplate);
-router.patch("/payroll/templates/:id", ...ADMIN_ONLY, updateSalaryTemplate);
-router.delete("/payroll/templates/:id", ...ADMIN_ONLY, deleteSalaryTemplate);
-router.get("/payroll/staff/:staffId/structure", ...ADMIN_ONLY, getStaffSalaryStructure);
-router.put("/payroll/staff/:staffId/structure", ...ADMIN_ONLY, saveStaffSalaryStructure);
-router.get("/payroll/runs", ...ADMIN_ONLY, listPayrollRuns);
-router.post("/payroll/runs", ...ADMIN_ONLY, createPayrollRun);
-router.get("/payroll/runs/:id", ...ADMIN_ONLY, getPayrollRun);
-router.patch("/payroll/runs/:id/payslips/:payslipId", ...ADMIN_ONLY, updatePayslipLineItems);
-router.delete("/payroll/runs/:id/payslips/:payslipId", ...ADMIN_ONLY, removePayslipFromRun);
-router.post("/payroll/runs/:id/publish", ...ADMIN_ONLY, publishPayrollRun);
-router.patch("/payroll/payslips/:id/mark-paid", ...ADMIN_ONLY, markPayslipPaid);
+router.get("/payroll/staff", ...PAYROLL_PERM, listStaff);
+router.get("/payroll/staff/search-profiles", ...PAYROLL_PERM, searchLinkableProfiles);
+router.post("/payroll/staff/import-profiles", ...PAYROLL_PERM, importLinkableProfiles);
+router.put("/payroll/staff/reorder", ...PAYROLL_PERM, reorderStaff);
+router.post("/payroll/staff", ...PAYROLL_PERM, createStaff);
+router.patch("/payroll/staff/:id", ...PAYROLL_PERM, updateStaff);
+router.delete("/payroll/staff/:id", ...PAYROLL_PERM, deleteStaff);
+router.get("/payroll/settings", ...PAYROLL_PERM, getPayrollSettings);
+router.put("/payroll/settings", ...PAYROLL_PERM, savePayrollSettings);
+router.get("/payroll/components", ...PAYROLL_PERM, listSalaryComponents);
+router.post("/payroll/components", ...PAYROLL_PERM, createSalaryComponent);
+router.post("/payroll/components/defaults", ...PAYROLL_PERM, addDefaultSalaryComponents);
+router.patch("/payroll/components/:id", ...PAYROLL_PERM, updateSalaryComponent);
+router.delete("/payroll/components/:id", ...PAYROLL_PERM, deleteSalaryComponent);
+router.get("/payroll/templates", ...PAYROLL_PERM, listSalaryTemplates);
+router.post("/payroll/templates", ...PAYROLL_PERM, createSalaryTemplate);
+router.patch("/payroll/templates/:id", ...PAYROLL_PERM, updateSalaryTemplate);
+router.delete("/payroll/templates/:id", ...PAYROLL_PERM, deleteSalaryTemplate);
+router.get("/payroll/staff/:staffId/structure", ...PAYROLL_PERM, getStaffSalaryStructure);
+router.put("/payroll/staff/:staffId/structure", ...PAYROLL_PERM, saveStaffSalaryStructure);
+router.delete("/payroll/staff/:staffId/structure/:versionId", ...PAYROLL_PERM, deleteStaffSalaryVersion);
+router.get("/payroll/runs", ...PAYROLL_PERM, listPayrollRuns);
+router.post("/payroll/runs", ...PAYROLL_PERM, createPayrollRun);
+router.get("/payroll/runs/:id", ...PAYROLL_PERM, getPayrollRun);
+router.delete("/payroll/runs/:id", ...PAYROLL_PERM, deletePayrollRun);
+router.patch("/payroll/runs/:id/payslips/:payslipId", ...PAYROLL_PERM, updatePayslipLineItems);
+router.delete("/payroll/runs/:id/payslips/:payslipId", ...PAYROLL_PERM, removePayslipFromRun);
+router.put("/payroll/runs/:id/inputs", ...PAYROLL_PERM, saveRunInputs);
+router.post("/payroll/runs/:id/ai-review", ...PAYROLL_PERM, aiReviewPayrollRun);
+router.post("/payroll/runs/:id/inputs-checked", ...PAYROLL_PERM, markRunInputsChecked);
+router.post("/payroll/runs/:id/submit", ...PAYROLL_PERM, submitPayrollRun);
+router.post("/payroll/runs/:id/recall", ...PAYROLL_PERM, recallPayrollRun);
+router.post("/payroll/runs/:id/approve", ...ADMIN_ONLY, approvePayrollRun);
+router.post("/payroll/runs/:id/send-back", ...ADMIN_ONLY, sendBackPayrollRun);
+router.post("/payroll/runs/:id/publish", ...PAYROLL_PERM, publishPayrollRun);
+router.post("/payroll/runs/:id/mark-all-paid", ...PAYROLL_PERM, markAllPayslipsPaid);
+router.get("/payroll/runs/:id/payments.csv", ...PAYROLL_PERM, exportRunPayments);
+router.post("/payroll/runs/:id/mark-paid-bulk", ...PAYROLL_PERM, markPayslipsPaidBulk);
+router.patch("/payroll/payslips/:id/mark-paid", ...PAYROLL_PERM, markPayslipPaid);
+router.patch("/payroll/payslips/:id/mark-unpaid", ...PAYROLL_PERM, markPayslipUnpaid);
 router.get("/payroll/my-payslips", ...A, listMyPayslips);
 router.get("/payroll/my-payslips/:id/pdf", ...A, redirectToMyPayslipPdf);
 

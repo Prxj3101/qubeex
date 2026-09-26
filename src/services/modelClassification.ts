@@ -87,6 +87,14 @@ export const ACADEMIC_MODELS = [
   "MarksheetGradedScore",
   "MarksheetRemark",
   "TranslationCache",
+  // Payroll — per-institution staff salary data, lives with academic data.
+  "PayrollSettings",
+  "SalaryComponent",
+  "SalaryTemplate",
+  "Staff",
+  "StaffSalaryStructure",
+  "PayrollRun",
+  "Payslip",
 ] as const;
 
 const academicSet = new Set<string>(ACADEMIC_MODELS);

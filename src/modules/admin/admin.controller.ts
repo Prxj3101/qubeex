@@ -92,6 +92,7 @@ const VALID_PERMISSIONS = [
   "INSIGHTS_SUBSCRIPTION",
   "SUPPORT",
   "AUDIT_LOGS",
+  "PAYROLL",
 ] as const;
 
 const addSubAdminSchema = z.object({

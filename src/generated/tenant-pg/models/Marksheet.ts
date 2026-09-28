@@ -30,6 +30,7 @@ export type MarksheetMinAggregateOutputType = {
   divisionId: string | null
   createdByTeacherId: string | null
   academicYear: string | null
+  academicYearId: string | null
   status: $Enums.MarksheetStatus | null
   pdfR2Key: string | null
   shareToken: string | null
@@ -46,6 +47,7 @@ export type MarksheetMaxAggregateOutputType = {
   divisionId: string | null
   createdByTeacherId: string | null
   academicYear: string | null
+  academicYearId: string | null
   status: $Enums.MarksheetStatus | null
   pdfR2Key: string | null
   shareToken: string | null
@@ -62,6 +64,7 @@ export type MarksheetCountAggregateOutputType = {
   divisionId: number
   createdByTeacherId: number
   academicYear: number
+  academicYearId: number
   status: number
   pdfR2Key: number
   shareToken: number
@@ -82,6 +85,7 @@ export type MarksheetMinAggregateInputType = {
   divisionId?: true
   createdByTeacherId?: true
   academicYear?: true
+  academicYearId?: true
   status?: true
   pdfR2Key?: true
   shareToken?: true
@@ -98,6 +102,7 @@ export type MarksheetMaxAggregateInputType = {
   divisionId?: true
   createdByTeacherId?: true
   academicYear?: true
+  academicYearId?: true
   status?: true
   pdfR2Key?: true
   shareToken?: true
@@ -114,6 +119,7 @@ export type MarksheetCountAggregateInputType = {
   divisionId?: true
   createdByTeacherId?: true
   academicYear?: true
+  academicYearId?: true
   status?: true
   pdfR2Key?: true
   shareToken?: true
@@ -205,6 +211,7 @@ export type MarksheetGroupByOutputType = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId: string | null
   status: $Enums.MarksheetStatus
   pdfR2Key: string | null
   shareToken: string
@@ -244,6 +251,7 @@ export type MarksheetWhereInput = {
   divisionId?: Prisma.StringFilter<"Marksheet"> | string
   createdByTeacherId?: Prisma.StringFilter<"Marksheet"> | string
   academicYear?: Prisma.StringFilter<"Marksheet"> | string
+  academicYearId?: Prisma.StringNullableFilter<"Marksheet"> | string | null
   status?: Prisma.EnumMarksheetStatusFilter<"Marksheet"> | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.StringNullableFilter<"Marksheet"> | string | null
   shareToken?: Prisma.StringFilter<"Marksheet"> | string
@@ -254,6 +262,7 @@ export type MarksheetWhereInput = {
   publishedAt?: Prisma.DateTimeNullableFilter<"Marksheet"> | Date | string | null
   publishedSnapshot?: Prisma.JsonNullableFilter<"Marksheet">
   hasUnpublishedChanges?: Prisma.BoolFilter<"Marksheet"> | boolean
+  academicYear2?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
   examColumns?: Prisma.MarksheetExamColumnListRelationFilter
@@ -270,6 +279,7 @@ export type MarksheetOrderByWithRelationInput = {
   divisionId?: Prisma.SortOrder
   createdByTeacherId?: Prisma.SortOrder
   academicYear?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   pdfR2Key?: Prisma.SortOrderInput | Prisma.SortOrder
   shareToken?: Prisma.SortOrder
@@ -280,6 +290,7 @@ export type MarksheetOrderByWithRelationInput = {
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   publishedSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   hasUnpublishedChanges?: Prisma.SortOrder
+  academicYear2?: Prisma.AcademicYearOrderByWithRelationInput
   createdBy?: Prisma.TeacherOrderByWithRelationInput
   division?: Prisma.DivisionOrderByWithRelationInput
   examColumns?: Prisma.MarksheetExamColumnOrderByRelationAggregateInput
@@ -294,6 +305,7 @@ export type MarksheetWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   shareToken?: string
   divisionId_academicYear?: Prisma.MarksheetDivisionIdAcademicYearCompoundUniqueInput
+  divisionId_academicYearId?: Prisma.MarksheetDivisionIdAcademicYearIdCompoundUniqueInput
   AND?: Prisma.MarksheetWhereInput | Prisma.MarksheetWhereInput[]
   OR?: Prisma.MarksheetWhereInput[]
   NOT?: Prisma.MarksheetWhereInput | Prisma.MarksheetWhereInput[]
@@ -301,6 +313,7 @@ export type MarksheetWhereUniqueInput = Prisma.AtLeast<{
   divisionId?: Prisma.StringFilter<"Marksheet"> | string
   createdByTeacherId?: Prisma.StringFilter<"Marksheet"> | string
   academicYear?: Prisma.StringFilter<"Marksheet"> | string
+  academicYearId?: Prisma.StringNullableFilter<"Marksheet"> | string | null
   status?: Prisma.EnumMarksheetStatusFilter<"Marksheet"> | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.StringNullableFilter<"Marksheet"> | string | null
   gradedSectionTitle?: Prisma.StringFilter<"Marksheet"> | string
@@ -310,6 +323,7 @@ export type MarksheetWhereUniqueInput = Prisma.AtLeast<{
   publishedAt?: Prisma.DateTimeNullableFilter<"Marksheet"> | Date | string | null
   publishedSnapshot?: Prisma.JsonNullableFilter<"Marksheet">
   hasUnpublishedChanges?: Prisma.BoolFilter<"Marksheet"> | boolean
+  academicYear2?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
   examColumns?: Prisma.MarksheetExamColumnListRelationFilter
@@ -318,7 +332,7 @@ export type MarksheetWhereUniqueInput = Prisma.AtLeast<{
   remarks?: Prisma.MarksheetRemarkListRelationFilter
   scores?: Prisma.MarksheetScoreListRelationFilter
   subjectConfigs?: Prisma.MarksheetSubjectConfigListRelationFilter
-}, "id" | "shareToken" | "divisionId_academicYear">
+}, "id" | "shareToken" | "divisionId_academicYear" | "divisionId_academicYearId">
 
 export type MarksheetOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -326,6 +340,7 @@ export type MarksheetOrderByWithAggregationInput = {
   divisionId?: Prisma.SortOrder
   createdByTeacherId?: Prisma.SortOrder
   academicYear?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   pdfR2Key?: Prisma.SortOrderInput | Prisma.SortOrder
   shareToken?: Prisma.SortOrder
@@ -350,6 +365,7 @@ export type MarksheetScalarWhereWithAggregatesInput = {
   divisionId?: Prisma.StringWithAggregatesFilter<"Marksheet"> | string
   createdByTeacherId?: Prisma.StringWithAggregatesFilter<"Marksheet"> | string
   academicYear?: Prisma.StringWithAggregatesFilter<"Marksheet"> | string
+  academicYearId?: Prisma.StringNullableWithAggregatesFilter<"Marksheet"> | string | null
   status?: Prisma.EnumMarksheetStatusWithAggregatesFilter<"Marksheet"> | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.StringNullableWithAggregatesFilter<"Marksheet"> | string | null
   shareToken?: Prisma.StringWithAggregatesFilter<"Marksheet"> | string
@@ -376,6 +392,7 @@ export type MarksheetCreateInput = {
   publishedAt?: Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
   createdBy: Prisma.TeacherCreateNestedOneWithoutCreatedMarksheetsInput
   division: Prisma.DivisionCreateNestedOneWithoutMarksheetsInput
   examColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutMarksheetInput
@@ -392,6 +409,7 @@ export type MarksheetUncheckedCreateInput = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -424,6 +442,7 @@ export type MarksheetUpdateInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
   examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
@@ -440,6 +459,7 @@ export type MarksheetUncheckedUpdateInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -464,6 +484,7 @@ export type MarksheetCreateManyInput = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -498,6 +519,7 @@ export type MarksheetUncheckedUpdateManyInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -525,12 +547,18 @@ export type MarksheetDivisionIdAcademicYearCompoundUniqueInput = {
   academicYear: string
 }
 
+export type MarksheetDivisionIdAcademicYearIdCompoundUniqueInput = {
+  divisionId: string
+  academicYearId: string
+}
+
 export type MarksheetCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   divisionId?: Prisma.SortOrder
   createdByTeacherId?: Prisma.SortOrder
   academicYear?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   pdfR2Key?: Prisma.SortOrder
   shareToken?: Prisma.SortOrder
@@ -549,6 +577,7 @@ export type MarksheetMaxOrderByAggregateInput = {
   divisionId?: Prisma.SortOrder
   createdByTeacherId?: Prisma.SortOrder
   academicYear?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   pdfR2Key?: Prisma.SortOrder
   shareToken?: Prisma.SortOrder
@@ -565,6 +594,7 @@ export type MarksheetMinOrderByAggregateInput = {
   divisionId?: Prisma.SortOrder
   createdByTeacherId?: Prisma.SortOrder
   academicYear?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   pdfR2Key?: Prisma.SortOrder
   shareToken?: Prisma.SortOrder
@@ -661,6 +691,48 @@ export type MarksheetUncheckedUpdateManyWithoutDivisionNestedInput = {
   connect?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
   update?: Prisma.MarksheetUpdateWithWhereUniqueWithoutDivisionInput | Prisma.MarksheetUpdateWithWhereUniqueWithoutDivisionInput[]
   updateMany?: Prisma.MarksheetUpdateManyWithWhereWithoutDivisionInput | Prisma.MarksheetUpdateManyWithWhereWithoutDivisionInput[]
+  deleteMany?: Prisma.MarksheetScalarWhereInput | Prisma.MarksheetScalarWhereInput[]
+}
+
+export type MarksheetCreateNestedManyWithoutAcademicYear2Input = {
+  create?: Prisma.XOR<Prisma.MarksheetCreateWithoutAcademicYear2Input, Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input> | Prisma.MarksheetCreateWithoutAcademicYear2Input[] | Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input[]
+  connectOrCreate?: Prisma.MarksheetCreateOrConnectWithoutAcademicYear2Input | Prisma.MarksheetCreateOrConnectWithoutAcademicYear2Input[]
+  createMany?: Prisma.MarksheetCreateManyAcademicYear2InputEnvelope
+  connect?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+}
+
+export type MarksheetUncheckedCreateNestedManyWithoutAcademicYear2Input = {
+  create?: Prisma.XOR<Prisma.MarksheetCreateWithoutAcademicYear2Input, Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input> | Prisma.MarksheetCreateWithoutAcademicYear2Input[] | Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input[]
+  connectOrCreate?: Prisma.MarksheetCreateOrConnectWithoutAcademicYear2Input | Prisma.MarksheetCreateOrConnectWithoutAcademicYear2Input[]
+  createMany?: Prisma.MarksheetCreateManyAcademicYear2InputEnvelope
+  connect?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+}
+
+export type MarksheetUpdateManyWithoutAcademicYear2NestedInput = {
+  create?: Prisma.XOR<Prisma.MarksheetCreateWithoutAcademicYear2Input, Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input> | Prisma.MarksheetCreateWithoutAcademicYear2Input[] | Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input[]
+  connectOrCreate?: Prisma.MarksheetCreateOrConnectWithoutAcademicYear2Input | Prisma.MarksheetCreateOrConnectWithoutAcademicYear2Input[]
+  upsert?: Prisma.MarksheetUpsertWithWhereUniqueWithoutAcademicYear2Input | Prisma.MarksheetUpsertWithWhereUniqueWithoutAcademicYear2Input[]
+  createMany?: Prisma.MarksheetCreateManyAcademicYear2InputEnvelope
+  set?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+  disconnect?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+  delete?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+  connect?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+  update?: Prisma.MarksheetUpdateWithWhereUniqueWithoutAcademicYear2Input | Prisma.MarksheetUpdateWithWhereUniqueWithoutAcademicYear2Input[]
+  updateMany?: Prisma.MarksheetUpdateManyWithWhereWithoutAcademicYear2Input | Prisma.MarksheetUpdateManyWithWhereWithoutAcademicYear2Input[]
+  deleteMany?: Prisma.MarksheetScalarWhereInput | Prisma.MarksheetScalarWhereInput[]
+}
+
+export type MarksheetUncheckedUpdateManyWithoutAcademicYear2NestedInput = {
+  create?: Prisma.XOR<Prisma.MarksheetCreateWithoutAcademicYear2Input, Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input> | Prisma.MarksheetCreateWithoutAcademicYear2Input[] | Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input[]
+  connectOrCreate?: Prisma.MarksheetCreateOrConnectWithoutAcademicYear2Input | Prisma.MarksheetCreateOrConnectWithoutAcademicYear2Input[]
+  upsert?: Prisma.MarksheetUpsertWithWhereUniqueWithoutAcademicYear2Input | Prisma.MarksheetUpsertWithWhereUniqueWithoutAcademicYear2Input[]
+  createMany?: Prisma.MarksheetCreateManyAcademicYear2InputEnvelope
+  set?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+  disconnect?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+  delete?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+  connect?: Prisma.MarksheetWhereUniqueInput | Prisma.MarksheetWhereUniqueInput[]
+  update?: Prisma.MarksheetUpdateWithWhereUniqueWithoutAcademicYear2Input | Prisma.MarksheetUpdateWithWhereUniqueWithoutAcademicYear2Input[]
+  updateMany?: Prisma.MarksheetUpdateManyWithWhereWithoutAcademicYear2Input | Prisma.MarksheetUpdateManyWithWhereWithoutAcademicYear2Input[]
   deleteMany?: Prisma.MarksheetScalarWhereInput | Prisma.MarksheetScalarWhereInput[]
 }
 
@@ -766,6 +838,7 @@ export type MarksheetCreateWithoutCreatedByInput = {
   publishedAt?: Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
   division: Prisma.DivisionCreateNestedOneWithoutMarksheetsInput
   examColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutMarksheetInput
   gradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutMarksheetInput
@@ -780,6 +853,7 @@ export type MarksheetUncheckedCreateWithoutCreatedByInput = {
   institutionId: string
   divisionId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -833,6 +907,7 @@ export type MarksheetScalarWhereInput = {
   divisionId?: Prisma.StringFilter<"Marksheet"> | string
   createdByTeacherId?: Prisma.StringFilter<"Marksheet"> | string
   academicYear?: Prisma.StringFilter<"Marksheet"> | string
+  academicYearId?: Prisma.StringNullableFilter<"Marksheet"> | string | null
   status?: Prisma.EnumMarksheetStatusFilter<"Marksheet"> | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.StringNullableFilter<"Marksheet"> | string | null
   shareToken?: Prisma.StringFilter<"Marksheet"> | string
@@ -859,6 +934,7 @@ export type MarksheetCreateWithoutDivisionInput = {
   publishedAt?: Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
   createdBy: Prisma.TeacherCreateNestedOneWithoutCreatedMarksheetsInput
   examColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutMarksheetInput
   gradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutMarksheetInput
@@ -873,6 +949,7 @@ export type MarksheetUncheckedCreateWithoutDivisionInput = {
   institutionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -917,7 +994,7 @@ export type MarksheetUpdateManyWithWhereWithoutDivisionInput = {
   data: Prisma.XOR<Prisma.MarksheetUpdateManyMutationInput, Prisma.MarksheetUncheckedUpdateManyWithoutDivisionInput>
 }
 
-export type MarksheetCreateWithoutSubjectConfigsInput = {
+export type MarksheetCreateWithoutAcademicYear2Input = {
   id?: string
   institutionId: string
   academicYear: string
@@ -938,6 +1015,81 @@ export type MarksheetCreateWithoutSubjectConfigsInput = {
   gradedSubjects?: Prisma.MarksheetGradedSubjectCreateNestedManyWithoutMarksheetInput
   remarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutMarksheetInput
   scores?: Prisma.MarksheetScoreCreateNestedManyWithoutMarksheetInput
+  subjectConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutMarksheetInput
+}
+
+export type MarksheetUncheckedCreateWithoutAcademicYear2Input = {
+  id?: string
+  institutionId: string
+  divisionId: string
+  createdByTeacherId: string
+  academicYear: string
+  status?: $Enums.MarksheetStatus
+  pdfR2Key?: string | null
+  shareToken: string
+  gradedSectionTitle?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  gradeScale?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  publishedAt?: Date | string | null
+  publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hasUnpublishedChanges?: boolean
+  examColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutMarksheetInput
+  gradedScores?: Prisma.MarksheetGradedScoreUncheckedCreateNestedManyWithoutMarksheetInput
+  gradedSubjects?: Prisma.MarksheetGradedSubjectUncheckedCreateNestedManyWithoutMarksheetInput
+  remarks?: Prisma.MarksheetRemarkUncheckedCreateNestedManyWithoutMarksheetInput
+  scores?: Prisma.MarksheetScoreUncheckedCreateNestedManyWithoutMarksheetInput
+  subjectConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutMarksheetInput
+}
+
+export type MarksheetCreateOrConnectWithoutAcademicYear2Input = {
+  where: Prisma.MarksheetWhereUniqueInput
+  create: Prisma.XOR<Prisma.MarksheetCreateWithoutAcademicYear2Input, Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input>
+}
+
+export type MarksheetCreateManyAcademicYear2InputEnvelope = {
+  data: Prisma.MarksheetCreateManyAcademicYear2Input | Prisma.MarksheetCreateManyAcademicYear2Input[]
+  skipDuplicates?: boolean
+}
+
+export type MarksheetUpsertWithWhereUniqueWithoutAcademicYear2Input = {
+  where: Prisma.MarksheetWhereUniqueInput
+  update: Prisma.XOR<Prisma.MarksheetUpdateWithoutAcademicYear2Input, Prisma.MarksheetUncheckedUpdateWithoutAcademicYear2Input>
+  create: Prisma.XOR<Prisma.MarksheetCreateWithoutAcademicYear2Input, Prisma.MarksheetUncheckedCreateWithoutAcademicYear2Input>
+}
+
+export type MarksheetUpdateWithWhereUniqueWithoutAcademicYear2Input = {
+  where: Prisma.MarksheetWhereUniqueInput
+  data: Prisma.XOR<Prisma.MarksheetUpdateWithoutAcademicYear2Input, Prisma.MarksheetUncheckedUpdateWithoutAcademicYear2Input>
+}
+
+export type MarksheetUpdateManyWithWhereWithoutAcademicYear2Input = {
+  where: Prisma.MarksheetScalarWhereInput
+  data: Prisma.XOR<Prisma.MarksheetUpdateManyMutationInput, Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYear2Input>
+}
+
+export type MarksheetCreateWithoutSubjectConfigsInput = {
+  id?: string
+  institutionId: string
+  academicYear: string
+  status?: $Enums.MarksheetStatus
+  pdfR2Key?: string | null
+  shareToken: string
+  gradedSectionTitle?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  gradeScale?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  publishedAt?: Date | string | null
+  publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
+  createdBy: Prisma.TeacherCreateNestedOneWithoutCreatedMarksheetsInput
+  division: Prisma.DivisionCreateNestedOneWithoutMarksheetsInput
+  examColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutMarksheetInput
+  gradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutMarksheetInput
+  gradedSubjects?: Prisma.MarksheetGradedSubjectCreateNestedManyWithoutMarksheetInput
+  remarks?: Prisma.MarksheetRemarkCreateNestedManyWithoutMarksheetInput
+  scores?: Prisma.MarksheetScoreCreateNestedManyWithoutMarksheetInput
 }
 
 export type MarksheetUncheckedCreateWithoutSubjectConfigsInput = {
@@ -946,6 +1098,7 @@ export type MarksheetUncheckedCreateWithoutSubjectConfigsInput = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -993,6 +1146,7 @@ export type MarksheetUpdateWithoutSubjectConfigsInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
   examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
@@ -1008,6 +1162,7 @@ export type MarksheetUncheckedUpdateWithoutSubjectConfigsInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1039,6 +1194,7 @@ export type MarksheetCreateWithoutExamColumnsInput = {
   publishedAt?: Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
   createdBy: Prisma.TeacherCreateNestedOneWithoutCreatedMarksheetsInput
   division: Prisma.DivisionCreateNestedOneWithoutMarksheetsInput
   gradedScores?: Prisma.MarksheetGradedScoreCreateNestedManyWithoutMarksheetInput
@@ -1054,6 +1210,7 @@ export type MarksheetUncheckedCreateWithoutExamColumnsInput = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -1101,6 +1258,7 @@ export type MarksheetUpdateWithoutExamColumnsInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
   gradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutMarksheetNestedInput
@@ -1116,6 +1274,7 @@ export type MarksheetUncheckedUpdateWithoutExamColumnsInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1147,6 +1306,7 @@ export type MarksheetCreateWithoutScoresInput = {
   publishedAt?: Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
   createdBy: Prisma.TeacherCreateNestedOneWithoutCreatedMarksheetsInput
   division: Prisma.DivisionCreateNestedOneWithoutMarksheetsInput
   examColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutMarksheetInput
@@ -1162,6 +1322,7 @@ export type MarksheetUncheckedCreateWithoutScoresInput = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -1209,6 +1370,7 @@ export type MarksheetUpdateWithoutScoresInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
   examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
@@ -1224,6 +1386,7 @@ export type MarksheetUncheckedUpdateWithoutScoresInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1255,6 +1418,7 @@ export type MarksheetCreateWithoutGradedSubjectsInput = {
   publishedAt?: Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
   createdBy: Prisma.TeacherCreateNestedOneWithoutCreatedMarksheetsInput
   division: Prisma.DivisionCreateNestedOneWithoutMarksheetsInput
   examColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutMarksheetInput
@@ -1270,6 +1434,7 @@ export type MarksheetUncheckedCreateWithoutGradedSubjectsInput = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -1317,6 +1482,7 @@ export type MarksheetUpdateWithoutGradedSubjectsInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
   examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
@@ -1332,6 +1498,7 @@ export type MarksheetUncheckedUpdateWithoutGradedSubjectsInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1363,6 +1530,7 @@ export type MarksheetCreateWithoutGradedScoresInput = {
   publishedAt?: Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
   createdBy: Prisma.TeacherCreateNestedOneWithoutCreatedMarksheetsInput
   division: Prisma.DivisionCreateNestedOneWithoutMarksheetsInput
   examColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutMarksheetInput
@@ -1378,6 +1546,7 @@ export type MarksheetUncheckedCreateWithoutGradedScoresInput = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -1425,6 +1594,7 @@ export type MarksheetUpdateWithoutGradedScoresInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
   examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
@@ -1440,6 +1610,7 @@ export type MarksheetUncheckedUpdateWithoutGradedScoresInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1471,6 +1642,7 @@ export type MarksheetCreateWithoutRemarksInput = {
   publishedAt?: Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: boolean
+  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutMarksheetsInput
   createdBy: Prisma.TeacherCreateNestedOneWithoutCreatedMarksheetsInput
   division: Prisma.DivisionCreateNestedOneWithoutMarksheetsInput
   examColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutMarksheetInput
@@ -1486,6 +1658,7 @@ export type MarksheetUncheckedCreateWithoutRemarksInput = {
   divisionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -1533,6 +1706,7 @@ export type MarksheetUpdateWithoutRemarksInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
   examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
@@ -1548,6 +1722,7 @@ export type MarksheetUncheckedUpdateWithoutRemarksInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1570,6 +1745,7 @@ export type MarksheetCreateManyCreatedByInput = {
   institutionId: string
   divisionId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -1596,6 +1772,7 @@ export type MarksheetUpdateWithoutCreatedByInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
   examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
   gradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutMarksheetNestedInput
@@ -1610,6 +1787,7 @@ export type MarksheetUncheckedUpdateWithoutCreatedByInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1633,6 +1811,7 @@ export type MarksheetUncheckedUpdateManyWithoutCreatedByInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1650,6 +1829,7 @@ export type MarksheetCreateManyDivisionInput = {
   institutionId: string
   createdByTeacherId: string
   academicYear: string
+  academicYearId?: string | null
   status?: $Enums.MarksheetStatus
   pdfR2Key?: string | null
   shareToken: string
@@ -1676,6 +1856,7 @@ export type MarksheetUpdateWithoutDivisionInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  academicYear2?: Prisma.AcademicYearUpdateOneWithoutMarksheetsNestedInput
   createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
   examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
   gradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutMarksheetNestedInput
@@ -1690,6 +1871,7 @@ export type MarksheetUncheckedUpdateWithoutDivisionInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
   pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   shareToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1711,6 +1893,91 @@ export type MarksheetUncheckedUpdateWithoutDivisionInput = {
 export type MarksheetUncheckedUpdateManyWithoutDivisionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
+  pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shareToken?: Prisma.StringFieldUpdateOperationsInput | string
+  gradedSectionTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gradeScale?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type MarksheetCreateManyAcademicYear2Input = {
+  id?: string
+  institutionId: string
+  divisionId: string
+  createdByTeacherId: string
+  academicYear: string
+  status?: $Enums.MarksheetStatus
+  pdfR2Key?: string | null
+  shareToken: string
+  gradedSectionTitle?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  gradeScale?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  publishedAt?: Date | string | null
+  publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hasUnpublishedChanges?: boolean
+}
+
+export type MarksheetUpdateWithoutAcademicYear2Input = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
+  pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shareToken?: Prisma.StringFieldUpdateOperationsInput | string
+  gradedSectionTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gradeScale?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdBy?: Prisma.TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput
+  division?: Prisma.DivisionUpdateOneRequiredWithoutMarksheetsNestedInput
+  examColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutMarksheetNestedInput
+  gradedScores?: Prisma.MarksheetGradedScoreUpdateManyWithoutMarksheetNestedInput
+  gradedSubjects?: Prisma.MarksheetGradedSubjectUpdateManyWithoutMarksheetNestedInput
+  remarks?: Prisma.MarksheetRemarkUpdateManyWithoutMarksheetNestedInput
+  scores?: Prisma.MarksheetScoreUpdateManyWithoutMarksheetNestedInput
+  subjectConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutMarksheetNestedInput
+}
+
+export type MarksheetUncheckedUpdateWithoutAcademicYear2Input = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  divisionId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
+  pdfR2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shareToken?: Prisma.StringFieldUpdateOperationsInput | string
+  gradedSectionTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gradeScale?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  publishedSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hasUnpublishedChanges?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  examColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutMarksheetNestedInput
+  gradedScores?: Prisma.MarksheetGradedScoreUncheckedUpdateManyWithoutMarksheetNestedInput
+  gradedSubjects?: Prisma.MarksheetGradedSubjectUncheckedUpdateManyWithoutMarksheetNestedInput
+  remarks?: Prisma.MarksheetRemarkUncheckedUpdateManyWithoutMarksheetNestedInput
+  scores?: Prisma.MarksheetScoreUncheckedUpdateManyWithoutMarksheetNestedInput
+  subjectConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutMarksheetNestedInput
+}
+
+export type MarksheetUncheckedUpdateManyWithoutAcademicYear2Input = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   createdByTeacherId?: Prisma.StringFieldUpdateOperationsInput | string
   academicYear?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumMarksheetStatusFieldUpdateOperationsInput | $Enums.MarksheetStatus
@@ -1807,6 +2074,7 @@ export type MarksheetSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   divisionId?: boolean
   createdByTeacherId?: boolean
   academicYear?: boolean
+  academicYearId?: boolean
   status?: boolean
   pdfR2Key?: boolean
   shareToken?: boolean
@@ -1817,6 +2085,7 @@ export type MarksheetSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   publishedAt?: boolean
   publishedSnapshot?: boolean
   hasUnpublishedChanges?: boolean
+  academicYear2?: boolean | Prisma.Marksheet$academicYear2Args<ExtArgs>
   createdBy?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   examColumns?: boolean | Prisma.Marksheet$examColumnsArgs<ExtArgs>
@@ -1834,6 +2103,7 @@ export type MarksheetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   divisionId?: boolean
   createdByTeacherId?: boolean
   academicYear?: boolean
+  academicYearId?: boolean
   status?: boolean
   pdfR2Key?: boolean
   shareToken?: boolean
@@ -1844,6 +2114,7 @@ export type MarksheetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   publishedAt?: boolean
   publishedSnapshot?: boolean
   hasUnpublishedChanges?: boolean
+  academicYear2?: boolean | Prisma.Marksheet$academicYear2Args<ExtArgs>
   createdBy?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marksheet"]>
@@ -1854,6 +2125,7 @@ export type MarksheetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   divisionId?: boolean
   createdByTeacherId?: boolean
   academicYear?: boolean
+  academicYearId?: boolean
   status?: boolean
   pdfR2Key?: boolean
   shareToken?: boolean
@@ -1864,6 +2136,7 @@ export type MarksheetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   publishedAt?: boolean
   publishedSnapshot?: boolean
   hasUnpublishedChanges?: boolean
+  academicYear2?: boolean | Prisma.Marksheet$academicYear2Args<ExtArgs>
   createdBy?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marksheet"]>
@@ -1874,6 +2147,7 @@ export type MarksheetSelectScalar = {
   divisionId?: boolean
   createdByTeacherId?: boolean
   academicYear?: boolean
+  academicYearId?: boolean
   status?: boolean
   pdfR2Key?: boolean
   shareToken?: boolean
@@ -1886,8 +2160,9 @@ export type MarksheetSelectScalar = {
   hasUnpublishedChanges?: boolean
 }
 
-export type MarksheetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "divisionId" | "createdByTeacherId" | "academicYear" | "status" | "pdfR2Key" | "shareToken" | "gradedSectionTitle" | "createdAt" | "updatedAt" | "gradeScale" | "publishedAt" | "publishedSnapshot" | "hasUnpublishedChanges", ExtArgs["result"]["marksheet"]>
+export type MarksheetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "divisionId" | "createdByTeacherId" | "academicYear" | "academicYearId" | "status" | "pdfR2Key" | "shareToken" | "gradedSectionTitle" | "createdAt" | "updatedAt" | "gradeScale" | "publishedAt" | "publishedSnapshot" | "hasUnpublishedChanges", ExtArgs["result"]["marksheet"]>
 export type MarksheetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academicYear2?: boolean | Prisma.Marksheet$academicYear2Args<ExtArgs>
   createdBy?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   examColumns?: boolean | Prisma.Marksheet$examColumnsArgs<ExtArgs>
@@ -1899,10 +2174,12 @@ export type MarksheetInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   _count?: boolean | Prisma.MarksheetCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MarksheetIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academicYear2?: boolean | Prisma.Marksheet$academicYear2Args<ExtArgs>
   createdBy?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
 }
 export type MarksheetIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  academicYear2?: boolean | Prisma.Marksheet$academicYear2Args<ExtArgs>
   createdBy?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
 }
@@ -1910,6 +2187,7 @@ export type MarksheetIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type $MarksheetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Marksheet"
   objects: {
+    academicYear2: Prisma.$AcademicYearPayload<ExtArgs> | null
     createdBy: Prisma.$TeacherPayload<ExtArgs>
     division: Prisma.$DivisionPayload<ExtArgs>
     examColumns: Prisma.$MarksheetExamColumnPayload<ExtArgs>[]
@@ -1925,6 +2203,7 @@ export type $MarksheetPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     divisionId: string
     createdByTeacherId: string
     academicYear: string
+    academicYearId: string | null
     status: $Enums.MarksheetStatus
     pdfR2Key: string | null
     shareToken: string
@@ -2329,6 +2608,7 @@ readonly fields: MarksheetFieldRefs;
  */
 export interface Prisma__MarksheetClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  academicYear2<T extends Prisma.Marksheet$academicYear2Args<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Marksheet$academicYear2Args<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   division<T extends Prisma.DivisionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionDefaultArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   examColumns<T extends Prisma.Marksheet$examColumnsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Marksheet$examColumnsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetExamColumnPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2371,6 +2651,7 @@ export interface MarksheetFieldRefs {
   readonly divisionId: Prisma.FieldRef<"Marksheet", 'String'>
   readonly createdByTeacherId: Prisma.FieldRef<"Marksheet", 'String'>
   readonly academicYear: Prisma.FieldRef<"Marksheet", 'String'>
+  readonly academicYearId: Prisma.FieldRef<"Marksheet", 'String'>
   readonly status: Prisma.FieldRef<"Marksheet", 'MarksheetStatus'>
   readonly pdfR2Key: Prisma.FieldRef<"Marksheet", 'String'>
   readonly shareToken: Prisma.FieldRef<"Marksheet", 'String'>
@@ -2779,6 +3060,25 @@ export type MarksheetDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Marksheets to delete.
    */
   limit?: number
+}
+
+/**
+ * Marksheet.academicYear2
+ */
+export type Marksheet$academicYear2Args<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AcademicYear
+   */
+  select?: Prisma.AcademicYearSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AcademicYear
+   */
+  omit?: Prisma.AcademicYearOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademicYearInclude<ExtArgs> | null
+  where?: Prisma.AcademicYearWhereInput
 }
 
 /**

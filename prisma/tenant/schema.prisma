@@ -114,6 +114,7 @@ model Standard {
   divisions     Division[]
   students      Student[]
   subjects      Subject[]
+  enrollments   StudentEnrollment[]
 
   @@unique([institutionId, name])
   @@index([institutionId])
@@ -136,13 +137,15 @@ model Division {
   classTeacher       Teacher?              @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
   standard           Standard              @relation(fields: [standardId], references: [id])
   assignments        DivisionAssignment[]
-  feeStructure       DivisionFeeStructure?
+  feeStructures      DivisionFeeStructure[]
   divisionSubjects   DivisionSubject[]
   marksheets         Marksheet[]
   students           Student[]
   taskAssignments    TaskAssignment[]
   taskContainers     TaskContainer[]
   taskTests          TaskTest[]
+  enrollments        StudentEnrollment[]
+  timetables         DivisionTimetable[]
 
   @@unique([standardId, name])
   @@index([institutionId])
@@ -189,19 +192,22 @@ model DivisionSubject {
 }
 
 model DivisionAssignment {
-  id            String      @id @default(uuid())
-  divisionId    String
-  subjectId     String?
-  teacherId     String
-  institutionId String
-  createdAt     DateTime    @default(now())
-  division      Division    @relation(fields: [divisionId], references: [id])
-  subject       Subject?    @relation(fields: [subjectId], references: [id])
-  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+  id             String        @id @default(uuid())
+  divisionId     String
+  subjectId      String?
+  teacherId      String
+  institutionId  String
+  academicYearId String?
+  createdAt      DateTime      @default(now())
+  division       Division      @relation(fields: [divisionId], references: [id])
+  subject        Subject?      @relation(fields: [subjectId], references: [id])
+  teacher        Teacher       @relation(fields: [teacherId], references: [id])
+  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id])
 
   @@index([divisionId])
   @@index([teacherId])
   @@index([institutionId])
+  @@index([academicYearId])
 }
 
 model Student {
@@ -252,6 +258,7 @@ model Student {
   taskAssignmentSubmissions        TaskAssignmentSubmission[]
   taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
   taskTestAttempts                 TaskTestAttempt[]
+  enrollments                      StudentEnrollment[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
@@ -268,6 +275,68 @@ model ParentModeEvent {
   @@index([studentId, openedAt])
 }
 
+enum AcademicYearStatus {
+  ACTIVE
+  CLOSED
+}
+
+model AcademicYear {
+  id            String             @id @default(uuid())
+  institutionId String
+  label         String
+  startDate     DateTime
+  endDate       DateTime
+  status        AcademicYearStatus @default(ACTIVE)
+  isCurrent     Boolean            @default(false)
+  createdAt     DateTime           @default(now())
+
+  studentEnrollments  StudentEnrollment[]
+  divisionAssignments DivisionAssignment[]
+  attendances         Attendance[]
+  feeStructures       DivisionFeeStructure[]
+  timetables          DivisionTimetable[]
+  marksheets          Marksheet[]
+  promotionBatches    PromotionBatch[]
+
+  @@unique([institutionId, label])
+  @@index([institutionId, isCurrent])
+}
+
+model StudentEnrollment {
+  id             String        @id @default(uuid())
+  institutionId  String
+  studentId      String
+  student        Student       @relation(fields: [studentId], references: [id])
+  academicYearId String
+  academicYear   AcademicYear  @relation(fields: [academicYearId], references: [id])
+  standardId     String
+  standard       Standard      @relation(fields: [standardId], references: [id])
+  divisionId     String
+  division       Division      @relation(fields: [divisionId], references: [id])
+  rollNo         String?
+  status         StudentStatus
+  createdAt      DateTime      @default(now())
+
+  @@unique([studentId, academicYearId])
+  @@index([divisionId, academicYearId])
+  @@index([institutionId, academicYearId])
+}
+
+model DivisionTimetable {
+  id             String       @id @default(uuid())
+  institutionId  String
+  divisionId     String
+  division       Division     @relation(fields: [divisionId], references: [id])
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  timetableUrl   String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([divisionId, academicYearId])
+  @@index([institutionId, academicYearId])
+}
+
 model PromotionBatch {
   id              String                    @id @default(uuid())
   institutionId   String
@@ -275,6 +344,8 @@ model PromotionBatch {
   fromDivisionId  String
   toDivisionId    String?
   academicYear    String
+  academicYearId  String?
+  academicYear2   AcademicYear?             @relation(fields: [academicYearId], references: [id])
   triggeredById   String
   triggeredByRole String
   undoneAt        DateTime?
@@ -346,22 +417,25 @@ model PTMNote {
 }
 
 model Attendance {
-  id            String      @id @default(uuid())
-  institutionId String
-  divisionId    String
-  studentId     String
-  date          String
-  status        String
-  remark        String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  division      Division    @relation(fields: [divisionId], references: [id])
-  student       Student     @relation(fields: [studentId], references: [id])
+  id             String        @id @default(uuid())
+  institutionId  String
+  divisionId     String
+  studentId      String
+  date           String
+  status         String
+  remark         String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  academicYearId String?
+  division       Division      @relation(fields: [divisionId], references: [id])
+  student        Student       @relation(fields: [studentId], references: [id])
+  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id])
 
   @@unique([divisionId, studentId, date])
   @@index([divisionId, date])
   @@index([studentId])
   @@index([institutionId])
+  @@index([divisionId, academicYearId, date])
 }
 
 model SchoolHoliday {
@@ -480,25 +554,29 @@ model CalendarEvent {
 }
 
 model DivisionFeeStructure {
-  id                 String      @id @default(uuid())
-  divisionId         String      @unique
+  id                 String        @id @default(uuid())
+  divisionId         String
+  academicYearId     String?
   institutionId      String
   feeMonths          Json
   bankDetails        Json?
   qrImageUrl         String?
   extraColumns       Json
   extraStudentFields Json
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
   feeStructures      Json
   generalRemark      String?
   feeCardTheme       String?
   schoolLogoUrl      String?
   schoolName         String?
   rulesAndRegs       Json?
-  division           Division    @relation(fields: [divisionId], references: [id])
+  division           Division      @relation(fields: [divisionId], references: [id])
+  academicYear       AcademicYear? @relation(fields: [academicYearId], references: [id])
 
+  @@unique([divisionId, academicYearId])
   @@index([institutionId])
+  @@index([academicYearId])
 }
 
 model StudentFeePayment {
@@ -858,6 +936,8 @@ model Marksheet {
   divisionId            String
   createdByTeacherId    String
   academicYear          String
+  academicYearId        String?
+  academicYear2         AcademicYear?            @relation(fields: [academicYearId], references: [id])
   status                MarksheetStatus          @default(DRAFT)
   pdfR2Key              String?
   shareToken            String                   @unique
@@ -878,6 +958,7 @@ model Marksheet {
   subjectConfigs        MarksheetSubjectConfig[]
 
   @@unique([divisionId, academicYear])
+  @@unique([divisionId, academicYearId])
   @@index([institutionId])
   @@index([divisionId])
 }

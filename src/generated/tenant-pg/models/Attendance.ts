@@ -34,6 +34,7 @@ export type AttendanceMinAggregateOutputType = {
   remark: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  academicYearId: string | null
 }
 
 export type AttendanceMaxAggregateOutputType = {
@@ -46,6 +47,7 @@ export type AttendanceMaxAggregateOutputType = {
   remark: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  academicYearId: string | null
 }
 
 export type AttendanceCountAggregateOutputType = {
@@ -58,6 +60,7 @@ export type AttendanceCountAggregateOutputType = {
   remark: number
   createdAt: number
   updatedAt: number
+  academicYearId: number
   _all: number
 }
 
@@ -72,6 +75,7 @@ export type AttendanceMinAggregateInputType = {
   remark?: true
   createdAt?: true
   updatedAt?: true
+  academicYearId?: true
 }
 
 export type AttendanceMaxAggregateInputType = {
@@ -84,6 +88,7 @@ export type AttendanceMaxAggregateInputType = {
   remark?: true
   createdAt?: true
   updatedAt?: true
+  academicYearId?: true
 }
 
 export type AttendanceCountAggregateInputType = {
@@ -96,6 +101,7 @@ export type AttendanceCountAggregateInputType = {
   remark?: true
   createdAt?: true
   updatedAt?: true
+  academicYearId?: true
   _all?: true
 }
 
@@ -181,6 +187,7 @@ export type AttendanceGroupByOutputType = {
   remark: string | null
   createdAt: Date
   updatedAt: Date
+  academicYearId: string | null
   _count: AttendanceCountAggregateOutputType | null
   _min: AttendanceMinAggregateOutputType | null
   _max: AttendanceMaxAggregateOutputType | null
@@ -214,8 +221,10 @@ export type AttendanceWhereInput = {
   remark?: Prisma.StringNullableFilter<"Attendance"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
+  academicYearId?: Prisma.StringNullableFilter<"Attendance"> | string | null
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
+  academicYear?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
 }
 
 export type AttendanceOrderByWithRelationInput = {
@@ -228,8 +237,10 @@ export type AttendanceOrderByWithRelationInput = {
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
   division?: Prisma.DivisionOrderByWithRelationInput
   student?: Prisma.StudentOrderByWithRelationInput
+  academicYear?: Prisma.AcademicYearOrderByWithRelationInput
 }
 
 export type AttendanceWhereUniqueInput = Prisma.AtLeast<{
@@ -246,8 +257,10 @@ export type AttendanceWhereUniqueInput = Prisma.AtLeast<{
   remark?: Prisma.StringNullableFilter<"Attendance"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
+  academicYearId?: Prisma.StringNullableFilter<"Attendance"> | string | null
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
+  academicYear?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
 }, "id" | "divisionId_studentId_date">
 
 export type AttendanceOrderByWithAggregationInput = {
@@ -260,6 +273,7 @@ export type AttendanceOrderByWithAggregationInput = {
   remark?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.AttendanceCountOrderByAggregateInput
   _max?: Prisma.AttendanceMaxOrderByAggregateInput
   _min?: Prisma.AttendanceMinOrderByAggregateInput
@@ -278,6 +292,7 @@ export type AttendanceScalarWhereWithAggregatesInput = {
   remark?: Prisma.StringNullableWithAggregatesFilter<"Attendance"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Attendance"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Attendance"> | Date | string
+  academicYearId?: Prisma.StringNullableWithAggregatesFilter<"Attendance"> | string | null
 }
 
 export type AttendanceCreateInput = {
@@ -290,6 +305,7 @@ export type AttendanceCreateInput = {
   updatedAt?: Date | string
   division: Prisma.DivisionCreateNestedOneWithoutAttendancesInput
   student: Prisma.StudentCreateNestedOneWithoutAttendancesInput
+  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutAttendancesInput
 }
 
 export type AttendanceUncheckedCreateInput = {
@@ -302,6 +318,7 @@ export type AttendanceUncheckedCreateInput = {
   remark?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  academicYearId?: string | null
 }
 
 export type AttendanceUpdateInput = {
@@ -314,6 +331,7 @@ export type AttendanceUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   division?: Prisma.DivisionUpdateOneRequiredWithoutAttendancesNestedInput
   student?: Prisma.StudentUpdateOneRequiredWithoutAttendancesNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneWithoutAttendancesNestedInput
 }
 
 export type AttendanceUncheckedUpdateInput = {
@@ -326,6 +344,7 @@ export type AttendanceUncheckedUpdateInput = {
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type AttendanceCreateManyInput = {
@@ -338,6 +357,7 @@ export type AttendanceCreateManyInput = {
   remark?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  academicYearId?: string | null
 }
 
 export type AttendanceUpdateManyMutationInput = {
@@ -360,6 +380,7 @@ export type AttendanceUncheckedUpdateManyInput = {
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type AttendanceListRelationFilter = {
@@ -388,6 +409,7 @@ export type AttendanceCountOrderByAggregateInput = {
   remark?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
 }
 
 export type AttendanceMaxOrderByAggregateInput = {
@@ -400,6 +422,7 @@ export type AttendanceMaxOrderByAggregateInput = {
   remark?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
 }
 
 export type AttendanceMinOrderByAggregateInput = {
@@ -412,6 +435,7 @@ export type AttendanceMinOrderByAggregateInput = {
   remark?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
 }
 
 export type AttendanceCreateNestedManyWithoutDivisionInput = {
@@ -498,6 +522,48 @@ export type AttendanceUncheckedUpdateManyWithoutStudentNestedInput = {
   deleteMany?: Prisma.AttendanceScalarWhereInput | Prisma.AttendanceScalarWhereInput[]
 }
 
+export type AttendanceCreateNestedManyWithoutAcademicYearInput = {
+  create?: Prisma.XOR<Prisma.AttendanceCreateWithoutAcademicYearInput, Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput> | Prisma.AttendanceCreateWithoutAcademicYearInput[] | Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput[]
+  connectOrCreate?: Prisma.AttendanceCreateOrConnectWithoutAcademicYearInput | Prisma.AttendanceCreateOrConnectWithoutAcademicYearInput[]
+  createMany?: Prisma.AttendanceCreateManyAcademicYearInputEnvelope
+  connect?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+}
+
+export type AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput = {
+  create?: Prisma.XOR<Prisma.AttendanceCreateWithoutAcademicYearInput, Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput> | Prisma.AttendanceCreateWithoutAcademicYearInput[] | Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput[]
+  connectOrCreate?: Prisma.AttendanceCreateOrConnectWithoutAcademicYearInput | Prisma.AttendanceCreateOrConnectWithoutAcademicYearInput[]
+  createMany?: Prisma.AttendanceCreateManyAcademicYearInputEnvelope
+  connect?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+}
+
+export type AttendanceUpdateManyWithoutAcademicYearNestedInput = {
+  create?: Prisma.XOR<Prisma.AttendanceCreateWithoutAcademicYearInput, Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput> | Prisma.AttendanceCreateWithoutAcademicYearInput[] | Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput[]
+  connectOrCreate?: Prisma.AttendanceCreateOrConnectWithoutAcademicYearInput | Prisma.AttendanceCreateOrConnectWithoutAcademicYearInput[]
+  upsert?: Prisma.AttendanceUpsertWithWhereUniqueWithoutAcademicYearInput | Prisma.AttendanceUpsertWithWhereUniqueWithoutAcademicYearInput[]
+  createMany?: Prisma.AttendanceCreateManyAcademicYearInputEnvelope
+  set?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+  disconnect?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+  delete?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+  connect?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+  update?: Prisma.AttendanceUpdateWithWhereUniqueWithoutAcademicYearInput | Prisma.AttendanceUpdateWithWhereUniqueWithoutAcademicYearInput[]
+  updateMany?: Prisma.AttendanceUpdateManyWithWhereWithoutAcademicYearInput | Prisma.AttendanceUpdateManyWithWhereWithoutAcademicYearInput[]
+  deleteMany?: Prisma.AttendanceScalarWhereInput | Prisma.AttendanceScalarWhereInput[]
+}
+
+export type AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput = {
+  create?: Prisma.XOR<Prisma.AttendanceCreateWithoutAcademicYearInput, Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput> | Prisma.AttendanceCreateWithoutAcademicYearInput[] | Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput[]
+  connectOrCreate?: Prisma.AttendanceCreateOrConnectWithoutAcademicYearInput | Prisma.AttendanceCreateOrConnectWithoutAcademicYearInput[]
+  upsert?: Prisma.AttendanceUpsertWithWhereUniqueWithoutAcademicYearInput | Prisma.AttendanceUpsertWithWhereUniqueWithoutAcademicYearInput[]
+  createMany?: Prisma.AttendanceCreateManyAcademicYearInputEnvelope
+  set?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+  disconnect?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+  delete?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+  connect?: Prisma.AttendanceWhereUniqueInput | Prisma.AttendanceWhereUniqueInput[]
+  update?: Prisma.AttendanceUpdateWithWhereUniqueWithoutAcademicYearInput | Prisma.AttendanceUpdateWithWhereUniqueWithoutAcademicYearInput[]
+  updateMany?: Prisma.AttendanceUpdateManyWithWhereWithoutAcademicYearInput | Prisma.AttendanceUpdateManyWithWhereWithoutAcademicYearInput[]
+  deleteMany?: Prisma.AttendanceScalarWhereInput | Prisma.AttendanceScalarWhereInput[]
+}
+
 export type AttendanceCreateWithoutDivisionInput = {
   id?: string
   institutionId: string
@@ -507,6 +573,7 @@ export type AttendanceCreateWithoutDivisionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.StudentCreateNestedOneWithoutAttendancesInput
+  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutAttendancesInput
 }
 
 export type AttendanceUncheckedCreateWithoutDivisionInput = {
@@ -518,6 +585,7 @@ export type AttendanceUncheckedCreateWithoutDivisionInput = {
   remark?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  academicYearId?: string | null
 }
 
 export type AttendanceCreateOrConnectWithoutDivisionInput = {
@@ -559,6 +627,7 @@ export type AttendanceScalarWhereInput = {
   remark?: Prisma.StringNullableFilter<"Attendance"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
+  academicYearId?: Prisma.StringNullableFilter<"Attendance"> | string | null
 }
 
 export type AttendanceCreateWithoutStudentInput = {
@@ -570,6 +639,7 @@ export type AttendanceCreateWithoutStudentInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   division: Prisma.DivisionCreateNestedOneWithoutAttendancesInput
+  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutAttendancesInput
 }
 
 export type AttendanceUncheckedCreateWithoutStudentInput = {
@@ -581,6 +651,7 @@ export type AttendanceUncheckedCreateWithoutStudentInput = {
   remark?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  academicYearId?: string | null
 }
 
 export type AttendanceCreateOrConnectWithoutStudentInput = {
@@ -609,6 +680,56 @@ export type AttendanceUpdateManyWithWhereWithoutStudentInput = {
   data: Prisma.XOR<Prisma.AttendanceUpdateManyMutationInput, Prisma.AttendanceUncheckedUpdateManyWithoutStudentInput>
 }
 
+export type AttendanceCreateWithoutAcademicYearInput = {
+  id?: string
+  institutionId: string
+  date: string
+  status: string
+  remark?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  division: Prisma.DivisionCreateNestedOneWithoutAttendancesInput
+  student: Prisma.StudentCreateNestedOneWithoutAttendancesInput
+}
+
+export type AttendanceUncheckedCreateWithoutAcademicYearInput = {
+  id?: string
+  institutionId: string
+  divisionId: string
+  studentId: string
+  date: string
+  status: string
+  remark?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AttendanceCreateOrConnectWithoutAcademicYearInput = {
+  where: Prisma.AttendanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.AttendanceCreateWithoutAcademicYearInput, Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput>
+}
+
+export type AttendanceCreateManyAcademicYearInputEnvelope = {
+  data: Prisma.AttendanceCreateManyAcademicYearInput | Prisma.AttendanceCreateManyAcademicYearInput[]
+  skipDuplicates?: boolean
+}
+
+export type AttendanceUpsertWithWhereUniqueWithoutAcademicYearInput = {
+  where: Prisma.AttendanceWhereUniqueInput
+  update: Prisma.XOR<Prisma.AttendanceUpdateWithoutAcademicYearInput, Prisma.AttendanceUncheckedUpdateWithoutAcademicYearInput>
+  create: Prisma.XOR<Prisma.AttendanceCreateWithoutAcademicYearInput, Prisma.AttendanceUncheckedCreateWithoutAcademicYearInput>
+}
+
+export type AttendanceUpdateWithWhereUniqueWithoutAcademicYearInput = {
+  where: Prisma.AttendanceWhereUniqueInput
+  data: Prisma.XOR<Prisma.AttendanceUpdateWithoutAcademicYearInput, Prisma.AttendanceUncheckedUpdateWithoutAcademicYearInput>
+}
+
+export type AttendanceUpdateManyWithWhereWithoutAcademicYearInput = {
+  where: Prisma.AttendanceScalarWhereInput
+  data: Prisma.XOR<Prisma.AttendanceUpdateManyMutationInput, Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearInput>
+}
+
 export type AttendanceCreateManyDivisionInput = {
   id?: string
   institutionId: string
@@ -618,6 +739,7 @@ export type AttendanceCreateManyDivisionInput = {
   remark?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  academicYearId?: string | null
 }
 
 export type AttendanceUpdateWithoutDivisionInput = {
@@ -629,6 +751,7 @@ export type AttendanceUpdateWithoutDivisionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.StudentUpdateOneRequiredWithoutAttendancesNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneWithoutAttendancesNestedInput
 }
 
 export type AttendanceUncheckedUpdateWithoutDivisionInput = {
@@ -640,6 +763,7 @@ export type AttendanceUncheckedUpdateWithoutDivisionInput = {
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type AttendanceUncheckedUpdateManyWithoutDivisionInput = {
@@ -651,6 +775,7 @@ export type AttendanceUncheckedUpdateManyWithoutDivisionInput = {
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type AttendanceCreateManyStudentInput = {
@@ -662,6 +787,7 @@ export type AttendanceCreateManyStudentInput = {
   remark?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  academicYearId?: string | null
 }
 
 export type AttendanceUpdateWithoutStudentInput = {
@@ -673,6 +799,7 @@ export type AttendanceUpdateWithoutStudentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   division?: Prisma.DivisionUpdateOneRequiredWithoutAttendancesNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneWithoutAttendancesNestedInput
 }
 
 export type AttendanceUncheckedUpdateWithoutStudentInput = {
@@ -684,12 +811,62 @@ export type AttendanceUncheckedUpdateWithoutStudentInput = {
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type AttendanceUncheckedUpdateManyWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type AttendanceCreateManyAcademicYearInput = {
+  id?: string
+  institutionId: string
+  divisionId: string
+  studentId: string
+  date: string
+  status: string
+  remark?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AttendanceUpdateWithoutAcademicYearInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  division?: Prisma.DivisionUpdateOneRequiredWithoutAttendancesNestedInput
+  student?: Prisma.StudentUpdateOneRequiredWithoutAttendancesNestedInput
+}
+
+export type AttendanceUncheckedUpdateWithoutAcademicYearInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  divisionId?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AttendanceUncheckedUpdateManyWithoutAcademicYearInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  divisionId?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -709,8 +886,10 @@ export type AttendanceSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   remark?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  academicYearId?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  academicYear?: boolean | Prisma.Attendance$academicYearArgs<ExtArgs>
 }, ExtArgs["result"]["attendance"]>
 
 export type AttendanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -723,8 +902,10 @@ export type AttendanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   remark?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  academicYearId?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  academicYear?: boolean | Prisma.Attendance$academicYearArgs<ExtArgs>
 }, ExtArgs["result"]["attendance"]>
 
 export type AttendanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -737,8 +918,10 @@ export type AttendanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   remark?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  academicYearId?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  academicYear?: boolean | Prisma.Attendance$academicYearArgs<ExtArgs>
 }, ExtArgs["result"]["attendance"]>
 
 export type AttendanceSelectScalar = {
@@ -751,20 +934,24 @@ export type AttendanceSelectScalar = {
   remark?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  academicYearId?: boolean
 }
 
-export type AttendanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "divisionId" | "studentId" | "date" | "status" | "remark" | "createdAt" | "updatedAt", ExtArgs["result"]["attendance"]>
+export type AttendanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "divisionId" | "studentId" | "date" | "status" | "remark" | "createdAt" | "updatedAt" | "academicYearId", ExtArgs["result"]["attendance"]>
 export type AttendanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  academicYear?: boolean | Prisma.Attendance$academicYearArgs<ExtArgs>
 }
 export type AttendanceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  academicYear?: boolean | Prisma.Attendance$academicYearArgs<ExtArgs>
 }
 export type AttendanceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
+  academicYear?: boolean | Prisma.Attendance$academicYearArgs<ExtArgs>
 }
 
 export type $AttendancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -772,6 +959,7 @@ export type $AttendancePayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     division: Prisma.$DivisionPayload<ExtArgs>
     student: Prisma.$StudentPayload<ExtArgs>
+    academicYear: Prisma.$AcademicYearPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -783,6 +971,7 @@ export type $AttendancePayload<ExtArgs extends runtime.Types.Extensions.Internal
     remark: string | null
     createdAt: Date
     updatedAt: Date
+    academicYearId: string | null
   }, ExtArgs["result"]["attendance"]>
   composites: {}
 }
@@ -1179,6 +1368,7 @@ export interface Prisma__AttendanceClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   division<T extends Prisma.DivisionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionDefaultArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   student<T extends Prisma.StudentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentDefaultArgs<ExtArgs>>): Prisma.Prisma__StudentClient<runtime.Types.Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  academicYear<T extends Prisma.Attendance$academicYearArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Attendance$academicYearArgs<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1217,6 +1407,7 @@ export interface AttendanceFieldRefs {
   readonly remark: Prisma.FieldRef<"Attendance", 'String'>
   readonly createdAt: Prisma.FieldRef<"Attendance", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Attendance", 'DateTime'>
+  readonly academicYearId: Prisma.FieldRef<"Attendance", 'String'>
 }
     
 
@@ -1615,6 +1806,25 @@ export type AttendanceDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many Attendances to delete.
    */
   limit?: number
+}
+
+/**
+ * Attendance.academicYear
+ */
+export type Attendance$academicYearArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AcademicYear
+   */
+  select?: Prisma.AcademicYearSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AcademicYear
+   */
+  omit?: Prisma.AcademicYearOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademicYearInclude<ExtArgs> | null
+  where?: Prisma.AcademicYearWhereInput
 }
 
 /**

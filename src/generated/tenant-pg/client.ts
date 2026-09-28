@@ -100,6 +100,21 @@ export type Student = Prisma.StudentModel
  */
 export type ParentModeEvent = Prisma.ParentModeEventModel
 /**
+ * Model AcademicYear
+ * 
+ */
+export type AcademicYear = Prisma.AcademicYearModel
+/**
+ * Model StudentEnrollment
+ * 
+ */
+export type StudentEnrollment = Prisma.StudentEnrollmentModel
+/**
+ * Model DivisionTimetable
+ * 
+ */
+export type DivisionTimetable = Prisma.DivisionTimetableModel
+/**
  * Model PromotionBatch
  * 
  */

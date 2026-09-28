@@ -13,6 +13,7 @@ import { listStudentRemarks } from "../../services/remark.service";
 import { listPTMNotes, acknowledgePTMNote } from "../../services/ptmNote.service";
 import { translateBatch, DynamicTranslateLang } from "../../services/translation.service";
 import { delCache } from "../../utils/cache";
+import { getCurrentAcademicYear as resolveCurrentAcademicYear } from "../../utils/academicYear";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
@@ -1497,6 +1498,10 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
 router.get("/fees", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution associated with this account" });
+      return;
+    }
 
     const student = await academicDb().student.findFirst({
       where: { userId, institutionId },
@@ -1507,8 +1512,9 @@ router.get("/fees", ...S, async (req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
-    const structure = await (academicDb().divisionFeeStructure as any).findFirst({
-      where: { divisionId: student.divisionId, institutionId },
+    const currentYear = await resolveCurrentAcademicYear(institutionId);
+    const structure = await academicDb().divisionFeeStructure.findFirst({
+      where: { divisionId: student.divisionId, institutionId, academicYearId: currentYear.id },
     });
 
     const payments = await academicDb().studentFeePayment.findMany({

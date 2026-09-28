@@ -7,6 +7,7 @@ import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 import { assignSubjectColor } from "../../utils/subjectColors";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { getCurrentAcademicYear } from "../../utils/academicYear";
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
@@ -576,8 +577,9 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
         include: { teacher: true, subject: true },
       });
     } else {
+      const currentYear = await getCurrentAcademicYear(institutionId);
       assignment = await academicDb().divisionAssignment.create({
-        data: { divisionId, institutionId, teacherId: data.teacherId, subjectId },
+        data: { divisionId, institutionId, teacherId: data.teacherId, subjectId, academicYearId: currentYear.id },
         include: { teacher: true, subject: true },
       });
     }

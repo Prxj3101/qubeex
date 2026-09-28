@@ -59,6 +59,11 @@ describe("Class-teacher single-assignment invariant", () => {
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    // The assignTeacher endpoint now resolves/creates the institution's
+    // current AcademicYear row (see campus.controller.ts assignTeacher) —
+    // must be cleared before the institution itself, or the FK constraint
+    // on AcademicYear.institutionId blocks the delete below.
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

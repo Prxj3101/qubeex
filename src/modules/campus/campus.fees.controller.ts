@@ -3,6 +3,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
+import { getCurrentAcademicYear } from "../../utils/academicYear";
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -128,8 +129,10 @@ export const getFeeStructure = async (req: AuthRequest, res: Response, next: Nex
     const division = await academicDb().division.findFirst({ where: { id: divisionId, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
-    const structure = await (academicDb().divisionFeeStructure as any).findFirst({
-      where: { divisionId, institutionId },
+    const currentYear = await getCurrentAcademicYear(institutionId);
+
+    const structure = await academicDb().divisionFeeStructure.findFirst({
+      where: { divisionId, institutionId, academicYearId: currentYear.id },
     });
 
     if (structure) {
@@ -140,8 +143,8 @@ export const getFeeStructure = async (req: AuthRequest, res: Response, next: Nex
     }
 
     // No structure — try most recently created as template
-    const template = await (academicDb().divisionFeeStructure as any).findFirst({
-      where: { institutionId, divisionId: { not: divisionId } },
+    const template = await academicDb().divisionFeeStructure.findFirst({
+      where: { institutionId, divisionId: { not: divisionId }, academicYearId: currentYear.id },
       orderBy: { createdAt: "desc" },
       include: {
         division: {
@@ -197,10 +200,13 @@ export const saveFeeStructure = async (req: AuthRequest, res: Response, next: Ne
 
     const data = saveFeeStructureSchema.parse(req.body);
 
-    const structure = await (academicDb().divisionFeeStructure as any).upsert({
-      where: { divisionId },
+    const currentYear = await getCurrentAcademicYear(institutionId);
+
+    const structure = await academicDb().divisionFeeStructure.upsert({
+      where: { divisionId_academicYearId: { divisionId, academicYearId: currentYear.id } },
       create: {
         divisionId,
+        academicYearId: currentYear.id,
         institutionId,
         feeStructures: data.feeStructures,
         feeMonths: data.feeMonths,

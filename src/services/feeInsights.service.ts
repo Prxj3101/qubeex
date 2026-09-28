@@ -3,6 +3,7 @@ import { prisma } from "../utils/prisma";
 import { getAcademicClient } from "./tenantDb.service";
 import { getCache, setCache } from "../utils/cache";
 import { recordAiUsage, getInstitutionAiTokenLimit, getInstitutionPoolUsed } from "./ai-usage.service";
+import { computeDefaultAcademicYearWindow } from "../utils/academicYear";
 
 // ── Raw fee-collection stats (shared by the admin's own view and the
 // cross-institution peer-benchmark pool) ───────────────────────────────────
@@ -39,11 +40,35 @@ const MONTH_NAMES = [
   "July", "August", "September", "October", "November", "December",
 ];
 
+// Resolves the institution's current academic year using the *given* client
+// rather than the ambient request-scoped one (utils/academicYear.ts's
+// getCurrentAcademicYear relies on academicDb(), which is bound to whichever
+// institution's client is active in the current async scope). This function
+// is also called from getPeerAggregate's cross-institution loop below, which
+// deliberately uses each peer institution's own client (possibly a separate
+// BYOD database) rather than the calling admin's — using the ambient client
+// there would silently query the wrong institution's database.
+async function resolveCurrentAcademicYearForClient(client: AcademicClient, institutionId: string) {
+  const existing = await client.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
+  if (existing) return existing;
+  const { label, startDate, endDate } = computeDefaultAcademicYearWindow();
+  try {
+    return await client.academicYear.create({
+      data: { institutionId, label, startDate, endDate, isCurrent: true, status: "ACTIVE" },
+    });
+  } catch (err) {
+    const retry = await client.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
+    if (retry) return retry;
+    throw err;
+  }
+}
+
 // Same headcount-based "collection rate" convention as the existing
 // /admin/insights/fees endpoint (paid students / total students, not rupee
 // amounts) — kept consistent so the AI card's numbers never disagree with
 // the donut/accordion above it.
 export async function computeInstitutionFeeStats(client: AcademicClient, institutionId: string): Promise<FeeStatsResult> {
+  const currentYear = await resolveCurrentAcademicYearForClient(client, institutionId);
   const standards = await client.standard.findMany({
     where: { institutionId },
     select: {
@@ -51,7 +76,7 @@ export async function computeInstitutionFeeStats(client: AcademicClient, institu
         select: {
           id: true,
           _count: { select: { students: { where: { status: "ACTIVE" } } } },
-          feeStructure: { select: { feeMonths: true } },
+          feeStructures: { select: { feeMonths: true }, where: { academicYearId: currentYear.id } },
         },
       },
     },
@@ -76,7 +101,7 @@ export async function computeInstitutionFeeStats(client: AcademicClient, institu
   for (const d of divisions) {
     const total = d._count.students;
     studentCount += total;
-    const months = (d.feeStructure?.feeMonths as FeeMonth[] | null) ?? [];
+    const months = (d.feeStructures[0]?.feeMonths as FeeMonth[] | null) ?? [];
     if (months.length === 0) continue;
 
     const sorted = [...months].sort((a, b) => dueDateMs(a.dueDate) - dueDateMs(b.dueDate));

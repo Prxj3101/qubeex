@@ -9,6 +9,7 @@ import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
+import { getCurrentAcademicYear as resolveCurrentAcademicYear } from "../../utils/academicYear";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const PDFDocument = require("pdfkit");
 import {
@@ -635,6 +636,7 @@ export async function initMarksheet(
 
     const subjects = division.standard.subjects;
     const shareToken = crypto.randomUUID();
+    const currentYear = await resolveCurrentAcademicYear(institutionId);
 
     const marksheet = await prisma.$transaction(async (tx) => {
       const ms = await tx.marksheet.create({
@@ -643,6 +645,7 @@ export async function initMarksheet(
           divisionId,
           createdByTeacherId: teacherId,
           academicYear,
+          academicYearId: currentYear.id,
           shareToken,
         },
       });

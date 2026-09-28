@@ -8,11 +8,14 @@ describe("Teacher promotion routes", () => {
   let standard5Id: string;
   let standard6Id: string;
   let division5AId: string;
+  let division5BId: string;
   let division6AId: string;
   let teacherToken: string;
   let subjectTeacherToken: string;
   let studentAId: string;
   let studentBId: string;
+  let studentCId: string;
+  let studentDId: string;
 
   beforeAll(async () => {
     const suffix = `${Date.now()}`;
@@ -34,8 +37,10 @@ describe("Teacher promotion routes", () => {
     standard6Id = standard6.id;
 
     const division5A = await prisma.division.create({ data: { standardId: standard5Id, institutionId, name: "A", capacity: 2 } });
+    const division5B = await prisma.division.create({ data: { standardId: standard5Id, institutionId, name: "B" } });
     const division6A = await prisma.division.create({ data: { standardId: standard6Id, institutionId, name: "A" } });
     division5AId = division5A.id;
+    division5BId = division5B.id;
     division6AId = division6A.id;
 
     const teacherUser = await prisma.user.create({
@@ -43,6 +48,7 @@ describe("Teacher promotion routes", () => {
     });
     const teacher = await prisma.teacher.create({ data: { teacherId: `TCH-PROMO-${suffix}`, userId: teacherUser.id, institutionId } });
     await prisma.divisionAssignment.create({ data: { divisionId: division5AId, subjectId: null, teacherId: teacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { divisionId: division5BId, subjectId: null, teacherId: teacher.id, institutionId } });
     teacherToken = jwt.sign({ userId: teacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const subjectTeacherUser = await prisma.user.create({
@@ -68,12 +74,34 @@ describe("Teacher promotion routes", () => {
       data: { studentId: `STU-B-${suffix}`, userId: studentUserB.id, institutionId, standardId: standard5Id, divisionId: division5AId, rollNo: "2" },
     });
     studentBId = studentB.id;
+
+    // Fresh students for the StudentEnrollment tests below — studentA/B already accrue
+    // enrollment rows for the current academic year from the promotion test above, and
+    // re-promoting them within the same year would hit the studentId+academicYearId unique
+    // constraint on StudentEnrollment, which is not what those tests are probing.
+    const studentUserC = await prisma.user.create({
+      data: { name: "Student C", email: `student-c-promo-${suffix}@example.com`, role: "STUDENT", institutionId, isActive: true },
+    });
+    const studentC = await prisma.student.create({
+      data: { studentId: `STU-C-${suffix}`, userId: studentUserC.id, institutionId, standardId: standard5Id, divisionId: division5BId, rollNo: "1" },
+    });
+    studentCId = studentC.id;
+
+    const studentUserD = await prisma.user.create({
+      data: { name: "Student D", email: `student-d-promo-${suffix}@example.com`, role: "STUDENT", institutionId, isActive: true },
+    });
+    const studentD = await prisma.student.create({
+      data: { studentId: `STU-D-${suffix}`, userId: studentUserD.id, institutionId, standardId: standard5Id, divisionId: division5BId, rollNo: "2" },
+    });
+    studentDId = studentD.id;
   });
 
   afterAll(async () => {
     if (!institutionId) { await prisma.$disconnect(); return; }
+    await prisma.studentEnrollment.deleteMany({ where: { institutionId } });
     await prisma.studentPromotionOutcome.deleteMany({ where: { institutionId } });
     await prisma.promotionBatch.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.divisionAssignment.deleteMany({ where: { institutionId } });
     await prisma.subject.deleteMany({ where: { institutionId } });
     await prisma.student.deleteMany({ where: { institutionId } });
@@ -157,10 +185,69 @@ describe("Teacher promotion routes", () => {
     expect(studentA?.standardId).toBe(standard5Id);
   });
 
+  it("undo removes the StudentEnrollment row and allows a clean re-promotion in the same academic year", async () => {
+    const currentYear = await prisma.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
+    expect(currentYear).not.toBeNull();
+
+    // The undo above should have deleted the StudentEnrollment row the original promotion created.
+    const staleEnrollment = await prisma.studentEnrollment.findUnique({
+      where: { studentId_academicYearId: { studentId: studentAId, academicYearId: currentYear!.id } },
+    });
+    expect(staleEnrollment).toBeNull();
+
+    // Re-promoting studentA (now restored to division5A, ACTIVE) in the same academic year
+    // should succeed cleanly — not 500 on a stale/duplicate StudentEnrollment row.
+    const res = await request(app)
+      .post(`/api/teacher/promotions/divisions/${division5AId}`)
+      .set("Authorization", `Bearer ${teacherToken}`)
+      .send({ outcomes: [{ studentId: studentAId, outcome: "PROMOTED" }], targetDivisionId: division6AId });
+    expect(res.status).toBe(200);
+
+    const enrollment = await prisma.studentEnrollment.findUnique({
+      where: { studentId_academicYearId: { studentId: studentAId, academicYearId: currentYear!.id } },
+    });
+    expect(enrollment).not.toBeNull();
+    expect(enrollment!.divisionId).toBe(division6AId);
+    expect(enrollment!.status).toBe("ACTIVE");
+  });
+
   it("rejects undoing an already-undone batch", async () => {
     const res = await request(app)
       .post(`/api/teacher/promotions/batches/${createdBatchId}/undo`)
       .set("Authorization", `Bearer ${teacherToken}`);
     expect(res.status).toBe(409);
+  });
+
+  it("creates a StudentEnrollment row for the current academic year on promotion", async () => {
+    const currentYear = await prisma.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
+    expect(currentYear).not.toBeNull();
+
+    const res = await request(app)
+      .post(`/api/teacher/promotions/divisions/${division5BId}`)
+      .set("Authorization", `Bearer ${teacherToken}`)
+      .send({ outcomes: [{ studentId: studentCId, outcome: "PROMOTED" }], targetDivisionId: division6AId });
+    expect(res.status).toBe(200);
+
+    const enrollment = await prisma.studentEnrollment.findUnique({
+      where: { studentId_academicYearId: { studentId: studentCId, academicYearId: currentYear!.id } },
+    });
+    expect(enrollment).not.toBeNull();
+    expect(enrollment!.divisionId).toBe(division6AId);
+    expect(enrollment!.status).toBe("ACTIVE");
+  });
+
+  it("fails cleanly, not with a crash, when promoting the same student twice in one year", async () => {
+    await request(app)
+      .post(`/api/teacher/promotions/divisions/${division5BId}`)
+      .set("Authorization", `Bearer ${teacherToken}`)
+      .send({ outcomes: [{ studentId: studentDId, outcome: "PROMOTED" }], targetDivisionId: division6AId });
+
+    // Re-promoting studentD (now inactive in division5B) should 400, not 500,
+    // because applyPromotionOutcomes only accepts ACTIVE students of the source division.
+    const res = await request(app)
+      .post(`/api/teacher/promotions/divisions/${division5BId}`)
+      .set("Authorization", `Bearer ${teacherToken}`)
+      .send({ outcomes: [{ studentId: studentDId, outcome: "PROMOTED" }], targetDivisionId: division6AId });
+    expect(res.status).toBe(400);
   });
 });

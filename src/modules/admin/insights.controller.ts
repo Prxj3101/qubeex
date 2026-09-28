@@ -23,6 +23,7 @@ import { computeInstitutionFeeStats, computeFeeHealthScore, computeFeeForecast, 
 import { generateAiAttendanceSummary } from "../../services/attendanceInsights.service";
 import { askSchoolAssistant, type AssistantMessage } from "../../services/schoolAssistant.service";
 import { getChatHistory, appendChatMessages, clearChatHistory } from "../../services/aiChatHistory.service";
+import { getCurrentAcademicYear } from "../../utils/academicYear";
 
 // Both endpoints below scan full-institution history on every request (all
 // attendance rows for the academic year; all status/audit events ever, with
@@ -270,6 +271,7 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
     const { institutionId } = req.user!;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
 
+    const currentYear = await getCurrentAcademicYear(institutionId);
     const standards = await academicDb().standard.findMany({
       where: { institutionId },
       orderBy: { order: "asc" },
@@ -283,7 +285,7 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
             name: true,
             _count: { select: { students: { where: { status: "ACTIVE" } } } },
             students: { where: { status: "ACTIVE" }, select: { id: true } },
-            feeStructure: { select: { feeMonths: true } },
+            feeStructures: { select: { feeMonths: true }, where: { academicYearId: currentYear.id } },
           },
         },
       },
@@ -314,7 +316,7 @@ export const getFeeInsights = async (req: AuthRequest, res: Response, next: Next
     const currentMonthIdByDivision = new Map<string, string>();
     for (const s of standards) {
       for (const d of s.divisions) {
-        const months = (d.feeStructure?.feeMonths as FeeMonth[] | null) ?? [];
+        const months = (d.feeStructures[0]?.feeMonths as FeeMonth[] | null) ?? [];
         if (months.length === 0) continue;
         const past = months.filter((m) => dueDateMs(m.dueDate) <= todayMs).sort((a, b) => dueDateMs(a.dueDate) - dueDateMs(b.dueDate));
 

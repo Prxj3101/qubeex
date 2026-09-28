@@ -19,6 +19,7 @@ import { resolveUsers } from "./userLookup.service";
 import { computeInstitutionFeeStats } from "./feeInsights.service";
 import { NOTE_COLORS } from "../modules/admin/notepad.schema";
 import { getInstitutionTeacherBreakdown } from "./ai-usage.service";
+import { getCurrentAcademicYear } from "../utils/academicYear";
 
 export interface ToolDefinition {
   name: string;
@@ -695,6 +696,7 @@ export async function getFeeDefaultersByClass(institutionId: string, args: { cla
   const className = (args.className ?? "").trim();
   if (!className) return { error: "No class specified." };
   const db = academicDb();
+  const currentYear = await getCurrentAcademicYear(institutionId);
 
   const divisions = await db.division.findMany({
     where: { institutionId },
@@ -702,7 +704,7 @@ export async function getFeeDefaultersByClass(institutionId: string, args: { cla
       id: true,
       name: true,
       standard: { select: { name: true } },
-      feeStructure: { select: { feeMonths: true } },
+      feeStructures: { select: { feeMonths: true }, where: { academicYearId: currentYear.id } },
       students: { where: { status: "ACTIVE" }, select: { id: true, userId: true, rollNo: true } },
     },
   });
@@ -712,7 +714,7 @@ export async function getFeeDefaultersByClass(institutionId: string, args: { cla
   const match = divisions.find((d) => normalize(`${d.standard.name}${d.name}`).includes(target));
   if (!match) return { note: "No class matched that." };
 
-  const months = (match.feeStructure?.feeMonths as { id: string; month: string; dueDate: string }[] | null) ?? [];
+  const months = (match.feeStructures[0]?.feeMonths as { id: string; month: string; dueDate: string }[] | null) ?? [];
   if (months.length === 0) return { class: `${match.standard.name} - ${match.name}`, note: "No fee structure set up for this class yet." };
 
   const now = Date.now();

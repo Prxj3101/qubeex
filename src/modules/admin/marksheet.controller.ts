@@ -5,6 +5,7 @@ import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
+import { getCurrentAcademicYear as resolveCurrentAcademicYear } from "../../utils/academicYear";
 
 // ── GET /api/admin/marksheet ──────────────────────────────────────────────────
 
@@ -278,8 +279,9 @@ export async function assignClassTeacher(
       } else if (existingSlot) {
         await tx.divisionAssignment.update({ where: { id: existingSlot.id }, data: { teacherId } });
       } else {
+        const currentYear = await resolveCurrentAcademicYear(institutionId);
         await tx.divisionAssignment.create({
-          data: { divisionId, institutionId, teacherId, subjectId: null },
+          data: { divisionId, institutionId, teacherId, subjectId: null, academicYearId: currentYear.id },
         });
       }
     });

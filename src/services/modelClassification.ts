@@ -101,6 +101,10 @@ export const ACADEMIC_MODELS = [
   "Payslip",
   "StaffAttendance",
   "StaffPunch",
+  // Academic-year foundation — per-institution academic-year scoping data.
+  "AcademicYear",
+  "StudentEnrollment",
+  "DivisionTimetable",
 ] as const;
 
 const academicSet = new Set<string>(ACADEMIC_MODELS);

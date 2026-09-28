@@ -1,5 +1,6 @@
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
+import { getCurrentAcademicYear } from "../../utils/academicYear";
 import { SubmitOutcomesInput } from "./promotion.schema";
 
 export interface PreviewStudent { id: string; studentId: string; name: string | null; rollNo: string | null }
@@ -9,14 +10,6 @@ export interface PreviewData {
   students: PreviewStudent[];
   isHighestStandard: boolean;
   targets: PreviewTarget[];
-}
-
-function getAcademicYear(): string {
-  const now = new Date();
-  const month = now.getMonth(); // 0-indexed
-  const year = now.getFullYear();
-  if (month >= 5) return `${year}-${String(year + 1).slice(2)}`;
-  return `${year - 1}-${String(year).slice(2)}`;
 }
 
 export async function getPromotionPreview(
@@ -110,7 +103,7 @@ export async function applyPromotionOutcomes(params: {
   }
 
   const studentById = new Map(students.map((s) => [s.id, s]));
-  const academicYear = getAcademicYear();
+  const currentYear = await getCurrentAcademicYear(institutionId);
 
   const batchId = await academicDb().$transaction(async (tx) => {
     const batch = await tx.promotionBatch.create({
@@ -119,7 +112,8 @@ export async function applyPromotionOutcomes(params: {
         fromStandardId: division.standardId,
         fromDivisionId: divisionId,
         toDivisionId: targetDivision?.id ?? null,
-        academicYear,
+        academicYear: currentYear.label,
+        academicYearId: currentYear.id,
         triggeredById: userId,
         triggeredByRole: actorRole,
       },
@@ -151,6 +145,24 @@ export async function applyPromotionOutcomes(params: {
         await tx.student.update({ where: { id: o.studentId }, data: { status: "WITHDRAWN" } });
       }
       // REPEATED: no student field changes
+
+      const enrollmentDivisionId =
+        o.outcome === "PROMOTED" && targetDivision ? targetDivision.id : student.divisionId!;
+      const enrollmentStandardId =
+        o.outcome === "PROMOTED" && targetDivision ? targetDivision.standardId : student.standardId!;
+      const enrollmentStatus =
+        o.outcome === "GRADUATED" ? "GRADUATED" : o.outcome === "WITHDRAWN" ? "WITHDRAWN" : "ACTIVE";
+
+      await tx.studentEnrollment.create({
+        data: {
+          institutionId,
+          studentId: o.studentId,
+          academicYearId: currentYear.id,
+          standardId: enrollmentStandardId,
+          divisionId: enrollmentDivisionId,
+          status: enrollmentStatus,
+        },
+      });
     }
 
     return batch.id;
@@ -183,6 +195,15 @@ export async function undoPromotionBatch(batchId: string, institutionId: string)
         where: { id: o.studentId },
         data: { standardId: o.previousStandardId, divisionId: o.previousDivisionId, status: o.previousStatus },
       });
+
+      if (batch.academicYearId) {
+        // Undo the StudentEnrollment row this outcome created, so the student is free to be
+        // re-promoted within the same academic year without hitting the studentId+academicYearId
+        // unique constraint, and so no stale/reverted enrollment data is left behind.
+        await tx.studentEnrollment.deleteMany({
+          where: { studentId: o.studentId, academicYearId: batch.academicYearId },
+        });
+      }
     }
     await tx.promotionBatch.update({ where: { id: batchId }, data: { undoneAt: new Date() } });
   });

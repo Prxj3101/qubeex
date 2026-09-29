@@ -1,11 +1,5 @@
 import { z } from "zod";
 
-export const initMarksheetSchema = z.object({
-  academicYear: z
-    .string()
-    .regex(/^\d{4}-\d{2}$/, "academicYear must be in format YYYY-YY e.g. 2025-26"),
-});
-
 const gradeScaleItemSchema = z.object({
   grade: z.string().min(1).max(10),
   minPercent: z.number().min(0).max(100),

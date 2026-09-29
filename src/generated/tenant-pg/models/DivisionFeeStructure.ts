@@ -198,7 +198,7 @@ export type DivisionFeeStructureGroupByArgs<ExtArgs extends runtime.Types.Extens
 export type DivisionFeeStructureGroupByOutputType = {
   id: string
   divisionId: string
-  academicYearId: string | null
+  academicYearId: string
   institutionId: string
   feeMonths: runtime.JsonValue
   bankDetails: runtime.JsonValue | null
@@ -239,7 +239,7 @@ export type DivisionFeeStructureWhereInput = {
   NOT?: Prisma.DivisionFeeStructureWhereInput | Prisma.DivisionFeeStructureWhereInput[]
   id?: Prisma.StringFilter<"DivisionFeeStructure"> | string
   divisionId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
-  academicYearId?: Prisma.StringNullableFilter<"DivisionFeeStructure"> | string | null
+  academicYearId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
   institutionId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
   feeMonths?: Prisma.JsonFilter<"DivisionFeeStructure">
   bankDetails?: Prisma.JsonNullableFilter<"DivisionFeeStructure">
@@ -255,13 +255,13 @@ export type DivisionFeeStructureWhereInput = {
   schoolName?: Prisma.StringNullableFilter<"DivisionFeeStructure"> | string | null
   rulesAndRegs?: Prisma.JsonNullableFilter<"DivisionFeeStructure">
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
-  academicYear?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
+  academicYear?: Prisma.XOR<Prisma.AcademicYearScalarRelationFilter, Prisma.AcademicYearWhereInput>
 }
 
 export type DivisionFeeStructureOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   divisionId?: Prisma.SortOrder
-  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   feeMonths?: Prisma.SortOrder
   bankDetails?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -287,7 +287,7 @@ export type DivisionFeeStructureWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.DivisionFeeStructureWhereInput[]
   NOT?: Prisma.DivisionFeeStructureWhereInput | Prisma.DivisionFeeStructureWhereInput[]
   divisionId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
-  academicYearId?: Prisma.StringNullableFilter<"DivisionFeeStructure"> | string | null
+  academicYearId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
   institutionId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
   feeMonths?: Prisma.JsonFilter<"DivisionFeeStructure">
   bankDetails?: Prisma.JsonNullableFilter<"DivisionFeeStructure">
@@ -303,13 +303,13 @@ export type DivisionFeeStructureWhereUniqueInput = Prisma.AtLeast<{
   schoolName?: Prisma.StringNullableFilter<"DivisionFeeStructure"> | string | null
   rulesAndRegs?: Prisma.JsonNullableFilter<"DivisionFeeStructure">
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
-  academicYear?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
+  academicYear?: Prisma.XOR<Prisma.AcademicYearScalarRelationFilter, Prisma.AcademicYearWhereInput>
 }, "id" | "divisionId_academicYearId">
 
 export type DivisionFeeStructureOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   divisionId?: Prisma.SortOrder
-  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   feeMonths?: Prisma.SortOrder
   bankDetails?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -335,7 +335,7 @@ export type DivisionFeeStructureScalarWhereWithAggregatesInput = {
   NOT?: Prisma.DivisionFeeStructureScalarWhereWithAggregatesInput | Prisma.DivisionFeeStructureScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"DivisionFeeStructure"> | string
   divisionId?: Prisma.StringWithAggregatesFilter<"DivisionFeeStructure"> | string
-  academicYearId?: Prisma.StringNullableWithAggregatesFilter<"DivisionFeeStructure"> | string | null
+  academicYearId?: Prisma.StringWithAggregatesFilter<"DivisionFeeStructure"> | string
   institutionId?: Prisma.StringWithAggregatesFilter<"DivisionFeeStructure"> | string
   feeMonths?: Prisma.JsonWithAggregatesFilter<"DivisionFeeStructure">
   bankDetails?: Prisma.JsonNullableWithAggregatesFilter<"DivisionFeeStructure">
@@ -369,13 +369,13 @@ export type DivisionFeeStructureCreateInput = {
   schoolName?: string | null
   rulesAndRegs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   division: Prisma.DivisionCreateNestedOneWithoutFeeStructuresInput
-  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutFeeStructuresInput
+  academicYear: Prisma.AcademicYearCreateNestedOneWithoutFeeStructuresInput
 }
 
 export type DivisionFeeStructureUncheckedCreateInput = {
   id?: string
   divisionId: string
-  academicYearId?: string | null
+  academicYearId: string
   institutionId: string
   feeMonths: Prisma.JsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -409,13 +409,13 @@ export type DivisionFeeStructureUpdateInput = {
   schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rulesAndRegs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   division?: Prisma.DivisionUpdateOneRequiredWithoutFeeStructuresNestedInput
-  academicYear?: Prisma.AcademicYearUpdateOneWithoutFeeStructuresNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutFeeStructuresNestedInput
 }
 
 export type DivisionFeeStructureUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   feeMonths?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -435,7 +435,7 @@ export type DivisionFeeStructureUncheckedUpdateInput = {
 export type DivisionFeeStructureCreateManyInput = {
   id?: string
   divisionId: string
-  academicYearId?: string | null
+  academicYearId: string
   institutionId: string
   feeMonths: Prisma.JsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -473,7 +473,7 @@ export type DivisionFeeStructureUpdateManyMutationInput = {
 export type DivisionFeeStructureUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   feeMonths?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -653,12 +653,12 @@ export type DivisionFeeStructureCreateWithoutDivisionInput = {
   schoolLogoUrl?: string | null
   schoolName?: string | null
   rulesAndRegs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutFeeStructuresInput
+  academicYear: Prisma.AcademicYearCreateNestedOneWithoutFeeStructuresInput
 }
 
 export type DivisionFeeStructureUncheckedCreateWithoutDivisionInput = {
   id?: string
-  academicYearId?: string | null
+  academicYearId: string
   institutionId: string
   feeMonths: Prisma.JsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -707,7 +707,7 @@ export type DivisionFeeStructureScalarWhereInput = {
   NOT?: Prisma.DivisionFeeStructureScalarWhereInput | Prisma.DivisionFeeStructureScalarWhereInput[]
   id?: Prisma.StringFilter<"DivisionFeeStructure"> | string
   divisionId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
-  academicYearId?: Prisma.StringNullableFilter<"DivisionFeeStructure"> | string | null
+  academicYearId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
   institutionId?: Prisma.StringFilter<"DivisionFeeStructure"> | string
   feeMonths?: Prisma.JsonFilter<"DivisionFeeStructure">
   bankDetails?: Prisma.JsonNullableFilter<"DivisionFeeStructure">
@@ -790,7 +790,7 @@ export type DivisionFeeStructureUpdateManyWithWhereWithoutAcademicYearInput = {
 
 export type DivisionFeeStructureCreateManyDivisionInput = {
   id?: string
-  academicYearId?: string | null
+  academicYearId: string
   institutionId: string
   feeMonths: Prisma.JsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -823,12 +823,12 @@ export type DivisionFeeStructureUpdateWithoutDivisionInput = {
   schoolLogoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rulesAndRegs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  academicYear?: Prisma.AcademicYearUpdateOneWithoutFeeStructuresNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutFeeStructuresNestedInput
 }
 
 export type DivisionFeeStructureUncheckedUpdateWithoutDivisionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   feeMonths?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -847,7 +847,7 @@ export type DivisionFeeStructureUncheckedUpdateWithoutDivisionInput = {
 
 export type DivisionFeeStructureUncheckedUpdateManyWithoutDivisionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   feeMonths?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -961,7 +961,7 @@ export type DivisionFeeStructureSelect<ExtArgs extends runtime.Types.Extensions.
   schoolName?: boolean
   rulesAndRegs?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionFeeStructure$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["divisionFeeStructure"]>
 
 export type DivisionFeeStructureSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -983,7 +983,7 @@ export type DivisionFeeStructureSelectCreateManyAndReturn<ExtArgs extends runtim
   schoolName?: boolean
   rulesAndRegs?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionFeeStructure$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["divisionFeeStructure"]>
 
 export type DivisionFeeStructureSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1005,7 +1005,7 @@ export type DivisionFeeStructureSelectUpdateManyAndReturn<ExtArgs extends runtim
   schoolName?: boolean
   rulesAndRegs?: boolean
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionFeeStructure$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["divisionFeeStructure"]>
 
 export type DivisionFeeStructureSelectScalar = {
@@ -1031,27 +1031,27 @@ export type DivisionFeeStructureSelectScalar = {
 export type DivisionFeeStructureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "divisionId" | "academicYearId" | "institutionId" | "feeMonths" | "bankDetails" | "qrImageUrl" | "extraColumns" | "extraStudentFields" | "createdAt" | "updatedAt" | "feeStructures" | "generalRemark" | "feeCardTheme" | "schoolLogoUrl" | "schoolName" | "rulesAndRegs", ExtArgs["result"]["divisionFeeStructure"]>
 export type DivisionFeeStructureInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionFeeStructure$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }
 export type DivisionFeeStructureIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionFeeStructure$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }
 export type DivisionFeeStructureIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionFeeStructure$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }
 
 export type $DivisionFeeStructurePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "DivisionFeeStructure"
   objects: {
     division: Prisma.$DivisionPayload<ExtArgs>
-    academicYear: Prisma.$AcademicYearPayload<ExtArgs> | null
+    academicYear: Prisma.$AcademicYearPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     divisionId: string
-    academicYearId: string | null
+    academicYearId: string
     institutionId: string
     feeMonths: runtime.JsonValue
     bankDetails: runtime.JsonValue | null
@@ -1461,7 +1461,7 @@ readonly fields: DivisionFeeStructureFieldRefs;
 export interface Prisma__DivisionFeeStructureClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   division<T extends Prisma.DivisionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionDefaultArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  academicYear<T extends Prisma.DivisionFeeStructure$academicYearArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionFeeStructure$academicYearArgs<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  academicYear<T extends Prisma.AcademicYearDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYearDefaultArgs<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1906,25 +1906,6 @@ export type DivisionFeeStructureDeleteManyArgs<ExtArgs extends runtime.Types.Ext
    * Limit how many DivisionFeeStructures to delete.
    */
   limit?: number
-}
-
-/**
- * DivisionFeeStructure.academicYear
- */
-export type DivisionFeeStructure$academicYearArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AcademicYear
-   */
-  select?: Prisma.AcademicYearSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the AcademicYear
-   */
-  omit?: Prisma.AcademicYearOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AcademicYearInclude<ExtArgs> | null
-  where?: Prisma.AcademicYearWhereInput
 }
 
 /**

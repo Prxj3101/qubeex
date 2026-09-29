@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("Attendance summary — cumulative % from start of academic session", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let teacherToken: string;
   let adminToken: string;
@@ -24,6 +26,10 @@ describe("Attendance summary — cumulative % from start of academic session", (
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({ data: { institutionId, name: `Class ${suffix}`, order: 1 } });
     const division = await prisma.division.create({ data: { standardId: standard.id, institutionId, name: "A" } });
@@ -33,7 +39,7 @@ describe("Attendance summary — cumulative % from start of academic session", (
       data: { name: "Class Teacher", email: `teacher-att-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
     });
     const teacher = await prisma.teacher.create({ data: { teacherId: `TCH-ATT-${suffix}`, userId: teacherUser.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId, subjectId: null, teacherId: teacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId, subjectId: null, teacherId: teacher.id, institutionId } });
     teacherToken = jwt.sign({ userId: teacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const adminUser = await prisma.user.create({
@@ -55,21 +61,21 @@ describe("Attendance summary — cumulative % from start of academic session", (
     // Out-of-session record — well before the session start — must NOT be
     // included in the cumulative total (the bug this test guards against).
     await prisma.attendance.create({
-      data: { institutionId, divisionId, studentId, date: `${startYear - 1}-01-15`, status: "A" },
+      data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear - 1}-01-15`, status: "A" },
     });
 
     // June (session start): 1 present, 1 absent -> month pct 50%, cumulative 50%.
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-06-01`, status: "P" } });
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-06-02`, status: "A" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-06-01`, status: "P" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-06-02`, status: "A" } });
 
     // July: 2 present -> month pct 100%, cumulative (1+2)/(2+2) = 75%.
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-07-01`, status: "P" } });
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-07-02`, status: "P" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-07-01`, status: "P" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-07-02`, status: "P" } });
 
     // A record marked present BEFORE this date was later declared a holiday.
     // It must be excluded from both the month % and the cumulative %, the
     // same way the sheet UI already excludes holiday cells from its totals.
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-06-03`, status: "P" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-06-03`, status: "P" } });
     await prisma.schoolHoliday.create({ data: { institutionId, date: `${startYear}-06-03`, name: "Test Holiday" } });
 
     // August: 1 present, 3 absent -> month pct 25%. This month has a
@@ -77,10 +83,10 @@ describe("Attendance summary — cumulative % from start of academic session", (
     // running-average-of-monthly-% cumulative (the correct behavior) from a
     // weighted running total of raw counts (which would give a different,
     // wrong answer here).
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-08-01`, status: "P" } });
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-08-02`, status: "A" } });
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-08-03`, status: "A" } });
-    await prisma.attendance.create({ data: { institutionId, divisionId, studentId, date: `${startYear}-08-04`, status: "A" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-08-01`, status: "P" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-08-02`, status: "A" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-08-03`, status: "A" } });
+    await prisma.attendance.create({ data: { academicYearId, institutionId, divisionId, studentId, date: `${startYear}-08-04`, status: "A" } });
   });
 
   afterAll(async () => {
@@ -93,6 +99,7 @@ describe("Attendance summary — cumulative % from start of academic session", (
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

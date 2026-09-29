@@ -112,7 +112,6 @@ export async function applyPromotionOutcomes(params: {
         fromStandardId: division.standardId,
         fromDivisionId: divisionId,
         toDivisionId: targetDivision?.id ?? null,
-        academicYear: currentYear.label,
         academicYearId: currentYear.id,
         triggeredById: userId,
         triggeredByRole: actorRole,
@@ -233,6 +232,7 @@ export async function listPromotionBatches(
     take: 50,
     include: {
       outcomes: { select: { outcome: true } },
+      academicYear: { select: { label: true } },
     },
   });
 
@@ -260,7 +260,7 @@ export async function listPromotionBatches(
     }
     return {
       id: b.id,
-      academicYear: b.academicYear,
+      academicYear: b.academicYear.label,
       createdAt: b.createdAt.toISOString(),
       undoneAt: b.undoneAt?.toISOString() ?? null,
       fromStandard: { name: standardMap.get(b.fromStandardId) ?? "" },

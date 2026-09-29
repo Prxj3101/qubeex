@@ -3,9 +3,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("POST /api/teacher/classes/:divisionId/students/:studentId/remarks", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let otherDivisionId: string;
   let studentId: string;
@@ -25,6 +27,10 @@ describe("POST /api/teacher/classes/:divisionId/students/:studentId/remarks", ()
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({
       data: { institutionId, name: `Class RM ${suffix}`, order: 1 },
@@ -45,7 +51,7 @@ describe("POST /api/teacher/classes/:divisionId/students/:studentId/remarks", ()
       data: { teacherId: `TCH-RM-${suffix}`, userId: teacherUser.id, institutionId },
     });
     await prisma.divisionAssignment.create({
-      data: { divisionId, subjectId: null, teacherId: teacher.id, institutionId },
+      data: { academicYearId, divisionId, subjectId: null, teacherId: teacher.id, institutionId },
     });
 
     const unassignedTeacherUser = await prisma.user.create({
@@ -76,6 +82,7 @@ describe("POST /api/teacher/classes/:divisionId/students/:studentId/remarks", ()
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

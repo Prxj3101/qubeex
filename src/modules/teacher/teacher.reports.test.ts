@@ -3,9 +3,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("Report review flow: /reports/inbox, /reports/submitted, PATCH /reports/:remarkId", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let studentId: string;
   let classTeacherToken: string;
@@ -28,6 +30,10 @@ describe("Report review flow: /reports/inbox, /reports/submitted, PATCH /reports
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({
       data: { institutionId, name: `Class RPT ${suffix}`, order: 1 },
@@ -50,7 +56,7 @@ describe("Report review flow: /reports/inbox, /reports/submitted, PATCH /reports
       data: { teacherId: `TCH-RPT-CT-${suffix}`, userId: classTeacherUser.id, institutionId },
     });
     await prisma.divisionAssignment.create({
-      data: { divisionId, subjectId: null, teacherId: classTeacher.id, institutionId },
+      data: { academicYearId, divisionId, subjectId: null, teacherId: classTeacher.id, institutionId },
     });
     classTeacherToken = jwt.sign({ userId: classTeacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
@@ -64,7 +70,7 @@ describe("Report review flow: /reports/inbox, /reports/submitted, PATCH /reports
       data: { standardId: standard.id, institutionId, name: `Maths RPT ${suffix}`, order: 1 },
     });
     await prisma.divisionAssignment.create({
-      data: { divisionId, subjectId: subject.id, teacherId: subjectTeacher.id, institutionId },
+      data: { academicYearId, divisionId, subjectId: subject.id, teacherId: subjectTeacher.id, institutionId },
     });
     subjectTeacherToken = jwt.sign({ userId: subjectTeacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
@@ -102,6 +108,7 @@ describe("Report review flow: /reports/inbox, /reports/submitted, PATCH /reports
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

@@ -29,12 +29,13 @@ export async function adminListMarksheets(
         institutionId,
         ...(divisionId && { divisionId }),
         ...(standardId && { division: { standardId } }),
-        ...(academicYear && { academicYear }),
+        ...(academicYear && { academicYear: { label: academicYear } }),
       },
       include: {
         division: { include: { standard: true } },
         createdBy: { select: { userId: true } },
         _count: { select: { examColumns: true, scores: true } },
+        academicYear: { select: { label: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -46,7 +47,7 @@ export async function adminListMarksheets(
       success: true,
       data: marksheets.map((m) => ({
         id: m.id,
-        academicYear: m.academicYear,
+        academicYear: m.academicYear.label,
         status: m.status,
         shareToken: m.shareToken,
         divisionId: m.divisionId,
@@ -76,8 +77,8 @@ export async function adminGetDivisionMarksheet(
     const divisionId = req.params.divisionId as string;
     const academicYear = (req.query.academicYear as string) || getCurrentAcademicYear();
 
-    const marksheet = await academicDb().marksheet.findUnique({
-      where: { divisionId_academicYear: { divisionId, academicYear } },
+    const marksheet = await academicDb().marksheet.findFirst({
+      where: { divisionId, institutionId, academicYear: { label: academicYear } },
       select: { id: true, institutionId: true },
     });
     if (!marksheet || marksheet.institutionId !== institutionId) {
@@ -96,7 +97,7 @@ export async function adminGetDivisionMarksheet(
       academicDb().marksheet.findUnique({
         where: { id: marksheet.id },
         select: {
-          id: true, academicYear: true, status: true, shareToken: true, gradedSectionTitle: true, gradeScale: true,
+          id: true, academicYear: { select: { label: true } }, status: true, shareToken: true, gradedSectionTitle: true, gradeScale: true,
           hasUnpublishedChanges: true, publishedSnapshot: true,
           subjectConfigs: { select: { subjectId: true, passingMarks: true, gradeScale: true } },
         },
@@ -191,7 +192,7 @@ export async function adminGetDivisionMarksheet(
       success: true,
       data: {
         marksheet: {
-          id: ms!.id, academicYear: ms!.academicYear, status: ms!.status,
+          id: ms!.id, academicYear: ms!.academicYear.label, status: ms!.status,
           shareToken: ms!.shareToken, gradedSectionTitle: ms!.gradedSectionTitle,
           hasUnpublishedChanges: ms!.hasUnpublishedChanges,
         },

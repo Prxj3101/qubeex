@@ -424,18 +424,18 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     // not published, fall back to the most recent published marksheet for this
     // division. This handles the common case where results from the just-finished
     // year (e.g. 2025-26) are viewed in June of the new year (2026-27).
-    let marksheet = await academicDb().marksheet.findUnique({
-      where: { divisionId_academicYear: { divisionId: student.division.id, academicYear } },
-      select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
+    let marksheet = await academicDb().marksheet.findFirst({
+      where: { divisionId: student.division.id, institutionId, academicYear: { label: academicYear } },
+      select: { id: true, status: true, gradedSectionTitle: true, academicYear: { select: { label: true } }, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
     });
-    console.log("[marksheet] divisionId:", student.division.id, "academicYear:", academicYear, "found:", marksheet?.academicYear, "status:", marksheet?.status);
+    console.log("[marksheet] divisionId:", student.division.id, "academicYear:", academicYear, "found:", marksheet?.academicYear.label, "status:", marksheet?.status);
     if (!marksheet || marksheet.status !== "PUBLISHED") {
       marksheet = await academicDb().marksheet.findFirst({
         where: { divisionId: student.division.id, institutionId, status: "PUBLISHED" },
-        orderBy: { academicYear: "desc" },
-        select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
+        orderBy: { academicYear: { label: "desc" } },
+        select: { id: true, status: true, gradedSectionTitle: true, academicYear: { select: { label: true } }, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
       });
-      console.log("[marksheet] fallback:", marksheet?.academicYear, "status:", marksheet?.status);
+      console.log("[marksheet] fallback:", marksheet?.academicYear.label, "status:", marksheet?.status);
     }
     if (!marksheet) {
       res.status(404).json({ success: false, error: "Results not published yet" });
@@ -631,7 +631,7 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     res.json({
       success: true,
       data: {
-        academicYear: marksheet.academicYear,
+        academicYear: marksheet.academicYear.label,
         gradeScale: effectiveGradeScale,
         gradedSectionTitle: effectiveGradedSectionTitle,
         standardName: student.division.standard?.name ?? "",
@@ -708,7 +708,7 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
     if (divisionId) {
       const marksheet = await academicDb().marksheet.findFirst({
         where: { divisionId, institutionId, status: "PUBLISHED" },
-        orderBy: { academicYear: "desc" },
+        orderBy: { academicYear: { label: "desc" } },
         select: { id: true, publishedSnapshot: true },
       });
 
@@ -1107,7 +1107,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       // Fetch all published marksheets for scoring/leaderboard only
       academicDb().marksheet.findMany({
         where: { divisionId, institutionId, status: "PUBLISHED" },
-        orderBy: { academicYear: "desc" },
+        orderBy: { academicYear: { label: "desc" } },
         select: { id: true, publishedSnapshot: true },
       }),
     ]);

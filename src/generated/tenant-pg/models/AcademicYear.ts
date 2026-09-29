@@ -297,8 +297,8 @@ export type AcademicYearCreateInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUncheckedCreateInput = {
@@ -315,8 +315,8 @@ export type AcademicYearUncheckedCreateInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUpdateInput = {
@@ -333,8 +333,8 @@ export type AcademicYearUpdateInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearUncheckedUpdateInput = {
@@ -351,8 +351,8 @@ export type AcademicYearUncheckedUpdateInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearCreateManyInput = {
@@ -388,9 +388,9 @@ export type AcademicYearUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type AcademicYearNullableScalarRelationFilter = {
-  is?: Prisma.AcademicYearWhereInput | null
-  isNot?: Prisma.AcademicYearWhereInput | null
+export type AcademicYearScalarRelationFilter = {
+  is?: Prisma.AcademicYearWhereInput
+  isNot?: Prisma.AcademicYearWhereInput
 }
 
 export type AcademicYearInstitutionIdLabelCompoundUniqueInput = {
@@ -431,23 +431,16 @@ export type AcademicYearMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
-export type AcademicYearScalarRelationFilter = {
-  is?: Prisma.AcademicYearWhereInput
-  isNot?: Prisma.AcademicYearWhereInput
-}
-
 export type AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput = {
   create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutDivisionAssignmentsInput, Prisma.AcademicYearUncheckedCreateWithoutDivisionAssignmentsInput>
   connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutDivisionAssignmentsInput
   connect?: Prisma.AcademicYearWhereUniqueInput
 }
 
-export type AcademicYearUpdateOneWithoutDivisionAssignmentsNestedInput = {
+export type AcademicYearUpdateOneRequiredWithoutDivisionAssignmentsNestedInput = {
   create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutDivisionAssignmentsInput, Prisma.AcademicYearUncheckedCreateWithoutDivisionAssignmentsInput>
   connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutDivisionAssignmentsInput
   upsert?: Prisma.AcademicYearUpsertWithoutDivisionAssignmentsInput
-  disconnect?: Prisma.AcademicYearWhereInput | boolean
-  delete?: Prisma.AcademicYearWhereInput | boolean
   connect?: Prisma.AcademicYearWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutDivisionAssignmentsInput, Prisma.AcademicYearUpdateWithoutDivisionAssignmentsInput>, Prisma.AcademicYearUncheckedUpdateWithoutDivisionAssignmentsInput>
 }
@@ -490,12 +483,10 @@ export type AcademicYearCreateNestedOneWithoutPromotionBatchesInput = {
   connect?: Prisma.AcademicYearWhereUniqueInput
 }
 
-export type AcademicYearUpdateOneWithoutPromotionBatchesNestedInput = {
+export type AcademicYearUpdateOneRequiredWithoutPromotionBatchesNestedInput = {
   create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutPromotionBatchesInput, Prisma.AcademicYearUncheckedCreateWithoutPromotionBatchesInput>
   connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutPromotionBatchesInput
   upsert?: Prisma.AcademicYearUpsertWithoutPromotionBatchesInput
-  disconnect?: Prisma.AcademicYearWhereInput | boolean
-  delete?: Prisma.AcademicYearWhereInput | boolean
   connect?: Prisma.AcademicYearWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutPromotionBatchesInput, Prisma.AcademicYearUpdateWithoutPromotionBatchesInput>, Prisma.AcademicYearUncheckedUpdateWithoutPromotionBatchesInput>
 }
@@ -506,12 +497,10 @@ export type AcademicYearCreateNestedOneWithoutAttendancesInput = {
   connect?: Prisma.AcademicYearWhereUniqueInput
 }
 
-export type AcademicYearUpdateOneWithoutAttendancesNestedInput = {
+export type AcademicYearUpdateOneRequiredWithoutAttendancesNestedInput = {
   create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutAttendancesInput, Prisma.AcademicYearUncheckedCreateWithoutAttendancesInput>
   connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutAttendancesInput
   upsert?: Prisma.AcademicYearUpsertWithoutAttendancesInput
-  disconnect?: Prisma.AcademicYearWhereInput | boolean
-  delete?: Prisma.AcademicYearWhereInput | boolean
   connect?: Prisma.AcademicYearWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutAttendancesInput, Prisma.AcademicYearUpdateWithoutAttendancesInput>, Prisma.AcademicYearUncheckedUpdateWithoutAttendancesInput>
 }
@@ -522,12 +511,10 @@ export type AcademicYearCreateNestedOneWithoutFeeStructuresInput = {
   connect?: Prisma.AcademicYearWhereUniqueInput
 }
 
-export type AcademicYearUpdateOneWithoutFeeStructuresNestedInput = {
+export type AcademicYearUpdateOneRequiredWithoutFeeStructuresNestedInput = {
   create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutFeeStructuresInput, Prisma.AcademicYearUncheckedCreateWithoutFeeStructuresInput>
   connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutFeeStructuresInput
   upsert?: Prisma.AcademicYearUpsertWithoutFeeStructuresInput
-  disconnect?: Prisma.AcademicYearWhereInput | boolean
-  delete?: Prisma.AcademicYearWhereInput | boolean
   connect?: Prisma.AcademicYearWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutFeeStructuresInput, Prisma.AcademicYearUpdateWithoutFeeStructuresInput>, Prisma.AcademicYearUncheckedUpdateWithoutFeeStructuresInput>
 }
@@ -538,12 +525,10 @@ export type AcademicYearCreateNestedOneWithoutMarksheetsInput = {
   connect?: Prisma.AcademicYearWhereUniqueInput
 }
 
-export type AcademicYearUpdateOneWithoutMarksheetsNestedInput = {
+export type AcademicYearUpdateOneRequiredWithoutMarksheetsNestedInput = {
   create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutMarksheetsInput, Prisma.AcademicYearUncheckedCreateWithoutMarksheetsInput>
   connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutMarksheetsInput
   upsert?: Prisma.AcademicYearUpsertWithoutMarksheetsInput
-  disconnect?: Prisma.AcademicYearWhereInput | boolean
-  delete?: Prisma.AcademicYearWhereInput | boolean
   connect?: Prisma.AcademicYearWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutMarksheetsInput, Prisma.AcademicYearUpdateWithoutMarksheetsInput>, Prisma.AcademicYearUncheckedUpdateWithoutMarksheetsInput>
 }
@@ -561,8 +546,8 @@ export type AcademicYearCreateWithoutDivisionAssignmentsInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUncheckedCreateWithoutDivisionAssignmentsInput = {
@@ -578,8 +563,8 @@ export type AcademicYearUncheckedCreateWithoutDivisionAssignmentsInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearCreateOrConnectWithoutDivisionAssignmentsInput = {
@@ -611,8 +596,8 @@ export type AcademicYearUpdateWithoutDivisionAssignmentsInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearUncheckedUpdateWithoutDivisionAssignmentsInput = {
@@ -628,8 +613,8 @@ export type AcademicYearUncheckedUpdateWithoutDivisionAssignmentsInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearCreateWithoutStudentEnrollmentsInput = {
@@ -645,8 +630,8 @@ export type AcademicYearCreateWithoutStudentEnrollmentsInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUncheckedCreateWithoutStudentEnrollmentsInput = {
@@ -662,8 +647,8 @@ export type AcademicYearUncheckedCreateWithoutStudentEnrollmentsInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearCreateOrConnectWithoutStudentEnrollmentsInput = {
@@ -695,8 +680,8 @@ export type AcademicYearUpdateWithoutStudentEnrollmentsInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearUncheckedUpdateWithoutStudentEnrollmentsInput = {
@@ -712,8 +697,8 @@ export type AcademicYearUncheckedUpdateWithoutStudentEnrollmentsInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearCreateWithoutTimetablesInput = {
@@ -729,8 +714,8 @@ export type AcademicYearCreateWithoutTimetablesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUncheckedCreateWithoutTimetablesInput = {
@@ -746,8 +731,8 @@ export type AcademicYearUncheckedCreateWithoutTimetablesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearCreateOrConnectWithoutTimetablesInput = {
@@ -779,8 +764,8 @@ export type AcademicYearUpdateWithoutTimetablesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearUncheckedUpdateWithoutTimetablesInput = {
@@ -796,8 +781,8 @@ export type AcademicYearUncheckedUpdateWithoutTimetablesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearCreateWithoutPromotionBatchesInput = {
@@ -814,7 +799,7 @@ export type AcademicYearCreateWithoutPromotionBatchesInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUncheckedCreateWithoutPromotionBatchesInput = {
@@ -831,7 +816,7 @@ export type AcademicYearUncheckedCreateWithoutPromotionBatchesInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearCreateOrConnectWithoutPromotionBatchesInput = {
@@ -864,7 +849,7 @@ export type AcademicYearUpdateWithoutPromotionBatchesInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearUncheckedUpdateWithoutPromotionBatchesInput = {
@@ -881,7 +866,7 @@ export type AcademicYearUncheckedUpdateWithoutPromotionBatchesInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearCreateWithoutAttendancesInput = {
@@ -897,8 +882,8 @@ export type AcademicYearCreateWithoutAttendancesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUncheckedCreateWithoutAttendancesInput = {
@@ -914,8 +899,8 @@ export type AcademicYearUncheckedCreateWithoutAttendancesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearCreateOrConnectWithoutAttendancesInput = {
@@ -947,8 +932,8 @@ export type AcademicYearUpdateWithoutAttendancesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearUncheckedUpdateWithoutAttendancesInput = {
@@ -964,8 +949,8 @@ export type AcademicYearUncheckedUpdateWithoutAttendancesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearCreateWithoutFeeStructuresInput = {
@@ -981,8 +966,8 @@ export type AcademicYearCreateWithoutFeeStructuresInput = {
   divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUncheckedCreateWithoutFeeStructuresInput = {
@@ -998,8 +983,8 @@ export type AcademicYearUncheckedCreateWithoutFeeStructuresInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
-  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYear2Input
-  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYear2Input
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearCreateOrConnectWithoutFeeStructuresInput = {
@@ -1031,8 +1016,8 @@ export type AcademicYearUpdateWithoutFeeStructuresInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearUncheckedUpdateWithoutFeeStructuresInput = {
@@ -1048,8 +1033,8 @@ export type AcademicYearUncheckedUpdateWithoutFeeStructuresInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
-  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYear2NestedInput
-  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYear2NestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearCreateWithoutMarksheetsInput = {
@@ -1066,7 +1051,7 @@ export type AcademicYearCreateWithoutMarksheetsInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
-  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYear2Input
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearUncheckedCreateWithoutMarksheetsInput = {
@@ -1083,7 +1068,7 @@ export type AcademicYearUncheckedCreateWithoutMarksheetsInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
-  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYear2Input
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
 export type AcademicYearCreateOrConnectWithoutMarksheetsInput = {
@@ -1116,7 +1101,7 @@ export type AcademicYearUpdateWithoutMarksheetsInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
-  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYear2NestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
 
 export type AcademicYearUncheckedUpdateWithoutMarksheetsInput = {
@@ -1133,7 +1118,7 @@ export type AcademicYearUncheckedUpdateWithoutMarksheetsInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
-  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYear2NestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
 

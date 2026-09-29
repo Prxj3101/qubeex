@@ -1,6 +1,6 @@
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
-import { getCurrentAcademicYear } from "../../utils/academicYear";
+import { getCurrentAcademicYear, getNextAcademicYear, computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 import { Prisma } from "../../generated/prisma/client";
 import { SubmitOutcomesInput } from "./promotion.schema";
 
@@ -119,6 +119,13 @@ export async function applyPromotionOutcomes(params: {
       },
     });
 
+    // PROMOTED/REPEATED students are moving into the year AFTER the one this
+    // batch is closing out — not necessarily "whatever is currently marked
+    // current", since promotion may run before or after an explicit rollover.
+    // GRADUATED/WITHDRAWN students' terminal enrollment belongs to the
+    // closing year itself (currentYear), since that's the year they left in.
+    const nextYear = await getNextAcademicYear(institutionId, currentYear, tx);
+
     for (const o of input.outcomes) {
       const student = studentById.get(o.studentId)!;
 
@@ -146,19 +153,23 @@ export async function applyPromotionOutcomes(params: {
       }
       // REPEATED: no student field changes
 
+      const isTerminal = o.outcome === "GRADUATED" || o.outcome === "WITHDRAWN";
       const enrollmentDivisionId =
         o.outcome === "PROMOTED" && targetDivision ? targetDivision.id : student.divisionId!;
       const enrollmentStandardId =
         o.outcome === "PROMOTED" && targetDivision ? targetDivision.standardId : student.standardId!;
       const enrollmentStatus =
         o.outcome === "GRADUATED" ? "GRADUATED" : o.outcome === "WITHDRAWN" ? "WITHDRAWN" : "ACTIVE";
+      // Terminal outcomes (leaving the institution) belong to the year they left
+      // in; PROMOTED/REPEATED students belong to the year they're moving into.
+      const enrollmentYearId = isTerminal ? currentYear.id : nextYear.id;
 
       try {
         await tx.studentEnrollment.create({
           data: {
             institutionId,
             studentId: o.studentId,
-            academicYearId: currentYear.id,
+            academicYearId: enrollmentYearId,
             standardId: enrollmentStandardId,
             divisionId: enrollmentDivisionId,
             status: enrollmentStatus,
@@ -201,18 +212,36 @@ export async function undoPromotionBatch(batchId: string, institutionId: string)
   if (hoursSince > 48) throw { status: 409, message: "The 48-hour undo window has expired" };
 
   await academicDb().$transaction(async (tx) => {
+    // PROMOTED/REPEATED outcomes created their enrollment under the year AFTER
+    // batch.academicYearId (see applyPromotionOutcomes); GRADUATED/WITHDRAWN
+    // created theirs under batch.academicYearId itself. Look up (don't create)
+    // that next year so undo doesn't spuriously bring a new year into existence.
+    let nextYearId: string | null = null;
+    if (batch.academicYearId) {
+      const batchYear = await tx.academicYear.findUnique({ where: { id: batch.academicYearId } });
+      if (batchYear) {
+        const dayAfterEnd = new Date(batchYear.endDate.getTime() + 24 * 60 * 60 * 1000);
+        const nextWindow = computeDefaultAcademicYearWindow(dayAfterEnd);
+        const nextYear = await tx.academicYear.findFirst({ where: { institutionId, label: nextWindow.label } });
+        nextYearId = nextYear?.id ?? null;
+      }
+    }
+
     for (const o of batch.outcomes) {
       await tx.student.update({
         where: { id: o.studentId },
         data: { standardId: o.previousStandardId, divisionId: o.previousDivisionId, status: o.previousStatus },
       });
 
-      if (batch.academicYearId) {
+      const isTerminal = o.outcome === "GRADUATED" || o.outcome === "WITHDRAWN";
+      const enrollmentYearId = isTerminal ? batch.academicYearId : nextYearId;
+
+      if (enrollmentYearId) {
         // Undo the StudentEnrollment row this outcome created, so the student is free to be
         // re-promoted within the same academic year without hitting the studentId+academicYearId
         // unique constraint, and so no stale/reverted enrollment data is left behind.
         await tx.studentEnrollment.deleteMany({
-          where: { studentId: o.studentId, academicYearId: batch.academicYearId },
+          where: { studentId: o.studentId, academicYearId: enrollmentYearId },
         });
       }
     }

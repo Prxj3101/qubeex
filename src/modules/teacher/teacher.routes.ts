@@ -22,7 +22,7 @@ import { getStudentAttendanceTrendData } from "../../services/studentAttendanceT
 import { getStudentAttendanceDetailData } from "../../services/studentAttendanceDetail.service";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 import { delCache } from "../../utils/cache";
-import { getCurrentAcademicYear } from "../../utils/academicYear";
+import { getCurrentAcademicYear, upsertCurrentEnrollment } from "../../utils/academicYear";
 
 const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -704,7 +704,14 @@ router.post(
             data: { name: data.name, email, password: hashedPassword, role: "STUDENT", institutionId, isActive: true, mustChangePassword: true },
           });
           await recordUserStatusEvent(tx, { userId: newUser.id, institutionId, isActive: true });
-          return tx.student.create({ data: studentCreateData(newUser.id) });
+          const created = await tx.student.create({ data: studentCreateData(newUser.id) });
+          await upsertCurrentEnrollment(institutionId, {
+            studentId: created.id,
+            standardId: division.standardId,
+            divisionId,
+            status: "ACTIVE",
+          }, tx);
+          return created;
         });
       } else {
         const newUser = await prisma.$transaction(async (tx) => {
@@ -715,6 +722,12 @@ router.post(
           return u;
         });
         student = await acad.student.create({ data: studentCreateData(newUser.id) });
+        await upsertCurrentEnrollment(institutionId, {
+          studentId: student.id,
+          standardId: division.standardId,
+          divisionId,
+          status: "ACTIVE",
+        }, acad);
       }
       const createdStudentUserMap = await resolveUsers([student.userId], { id: true, name: true, email: true, mustChangePassword: true });
       student = { ...student, ...decryptStudentPII(student), user: createdStudentUserMap.get(student.userId) ?? null };
@@ -1783,7 +1796,16 @@ router.post(
         ownerId: division.id,
       });
 
-      await academicDb().division.update({ where: { id: division.id }, data: { timetableUrl: publicUrl } });
+      const currentYear = await getCurrentAcademicYear(institutionId);
+      const db = academicDb();
+      await db.$transaction([
+        db.division.update({ where: { id: division.id }, data: { timetableUrl: publicUrl } }),
+        db.divisionTimetable.upsert({
+          where: { divisionId_academicYearId: { divisionId: division.id, academicYearId: currentYear.id } },
+          create: { institutionId, divisionId: division.id, academicYearId: currentYear.id, timetableUrl: publicUrl },
+          update: { timetableUrl: publicUrl },
+        }),
+      ]);
 
       res.json({ success: true, data: { timetableUrl: publicUrl } });
     } catch (err) {

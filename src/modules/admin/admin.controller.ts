@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
+import { upsertCurrentEnrollment } from "../../utils/academicYear";
 import { resolveUsers, USER_SELECT_NO_PASSWORD } from "../../services/userLookup.service";
 import { checkInstitutionAccess } from "../../utils/authorization";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
@@ -1079,7 +1080,16 @@ export const addStudent = async (req: AuthRequest, res: Response, next: NextFunc
           data: { name: data.name, email: data.email, role: "STUDENT", institutionId, isActive: true },
         });
         await recordUserStatusEvent(tx, { userId: newUser.id, institutionId, isActive: true });
-        return tx.student.create({ data: studentCreateData2(newUser.id, studentId), include: studentInclude2 });
+        const created = await tx.student.create({ data: studentCreateData2(newUser.id, studentId), include: studentInclude2 });
+        if (data.standardId && data.divisionId) {
+          await upsertCurrentEnrollment(institutionId, {
+            studentId: created.id,
+            standardId: data.standardId,
+            divisionId: data.divisionId,
+            status: "ACTIVE",
+          }, tx);
+        }
+        return created;
       });
     } else {
       const newUser = await prisma.$transaction(async (tx) => {
@@ -1091,6 +1101,14 @@ export const addStudent = async (req: AuthRequest, res: Response, next: NextFunc
       });
       const studentId = await generateUserId(institutionId, "S");
       student = await acadAddStudent.student.create({ data: studentCreateData2(newUser.id, studentId), include: studentInclude2 });
+      if (data.standardId && data.divisionId) {
+        await upsertCurrentEnrollment(institutionId, {
+          studentId: student.id,
+          standardId: data.standardId,
+          divisionId: data.divisionId,
+          status: "ACTIVE",
+        }, acadAddStudent);
+      }
     }
     const addStudentUserMap = await resolveUsers([student.userId], { id: true, name: true, email: true });
     const addedStudentUser = addStudentUserMap.get(student.userId);
@@ -1181,7 +1199,16 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
         if (userChanges.isActive !== undefined) {
           await recordUserStatusEvent(tx, { userId: existing.userId, institutionId, isActive: userChanges.isActive });
         }
-        return tx.student.update({ where: { id }, data: studentUpdateData2, include: studentInclude3 });
+        const updated = await tx.student.update({ where: { id }, data: studentUpdateData2, include: studentInclude3 });
+        if (updated.standardId && updated.divisionId) {
+          await upsertCurrentEnrollment(institutionId, {
+            studentId: updated.id,
+            standardId: updated.standardId,
+            divisionId: updated.divisionId,
+            status: updated.status,
+          }, tx);
+        }
+        return updated;
       });
     } else {
       if (Object.keys(userChanges).length > 0 || userChanges.isActive !== undefined) {
@@ -1195,6 +1222,14 @@ export const updateStudent = async (req: AuthRequest, res: Response, next: NextF
         });
       }
       student = await acadUpdStudent.student.update({ where: { id }, data: studentUpdateData2, include: studentInclude3 });
+      if (student.standardId && student.divisionId) {
+        await upsertCurrentEnrollment(institutionId, {
+          studentId: student.id,
+          standardId: student.standardId,
+          divisionId: student.divisionId,
+          status: student.status,
+        }, acadUpdStudent);
+      }
     }
     const updateStudentUser = (await resolveUsers([student.userId], { id: true, name: true, email: true })).get(student.userId);
 

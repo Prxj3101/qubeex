@@ -14,9 +14,11 @@ import {
   CalcType,
   ComponentType,
   StructureItem,
+  Adjustment,
 } from "../../services/payrollCalc.service";
-import { loadComponents, loadPayrollSettings, readStaffBankDetails, loadLinkedProfiles } from "../../services/payrollData.service";
+import { loadComponents, loadPayrollSettings, readStaffBankDetails, loadLinkedProfiles, pfFor, statutoryFor } from "../../services/payrollData.service";
 import { generatePayrollAiSummary, reviewHash } from "../../services/payrollAiReview.service";
+import { computeMonthlyTds, fyRange, type TaxDeclaration, type TdsResult } from "../../services/tds.service";
 
 // All money in this module is integer PAISE. Percentages are basis points.
 
@@ -44,21 +46,44 @@ export const getPayrollSettings = async (req: AuthRequest, res: Response, next: 
   }
 };
 
+const bp = z.number().int().min(0).max(10000); // basis points
 const settingsSchema = z.object({
   dayBasis: z.enum(DAY_BASIS),
   payDay: z.number().int().min(1).max(28),
+  pfEnabled: z.boolean().optional(),
+  pfCeiling: z.number().int().min(0).max(1_000_000_00).optional(), // paise
+  pfCapWages: z.boolean().optional(),
+  pfEmployeeRate: bp.optional(),
+  pfEmployerRate: bp.optional(),
+  pfEpsRate: bp.optional(),
+  pfEdliRate: bp.optional(),
+  pfAdminRate: bp.optional(),
+  esiEnabled: z.boolean().optional(),
+  esiWageLimit: z.number().int().min(0).max(1_000_000_00).optional(),
+  esiEmployeeRate: bp.optional(),
+  esiEmployerRate: bp.optional(),
+  ptEnabled: z.boolean().optional(),
+  ptState: z.string().max(40).nullable().optional(),
+  tdsEnabled: z.boolean().optional(),
+  ptSlabs: z.array(z.object({
+    from: z.number().int().min(0),
+    amount: z.number().int().min(0).max(1_000_000),
+    febAmount: z.number().int().min(0).max(1_000_000).nullable().optional(),
+  })).max(20).nullable().optional(),
 });
 
 export const savePayrollSettings = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const institutionId = requireInstitution(req);
-    const data = settingsSchema.parse(req.body);
+    const parsed = settingsSchema.parse(req.body);
+    const data = { ...parsed, ...(parsed.ptSlabs !== undefined ? { ptSlabs: toJson(parsed.ptSlabs ?? []) /* [] = use the state preset */ } : {}) };
     const saved = await academicDb().payrollSettings.upsert({
       where: { institutionId },
       create: { institutionId, ...data },
       update: data,
     });
-    res.json({ success: true, data: { dayBasis: saved.dayBasis, payDay: saved.payDay } });
+    void saved;
+    res.json({ success: true, data: await loadPayrollSettings(institutionId) });
   } catch (err) {
     next(err);
   }
@@ -89,6 +114,7 @@ const componentSchema = z
     calcType: z.enum(CALC_TYPES),
     isBasic: z.boolean().optional().default(false),
     lopApplicable: z.boolean().optional().default(true),
+    pfApplicable: z.boolean().optional().default(false),
     defaultValue: z.number().int().min(0).optional().default(0),
     sortOrder: z.number().int().optional(),
   })
@@ -174,15 +200,15 @@ export const deleteSalaryComponent = async (req: AuthRequest, res: Response, nex
 };
 
 // One-click starter set so a school isn't staring at an empty screen.
+// (No Professional Tax here: PT is worked out from the state slab in Payroll Settings.)
 const DEFAULT_COMPONENTS: Array<{
-  name: string; type: ComponentType; calcType: CalcType; isBasic?: boolean; lopApplicable: boolean; defaultValue: number;
+  name: string; type: ComponentType; calcType: CalcType; isBasic?: boolean; lopApplicable: boolean; pfApplicable?: boolean; defaultValue: number;
 }> = [
   { name: "Basic", type: "EARNING", calcType: "FIXED", isBasic: true, lopApplicable: true, defaultValue: 0 },
   { name: "HRA", type: "EARNING", calcType: "PERCENT_OF_BASIC", lopApplicable: true, defaultValue: 4000 },
-  { name: "Dearness Allowance", type: "EARNING", calcType: "PERCENT_OF_BASIC", lopApplicable: true, defaultValue: 0 },
+  { name: "Dearness Allowance", type: "EARNING", calcType: "PERCENT_OF_BASIC", lopApplicable: true, pfApplicable: true, defaultValue: 0 },
   { name: "Transport Allowance", type: "EARNING", calcType: "FIXED", lopApplicable: false, defaultValue: 0 },
   { name: "Special Allowance", type: "EARNING", calcType: "FIXED", lopApplicable: true, defaultValue: 0 },
-  { name: "Professional Tax", type: "DEDUCTION", calcType: "FIXED", lopApplicable: false, defaultValue: 20000 },
 ];
 
 export const addDefaultSalaryComponents = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -403,21 +429,133 @@ export const listPayrollRuns = async (req: AuthRequest, res: Response, next: Nex
     const runs = await academicDb().payrollRun.findMany({
       where: { institutionId },
       orderBy: { month: "desc" },
-      include: { payslips: { select: { netPay: true, status: true } } },
+      include: { payslips: { select: { netPay: true, status: true, paidAt: true } } },
     });
+    // Who approved each run - shown as a signature on the runs-page receipt.
+    const approverIds = [...new Set(runs.map((r) => r.approvedById).filter((x): x is string => !!x))];
+    const approvers = approverIds.length
+      ? await prisma.user.findMany({ where: { id: { in: approverIds } }, select: { id: true, name: true, email: true } })
+      : [];
+    const approverName = (id: string | null) => {
+      const u = id ? approvers.find((a) => a.id === id) : undefined;
+      return u ? u.name?.trim() || u.email : null;
+    };
     res.json({
       success: true,
-      data: runs.map(({ payslips, ...run }) => ({
-        ...run,
-        staffCount: payslips.length,
-        totalNetPay: payslips.reduce((s, p) => s + p.netPay, 0),
-        paidCount: payslips.filter((p) => p.status === "PAID").length,
-      })),
+      data: runs.map(({ payslips, ...run }) => {
+        // Date the last salary of this run was marked paid (for the "PAID" stamp on the runs page).
+        const paidTimes = payslips.map((p) => p.paidAt?.getTime() ?? 0).filter(Boolean);
+        return {
+          ...run,
+          staffCount: payslips.length,
+          totalNetPay: payslips.reduce((s, p) => s + p.netPay, 0),
+          paidCount: payslips.filter((p) => p.status === "PAID").length,
+          lastPaidAt: paidTimes.length ? new Date(Math.max(...paidTimes)) : null,
+          approvedByName: approverName(run.approvedById),
+        };
+      }),
     });
   } catch (err) {
     next(err);
   }
 };
+
+// ── Salary + TDS for one payslip ────────────────────────────────────────────
+
+type TdsPast = { taxable: number; pt: number; pf: number; tds: number; months: Set<string> };
+const TDS_LABEL = "TDS (Income Tax)";
+const lineAmt = (list: unknown, label: string, startsWith = false) =>
+  ((Array.isArray(list) ? list : []) as { label: string; amount: number }[])
+    .filter((l) => (startsWith ? l.label.startsWith(label) : l.label === label))
+    .reduce((t, l) => t + l.amount, 0);
+
+// Earlier months of this FY (from April, or the joining month) that have no
+// published payslip in QubeEx - e.g. the school started using QubeEx mid-year.
+// TDS assumes the normal salary was paid in those months.
+function missingPastMonths(month: string, joinedAt: Date | null, found: Set<string> | undefined): number {
+  const { from } = fyRange(month);
+  const joined = joinedAt ? joinedAt.toISOString().slice(0, 7) : null;
+  let [y, m] = from.split("-").map(Number);
+  let count = 0;
+  for (;;) {
+    const key = `${y}-${String(m).padStart(2, "0")}`;
+    if (key >= month) break;
+    if ((!joined || key >= joined) && !found?.has(key)) count++;
+    m++;
+    if (m > 12) { m = 1; y++; }
+  }
+  return count;
+}
+
+// Earlier months of this financial year (published payrolls) for each person: salary earned, PT, PF, TDS.
+async function loadTdsPast(institutionId: string, month: string, staffIds: string[]): Promise<Map<string, TdsPast>> {
+  const out = new Map<string, TdsPast>();
+  if (!staffIds.length) return out;
+  const { from } = fyRange(month);
+  const runs = await academicDb().payrollRun.findMany({
+    where: { institutionId, status: "PUBLISHED", month: { gte: from, lt: month } }, select: { id: true, month: true },
+  });
+  if (!runs.length) return out;
+  const monthOfRun = new Map(runs.map((r) => [r.id, r.month]));
+  const slips = await academicDb().payslip.findMany({
+    where: { payrollRunId: { in: runs.map((r) => r.id) }, staffId: { in: staffIds } },
+    select: { staffId: true, payrollRunId: true, grossPay: true, deductions: true },
+  });
+  for (const p of slips) {
+    const cur = out.get(p.staffId) ?? { taxable: 0, pt: 0, pf: 0, tds: 0, months: new Set<string>() };
+    cur.months.add(monthOfRun.get(p.payrollRunId) ?? "");
+    cur.taxable += p.grossPay - lineAmt(p.deductions, "Loss of Pay", true);
+    cur.pt += lineAmt(p.deductions, "Professional Tax");
+    cur.pf += lineAmt(p.deductions, "PF (Employee)");
+    cur.tds += lineAmt(p.deductions, TDS_LABEL);
+    out.set(p.staffId, cur);
+  }
+  return out;
+}
+
+type SalaryStaff = {
+  joinedAt: Date | null; exitDate: Date | null; pan?: string | null;
+  pfApplicable?: boolean | null; esiApplicable?: boolean | null; ptApplicable?: boolean | null;
+  tdsApplicable?: boolean | null; taxRegime?: string | null; taxDeclaration?: unknown;
+};
+
+// Salary for the month incl. PF / ESI / PT and, when the school has TDS on, this
+// month's income tax (worked out on the whole financial year, see tds.service).
+function salaryWithTds(p: {
+  month: string; items: StructureItem[]; components: Awaited<ReturnType<typeof loadComponents>>;
+  settings: Awaited<ReturnType<typeof loadPayrollSettings>>; staff: SalaryStaff | undefined;
+  lopDays?: number; adjustments?: Adjustment[]; past?: TdsPast;
+}) {
+  const stat = statutoryFor(p.settings, p.staff);
+  const base = {
+    month: p.month, items: p.items, components: p.components, dayBasis: p.settings.dayBasis,
+    joinedAt: p.staff?.joinedAt ?? null, exitDate: p.staff?.exitDate ?? null, lopDays: p.lopDays ?? 0, ...stat,
+  };
+  let result = calculateSalary({ ...base, adjustments: p.adjustments });
+  let tdsInfo: TdsResult["info"] | null = null;
+  if (p.settings.tdsEnabled && p.staff?.tdsApplicable !== false && result.employedDays > 0) {
+    const normal = calculateSalary({ month: p.month, items: p.items, components: p.components, dayBasis: p.settings.dayBasis, ...stat });
+    const t = computeMonthlyTds({
+      month: p.month,
+      regime: p.staff?.taxRegime === "OLD" ? "OLD" : "NEW",
+      hasPan: !!p.staff?.pan,
+      declaration: (p.staff?.taxDeclaration && typeof p.staff.taxDeclaration === "object" ? p.staff.taxDeclaration : {}) as TaxDeclaration,
+      currentTaxable: result.grossPay - lineAmt(result.deductions, "Loss of Pay", true),
+      currentPt: lineAmt(result.deductions, "Professional Tax"),
+      currentEmployeePf: lineAmt(result.deductions, "PF (Employee)"),
+      normalMonthlyGross: normal.grossPay,
+      normalMonthlyPt: lineAmt(normal.deductions, "Professional Tax"),
+      normalMonthlyEmployeePf: lineAmt(normal.deductions, "PF (Employee)"),
+      pastTaxable: p.past?.taxable ?? 0, pastPt: p.past?.pt ?? 0, pastEmployeePf: p.past?.pf ?? 0, pastTds: p.past?.tds ?? 0,
+      assumedPastMonths: missingPastMonths(p.month, p.staff?.joinedAt ?? null, p.past?.months),
+    });
+    tdsInfo = t.info;
+    if (t.monthlyTds > 0) {
+      result = calculateSalary({ ...base, adjustments: [...(p.adjustments ?? []), { label: TDS_LABEL, type: "DEDUCTION", amount: t.monthlyTds }] });
+    }
+  }
+  return { result, tdsInfo };
+}
 
 export const createPayrollRun = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -432,10 +570,11 @@ export const createPayrollRun = async (req: AuthRequest, res: Response, next: Ne
       loadPayrollSettings(institutionId),
       academicDb().staff.findMany({
         where: { institutionId, status: "ACTIVE" },
-        select: { id: true, name: true, email: true, joinedAt: true, exitDate: true },
+        select: { id: true, name: true, email: true, joinedAt: true, exitDate: true, pan: true, pfApplicable: true, esiApplicable: true, ptApplicable: true, tdsApplicable: true, taxRegime: true, taxDeclaration: true },
       }),
       academicDb().staffSalaryStructure.findMany({ where: { institutionId } }),
     ]);
+    const tdsPast = await loadTdsPast(institutionId, month, staffList.map((s) => s.id));
 
     const structuresByStaff = new Map<string, typeof structures>();
     for (const s of structures) {
@@ -450,14 +589,8 @@ export const createPayrollRun = async (req: AuthRequest, res: Response, next: Ne
       for (const staff of staffList) {
         const structure = structureForMonth(structuresByStaff.get(staff.id) ?? [], month);
         if (!structure) continue;
-        const result = calculateSalary({
-          month,
-          items: structure.items as unknown as StructureItem[],
-          components,
-          dayBasis: settings.dayBasis,
-          lopDays: 0,
-          joinedAt: staff.joinedAt,
-          exitDate: staff.exitDate,
+        const { result, tdsInfo } = salaryWithTds({
+          month, items: structure.items as unknown as StructureItem[], components, settings, staff, past: tdsPast.get(staff.id),
         });
         if (result.employedDays === 0) continue; // not on the rolls this month
 
@@ -468,6 +601,8 @@ export const createPayrollRun = async (req: AuthRequest, res: Response, next: Ne
             earnings: toJson(result.earnings), deductions: toJson(result.deductions),
             grossPay: result.grossPay, netPay: result.netPay,
             lopDays: result.lopDays, paidDays: result.paidDays, basisDays: result.basisDays,
+            employerContributions: toJson(result.employer), pfWages: result.pfWages,
+            tdsInfo: toJson(tdsInfo ?? {}),
           },
         });
       }
@@ -513,7 +648,7 @@ const T = {
 async function buildRunReview(
   institutionId: string,
   run: { id: string; month: string },
-  payslips: { staffId: string; staffName: string; netPay: number; grossPay: number; paidDays: number; basisDays: number; lopDays: number; bonus: number; otherDeduction: number; inputNote?: string | null; deductions?: unknown }[],
+  payslips: { staffId: string; staffName: string; netPay: number; grossPay: number; paidDays: number; basisDays: number; lopDays: number; bonus: number; otherDeduction: number; inputNote?: string | null; deductions?: unknown; tdsInfo?: unknown }[],
   staffList: { id: string; paymentMode: string; bankDetails: string | null }[],
 ) {
   const warnings: RunWarning[] = [];
@@ -525,7 +660,7 @@ async function buildRunReview(
     academicDb().staffSalaryStructure.findMany({ where: { institutionId } }),
     academicDb().staff.findMany({
       where: { id: { in: payslips.map((p) => p.staffId) } },
-      select: { id: true, designation: true, staffType: true, joinedAt: true, exitDate: true, status: true, email: true, phone: true, pan: true },
+      select: { id: true, designation: true, staffType: true, joinedAt: true, exitDate: true, status: true, email: true, phone: true, pan: true, uan: true, pfApplicable: true, esiApplicable: true, ptApplicable: true, esiNumber: true },
     }),
     loadComponents(institutionId),
     loadPayrollSettings(institutionId),
@@ -539,7 +674,7 @@ async function buildRunReview(
   for (const p of payslips) {
     const st = structureForMonth(structures.filter((x) => x.staffId === p.staffId), run.month);
     if (!st) continue;
-    const r = calculateSalary({ month: run.month, items: st.items as unknown as StructureItem[], components, dayBasis: settings.dayBasis });
+    const r = calculateSalary({ month: run.month, items: st.items as unknown as StructureItem[], components, dayBasis: settings.dayBasis, ...statutoryFor(settings, detailOf.get(p.staffId)) });
     normal.set(p.staffId, { gross: r.grossPay, net: r.netPay });
   }
 
@@ -613,7 +748,18 @@ async function buildRunReview(
         message: `${p.staffName}'s take-home ${inr(p.netPay)} is higher than their usual ${inr(n.net)} even without the bonus.` });
     }
 
+    // Income tax
+    const tds = p.tdsInfo as { noPanRule?: boolean; annualTax?: number } | null | undefined;
+    if (tds?.noPanRule) add({ type: "TDS_NO_PAN", level: "critical", staffIds: ids,
+      message: `${p.staffName} has no PAN, so TDS is cut at 20% (${inr(lineAmt(p.deductions, TDS_LABEL))} this month). Add the PAN to cut the normal amount.` });
+
     // Records
+    const esiLine = (Array.isArray(p.deductions) ? (p.deductions as { label: string }[]) : []).some((l) => l.label === "ESI (Employee)")
+      || n !== undefined && settings.esiEnabled && d?.esiApplicable !== false && n.gross <= settings.esi.wageLimit;
+    if (esiLine && !d?.esiNumber) add({ type: "NO_ESI_NO", level: "warning", staffIds: ids,
+      message: `${p.staffName} is covered under ESI but has no ESI number saved.` });
+    if (settings.pfEnabled && d?.pfApplicable !== false && !d?.uan) add({ type: "NO_UAN", level: "warning", staffIds: ids,
+      message: `${p.staffName} has PF deducted but no UAN saved. It is needed for the EPFO (ECR) file.` });
     if (n && !d?.pan && n.gross * 12 > T.panAnnualPaise) add({ type: "NO_PAN", level: "warning", staffIds: ids,
       message: `${p.staffName} earns about ${inr(n.gross * 12)} a year but has no PAN saved. It is needed for TDS.` });
     if (!d?.email && !d?.phone) add({ type: "NO_CONTACT", level: "info", staffIds: ids,
@@ -926,7 +1072,7 @@ async function processPublish(institutionId: string, runId: string, adminUserId:
   const payslips = await academicDb().payslip.findMany({ where: { payrollRunId: runId } });
   const staffList = await academicDb().staff.findMany({
     where: { id: { in: payslips.map((p) => p.staffId) } },
-    select: { id: true, name: true, email: true, designation: true, userId: true, bankDetails: true, paymentMode: true },
+    select: { id: true, name: true, email: true, designation: true, userId: true, bankDetails: true, paymentMode: true, uan: true },
   });
   const staffById = new Map(staffList.map((s) => [s.id, s]));
   // institution.name is central data, always safe via the plain `prisma` client.
@@ -956,6 +1102,8 @@ async function processPublish(institutionId: string, runId: string, adminUserId:
           basisDays: payslip.basisDays,
           lopDays: payslip.lopDays,
           bankDetails: staff?.paymentMode === "BANK" ? readStaffBankDetails(staff.bankDetails) : null,
+          employer: (payslip.employerContributions as unknown as LineItem[] | null) ?? [],
+          uan: staff?.uan ?? null,
         });
 
         // Step 1: PDF saved (skip if an earlier try already did it).
@@ -1127,10 +1275,14 @@ async function applyRunInputs(institutionId: string, run: { id: string; month: s
     const [components, settings, staffList, structures] = await Promise.all([
       loadComponents(institutionId),
       loadPayrollSettings(institutionId),
-      academicDb().staff.findMany({ where: { id: { in: payslips.map((p) => p.staffId) } }, select: { id: true, joinedAt: true, exitDate: true } }),
+      academicDb().staff.findMany({
+        where: { id: { in: payslips.map((p) => p.staffId) } },
+        select: { id: true, joinedAt: true, exitDate: true, pan: true, pfApplicable: true, esiApplicable: true, ptApplicable: true, tdsApplicable: true, taxRegime: true, taxDeclaration: true },
+      }),
       academicDb().staffSalaryStructure.findMany({ where: { institutionId, staffId: { in: payslips.map((p) => p.staffId) } } }),
     ]);
     const staffById = new Map(staffList.map((s) => [s.id, s]));
+    const tdsPast = await loadTdsPast(institutionId, run.month, payslips.map((p) => p.staffId));
 
     const updates: ReturnType<ReturnType<typeof academicDb>["payslip"]["update"]>[] = [];
     for (const item of items) {
@@ -1146,15 +1298,9 @@ async function applyRunInputs(institutionId: string, run: { id: string; month: s
         ...(item.bonus ? [{ label: note && item.bonus ? `Bonus (${note})` : "Bonus", type: "EARNING" as const, amount: item.bonus }] : []),
         ...(item.otherDeduction ? [{ label: note && !item.bonus ? `Other deduction (${note})` : "Other deduction", type: "DEDUCTION" as const, amount: item.otherDeduction }] : []),
       ];
-      const result = calculateSalary({
-        month: run.month,
-        items: structure.items as unknown as StructureItem[],
-        components,
-        dayBasis: settings.dayBasis,
-        lopDays: item.lopDays,
-        joinedAt: staff?.joinedAt ?? null,
-        exitDate: staff?.exitDate ?? null,
-        adjustments,
+      const { result, tdsInfo } = salaryWithTds({
+        month: run.month, items: structure.items as unknown as StructureItem[], components, settings, staff,
+        lopDays: item.lopDays, adjustments, past: tdsPast.get(payslip.staffId),
       });
       if (item.lopDays > result.basisDays) {
         if (opts.auto) continue;
@@ -1164,7 +1310,8 @@ async function applyRunInputs(institutionId: string, run: { id: string; month: s
       if (opts.auto
         && payslip.grossPay === result.grossPay && payslip.netPay === result.netPay && payslip.paidDays === result.paidDays
         && JSON.stringify(payslip.earnings) === JSON.stringify(result.earnings)
-        && JSON.stringify(payslip.deductions) === JSON.stringify(result.deductions)) continue;
+        && JSON.stringify(payslip.deductions) === JSON.stringify(result.deductions)
+        && JSON.stringify(payslip.employerContributions ?? []) === JSON.stringify(result.employer)) continue;
       updates.push(academicDb().payslip.update({
         where: { id: payslip.id },
         data: {
@@ -1172,6 +1319,8 @@ async function applyRunInputs(institutionId: string, run: { id: string; month: s
           grossPay: result.grossPay, netPay: result.netPay,
           lopDays: result.lopDays, paidDays: result.paidDays, basisDays: result.basisDays,
           bonus: item.bonus, otherDeduction: item.otherDeduction, inputNote: note,
+          employerContributions: toJson(result.employer), pfWages: result.pfWages,
+          tdsInfo: toJson(tdsInfo ?? {}),
         },
       }));
     }
@@ -1349,8 +1498,10 @@ export const exportRunPayments = async (req: AuthRequest, res: Response, next: N
     if (!run) throw new NotFoundError("Payroll run not found");
     if (run.status !== "APPROVED" && run.status !== "PUBLISHED") throw new BadRequestError("The payment file is available once the payroll is approved");
     const list = req.query.list === "other" ? "other" : "bank";
+    // ?include=all -> everyone (e.g. a record after all are paid); default: only unpaid.
+    const includeAll = req.query.include === "all";
 
-    const payslips = await academicDb().payslip.findMany({ where: { payrollRunId: run.id, status: { not: "PAID" } } });
+    const payslips = await academicDb().payslip.findMany({ where: { payrollRunId: run.id, ...(includeAll ? {} : { status: { not: "PAID" } }) } });
     const staff = await academicDb().staff.findMany({
       where: { id: { in: payslips.map((p) => p.staffId) } },
       select: { id: true, employeeCode: true, paymentMode: true, bankDetails: true, sortOrder: true, createdAt: true },
@@ -1480,6 +1631,62 @@ export const aiReviewPayrollRun = async (req: AuthRequest, res: Response, next: 
     }
     const saved = await writeObservation(institutionId, run, { userId: req.user!.userId, role: req.user!.role });
     res.json({ success: true, data: { ...saved, aiReviewStale: false } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── EPFO ECR file ─────────────────────────────────────────────────────────────
+// Text file for the monthly PF return on the EPFO portal (ECR 2.0 format):
+// one line per member, fields separated by #~#, amounts in whole rupees:
+// UAN, name, gross wages, EPF wages, EPS wages, EDLI wages, EE share, EPS share,
+// ER (EPF-EPS difference) share, NCP days, refund of advances.
+// People without a UAN are left out (they show as a finding in AI Review).
+export const exportPfEcr = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = requireInstitution(req);
+    const run = await academicDb().payrollRun.findFirst({ where: { id: req.params.id as string, institutionId } });
+    if (!run) throw new NotFoundError("Payroll run not found");
+    if (run.status !== "APPROVED" && run.status !== "PUBLISHED") throw new BadRequestError("The PF file is available once the payroll is approved");
+
+    const settings = await loadPayrollSettings(institutionId);
+    const payslips = await academicDb().payslip.findMany({ where: { payrollRunId: run.id, pfWages: { gt: 0 } } });
+    const staff = await academicDb().staff.findMany({
+      where: { id: { in: payslips.map((p) => p.staffId) } },
+      select: { id: true, uan: true, sortOrder: true, createdAt: true },
+    });
+    const staffById = new Map(staff.map((x) => [x.id, x]));
+    const rs = (paise: number) => String(Math.round(paise / 100));
+    const line = (list: unknown, label: string) =>
+      ((Array.isArray(list) ? list : []) as { label: string; amount: number }[]).find((l) => l.label.startsWith(label))?.amount ?? 0;
+
+    const rows: string[] = [];
+    let skipped = 0;
+    for (const p of [...payslips].sort((a, b) => (staffById.get(a.staffId)?.sortOrder ?? 0) - (staffById.get(b.staffId)?.sortOrder ?? 0))) {
+      const uan = staffById.get(p.staffId)?.uan?.replace(/\D/g, "");
+      if (!uan) { skipped++; continue; }
+      const cappedWages = Math.min(p.pfWages, settings.pf.ceiling);
+      const epfWages = settings.pf.capWages ? cappedWages : p.pfWages;
+      const grossEarned = p.grossPay - line(p.deductions, "Loss of Pay");
+      const name = p.staffName.replace(/#~#/g, " ").replace(/[\r\n]/g, " ").trim();
+      // No EPS line on the payslip = not an EPS member (e.g. 58+): EPS wages and EPS are 0.
+      const hasEps = (Array.isArray(p.employerContributions) ? p.employerContributions : []).some((l) => (l as { label?: string })?.label?.startsWith("EPS"));
+      const eps = Math.round(line(p.employerContributions, "EPS") / 100);
+      // EPFO checks "EPF-EPS diff = employer 12% - EPS" in whole rupees, so round
+      // the employer total once and take EPS out of it (no ₹1 rounding mismatch).
+      const employerTotal = Math.round((line(p.employerContributions, "EPS") + line(p.employerContributions, "EPF (Employer)")) / 100);
+      rows.push([
+        uan, name, rs(grossEarned), rs(epfWages), hasEps ? rs(cappedWages) : "0", rs(cappedWages),
+        rs(line(p.deductions, "PF (Employee)")), String(eps), String(Math.max(0, employerTotal - eps)),
+        String(Math.round(p.lopDays)), "0",
+      ].join("#~#"));
+    }
+
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="pf-ecr-${run.month}.txt"`);
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("X-Skipped-No-UAN", String(skipped));
+    res.send(rows.join("\n") + (rows.length ? "\n" : ""));
   } catch (err) {
     next(err);
   }

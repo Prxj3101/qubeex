@@ -34,6 +34,7 @@ export type PayslipAvgAggregateOutputType = {
   basisDays: number | null
   bonus: number | null
   otherDeduction: number | null
+  pfWages: number | null
 }
 
 export type PayslipSumAggregateOutputType = {
@@ -44,6 +45,7 @@ export type PayslipSumAggregateOutputType = {
   basisDays: number | null
   bonus: number | null
   otherDeduction: number | null
+  pfWages: number | null
 }
 
 export type PayslipMinAggregateOutputType = {
@@ -61,6 +63,7 @@ export type PayslipMinAggregateOutputType = {
   bonus: number | null
   otherDeduction: number | null
   inputNote: string | null
+  pfWages: number | null
   status: string | null
   paidAt: Date | null
   paymentMethod: string | null
@@ -86,6 +89,7 @@ export type PayslipMaxAggregateOutputType = {
   bonus: number | null
   otherDeduction: number | null
   inputNote: string | null
+  pfWages: number | null
   status: string | null
   paidAt: Date | null
   paymentMethod: string | null
@@ -113,6 +117,9 @@ export type PayslipCountAggregateOutputType = {
   bonus: number
   otherDeduction: number
   inputNote: number
+  employerContributions: number
+  pfWages: number
+  tdsInfo: number
   status: number
   paidAt: number
   paymentMethod: number
@@ -133,6 +140,7 @@ export type PayslipAvgAggregateInputType = {
   basisDays?: true
   bonus?: true
   otherDeduction?: true
+  pfWages?: true
 }
 
 export type PayslipSumAggregateInputType = {
@@ -143,6 +151,7 @@ export type PayslipSumAggregateInputType = {
   basisDays?: true
   bonus?: true
   otherDeduction?: true
+  pfWages?: true
 }
 
 export type PayslipMinAggregateInputType = {
@@ -160,6 +169,7 @@ export type PayslipMinAggregateInputType = {
   bonus?: true
   otherDeduction?: true
   inputNote?: true
+  pfWages?: true
   status?: true
   paidAt?: true
   paymentMethod?: true
@@ -185,6 +195,7 @@ export type PayslipMaxAggregateInputType = {
   bonus?: true
   otherDeduction?: true
   inputNote?: true
+  pfWages?: true
   status?: true
   paidAt?: true
   paymentMethod?: true
@@ -212,6 +223,9 @@ export type PayslipCountAggregateInputType = {
   bonus?: true
   otherDeduction?: true
   inputNote?: true
+  employerContributions?: true
+  pfWages?: true
+  tdsInfo?: true
   status?: true
   paidAt?: true
   paymentMethod?: true
@@ -326,6 +340,9 @@ export type PayslipGroupByOutputType = {
   bonus: number
   otherDeduction: number
   inputNote: string | null
+  employerContributions: runtime.JsonValue | null
+  pfWages: number
+  tdsInfo: runtime.JsonValue | null
   status: string
   paidAt: Date | null
   paymentMethod: string | null
@@ -376,6 +393,9 @@ export type PayslipWhereInput = {
   bonus?: Prisma.IntFilter<"Payslip"> | number
   otherDeduction?: Prisma.IntFilter<"Payslip"> | number
   inputNote?: Prisma.StringNullableFilter<"Payslip"> | string | null
+  employerContributions?: Prisma.JsonNullableFilter<"Payslip">
+  pfWages?: Prisma.IntFilter<"Payslip"> | number
+  tdsInfo?: Prisma.JsonNullableFilter<"Payslip">
   status?: Prisma.StringFilter<"Payslip"> | string
   paidAt?: Prisma.DateTimeNullableFilter<"Payslip"> | Date | string | null
   paymentMethod?: Prisma.StringNullableFilter<"Payslip"> | string | null
@@ -405,6 +425,9 @@ export type PayslipOrderByWithRelationInput = {
   bonus?: Prisma.SortOrder
   otherDeduction?: Prisma.SortOrder
   inputNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  employerContributions?: Prisma.SortOrderInput | Prisma.SortOrder
+  pfWages?: Prisma.SortOrder
+  tdsInfo?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -438,6 +461,9 @@ export type PayslipWhereUniqueInput = Prisma.AtLeast<{
   bonus?: Prisma.IntFilter<"Payslip"> | number
   otherDeduction?: Prisma.IntFilter<"Payslip"> | number
   inputNote?: Prisma.StringNullableFilter<"Payslip"> | string | null
+  employerContributions?: Prisma.JsonNullableFilter<"Payslip">
+  pfWages?: Prisma.IntFilter<"Payslip"> | number
+  tdsInfo?: Prisma.JsonNullableFilter<"Payslip">
   status?: Prisma.StringFilter<"Payslip"> | string
   paidAt?: Prisma.DateTimeNullableFilter<"Payslip"> | Date | string | null
   paymentMethod?: Prisma.StringNullableFilter<"Payslip"> | string | null
@@ -467,6 +493,9 @@ export type PayslipOrderByWithAggregationInput = {
   bonus?: Prisma.SortOrder
   otherDeduction?: Prisma.SortOrder
   inputNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  employerContributions?: Prisma.SortOrderInput | Prisma.SortOrder
+  pfWages?: Prisma.SortOrder
+  tdsInfo?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -502,6 +531,9 @@ export type PayslipScalarWhereWithAggregatesInput = {
   bonus?: Prisma.IntWithAggregatesFilter<"Payslip"> | number
   otherDeduction?: Prisma.IntWithAggregatesFilter<"Payslip"> | number
   inputNote?: Prisma.StringNullableWithAggregatesFilter<"Payslip"> | string | null
+  employerContributions?: Prisma.JsonNullableWithAggregatesFilter<"Payslip">
+  pfWages?: Prisma.IntWithAggregatesFilter<"Payslip"> | number
+  tdsInfo?: Prisma.JsonNullableWithAggregatesFilter<"Payslip">
   status?: Prisma.StringWithAggregatesFilter<"Payslip"> | string
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Payslip"> | Date | string | null
   paymentMethod?: Prisma.StringNullableWithAggregatesFilter<"Payslip"> | string | null
@@ -527,6 +559,9 @@ export type PayslipCreateInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -556,6 +591,9 @@ export type PayslipUncheckedCreateInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -581,6 +619,9 @@ export type PayslipUpdateInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -610,6 +651,9 @@ export type PayslipUncheckedUpdateInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -637,6 +681,9 @@ export type PayslipCreateManyInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -662,6 +709,9 @@ export type PayslipUpdateManyMutationInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -689,6 +739,9 @@ export type PayslipUncheckedUpdateManyInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -731,6 +784,9 @@ export type PayslipCountOrderByAggregateInput = {
   bonus?: Prisma.SortOrder
   otherDeduction?: Prisma.SortOrder
   inputNote?: Prisma.SortOrder
+  employerContributions?: Prisma.SortOrder
+  pfWages?: Prisma.SortOrder
+  tdsInfo?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
@@ -749,6 +805,7 @@ export type PayslipAvgOrderByAggregateInput = {
   basisDays?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
   otherDeduction?: Prisma.SortOrder
+  pfWages?: Prisma.SortOrder
 }
 
 export type PayslipMaxOrderByAggregateInput = {
@@ -766,6 +823,7 @@ export type PayslipMaxOrderByAggregateInput = {
   bonus?: Prisma.SortOrder
   otherDeduction?: Prisma.SortOrder
   inputNote?: Prisma.SortOrder
+  pfWages?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
@@ -791,6 +849,7 @@ export type PayslipMinOrderByAggregateInput = {
   bonus?: Prisma.SortOrder
   otherDeduction?: Prisma.SortOrder
   inputNote?: Prisma.SortOrder
+  pfWages?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
@@ -809,6 +868,7 @@ export type PayslipSumOrderByAggregateInput = {
   basisDays?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
   otherDeduction?: Prisma.SortOrder
+  pfWages?: Prisma.SortOrder
 }
 
 export type PayslipCreateNestedManyWithoutStaffInput = {
@@ -910,6 +970,9 @@ export type PayslipCreateWithoutStaffInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -937,6 +1000,9 @@ export type PayslipUncheckedCreateWithoutStaffInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -993,6 +1059,9 @@ export type PayslipScalarWhereInput = {
   bonus?: Prisma.IntFilter<"Payslip"> | number
   otherDeduction?: Prisma.IntFilter<"Payslip"> | number
   inputNote?: Prisma.StringNullableFilter<"Payslip"> | string | null
+  employerContributions?: Prisma.JsonNullableFilter<"Payslip">
+  pfWages?: Prisma.IntFilter<"Payslip"> | number
+  tdsInfo?: Prisma.JsonNullableFilter<"Payslip">
   status?: Prisma.StringFilter<"Payslip"> | string
   paidAt?: Prisma.DateTimeNullableFilter<"Payslip"> | Date | string | null
   paymentMethod?: Prisma.StringNullableFilter<"Payslip"> | string | null
@@ -1018,6 +1087,9 @@ export type PayslipCreateWithoutPayrollRunInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -1045,6 +1117,9 @@ export type PayslipUncheckedCreateWithoutPayrollRunInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -1097,6 +1172,9 @@ export type PayslipCreateManyStaffInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -1122,6 +1200,9 @@ export type PayslipUpdateWithoutStaffInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1149,6 +1230,9 @@ export type PayslipUncheckedUpdateWithoutStaffInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1175,6 +1259,9 @@ export type PayslipUncheckedUpdateManyWithoutStaffInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1201,6 +1288,9 @@ export type PayslipCreateManyPayrollRunInput = {
   bonus?: number
   otherDeduction?: number
   inputNote?: string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: string
   paidAt?: Date | string | null
   paymentMethod?: string | null
@@ -1226,6 +1316,9 @@ export type PayslipUpdateWithoutPayrollRunInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1253,6 +1346,9 @@ export type PayslipUncheckedUpdateWithoutPayrollRunInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1279,6 +1375,9 @@ export type PayslipUncheckedUpdateManyWithoutPayrollRunInput = {
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
   otherDeduction?: Prisma.IntFieldUpdateOperationsInput | number
   inputNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employerContributions?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  pfWages?: Prisma.IntFieldUpdateOperationsInput | number
+  tdsInfo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.StringFieldUpdateOperationsInput | string
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1308,6 +1407,9 @@ export type PayslipSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   bonus?: boolean
   otherDeduction?: boolean
   inputNote?: boolean
+  employerContributions?: boolean
+  pfWages?: boolean
+  tdsInfo?: boolean
   status?: boolean
   paidAt?: boolean
   paymentMethod?: boolean
@@ -1337,6 +1439,9 @@ export type PayslipSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   bonus?: boolean
   otherDeduction?: boolean
   inputNote?: boolean
+  employerContributions?: boolean
+  pfWages?: boolean
+  tdsInfo?: boolean
   status?: boolean
   paidAt?: boolean
   paymentMethod?: boolean
@@ -1366,6 +1471,9 @@ export type PayslipSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   bonus?: boolean
   otherDeduction?: boolean
   inputNote?: boolean
+  employerContributions?: boolean
+  pfWages?: boolean
+  tdsInfo?: boolean
   status?: boolean
   paidAt?: boolean
   paymentMethod?: boolean
@@ -1395,6 +1503,9 @@ export type PayslipSelectScalar = {
   bonus?: boolean
   otherDeduction?: boolean
   inputNote?: boolean
+  employerContributions?: boolean
+  pfWages?: boolean
+  tdsInfo?: boolean
   status?: boolean
   paidAt?: boolean
   paymentMethod?: boolean
@@ -1405,7 +1516,7 @@ export type PayslipSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PayslipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "payrollRunId" | "staffId" | "institutionId" | "staffName" | "staffEmail" | "earnings" | "deductions" | "grossPay" | "netPay" | "lopDays" | "paidDays" | "basisDays" | "bonus" | "otherDeduction" | "inputNote" | "status" | "paidAt" | "paymentMethod" | "paymentRef" | "pdfUrl" | "notifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["payslip"]>
+export type PayslipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "payrollRunId" | "staffId" | "institutionId" | "staffName" | "staffEmail" | "earnings" | "deductions" | "grossPay" | "netPay" | "lopDays" | "paidDays" | "basisDays" | "bonus" | "otherDeduction" | "inputNote" | "employerContributions" | "pfWages" | "tdsInfo" | "status" | "paidAt" | "paymentMethod" | "paymentRef" | "pdfUrl" | "notifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["payslip"]>
 export type PayslipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.StaffDefaultArgs<ExtArgs>
@@ -1442,6 +1553,9 @@ export type $PayslipPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     bonus: number
     otherDeduction: number
     inputNote: string | null
+    employerContributions: runtime.JsonValue | null
+    pfWages: number
+    tdsInfo: runtime.JsonValue | null
     status: string
     paidAt: Date | null
     paymentMethod: string | null
@@ -1891,6 +2005,9 @@ export interface PayslipFieldRefs {
   readonly bonus: Prisma.FieldRef<"Payslip", 'Int'>
   readonly otherDeduction: Prisma.FieldRef<"Payslip", 'Int'>
   readonly inputNote: Prisma.FieldRef<"Payslip", 'String'>
+  readonly employerContributions: Prisma.FieldRef<"Payslip", 'Json'>
+  readonly pfWages: Prisma.FieldRef<"Payslip", 'Int'>
+  readonly tdsInfo: Prisma.FieldRef<"Payslip", 'Json'>
   readonly status: Prisma.FieldRef<"Payslip", 'String'>
   readonly paidAt: Prisma.FieldRef<"Payslip", 'DateTime'>
   readonly paymentMethod: Prisma.FieldRef<"Payslip", 'String'>

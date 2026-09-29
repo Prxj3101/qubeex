@@ -994,6 +994,30 @@ model PayrollSettings {
   dayBasis      String @default("CALENDAR") // CALENDAR (actual days in month) | FIXED_30 | FIXED_26
   payDay        Int    @default(1) // day of month salary is usually paid (1-28)
 
+  // Provident Fund. Rates in basis points (1200 = 12%), ceiling in paise.
+  pfEnabled      Boolean @default(false)
+  pfCeiling      Int     @default(2500000) // ₹25,000 monthly wage ceiling (EPFO, from 17 Sep 2026)
+  pfCapWages     Boolean @default(true) // PF on wages up to the ceiling (false = on full PF wages)
+  pfEmployeeRate Int     @default(1200)
+  pfEmployerRate Int     @default(1200) // EPS + EPF together
+  pfEpsRate      Int     @default(833) // pension part, always on wages up to the ceiling
+  pfEdliRate     Int     @default(50)
+  pfAdminRate    Int     @default(50)
+
+  // ESI. Rates in basis points (75 = 0.75%), limit in paise.
+  esiEnabled      Boolean @default(false)
+  esiWageLimit    Int     @default(2100000) // ₹21,000 normal monthly gross
+  esiEmployeeRate Int     @default(75)
+  esiEmployerRate Int     @default(325)
+
+  // Professional Tax (state-wise slab table).
+  ptEnabled Boolean @default(false)
+  ptState   String? // e.g. "MAHARASHTRA" (preset) or "CUSTOM"
+  ptSlabs   Json? // [{ from, amount, febAmount? }] in paise
+
+  // Income tax deducted at source on salary (section 192), worked out monthly.
+  tdsEnabled Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -1006,6 +1030,7 @@ model SalaryComponent {
   calcType      String  @default("FIXED") // FIXED (value = paise) | PERCENT_OF_BASIC (value = basis points, 4000 = 40%)
   isBasic       Boolean @default(false) // the one EARNING that PERCENT_OF_BASIC components are calculated from
   lopApplicable Boolean @default(true) // reduced for loss-of-pay days / partial months
+  pfApplicable  Boolean @default(false) // counts towards PF wages (Basic always does; usually also DA)
   defaultValue  Int     @default(0) // pre-filled value when added to a structure/template
   sortOrder     Int     @default(0)
   isActive      Boolean @default(true)
@@ -1046,6 +1071,14 @@ model Staff {
   pan          String?
   uan          String? // PF Universal Account Number
   paymentMode  String    @default("BANK") // BANK | CASH | CHEQUE
+  pfApplicable Boolean   @default(true) // PF is deducted for this person when the school has PF on
+  epsApplicable Boolean  @default(true) // false: no EPS (pension), e.g. age 58+ — full employer 12% goes to EPF
+  esiApplicable Boolean  @default(true) // ESI applies (when the school has ESI on and gross is within the limit)
+  esiNumber    String? // ESIC insurance (IP) number
+  ptApplicable Boolean   @default(true) // Professional Tax applies (turn off for exempt staff)
+  tdsApplicable  Boolean @default(true) // TDS worked out for this person when the school has TDS on
+  taxRegime      String  @default("NEW") // NEW | OLD
+  taxDeclaration Json? // { sec80C, sec80D, hraExempt, otherDeductions, prevEmployerIncome, prevEmployerTds } in paise
   bankDetails  String? // AES-GCM encrypted JSON {accountName, accountNumber, ifsc, bankName} (fieldEncryption.service)
   sortOrder    Int       @default(0) // admin-chosen list order (drag to reorder); new staff go to the end
 
@@ -1148,6 +1181,11 @@ model Payslip {
   bonus          Int     @default(0)
   otherDeduction Int     @default(0)
   inputNote      String? // e.g. "Diwali bonus", "Advance recovery"
+
+  // Employer contributions (PF etc.) - school's cost, not deducted. [{ label, amount }] in paise.
+  employerContributions Json?
+  pfWages               Int   @default(0) // PF wages earned this month (paise), for the EPFO ECR file
+  tdsInfo               Json? // how this month's TDS was worked out (estimated yearly income, tax, months left...); {} when no TDS
 
   status        String    @default("PENDING") // PENDING | PAID
   paidAt        DateTime?

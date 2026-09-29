@@ -28,7 +28,7 @@ import {
   getStaffSalaryStructure, saveStaffSalaryStructure, deleteStaffSalaryVersion,
   listPayrollRuns, createPayrollRun, getPayrollRun, deletePayrollRun, updatePayslipLineItems, removePayslipFromRun, publishPayrollRun,
   markAllPayslipsPaid, markPayslipPaid, markPayslipUnpaid,
-  saveRunInputs, markRunInputsChecked, aiReviewPayrollRun, submitPayrollRun, exportRunPayments, markPayslipsPaidBulk, recallPayrollRun, approvePayrollRun, sendBackPayrollRun,
+  saveRunInputs, markRunInputsChecked, aiReviewPayrollRun, exportPfEcr, submitPayrollRun, exportRunPayments, markPayslipsPaidBulk, recallPayrollRun, approvePayrollRun, sendBackPayrollRun,
 } from "./payroll.controller";
 import { listStaff, searchLinkableProfiles, importLinkableProfiles, reorderStaff, createStaff, updateStaff, deleteStaff } from "./staff.controller";
 import { listMyPayslips, redirectToMyPayslipPdf } from "./myPayslips.controller";
@@ -281,6 +281,7 @@ router.post("/payroll/runs/:id/send-back", ...ADMIN_ONLY, sendBackPayrollRun);
 router.post("/payroll/runs/:id/publish", ...PAYROLL_PERM, publishPayrollRun);
 router.post("/payroll/runs/:id/mark-all-paid", ...PAYROLL_PERM, markAllPayslipsPaid);
 router.get("/payroll/runs/:id/payments.csv", ...PAYROLL_PERM, exportRunPayments);
+router.get("/payroll/runs/:id/pf-ecr.txt", ...PAYROLL_PERM, exportPfEcr);
 router.post("/payroll/runs/:id/mark-paid-bulk", ...PAYROLL_PERM, markPayslipsPaidBulk);
 router.patch("/payroll/payslips/:id/mark-paid", ...PAYROLL_PERM, markPayslipPaid);
 router.patch("/payroll/payslips/:id/mark-unpaid", ...PAYROLL_PERM, markPayslipUnpaid);

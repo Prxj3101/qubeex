@@ -15,7 +15,20 @@ export interface CalcComponent {
   calcType: CalcType;
   isBasic: boolean;
   lopApplicable: boolean;
+  pfApplicable?: boolean; // counts towards PF wages (Basic always does)
   sortOrder: number;
+}
+
+// Provident Fund rules (from PayrollSettings). Rates in basis points (1200 = 12%).
+// Pass it only when PF applies to this person (school has PF on + staff not excluded).
+export interface PfConfig {
+  ceiling: number; // paise, monthly wage ceiling (₹25,000 from 17 Sep 2026)
+  capWages: boolean; // true: PF on min(PF wages, ceiling); false: on full PF wages
+  employeeRate: number; // 1200
+  employerRate: number; // 1200 (EPS + EPF together)
+  epsRate: number; // 833, always on wages up to the ceiling
+  edliRate: number; // 50
+  adminRate: number; // 50
 }
 
 // One entry of a staff salary structure / template.
@@ -30,6 +43,18 @@ export interface Adjustment {
   amount: number; // paise
 }
 
+// ESI (from PayrollSettings). Pass only when ESI applies to this person.
+export interface EsiConfig {
+  wageLimit: number; // paise; covered when the normal monthly gross is up to this (₹21,000)
+  employeeRate: number; // 75 = 0.75%
+  employerRate: number; // 325 = 3.25%
+}
+
+// Professional Tax slab table (state-wise). The highest slab whose `from` is
+// <= the month's gross applies; `febAmount` (if set) is used in February.
+export interface PtSlab { from: number; amount: number; febAmount?: number | null } // paise
+export interface PtConfig { slabs: PtSlab[] }
+
 export interface CalcInput {
   month: string; // "YYYY-MM"
   items: StructureItem[];
@@ -39,6 +64,9 @@ export interface CalcInput {
   joinedAt?: Date | null;
   exitDate?: Date | null;
   adjustments?: Adjustment[];
+  pf?: PfConfig | null;
+  esi?: EsiConfig | null;
+  pt?: PtConfig | null;
 }
 
 export interface CalcLine {
@@ -57,6 +85,8 @@ export interface CalcResult {
   employedDays: number; // calendar days of the month the person was on the rolls
   lopDays: number;
   paidDays: number; // basis days actually paid for LOP-applicable heads
+  employer: CalcLine[]; // employer contributions (PF etc.) - part of cost, NOT deducted from pay
+  pfWages: number; // paise, PF wages actually earned this month (0 when PF doesn't apply)
 }
 
 const round = (n: number): number => Math.round(n);
@@ -135,12 +165,18 @@ export function calculateSalary(input: CalcInput): CalcResult {
   const earnings: CalcLine[] = [];
   let earnedBasic = 0; // Basic actually earned after LOP (drives % deductions like PF)
   let lopAmount = 0;
+  let pfWages = 0; // earned (after LOP / proration) amounts of PF-applicable earnings
+  let fullGross = 0; // normal full-month gross (for ESI eligibility)
+  let earnedGross = 0; // gross actually earned this month after LOP / proration (ESI and PT wages)
   for (const r of rows.filter((x) => x.comp.type === "EARNING")) {
     const full = fullAmount(r, fullBasic);
     const shown = round(full * employedFraction);
     const afterLop = prorate(full, r.comp.lopApplicable);
     if (r === basicRow) earnedBasic = afterLop;
     if (r.comp.lopApplicable) lopAmount += shown - afterLop;
+    if (r.comp.isBasic || r.comp.pfApplicable) pfWages += afterLop;
+    fullGross += full;
+    earnedGross += afterLop;
     earnings.push({ label: r.comp.name, amount: shown });
   }
 
@@ -150,11 +186,52 @@ export function calculateSalary(input: CalcInput): CalcResult {
   if (lopAmount > 0) {
     deductions.push({ label: `Loss of Pay (${lopDays} ${lopDays === 1 ? "day" : "days"})`, amount: lopAmount });
   }
-  for (const r of rows.filter((x) => x.comp.type === "DEDUCTION")) {
+  // With state PT switched on, an old fixed "Professional Tax" component is skipped (no double PT).
+  const isOldPt = (name: string) => /professional\s*tax/i.test(name);
+  for (const r of rows.filter((x) => x.comp.type === "DEDUCTION" && !(input.pt && isOldPt(x.comp.name)))) {
     const amount = r.comp.calcType === "PERCENT_OF_BASIC"
       ? round((earnedBasic * r.item.value) / 10000)
       : r.item.value;
     deductions.push({ label: r.comp.name, amount });
+  }
+
+  // Provident Fund on the wages actually earned this month.
+  //   Employee: 12% of PF wages (capped at the ceiling unless the school pays on full wages) -> deducted.
+  //   Employer: 12% split as EPS 8.33% (always on wages up to the ceiling) + EPF the rest,
+  //             plus EDLI and admin charges -> school's cost, not deducted.
+  const employer: CalcLine[] = [];
+  const pf = input.pf;
+  if (pf && pfWages > 0) {
+    const pfBase = pf.capWages ? Math.min(pfWages, pf.ceiling) : pfWages;
+    const epsBase = Math.min(pfWages, pf.ceiling);
+    const employeePf = round((pfBase * pf.employeeRate) / 10000);
+    const eps = round((epsBase * pf.epsRate) / 10000);
+    const employerTotal = round((pfBase * pf.employerRate) / 10000);
+    deductions.push({ label: "PF (Employee)", amount: employeePf });
+    employer.push({ label: "EPF (Employer)", amount: Math.max(0, employerTotal - eps) });
+    if (pf.epsRate > 0) employer.push({ label: "EPS (Pension)", amount: eps }); // 0 rate = no EPS (e.g. age 58+)
+    if (pf.edliRate) employer.push({ label: "EDLI", amount: round((epsBase * pf.edliRate) / 10000) });
+    if (pf.adminRate) employer.push({ label: "PF admin charges", amount: round((pfBase * pf.adminRate) / 10000) });
+  }
+
+  // ESI on the gross earned this month (a one-off bonus is not ESI wages), for
+  // people whose normal monthly gross is within the limit. Employee share is
+  // waived when the average daily wage is ₹176 or less (employer still pays).
+  // Contributions are rounded up to the next rupee.
+  const esi = input.esi;
+  if (esi && fullGross > 0 && fullGross <= esi.wageLimit && earnedGross > 0) {
+    const upToRupee = (p: number) => Math.ceil(p / 100) * 100;
+    const dailyAvg = fullGross / dim;
+    if (dailyAvg > 17600) deductions.push({ label: "ESI (Employee)", amount: upToRupee((earnedGross * esi.employeeRate) / 10000) });
+    employer.push({ label: "ESI (Employer)", amount: upToRupee((earnedGross * esi.employerRate) / 10000) });
+  }
+
+  // Professional Tax from the state slab table, on the gross earned this month.
+  if (input.pt && input.pt.slabs.length) {
+    const isFeb = input.month.slice(5, 7) === "02";
+    const slab = [...input.pt.slabs].sort((a, b) => b.from - a.from).find((sl) => earnedGross >= sl.from);
+    const amount = slab ? (isFeb && slab.febAmount ? slab.febAmount : slab.amount) : 0;
+    if (amount > 0) deductions.push({ label: "Professional Tax", amount });
   }
 
   for (const adj of input.adjustments ?? []) {
@@ -177,6 +254,8 @@ export function calculateSalary(input: CalcInput): CalcResult {
     employedDays,
     lopDays,
     paidDays: Math.round(paidDays * 100) / 100,
+    employer,
+    pfWages: pf ? pfWages : 0,
   };
 }
 

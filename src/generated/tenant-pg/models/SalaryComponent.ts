@@ -44,6 +44,7 @@ export type SalaryComponentMinAggregateOutputType = {
   calcType: string | null
   isBasic: boolean | null
   lopApplicable: boolean | null
+  pfApplicable: boolean | null
   defaultValue: number | null
   sortOrder: number | null
   isActive: boolean | null
@@ -59,6 +60,7 @@ export type SalaryComponentMaxAggregateOutputType = {
   calcType: string | null
   isBasic: boolean | null
   lopApplicable: boolean | null
+  pfApplicable: boolean | null
   defaultValue: number | null
   sortOrder: number | null
   isActive: boolean | null
@@ -74,6 +76,7 @@ export type SalaryComponentCountAggregateOutputType = {
   calcType: number
   isBasic: number
   lopApplicable: number
+  pfApplicable: number
   defaultValue: number
   sortOrder: number
   isActive: number
@@ -101,6 +104,7 @@ export type SalaryComponentMinAggregateInputType = {
   calcType?: true
   isBasic?: true
   lopApplicable?: true
+  pfApplicable?: true
   defaultValue?: true
   sortOrder?: true
   isActive?: true
@@ -116,6 +120,7 @@ export type SalaryComponentMaxAggregateInputType = {
   calcType?: true
   isBasic?: true
   lopApplicable?: true
+  pfApplicable?: true
   defaultValue?: true
   sortOrder?: true
   isActive?: true
@@ -131,6 +136,7 @@ export type SalaryComponentCountAggregateInputType = {
   calcType?: true
   isBasic?: true
   lopApplicable?: true
+  pfApplicable?: true
   defaultValue?: true
   sortOrder?: true
   isActive?: true
@@ -233,6 +239,7 @@ export type SalaryComponentGroupByOutputType = {
   calcType: string
   isBasic: boolean
   lopApplicable: boolean
+  pfApplicable: boolean
   defaultValue: number
   sortOrder: number
   isActive: boolean
@@ -271,6 +278,7 @@ export type SalaryComponentWhereInput = {
   calcType?: Prisma.StringFilter<"SalaryComponent"> | string
   isBasic?: Prisma.BoolFilter<"SalaryComponent"> | boolean
   lopApplicable?: Prisma.BoolFilter<"SalaryComponent"> | boolean
+  pfApplicable?: Prisma.BoolFilter<"SalaryComponent"> | boolean
   defaultValue?: Prisma.IntFilter<"SalaryComponent"> | number
   sortOrder?: Prisma.IntFilter<"SalaryComponent"> | number
   isActive?: Prisma.BoolFilter<"SalaryComponent"> | boolean
@@ -286,6 +294,7 @@ export type SalaryComponentOrderByWithRelationInput = {
   calcType?: Prisma.SortOrder
   isBasic?: Prisma.SortOrder
   lopApplicable?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
   defaultValue?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -305,6 +314,7 @@ export type SalaryComponentWhereUniqueInput = Prisma.AtLeast<{
   calcType?: Prisma.StringFilter<"SalaryComponent"> | string
   isBasic?: Prisma.BoolFilter<"SalaryComponent"> | boolean
   lopApplicable?: Prisma.BoolFilter<"SalaryComponent"> | boolean
+  pfApplicable?: Prisma.BoolFilter<"SalaryComponent"> | boolean
   defaultValue?: Prisma.IntFilter<"SalaryComponent"> | number
   sortOrder?: Prisma.IntFilter<"SalaryComponent"> | number
   isActive?: Prisma.BoolFilter<"SalaryComponent"> | boolean
@@ -320,6 +330,7 @@ export type SalaryComponentOrderByWithAggregationInput = {
   calcType?: Prisma.SortOrder
   isBasic?: Prisma.SortOrder
   lopApplicable?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
   defaultValue?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -343,6 +354,7 @@ export type SalaryComponentScalarWhereWithAggregatesInput = {
   calcType?: Prisma.StringWithAggregatesFilter<"SalaryComponent"> | string
   isBasic?: Prisma.BoolWithAggregatesFilter<"SalaryComponent"> | boolean
   lopApplicable?: Prisma.BoolWithAggregatesFilter<"SalaryComponent"> | boolean
+  pfApplicable?: Prisma.BoolWithAggregatesFilter<"SalaryComponent"> | boolean
   defaultValue?: Prisma.IntWithAggregatesFilter<"SalaryComponent"> | number
   sortOrder?: Prisma.IntWithAggregatesFilter<"SalaryComponent"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"SalaryComponent"> | boolean
@@ -358,6 +370,7 @@ export type SalaryComponentCreateInput = {
   calcType?: string
   isBasic?: boolean
   lopApplicable?: boolean
+  pfApplicable?: boolean
   defaultValue?: number
   sortOrder?: number
   isActive?: boolean
@@ -373,6 +386,7 @@ export type SalaryComponentUncheckedCreateInput = {
   calcType?: string
   isBasic?: boolean
   lopApplicable?: boolean
+  pfApplicable?: boolean
   defaultValue?: number
   sortOrder?: number
   isActive?: boolean
@@ -388,6 +402,7 @@ export type SalaryComponentUpdateInput = {
   calcType?: Prisma.StringFieldUpdateOperationsInput | string
   isBasic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lopApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultValue?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -403,6 +418,7 @@ export type SalaryComponentUncheckedUpdateInput = {
   calcType?: Prisma.StringFieldUpdateOperationsInput | string
   isBasic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lopApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultValue?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -418,6 +434,7 @@ export type SalaryComponentCreateManyInput = {
   calcType?: string
   isBasic?: boolean
   lopApplicable?: boolean
+  pfApplicable?: boolean
   defaultValue?: number
   sortOrder?: number
   isActive?: boolean
@@ -433,6 +450,7 @@ export type SalaryComponentUpdateManyMutationInput = {
   calcType?: Prisma.StringFieldUpdateOperationsInput | string
   isBasic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lopApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultValue?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -448,6 +466,7 @@ export type SalaryComponentUncheckedUpdateManyInput = {
   calcType?: Prisma.StringFieldUpdateOperationsInput | string
   isBasic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lopApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultValue?: Prisma.IntFieldUpdateOperationsInput | number
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -468,6 +487,7 @@ export type SalaryComponentCountOrderByAggregateInput = {
   calcType?: Prisma.SortOrder
   isBasic?: Prisma.SortOrder
   lopApplicable?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
   defaultValue?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -488,6 +508,7 @@ export type SalaryComponentMaxOrderByAggregateInput = {
   calcType?: Prisma.SortOrder
   isBasic?: Prisma.SortOrder
   lopApplicable?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
   defaultValue?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -503,6 +524,7 @@ export type SalaryComponentMinOrderByAggregateInput = {
   calcType?: Prisma.SortOrder
   isBasic?: Prisma.SortOrder
   lopApplicable?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
   defaultValue?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -525,6 +547,7 @@ export type SalaryComponentSelect<ExtArgs extends runtime.Types.Extensions.Inter
   calcType?: boolean
   isBasic?: boolean
   lopApplicable?: boolean
+  pfApplicable?: boolean
   defaultValue?: boolean
   sortOrder?: boolean
   isActive?: boolean
@@ -540,6 +563,7 @@ export type SalaryComponentSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   calcType?: boolean
   isBasic?: boolean
   lopApplicable?: boolean
+  pfApplicable?: boolean
   defaultValue?: boolean
   sortOrder?: boolean
   isActive?: boolean
@@ -555,6 +579,7 @@ export type SalaryComponentSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   calcType?: boolean
   isBasic?: boolean
   lopApplicable?: boolean
+  pfApplicable?: boolean
   defaultValue?: boolean
   sortOrder?: boolean
   isActive?: boolean
@@ -570,6 +595,7 @@ export type SalaryComponentSelectScalar = {
   calcType?: boolean
   isBasic?: boolean
   lopApplicable?: boolean
+  pfApplicable?: boolean
   defaultValue?: boolean
   sortOrder?: boolean
   isActive?: boolean
@@ -577,7 +603,7 @@ export type SalaryComponentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SalaryComponentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "type" | "calcType" | "isBasic" | "lopApplicable" | "defaultValue" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["salaryComponent"]>
+export type SalaryComponentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "type" | "calcType" | "isBasic" | "lopApplicable" | "pfApplicable" | "defaultValue" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["salaryComponent"]>
 
 export type $SalaryComponentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SalaryComponent"
@@ -590,6 +616,7 @@ export type $SalaryComponentPayload<ExtArgs extends runtime.Types.Extensions.Int
     calcType: string
     isBasic: boolean
     lopApplicable: boolean
+    pfApplicable: boolean
     defaultValue: number
     sortOrder: number
     isActive: boolean
@@ -1025,6 +1052,7 @@ export interface SalaryComponentFieldRefs {
   readonly calcType: Prisma.FieldRef<"SalaryComponent", 'String'>
   readonly isBasic: Prisma.FieldRef<"SalaryComponent", 'Boolean'>
   readonly lopApplicable: Prisma.FieldRef<"SalaryComponent", 'Boolean'>
+  readonly pfApplicable: Prisma.FieldRef<"SalaryComponent", 'Boolean'>
   readonly defaultValue: Prisma.FieldRef<"SalaryComponent", 'Int'>
   readonly sortOrder: Prisma.FieldRef<"SalaryComponent", 'Int'>
   readonly isActive: Prisma.FieldRef<"SalaryComponent", 'Boolean'>

@@ -64,22 +64,39 @@ export async function generatePayrollAiSummary(
   ]);
   if (limit > 0 && used >= limit) throw new TooManyRequestsError("Your school's AI tokens for this month are used up");
 
-  // Names -> S1, S2 (longest first so "Rohit Sharma" is replaced before "Rohit").
+  // Names -> S1, S2 in the order they appear in what we send (longest name
+  // matched first so "Rohit Sharma" wins over "Rohit"). Only people actually in
+  // the request get a code, so with one person it's always S1 - the model can't
+  // "guess" S1 and land on someone else (that showed Dhoni for Rohit's bonus).
   const names = [...new Set(input.staffNames.filter(Boolean))].sort((a, b) => b.length - a.length);
-  const codeOf = new Map(names.map((n, i) => [n, `S${i + 1}`]));
-  const nameOf = new Map(names.map((n, i) => [`S${i + 1}`, n]));
-  const anon = (t: string) => names.reduce((acc, n) => acc.replace(new RegExp(escapeRe(n), "g"), codeOf.get(n)!), t);
+  const codeOf = new Map<string, string>();
+  const nameOf = new Map<string, string>();
+  const anon = (t: string) => {
+    // Assign codes by first position in this text, then replace.
+    const found = names
+      .map((n) => ({ n, at: t.indexOf(n) }))
+      .filter((x) => x.at >= 0)
+      .sort((a, b) => a.at - b.at);
+    for (const { n } of found) {
+      if (!codeOf.has(n)) {
+        const code = `S${codeOf.size + 1}`;
+        codeOf.set(n, code);
+        nameOf.set(code, n);
+      }
+    }
+    return names.reduce((acc, n) => (codeOf.has(n) ? acc.replace(new RegExp(escapeRe(n), "g"), codeOf.get(n)!) : acc), t);
+  };
 
   // Keep the request small: only red / amber findings (max 4 of each), first
   // sentence only, anonymised. Notes are not sent.
   const short = (m: string) => anon(m.split(/(?<=\.)\s/)[0]).slice(0, 110);
+  const fix = critical.slice(0, 4).map((f) => short(f.message));
+  const check = input.findings.filter((f) => f.level === "warning").slice(0, 4).map((f) => short(f.message));
   const systemPrompt =
     "Summarise these payroll check findings for a school accountant in ONE short sentence (max 25 words), simple English. " +
-    "fix items first. Use the codes (S1, S2). No em dash. Reply JSON {\"summary\":\"...\"}";
-  const userPrompt = JSON.stringify({
-    fix: critical.slice(0, 4).map((f) => short(f.message)),
-    check: input.findings.filter((f) => f.level === "warning").slice(0, 4).map((f) => short(f.message)),
-  });
+    "fix items first. Refer to people ONLY with the exact codes used in the findings (S1, S2); never invent a code. " +
+    "Keep each amount with the person it belongs to. No em dash. Reply JSON {\"summary\":\"...\"}";
+  const userPrompt = JSON.stringify({ fix, check });
 
   let completion;
   try {
@@ -120,6 +137,12 @@ export async function generatePayrollAiSummary(
     const parsed = JSON.parse(completion.choices[0].message.content ?? "{}");
     summary = typeof parsed.summary === "string" ? parsed.summary : "";
   } catch {
+    summary = "";
+  }
+  // A code we never sent means the model mixed people up: don't show a wrong name.
+  const codes = summary.match(/\bS\d{1,4}\b/g) ?? [];
+  if (codes.some((c) => !nameOf.has(c))) {
+    console.error("[payroll-ai] summary used an unknown code, falling back:", summary);
     summary = "";
   }
   summary = summary

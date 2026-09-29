@@ -99,4 +99,99 @@ describe("payroll calculation", () => {
     expect(structureForMonth(versions, "2026-06")!.id).toBe("v2");
     expect(structureForMonth(versions, "2025-12")).toBeUndefined();
   });
+
+  describe("Provident Fund", () => {
+    const pf = { ceiling: 2500000, capWages: true, employeeRate: 1200, employerRate: 1200, epsRate: 833, edliRate: 50, adminRate: 50 };
+    const withDa = [...components, { id: "da", name: "DA", type: "EARNING" as const, calcType: "PERCENT_OF_BASIC" as const, isBasic: false, lopApplicable: true, pfApplicable: true, sortOrder: 5 }];
+
+    it("PF on Basic + DA under the ceiling", () => {
+      // Basic 20,000 + DA 10% (2,000) = PF wages 22,000 (HRA / Transport not counted)
+      const r = calculateSalary({ month: "2026-09", components: withDa, dayBasis: "CALENDAR", pf,
+        items: [...items, { componentId: "da", value: 1000 }] });
+      expect(r.pfWages).toBe(2200000);
+      expect(r.deductions.find((l) => l.label === "PF (Employee)")!.amount).toBe(264000); // 12% = 2,640
+      expect(r.employer.find((l) => l.label === "EPS (Pension)")!.amount).toBe(183260); // 8.33% = 1,832.60
+      expect(r.employer.find((l) => l.label === "EPF (Employer)")!.amount).toBe(264000 - 183260);
+      expect(r.netPay).toBe(3150000 - 20000 - 264000); // employer part is not deducted
+    });
+
+    it("caps at the ₹25,000 ceiling", () => {
+      const r = calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", pf,
+        items: [{ componentId: "basic", value: 4000000 }] });
+      expect(r.deductions.find((l) => l.label === "PF (Employee)")!.amount).toBe(300000); // 12% of 25,000
+      expect(r.employer.find((l) => l.label === "EPS (Pension)")!.amount).toBe(208250); // 8.33% of 25,000
+    });
+
+    it("no EPS (e.g. age 58+): the full employer 12% goes to EPF", () => {
+      const r = calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", pf: { ...pf, epsRate: 0 },
+        items: [{ componentId: "basic", value: 2000000 }] });
+      expect(r.employer.find((l) => l.label === "EPS (Pension)")).toBeUndefined();
+      expect(r.employer.find((l) => l.label === "EPF (Employer)")!.amount).toBe(240000); // 12% of 20,000
+      expect(r.employer.find((l) => l.label === "EDLI")!.amount).toBe(10000); // EDLI still applies
+    });
+
+    it("on full wages when the school chooses not to cap (EPS still capped)", () => {
+      const r = calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", pf: { ...pf, capWages: false },
+        items: [{ componentId: "basic", value: 4000000 }] });
+      expect(r.deductions.find((l) => l.label === "PF (Employee)")!.amount).toBe(480000); // 12% of 40,000
+      expect(r.employer.find((l) => l.label === "EPS (Pension)")!.amount).toBe(208250);
+      expect(r.employer.find((l) => l.label === "EPF (Employer)")!.amount).toBe(480000 - 208250);
+    });
+
+    it("uses the wages actually earned after LOP", () => {
+      const r = calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", pf, lopDays: 3,
+        items: [{ componentId: "basic", value: 1500000 }] });
+      // earned Basic 15,000 * 27/30 = 13,500 -> PF 1,620
+      expect(r.pfWages).toBe(1350000);
+      expect(r.deductions.find((l) => l.label === "PF (Employee)")!.amount).toBe(162000);
+    });
+
+    it("no PF lines when PF doesn't apply", () => {
+      const r = calculateSalary({ month: "2026-09", items, components, dayBasis: "CALENDAR" });
+      expect(r.employer).toEqual([]);
+      expect(r.pfWages).toBe(0);
+      expect(r.deductions.some((l) => l.label.startsWith("PF"))).toBe(false);
+    });
+  });
+
+  describe("ESI", () => {
+    const esi = { wageLimit: 2100000, employeeRate: 75, employerRate: 325 };
+    it("0.75% / 3.25% of gross when within ₹21,000, rounded up to the rupee", () => {
+      // Basic 12,000 + Transport 1,500 = 13,500 gross
+      const r = calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", esi,
+        items: [{ componentId: "basic", value: 1200000 }, { componentId: "transport", value: 150000 }] });
+      expect(r.deductions.find((l) => l.label === "ESI (Employee)")!.amount).toBe(10200); // 101.25 -> 102
+      expect(r.employer.find((l) => l.label === "ESI (Employer)")!.amount).toBe(43900); // 438.75 -> 439
+    });
+    it("not covered when the normal gross is above ₹21,000", () => {
+      const r = calculateSalary({ month: "2026-09", items, components, dayBasis: "CALENDAR", esi }); // 29,500
+      expect(r.deductions.some((l) => l.label.startsWith("ESI"))).toBe(false);
+      expect(r.employer).toEqual([]);
+    });
+    it("low daily wage (≤ ₹176/day): only the employer pays", () => {
+      const r = calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", esi, items: [{ componentId: "basic", value: 500000 }] });
+      expect(r.deductions.some((l) => l.label === "ESI (Employee)")).toBe(false);
+      expect(r.employer.find((l) => l.label === "ESI (Employer)")!.amount).toBe(16300); // 162.50 -> 163
+    });
+  });
+
+  describe("Professional Tax (Maharashtra slabs)", () => {
+    const pt = { slabs: [{ from: 0, amount: 0 }, { from: 750100, amount: 17500 }, { from: 1000100, amount: 20000, febAmount: 30000 }] };
+    const basic = (rupees: number) => [{ componentId: "basic", value: rupees * 100 }];
+    it("picks the slab by gross earned", () => {
+      expect(calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", pt, items: basic(7000) }).deductions).toEqual([]);
+      expect(calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", pt, items: basic(9000) }).deductions)
+        .toEqual([{ label: "Professional Tax", amount: 17500 }]);
+      expect(calculateSalary({ month: "2026-09", components, dayBasis: "CALENDAR", pt, items: basic(20000) }).deductions)
+        .toEqual([{ label: "Professional Tax", amount: 20000 }]);
+    });
+    it("₹300 in February", () => {
+      expect(calculateSalary({ month: "2027-02", components, dayBasis: "CALENDAR", pt, items: basic(20000) }).deductions)
+        .toEqual([{ label: "Professional Tax", amount: 30000 }]);
+    });
+    it("skips an old fixed Professional Tax component (no double PT)", () => {
+      const r = calculateSalary({ month: "2026-09", items, components, dayBasis: "CALENDAR", pt }); // items include the ₹200 PT component
+      expect(r.deductions.filter((l) => l.label === "Professional Tax")).toEqual([{ label: "Professional Tax", amount: 20000 }]);
+    });
+  });
 });

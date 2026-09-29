@@ -28,10 +28,28 @@ export type AggregatePayrollSettings = {
 
 export type PayrollSettingsAvgAggregateOutputType = {
   payDay: number | null
+  pfCeiling: number | null
+  pfEmployeeRate: number | null
+  pfEmployerRate: number | null
+  pfEpsRate: number | null
+  pfEdliRate: number | null
+  pfAdminRate: number | null
+  esiWageLimit: number | null
+  esiEmployeeRate: number | null
+  esiEmployerRate: number | null
 }
 
 export type PayrollSettingsSumAggregateOutputType = {
   payDay: number | null
+  pfCeiling: number | null
+  pfEmployeeRate: number | null
+  pfEmployerRate: number | null
+  pfEpsRate: number | null
+  pfEdliRate: number | null
+  pfAdminRate: number | null
+  esiWageLimit: number | null
+  esiEmployeeRate: number | null
+  esiEmployerRate: number | null
 }
 
 export type PayrollSettingsMinAggregateOutputType = {
@@ -39,6 +57,21 @@ export type PayrollSettingsMinAggregateOutputType = {
   institutionId: string | null
   dayBasis: string | null
   payDay: number | null
+  pfEnabled: boolean | null
+  pfCeiling: number | null
+  pfCapWages: boolean | null
+  pfEmployeeRate: number | null
+  pfEmployerRate: number | null
+  pfEpsRate: number | null
+  pfEdliRate: number | null
+  pfAdminRate: number | null
+  esiEnabled: boolean | null
+  esiWageLimit: number | null
+  esiEmployeeRate: number | null
+  esiEmployerRate: number | null
+  ptEnabled: boolean | null
+  ptState: string | null
+  tdsEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -48,6 +81,21 @@ export type PayrollSettingsMaxAggregateOutputType = {
   institutionId: string | null
   dayBasis: string | null
   payDay: number | null
+  pfEnabled: boolean | null
+  pfCeiling: number | null
+  pfCapWages: boolean | null
+  pfEmployeeRate: number | null
+  pfEmployerRate: number | null
+  pfEpsRate: number | null
+  pfEdliRate: number | null
+  pfAdminRate: number | null
+  esiEnabled: boolean | null
+  esiWageLimit: number | null
+  esiEmployeeRate: number | null
+  esiEmployerRate: number | null
+  ptEnabled: boolean | null
+  ptState: string | null
+  tdsEnabled: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -57,6 +105,22 @@ export type PayrollSettingsCountAggregateOutputType = {
   institutionId: number
   dayBasis: number
   payDay: number
+  pfEnabled: number
+  pfCeiling: number
+  pfCapWages: number
+  pfEmployeeRate: number
+  pfEmployerRate: number
+  pfEpsRate: number
+  pfEdliRate: number
+  pfAdminRate: number
+  esiEnabled: number
+  esiWageLimit: number
+  esiEmployeeRate: number
+  esiEmployerRate: number
+  ptEnabled: number
+  ptState: number
+  ptSlabs: number
+  tdsEnabled: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -65,10 +129,28 @@ export type PayrollSettingsCountAggregateOutputType = {
 
 export type PayrollSettingsAvgAggregateInputType = {
   payDay?: true
+  pfCeiling?: true
+  pfEmployeeRate?: true
+  pfEmployerRate?: true
+  pfEpsRate?: true
+  pfEdliRate?: true
+  pfAdminRate?: true
+  esiWageLimit?: true
+  esiEmployeeRate?: true
+  esiEmployerRate?: true
 }
 
 export type PayrollSettingsSumAggregateInputType = {
   payDay?: true
+  pfCeiling?: true
+  pfEmployeeRate?: true
+  pfEmployerRate?: true
+  pfEpsRate?: true
+  pfEdliRate?: true
+  pfAdminRate?: true
+  esiWageLimit?: true
+  esiEmployeeRate?: true
+  esiEmployerRate?: true
 }
 
 export type PayrollSettingsMinAggregateInputType = {
@@ -76,6 +158,21 @@ export type PayrollSettingsMinAggregateInputType = {
   institutionId?: true
   dayBasis?: true
   payDay?: true
+  pfEnabled?: true
+  pfCeiling?: true
+  pfCapWages?: true
+  pfEmployeeRate?: true
+  pfEmployerRate?: true
+  pfEpsRate?: true
+  pfEdliRate?: true
+  pfAdminRate?: true
+  esiEnabled?: true
+  esiWageLimit?: true
+  esiEmployeeRate?: true
+  esiEmployerRate?: true
+  ptEnabled?: true
+  ptState?: true
+  tdsEnabled?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -85,6 +182,21 @@ export type PayrollSettingsMaxAggregateInputType = {
   institutionId?: true
   dayBasis?: true
   payDay?: true
+  pfEnabled?: true
+  pfCeiling?: true
+  pfCapWages?: true
+  pfEmployeeRate?: true
+  pfEmployerRate?: true
+  pfEpsRate?: true
+  pfEdliRate?: true
+  pfAdminRate?: true
+  esiEnabled?: true
+  esiWageLimit?: true
+  esiEmployeeRate?: true
+  esiEmployerRate?: true
+  ptEnabled?: true
+  ptState?: true
+  tdsEnabled?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -94,6 +206,22 @@ export type PayrollSettingsCountAggregateInputType = {
   institutionId?: true
   dayBasis?: true
   payDay?: true
+  pfEnabled?: true
+  pfCeiling?: true
+  pfCapWages?: true
+  pfEmployeeRate?: true
+  pfEmployerRate?: true
+  pfEpsRate?: true
+  pfEdliRate?: true
+  pfAdminRate?: true
+  esiEnabled?: true
+  esiWageLimit?: true
+  esiEmployeeRate?: true
+  esiEmployerRate?: true
+  ptEnabled?: true
+  ptState?: true
+  ptSlabs?: true
+  tdsEnabled?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -190,6 +318,22 @@ export type PayrollSettingsGroupByOutputType = {
   institutionId: string
   dayBasis: string
   payDay: number
+  pfEnabled: boolean
+  pfCeiling: number
+  pfCapWages: boolean
+  pfEmployeeRate: number
+  pfEmployerRate: number
+  pfEpsRate: number
+  pfEdliRate: number
+  pfAdminRate: number
+  esiEnabled: boolean
+  esiWageLimit: number
+  esiEmployeeRate: number
+  esiEmployerRate: number
+  ptEnabled: boolean
+  ptState: string | null
+  ptSlabs: runtime.JsonValue | null
+  tdsEnabled: boolean
   createdAt: Date
   updatedAt: Date
   _count: PayrollSettingsCountAggregateOutputType | null
@@ -222,6 +366,22 @@ export type PayrollSettingsWhereInput = {
   institutionId?: Prisma.StringFilter<"PayrollSettings"> | string
   dayBasis?: Prisma.StringFilter<"PayrollSettings"> | string
   payDay?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  pfCeiling?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfCapWages?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  pfEmployeeRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfEmployerRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfEpsRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfEdliRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfAdminRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  esiEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  esiWageLimit?: Prisma.IntFilter<"PayrollSettings"> | number
+  esiEmployeeRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  esiEmployerRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  ptEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  ptState?: Prisma.StringNullableFilter<"PayrollSettings"> | string | null
+  ptSlabs?: Prisma.JsonNullableFilter<"PayrollSettings">
+  tdsEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PayrollSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PayrollSettings"> | Date | string
 }
@@ -231,6 +391,22 @@ export type PayrollSettingsOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   dayBasis?: Prisma.SortOrder
   payDay?: Prisma.SortOrder
+  pfEnabled?: Prisma.SortOrder
+  pfCeiling?: Prisma.SortOrder
+  pfCapWages?: Prisma.SortOrder
+  pfEmployeeRate?: Prisma.SortOrder
+  pfEmployerRate?: Prisma.SortOrder
+  pfEpsRate?: Prisma.SortOrder
+  pfEdliRate?: Prisma.SortOrder
+  pfAdminRate?: Prisma.SortOrder
+  esiEnabled?: Prisma.SortOrder
+  esiWageLimit?: Prisma.SortOrder
+  esiEmployeeRate?: Prisma.SortOrder
+  esiEmployerRate?: Prisma.SortOrder
+  ptEnabled?: Prisma.SortOrder
+  ptState?: Prisma.SortOrderInput | Prisma.SortOrder
+  ptSlabs?: Prisma.SortOrderInput | Prisma.SortOrder
+  tdsEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -243,6 +419,22 @@ export type PayrollSettingsWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PayrollSettingsWhereInput | Prisma.PayrollSettingsWhereInput[]
   dayBasis?: Prisma.StringFilter<"PayrollSettings"> | string
   payDay?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  pfCeiling?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfCapWages?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  pfEmployeeRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfEmployerRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfEpsRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfEdliRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  pfAdminRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  esiEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  esiWageLimit?: Prisma.IntFilter<"PayrollSettings"> | number
+  esiEmployeeRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  esiEmployerRate?: Prisma.IntFilter<"PayrollSettings"> | number
+  ptEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  ptState?: Prisma.StringNullableFilter<"PayrollSettings"> | string | null
+  ptSlabs?: Prisma.JsonNullableFilter<"PayrollSettings">
+  tdsEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PayrollSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PayrollSettings"> | Date | string
 }, "id" | "institutionId">
@@ -252,6 +444,22 @@ export type PayrollSettingsOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   dayBasis?: Prisma.SortOrder
   payDay?: Prisma.SortOrder
+  pfEnabled?: Prisma.SortOrder
+  pfCeiling?: Prisma.SortOrder
+  pfCapWages?: Prisma.SortOrder
+  pfEmployeeRate?: Prisma.SortOrder
+  pfEmployerRate?: Prisma.SortOrder
+  pfEpsRate?: Prisma.SortOrder
+  pfEdliRate?: Prisma.SortOrder
+  pfAdminRate?: Prisma.SortOrder
+  esiEnabled?: Prisma.SortOrder
+  esiWageLimit?: Prisma.SortOrder
+  esiEmployeeRate?: Prisma.SortOrder
+  esiEmployerRate?: Prisma.SortOrder
+  ptEnabled?: Prisma.SortOrder
+  ptState?: Prisma.SortOrderInput | Prisma.SortOrder
+  ptSlabs?: Prisma.SortOrderInput | Prisma.SortOrder
+  tdsEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PayrollSettingsCountOrderByAggregateInput
@@ -269,6 +477,22 @@ export type PayrollSettingsScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"PayrollSettings"> | string
   dayBasis?: Prisma.StringWithAggregatesFilter<"PayrollSettings"> | string
   payDay?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  pfEnabled?: Prisma.BoolWithAggregatesFilter<"PayrollSettings"> | boolean
+  pfCeiling?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  pfCapWages?: Prisma.BoolWithAggregatesFilter<"PayrollSettings"> | boolean
+  pfEmployeeRate?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  pfEmployerRate?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  pfEpsRate?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  pfEdliRate?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  pfAdminRate?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  esiEnabled?: Prisma.BoolWithAggregatesFilter<"PayrollSettings"> | boolean
+  esiWageLimit?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  esiEmployeeRate?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  esiEmployerRate?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  ptEnabled?: Prisma.BoolWithAggregatesFilter<"PayrollSettings"> | boolean
+  ptState?: Prisma.StringNullableWithAggregatesFilter<"PayrollSettings"> | string | null
+  ptSlabs?: Prisma.JsonNullableWithAggregatesFilter<"PayrollSettings">
+  tdsEnabled?: Prisma.BoolWithAggregatesFilter<"PayrollSettings"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PayrollSettings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PayrollSettings"> | Date | string
 }
@@ -278,6 +502,22 @@ export type PayrollSettingsCreateInput = {
   institutionId: string
   dayBasis?: string
   payDay?: number
+  pfEnabled?: boolean
+  pfCeiling?: number
+  pfCapWages?: boolean
+  pfEmployeeRate?: number
+  pfEmployerRate?: number
+  pfEpsRate?: number
+  pfEdliRate?: number
+  pfAdminRate?: number
+  esiEnabled?: boolean
+  esiWageLimit?: number
+  esiEmployeeRate?: number
+  esiEmployerRate?: number
+  ptEnabled?: boolean
+  ptState?: string | null
+  ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tdsEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -287,6 +527,22 @@ export type PayrollSettingsUncheckedCreateInput = {
   institutionId: string
   dayBasis?: string
   payDay?: number
+  pfEnabled?: boolean
+  pfCeiling?: number
+  pfCapWages?: boolean
+  pfEmployeeRate?: number
+  pfEmployerRate?: number
+  pfEpsRate?: number
+  pfEdliRate?: number
+  pfAdminRate?: number
+  esiEnabled?: boolean
+  esiWageLimit?: number
+  esiEmployeeRate?: number
+  esiEmployerRate?: number
+  ptEnabled?: boolean
+  ptState?: string | null
+  ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tdsEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -296,6 +552,22 @@ export type PayrollSettingsUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   dayBasis?: Prisma.StringFieldUpdateOperationsInput | string
   payDay?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfCeiling?: Prisma.IntFieldUpdateOperationsInput | number
+  pfCapWages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfEmployeeRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEmployerRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEpsRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEdliRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfAdminRate?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiWageLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEmployeeRate?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEmployerRate?: Prisma.IntFieldUpdateOperationsInput | number
+  ptEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ptState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tdsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -305,6 +577,22 @@ export type PayrollSettingsUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   dayBasis?: Prisma.StringFieldUpdateOperationsInput | string
   payDay?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfCeiling?: Prisma.IntFieldUpdateOperationsInput | number
+  pfCapWages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfEmployeeRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEmployerRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEpsRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEdliRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfAdminRate?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiWageLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEmployeeRate?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEmployerRate?: Prisma.IntFieldUpdateOperationsInput | number
+  ptEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ptState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tdsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -314,6 +602,22 @@ export type PayrollSettingsCreateManyInput = {
   institutionId: string
   dayBasis?: string
   payDay?: number
+  pfEnabled?: boolean
+  pfCeiling?: number
+  pfCapWages?: boolean
+  pfEmployeeRate?: number
+  pfEmployerRate?: number
+  pfEpsRate?: number
+  pfEdliRate?: number
+  pfAdminRate?: number
+  esiEnabled?: boolean
+  esiWageLimit?: number
+  esiEmployeeRate?: number
+  esiEmployerRate?: number
+  ptEnabled?: boolean
+  ptState?: string | null
+  ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tdsEnabled?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -323,6 +627,22 @@ export type PayrollSettingsUpdateManyMutationInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   dayBasis?: Prisma.StringFieldUpdateOperationsInput | string
   payDay?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfCeiling?: Prisma.IntFieldUpdateOperationsInput | number
+  pfCapWages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfEmployeeRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEmployerRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEpsRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEdliRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfAdminRate?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiWageLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEmployeeRate?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEmployerRate?: Prisma.IntFieldUpdateOperationsInput | number
+  ptEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ptState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tdsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -332,6 +652,22 @@ export type PayrollSettingsUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   dayBasis?: Prisma.StringFieldUpdateOperationsInput | string
   payDay?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfCeiling?: Prisma.IntFieldUpdateOperationsInput | number
+  pfCapWages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pfEmployeeRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEmployerRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEpsRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfEdliRate?: Prisma.IntFieldUpdateOperationsInput | number
+  pfAdminRate?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiWageLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEmployeeRate?: Prisma.IntFieldUpdateOperationsInput | number
+  esiEmployerRate?: Prisma.IntFieldUpdateOperationsInput | number
+  ptEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ptState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  tdsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -341,12 +677,37 @@ export type PayrollSettingsCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   dayBasis?: Prisma.SortOrder
   payDay?: Prisma.SortOrder
+  pfEnabled?: Prisma.SortOrder
+  pfCeiling?: Prisma.SortOrder
+  pfCapWages?: Prisma.SortOrder
+  pfEmployeeRate?: Prisma.SortOrder
+  pfEmployerRate?: Prisma.SortOrder
+  pfEpsRate?: Prisma.SortOrder
+  pfEdliRate?: Prisma.SortOrder
+  pfAdminRate?: Prisma.SortOrder
+  esiEnabled?: Prisma.SortOrder
+  esiWageLimit?: Prisma.SortOrder
+  esiEmployeeRate?: Prisma.SortOrder
+  esiEmployerRate?: Prisma.SortOrder
+  ptEnabled?: Prisma.SortOrder
+  ptState?: Prisma.SortOrder
+  ptSlabs?: Prisma.SortOrder
+  tdsEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type PayrollSettingsAvgOrderByAggregateInput = {
   payDay?: Prisma.SortOrder
+  pfCeiling?: Prisma.SortOrder
+  pfEmployeeRate?: Prisma.SortOrder
+  pfEmployerRate?: Prisma.SortOrder
+  pfEpsRate?: Prisma.SortOrder
+  pfEdliRate?: Prisma.SortOrder
+  pfAdminRate?: Prisma.SortOrder
+  esiWageLimit?: Prisma.SortOrder
+  esiEmployeeRate?: Prisma.SortOrder
+  esiEmployerRate?: Prisma.SortOrder
 }
 
 export type PayrollSettingsMaxOrderByAggregateInput = {
@@ -354,6 +715,21 @@ export type PayrollSettingsMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   dayBasis?: Prisma.SortOrder
   payDay?: Prisma.SortOrder
+  pfEnabled?: Prisma.SortOrder
+  pfCeiling?: Prisma.SortOrder
+  pfCapWages?: Prisma.SortOrder
+  pfEmployeeRate?: Prisma.SortOrder
+  pfEmployerRate?: Prisma.SortOrder
+  pfEpsRate?: Prisma.SortOrder
+  pfEdliRate?: Prisma.SortOrder
+  pfAdminRate?: Prisma.SortOrder
+  esiEnabled?: Prisma.SortOrder
+  esiWageLimit?: Prisma.SortOrder
+  esiEmployeeRate?: Prisma.SortOrder
+  esiEmployerRate?: Prisma.SortOrder
+  ptEnabled?: Prisma.SortOrder
+  ptState?: Prisma.SortOrder
+  tdsEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -363,12 +739,36 @@ export type PayrollSettingsMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   dayBasis?: Prisma.SortOrder
   payDay?: Prisma.SortOrder
+  pfEnabled?: Prisma.SortOrder
+  pfCeiling?: Prisma.SortOrder
+  pfCapWages?: Prisma.SortOrder
+  pfEmployeeRate?: Prisma.SortOrder
+  pfEmployerRate?: Prisma.SortOrder
+  pfEpsRate?: Prisma.SortOrder
+  pfEdliRate?: Prisma.SortOrder
+  pfAdminRate?: Prisma.SortOrder
+  esiEnabled?: Prisma.SortOrder
+  esiWageLimit?: Prisma.SortOrder
+  esiEmployeeRate?: Prisma.SortOrder
+  esiEmployerRate?: Prisma.SortOrder
+  ptEnabled?: Prisma.SortOrder
+  ptState?: Prisma.SortOrder
+  tdsEnabled?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type PayrollSettingsSumOrderByAggregateInput = {
   payDay?: Prisma.SortOrder
+  pfCeiling?: Prisma.SortOrder
+  pfEmployeeRate?: Prisma.SortOrder
+  pfEmployerRate?: Prisma.SortOrder
+  pfEpsRate?: Prisma.SortOrder
+  pfEdliRate?: Prisma.SortOrder
+  pfAdminRate?: Prisma.SortOrder
+  esiWageLimit?: Prisma.SortOrder
+  esiEmployeeRate?: Prisma.SortOrder
+  esiEmployerRate?: Prisma.SortOrder
 }
 
 
@@ -378,6 +778,22 @@ export type PayrollSettingsSelect<ExtArgs extends runtime.Types.Extensions.Inter
   institutionId?: boolean
   dayBasis?: boolean
   payDay?: boolean
+  pfEnabled?: boolean
+  pfCeiling?: boolean
+  pfCapWages?: boolean
+  pfEmployeeRate?: boolean
+  pfEmployerRate?: boolean
+  pfEpsRate?: boolean
+  pfEdliRate?: boolean
+  pfAdminRate?: boolean
+  esiEnabled?: boolean
+  esiWageLimit?: boolean
+  esiEmployeeRate?: boolean
+  esiEmployerRate?: boolean
+  ptEnabled?: boolean
+  ptState?: boolean
+  ptSlabs?: boolean
+  tdsEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["payrollSettings"]>
@@ -387,6 +803,22 @@ export type PayrollSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   institutionId?: boolean
   dayBasis?: boolean
   payDay?: boolean
+  pfEnabled?: boolean
+  pfCeiling?: boolean
+  pfCapWages?: boolean
+  pfEmployeeRate?: boolean
+  pfEmployerRate?: boolean
+  pfEpsRate?: boolean
+  pfEdliRate?: boolean
+  pfAdminRate?: boolean
+  esiEnabled?: boolean
+  esiWageLimit?: boolean
+  esiEmployeeRate?: boolean
+  esiEmployerRate?: boolean
+  ptEnabled?: boolean
+  ptState?: boolean
+  ptSlabs?: boolean
+  tdsEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["payrollSettings"]>
@@ -396,6 +828,22 @@ export type PayrollSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   institutionId?: boolean
   dayBasis?: boolean
   payDay?: boolean
+  pfEnabled?: boolean
+  pfCeiling?: boolean
+  pfCapWages?: boolean
+  pfEmployeeRate?: boolean
+  pfEmployerRate?: boolean
+  pfEpsRate?: boolean
+  pfEdliRate?: boolean
+  pfAdminRate?: boolean
+  esiEnabled?: boolean
+  esiWageLimit?: boolean
+  esiEmployeeRate?: boolean
+  esiEmployerRate?: boolean
+  ptEnabled?: boolean
+  ptState?: boolean
+  ptSlabs?: boolean
+  tdsEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["payrollSettings"]>
@@ -405,11 +853,27 @@ export type PayrollSettingsSelectScalar = {
   institutionId?: boolean
   dayBasis?: boolean
   payDay?: boolean
+  pfEnabled?: boolean
+  pfCeiling?: boolean
+  pfCapWages?: boolean
+  pfEmployeeRate?: boolean
+  pfEmployerRate?: boolean
+  pfEpsRate?: boolean
+  pfEdliRate?: boolean
+  pfAdminRate?: boolean
+  esiEnabled?: boolean
+  esiWageLimit?: boolean
+  esiEmployeeRate?: boolean
+  esiEmployerRate?: boolean
+  ptEnabled?: boolean
+  ptState?: boolean
+  ptSlabs?: boolean
+  tdsEnabled?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PayrollSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "dayBasis" | "payDay" | "createdAt" | "updatedAt", ExtArgs["result"]["payrollSettings"]>
+export type PayrollSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "dayBasis" | "payDay" | "pfEnabled" | "pfCeiling" | "pfCapWages" | "pfEmployeeRate" | "pfEmployerRate" | "pfEpsRate" | "pfEdliRate" | "pfAdminRate" | "esiEnabled" | "esiWageLimit" | "esiEmployeeRate" | "esiEmployerRate" | "ptEnabled" | "ptState" | "ptSlabs" | "tdsEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["payrollSettings"]>
 
 export type $PayrollSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PayrollSettings"
@@ -419,6 +883,22 @@ export type $PayrollSettingsPayload<ExtArgs extends runtime.Types.Extensions.Int
     institutionId: string
     dayBasis: string
     payDay: number
+    pfEnabled: boolean
+    pfCeiling: number
+    pfCapWages: boolean
+    pfEmployeeRate: number
+    pfEmployerRate: number
+    pfEpsRate: number
+    pfEdliRate: number
+    pfAdminRate: number
+    esiEnabled: boolean
+    esiWageLimit: number
+    esiEmployeeRate: number
+    esiEmployerRate: number
+    ptEnabled: boolean
+    ptState: string | null
+    ptSlabs: runtime.JsonValue | null
+    tdsEnabled: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["payrollSettings"]>
@@ -848,6 +1328,22 @@ export interface PayrollSettingsFieldRefs {
   readonly institutionId: Prisma.FieldRef<"PayrollSettings", 'String'>
   readonly dayBasis: Prisma.FieldRef<"PayrollSettings", 'String'>
   readonly payDay: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly pfEnabled: Prisma.FieldRef<"PayrollSettings", 'Boolean'>
+  readonly pfCeiling: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly pfCapWages: Prisma.FieldRef<"PayrollSettings", 'Boolean'>
+  readonly pfEmployeeRate: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly pfEmployerRate: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly pfEpsRate: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly pfEdliRate: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly pfAdminRate: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly esiEnabled: Prisma.FieldRef<"PayrollSettings", 'Boolean'>
+  readonly esiWageLimit: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly esiEmployeeRate: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly esiEmployerRate: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly ptEnabled: Prisma.FieldRef<"PayrollSettings", 'Boolean'>
+  readonly ptState: Prisma.FieldRef<"PayrollSettings", 'String'>
+  readonly ptSlabs: Prisma.FieldRef<"PayrollSettings", 'Json'>
+  readonly tdsEnabled: Prisma.FieldRef<"PayrollSettings", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"PayrollSettings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PayrollSettings", 'DateTime'>
 }

@@ -49,6 +49,13 @@ export type StaffMinAggregateOutputType = {
   pan: string | null
   uan: string | null
   paymentMode: string | null
+  pfApplicable: boolean | null
+  epsApplicable: boolean | null
+  esiApplicable: boolean | null
+  esiNumber: string | null
+  ptApplicable: boolean | null
+  tdsApplicable: boolean | null
+  taxRegime: string | null
   bankDetails: string | null
   sortOrder: number | null
   userId: string | null
@@ -71,6 +78,13 @@ export type StaffMaxAggregateOutputType = {
   pan: string | null
   uan: string | null
   paymentMode: string | null
+  pfApplicable: boolean | null
+  epsApplicable: boolean | null
+  esiApplicable: boolean | null
+  esiNumber: string | null
+  ptApplicable: boolean | null
+  tdsApplicable: boolean | null
+  taxRegime: string | null
   bankDetails: string | null
   sortOrder: number | null
   userId: string | null
@@ -93,6 +107,14 @@ export type StaffCountAggregateOutputType = {
   pan: number
   uan: number
   paymentMode: number
+  pfApplicable: number
+  epsApplicable: number
+  esiApplicable: number
+  esiNumber: number
+  ptApplicable: number
+  tdsApplicable: number
+  taxRegime: number
+  taxDeclaration: number
   bankDetails: number
   sortOrder: number
   userId: number
@@ -125,6 +147,13 @@ export type StaffMinAggregateInputType = {
   pan?: true
   uan?: true
   paymentMode?: true
+  pfApplicable?: true
+  epsApplicable?: true
+  esiApplicable?: true
+  esiNumber?: true
+  ptApplicable?: true
+  tdsApplicable?: true
+  taxRegime?: true
   bankDetails?: true
   sortOrder?: true
   userId?: true
@@ -147,6 +176,13 @@ export type StaffMaxAggregateInputType = {
   pan?: true
   uan?: true
   paymentMode?: true
+  pfApplicable?: true
+  epsApplicable?: true
+  esiApplicable?: true
+  esiNumber?: true
+  ptApplicable?: true
+  tdsApplicable?: true
+  taxRegime?: true
   bankDetails?: true
   sortOrder?: true
   userId?: true
@@ -169,6 +205,14 @@ export type StaffCountAggregateInputType = {
   pan?: true
   uan?: true
   paymentMode?: true
+  pfApplicable?: true
+  epsApplicable?: true
+  esiApplicable?: true
+  esiNumber?: true
+  ptApplicable?: true
+  tdsApplicable?: true
+  taxRegime?: true
+  taxDeclaration?: true
   bankDetails?: true
   sortOrder?: true
   userId?: true
@@ -278,6 +322,14 @@ export type StaffGroupByOutputType = {
   pan: string | null
   uan: string | null
   paymentMode: string
+  pfApplicable: boolean
+  epsApplicable: boolean
+  esiApplicable: boolean
+  esiNumber: string | null
+  ptApplicable: boolean
+  tdsApplicable: boolean
+  taxRegime: string
+  taxDeclaration: runtime.JsonValue | null
   bankDetails: string | null
   sortOrder: number
   userId: string | null
@@ -323,6 +375,14 @@ export type StaffWhereInput = {
   pan?: Prisma.StringNullableFilter<"Staff"> | string | null
   uan?: Prisma.StringNullableFilter<"Staff"> | string | null
   paymentMode?: Prisma.StringFilter<"Staff"> | string
+  pfApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  epsApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  esiApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  esiNumber?: Prisma.StringNullableFilter<"Staff"> | string | null
+  ptApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  tdsApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  taxRegime?: Prisma.StringFilter<"Staff"> | string
+  taxDeclaration?: Prisma.JsonNullableFilter<"Staff">
   bankDetails?: Prisma.StringNullableFilter<"Staff"> | string | null
   sortOrder?: Prisma.IntFilter<"Staff"> | number
   userId?: Prisma.StringNullableFilter<"Staff"> | string | null
@@ -347,6 +407,14 @@ export type StaffOrderByWithRelationInput = {
   pan?: Prisma.SortOrderInput | Prisma.SortOrder
   uan?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentMode?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
+  epsApplicable?: Prisma.SortOrder
+  esiApplicable?: Prisma.SortOrder
+  esiNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  ptApplicable?: Prisma.SortOrder
+  tdsApplicable?: Prisma.SortOrder
+  taxRegime?: Prisma.SortOrder
+  taxDeclaration?: Prisma.SortOrderInput | Prisma.SortOrder
   bankDetails?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -375,6 +443,14 @@ export type StaffWhereUniqueInput = Prisma.AtLeast<{
   pan?: Prisma.StringNullableFilter<"Staff"> | string | null
   uan?: Prisma.StringNullableFilter<"Staff"> | string | null
   paymentMode?: Prisma.StringFilter<"Staff"> | string
+  pfApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  epsApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  esiApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  esiNumber?: Prisma.StringNullableFilter<"Staff"> | string | null
+  ptApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  tdsApplicable?: Prisma.BoolFilter<"Staff"> | boolean
+  taxRegime?: Prisma.StringFilter<"Staff"> | string
+  taxDeclaration?: Prisma.JsonNullableFilter<"Staff">
   bankDetails?: Prisma.StringNullableFilter<"Staff"> | string | null
   sortOrder?: Prisma.IntFilter<"Staff"> | number
   createdAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
@@ -398,6 +474,14 @@ export type StaffOrderByWithAggregationInput = {
   pan?: Prisma.SortOrderInput | Prisma.SortOrder
   uan?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentMode?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
+  epsApplicable?: Prisma.SortOrder
+  esiApplicable?: Prisma.SortOrder
+  esiNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  ptApplicable?: Prisma.SortOrder
+  tdsApplicable?: Prisma.SortOrder
+  taxRegime?: Prisma.SortOrder
+  taxDeclaration?: Prisma.SortOrderInput | Prisma.SortOrder
   bankDetails?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -428,6 +512,14 @@ export type StaffScalarWhereWithAggregatesInput = {
   pan?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
   uan?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
   paymentMode?: Prisma.StringWithAggregatesFilter<"Staff"> | string
+  pfApplicable?: Prisma.BoolWithAggregatesFilter<"Staff"> | boolean
+  epsApplicable?: Prisma.BoolWithAggregatesFilter<"Staff"> | boolean
+  esiApplicable?: Prisma.BoolWithAggregatesFilter<"Staff"> | boolean
+  esiNumber?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
+  ptApplicable?: Prisma.BoolWithAggregatesFilter<"Staff"> | boolean
+  tdsApplicable?: Prisma.BoolWithAggregatesFilter<"Staff"> | boolean
+  taxRegime?: Prisma.StringWithAggregatesFilter<"Staff"> | string
+  taxDeclaration?: Prisma.JsonNullableWithAggregatesFilter<"Staff">
   bankDetails?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"Staff"> | number
   userId?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
@@ -450,6 +542,14 @@ export type StaffCreateInput = {
   pan?: string | null
   uan?: string | null
   paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
   userId?: string | null
@@ -474,6 +574,14 @@ export type StaffUncheckedCreateInput = {
   pan?: string | null
   uan?: string | null
   paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
   userId?: string | null
@@ -498,6 +606,14 @@ export type StaffUpdateInput = {
   pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -522,6 +638,14 @@ export type StaffUncheckedUpdateInput = {
   pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -546,6 +670,14 @@ export type StaffCreateManyInput = {
   pan?: string | null
   uan?: string | null
   paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
   userId?: string | null
@@ -568,6 +700,14 @@ export type StaffUpdateManyMutationInput = {
   pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -590,6 +730,14 @@ export type StaffUncheckedUpdateManyInput = {
   pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -612,6 +760,14 @@ export type StaffCountOrderByAggregateInput = {
   pan?: Prisma.SortOrder
   uan?: Prisma.SortOrder
   paymentMode?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
+  epsApplicable?: Prisma.SortOrder
+  esiApplicable?: Prisma.SortOrder
+  esiNumber?: Prisma.SortOrder
+  ptApplicable?: Prisma.SortOrder
+  tdsApplicable?: Prisma.SortOrder
+  taxRegime?: Prisma.SortOrder
+  taxDeclaration?: Prisma.SortOrder
   bankDetails?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -638,6 +794,13 @@ export type StaffMaxOrderByAggregateInput = {
   pan?: Prisma.SortOrder
   uan?: Prisma.SortOrder
   paymentMode?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
+  epsApplicable?: Prisma.SortOrder
+  esiApplicable?: Prisma.SortOrder
+  esiNumber?: Prisma.SortOrder
+  ptApplicable?: Prisma.SortOrder
+  tdsApplicable?: Prisma.SortOrder
+  taxRegime?: Prisma.SortOrder
   bankDetails?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -660,6 +823,13 @@ export type StaffMinOrderByAggregateInput = {
   pan?: Prisma.SortOrder
   uan?: Prisma.SortOrder
   paymentMode?: Prisma.SortOrder
+  pfApplicable?: Prisma.SortOrder
+  epsApplicable?: Prisma.SortOrder
+  esiApplicable?: Prisma.SortOrder
+  esiNumber?: Prisma.SortOrder
+  ptApplicable?: Prisma.SortOrder
+  tdsApplicable?: Prisma.SortOrder
+  taxRegime?: Prisma.SortOrder
   bankDetails?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -719,6 +889,14 @@ export type StaffCreateWithoutSalaryStructuresInput = {
   pan?: string | null
   uan?: string | null
   paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
   userId?: string | null
@@ -742,6 +920,14 @@ export type StaffUncheckedCreateWithoutSalaryStructuresInput = {
   pan?: string | null
   uan?: string | null
   paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
   userId?: string | null
@@ -781,6 +967,14 @@ export type StaffUpdateWithoutSalaryStructuresInput = {
   pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -804,6 +998,14 @@ export type StaffUncheckedUpdateWithoutSalaryStructuresInput = {
   pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -827,6 +1029,14 @@ export type StaffCreateWithoutPayslipsInput = {
   pan?: string | null
   uan?: string | null
   paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
   userId?: string | null
@@ -850,6 +1060,14 @@ export type StaffUncheckedCreateWithoutPayslipsInput = {
   pan?: string | null
   uan?: string | null
   paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
   userId?: string | null
@@ -889,6 +1107,14 @@ export type StaffUpdateWithoutPayslipsInput = {
   pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -912,6 +1138,14 @@ export type StaffUncheckedUpdateWithoutPayslipsInput = {
   pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -975,6 +1209,14 @@ export type StaffSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   pan?: boolean
   uan?: boolean
   paymentMode?: boolean
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: boolean
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: boolean
+  taxDeclaration?: boolean
   bankDetails?: boolean
   sortOrder?: boolean
   userId?: boolean
@@ -1000,6 +1242,14 @@ export type StaffSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   pan?: boolean
   uan?: boolean
   paymentMode?: boolean
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: boolean
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: boolean
+  taxDeclaration?: boolean
   bankDetails?: boolean
   sortOrder?: boolean
   userId?: boolean
@@ -1022,6 +1272,14 @@ export type StaffSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   pan?: boolean
   uan?: boolean
   paymentMode?: boolean
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: boolean
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: boolean
+  taxDeclaration?: boolean
   bankDetails?: boolean
   sortOrder?: boolean
   userId?: boolean
@@ -1044,6 +1302,14 @@ export type StaffSelectScalar = {
   pan?: boolean
   uan?: boolean
   paymentMode?: boolean
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: boolean
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: boolean
+  taxDeclaration?: boolean
   bankDetails?: boolean
   sortOrder?: boolean
   userId?: boolean
@@ -1051,7 +1317,7 @@ export type StaffSelectScalar = {
   updatedAt?: boolean
 }
 
-export type StaffOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "email" | "phone" | "designation" | "staffType" | "status" | "joinedAt" | "exitDate" | "employeeCode" | "pan" | "uan" | "paymentMode" | "bankDetails" | "sortOrder" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["staff"]>
+export type StaffOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "email" | "phone" | "designation" | "staffType" | "status" | "joinedAt" | "exitDate" | "employeeCode" | "pan" | "uan" | "paymentMode" | "pfApplicable" | "epsApplicable" | "esiApplicable" | "esiNumber" | "ptApplicable" | "tdsApplicable" | "taxRegime" | "taxDeclaration" | "bankDetails" | "sortOrder" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["staff"]>
 export type StaffInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salaryStructures?: boolean | Prisma.Staff$salaryStructuresArgs<ExtArgs>
   payslips?: boolean | Prisma.Staff$payslipsArgs<ExtArgs>
@@ -1081,6 +1347,14 @@ export type $StaffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     pan: string | null
     uan: string | null
     paymentMode: string
+    pfApplicable: boolean
+    epsApplicable: boolean
+    esiApplicable: boolean
+    esiNumber: string | null
+    ptApplicable: boolean
+    tdsApplicable: boolean
+    taxRegime: string
+    taxDeclaration: runtime.JsonValue | null
     bankDetails: string | null
     sortOrder: number
     userId: string | null
@@ -1525,6 +1799,14 @@ export interface StaffFieldRefs {
   readonly pan: Prisma.FieldRef<"Staff", 'String'>
   readonly uan: Prisma.FieldRef<"Staff", 'String'>
   readonly paymentMode: Prisma.FieldRef<"Staff", 'String'>
+  readonly pfApplicable: Prisma.FieldRef<"Staff", 'Boolean'>
+  readonly epsApplicable: Prisma.FieldRef<"Staff", 'Boolean'>
+  readonly esiApplicable: Prisma.FieldRef<"Staff", 'Boolean'>
+  readonly esiNumber: Prisma.FieldRef<"Staff", 'String'>
+  readonly ptApplicable: Prisma.FieldRef<"Staff", 'Boolean'>
+  readonly tdsApplicable: Prisma.FieldRef<"Staff", 'Boolean'>
+  readonly taxRegime: Prisma.FieldRef<"Staff", 'String'>
+  readonly taxDeclaration: Prisma.FieldRef<"Staff", 'Json'>
   readonly bankDetails: Prisma.FieldRef<"Staff", 'String'>
   readonly sortOrder: Prisma.FieldRef<"Staff", 'Int'>
   readonly userId: Prisma.FieldRef<"Staff", 'String'>

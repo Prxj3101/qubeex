@@ -5,7 +5,7 @@ import { academicDb } from "../../utils/academicContext";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError, NotFoundError, ConflictError } from "../../utils/errors";
 import { calculateSalary, structureForMonth, StructureItem } from "../../services/payrollCalc.service";
-import { loadComponents, loadPayrollSettings, readStaffBankDetails, writeStaffBankDetails, loadLinkedProfiles } from "../../services/payrollData.service";
+import { loadComponents, loadPayrollSettings, readStaffBankDetails, writeStaffBankDetails, loadLinkedProfiles, pfFor, statutoryFor } from "../../services/payrollData.service";
 
 const STAFF_TYPES = ["TEACHER", "ADMIN", "SUB_ADMIN", "HELPER", "OTHER"] as const;
 const PAYMENT_MODES = ["BANK", "CASH", "CHEQUE"] as const;
@@ -29,6 +29,13 @@ const optionalEmail = z.union([z.string().trim().email(), z.literal("")]).nullab
 // Optional text fields: "" from a cleared form input is stored as null.
 const optionalText = (max: number) => z.string().max(max).trim().optional().transform((v) => (v === "" ? null : v));
 
+// Yearly amounts in paise, for the old tax regime / a previous job this financial year.
+const money = z.number().int().min(0).max(1_000_000_000_00);
+const taxDeclarationSchema = z.object({
+  sec80C: money.optional(), sec80D: money.optional(), hraExempt: money.optional(), otherDeductions: money.optional(),
+  prevEmployerIncome: money.optional(), prevEmployerTds: money.optional(), tdsBeforeQubeex: money.optional(),
+});
+
 const createStaffSchema = z.object({
   name: z.string().min(1).max(150).trim(),
   email: optionalEmail,
@@ -41,6 +48,14 @@ const createStaffSchema = z.object({
   pan: optionalText(10),
   uan: optionalText(12),
   paymentMode: z.enum(PAYMENT_MODES).optional(),
+  pfApplicable: z.boolean().optional(),
+  epsApplicable: z.boolean().optional(),
+  esiApplicable: z.boolean().optional(),
+  ptApplicable: z.boolean().optional(),
+  tdsApplicable: z.boolean().optional(),
+  taxRegime: z.enum(["NEW", "OLD"]).optional(),
+  taxDeclaration: taxDeclarationSchema.optional(),
+  esiNumber: optionalText(20),
   bankDetails: bankDetailsSchema.nullable().optional(),
 });
 
@@ -57,6 +72,14 @@ const updateStaffSchema = z.object({
   pan: optionalText(10),
   uan: optionalText(12),
   paymentMode: z.enum(PAYMENT_MODES).optional(),
+  pfApplicable: z.boolean().optional(),
+  epsApplicable: z.boolean().optional(),
+  esiApplicable: z.boolean().optional(),
+  ptApplicable: z.boolean().optional(),
+  tdsApplicable: z.boolean().optional(),
+  taxRegime: z.enum(["NEW", "OLD"]).optional(),
+  taxDeclaration: taxDeclarationSchema.optional(),
+  esiNumber: optionalText(20),
   bankDetails: bankDetailsSchema.nullable().optional(),
 });
 
@@ -94,7 +117,17 @@ export const listStaff = async (req: AuthRequest, res: Response, next: NextFunct
       // Full-month salary (no LOP / joining proration) — what the person
       // earns in a normal month on their current structure.
       const monthly = current
-        ? calculateSalary({ month, items: current.items as unknown as StructureItem[], components, dayBasis: settings.dayBasis })
+        ? calculateSalary({ month, items: current.items as unknown as StructureItem[], components, dayBasis: settings.dayBasis, ...statutoryFor(settings, s) })
+        : null;
+      // No salary for this month yet but one starts later (e.g. set in Sept to
+      // apply from 1 Oct): send it so the list shows "starts 1 Oct" instead of
+      // "No salary yet".
+      const upcoming = current
+        ? null
+        : [...(byStaff.get(s.id) ?? [])].sort((a, b) => a.effectiveFrom.getTime() - b.effectiveFrom.getTime())[0] ?? null;
+      const upcomingMonth = upcoming ? upcoming.effectiveFrom.toISOString().slice(0, 7) : null;
+      const upcomingCalc = upcoming && upcomingMonth
+        ? calculateSalary({ month: upcomingMonth, items: upcoming.items as unknown as StructureItem[], components, dayBasis: settings.dayBasis, ...statutoryFor(settings, s) })
         : null;
       return {
         ...presentStaff(s),
@@ -103,7 +136,10 @@ export const listStaff = async (req: AuthRequest, res: Response, next: NextFunct
         profileDesignation: profile?.designation ?? null,
         salaryStructure: current,
         monthlySalary: monthly
-          ? { grossPay: monthly.grossPay, netPay: monthly.netPay, earnings: monthly.earnings, deductions: monthly.deductions }
+          ? { grossPay: monthly.grossPay, netPay: monthly.netPay, earnings: monthly.earnings, deductions: monthly.deductions, employer: monthly.employer }
+          : null,
+        upcomingSalary: upcoming && upcomingCalc
+          ? { startsFrom: upcoming.effectiveFrom, grossPay: upcomingCalc.grossPay, netPay: upcomingCalc.netPay }
           : null,
         salaryVersions: (byStaff.get(s.id) ?? []).length,
       };
@@ -227,6 +263,14 @@ export const createStaff = async (req: AuthRequest, res: Response, next: NextFun
         pan: data.pan ? data.pan.toUpperCase() : null,
         uan: data.uan ?? null,
         paymentMode: data.paymentMode ?? "BANK",
+        pfApplicable: data.pfApplicable ?? true,
+        epsApplicable: data.epsApplicable ?? true,
+        esiApplicable: data.esiApplicable ?? true,
+        ptApplicable: data.ptApplicable ?? true,
+        esiNumber: data.esiNumber ?? null,
+        tdsApplicable: data.tdsApplicable ?? true,
+        taxRegime: data.taxRegime ?? "NEW",
+        ...(data.taxDeclaration ? { taxDeclaration: data.taxDeclaration } : {}),
         bankDetails: writeStaffBankDetails(data.bankDetails ?? null),
         joinedAt: data.joinedAt ? toDateOnly(data.joinedAt) : null,
       },

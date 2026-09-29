@@ -16,6 +16,8 @@ export interface PayslipPdfParams {
   basisDays?: number;
   lopDays?: number;
   bankDetails?: { accountName: string; accountNumber: string; ifsc: string; bankName: string } | null;
+  uan?: string | null;
+  employer?: { label: string; amount: number }[]; // employer PF etc. - shown for information, not deducted
 }
 
 function monthLabel(month: string): string {
@@ -86,6 +88,19 @@ export async function generatePayslipPdf(params: PayslipPdfParams): Promise<Buff
     doc.fillColor("#1a7a1a").text(`Net Pay: ${formatRupees(params.netPay)}`, startX + colWidth + 20, y, { width: colWidth });
     doc.fillColor("#1a1a1a");
     y += 30;
+
+    // Employer contributions (PF etc.): the school's cost on top of the salary, not taken from it.
+    if (params.employer && params.employer.length > 0) {
+      doc.font("Helvetica-Bold").fontSize(10).text("Employer Contributions (paid by the school, not deducted)", startX, y);
+      y += 16;
+      doc.font("Helvetica").fontSize(9);
+      for (const l of params.employer) {
+        doc.text(`${l.label}: ${formatRupees(l.amount)}`, startX, y);
+        y += 14;
+      }
+      if (params.uan) { doc.text(`UAN: ${params.uan}`, startX, y); y += 14; }
+      y += 10;
+    }
 
     if (params.bankDetails) {
       doc.font("Helvetica-Bold").fontSize(10).text("Bank Details (for reference)", startX, y);

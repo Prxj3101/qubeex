@@ -5,7 +5,7 @@ import { prisma } from "../utils/prisma";
 import { generateSignedAvatarUrlsBatch } from "./storage.service";
 import { BadRequestError } from "../utils/errors";
 import { encryptField, decryptFieldSafe, isFieldEncryptionConfigured } from "./fieldEncryption.service";
-import type { CalcComponent, CalcType, ComponentType, DayBasis } from "./payrollCalc.service";
+import type { CalcComponent, CalcType, ComponentType, DayBasis, PfConfig, EsiConfig, PtConfig, PtSlab } from "./payrollCalc.service";
 
 export interface BankDetails {
   accountName: string;
@@ -14,9 +14,75 @@ export interface BankDetails {
   bankName: string;
 }
 
-export async function loadPayrollSettings(institutionId: string): Promise<{ dayBasis: DayBasis; payDay: number }> {
+export interface PayrollSettingsData {
+  dayBasis: DayBasis;
+  payDay: number;
+  pfEnabled: boolean;
+  pf: PfConfig; // rules used when PF applies
+  esiEnabled: boolean;
+  esi: EsiConfig;
+  ptEnabled: boolean;
+  ptState: string | null;
+  pt: PtConfig;
+  tdsEnabled: boolean;
+}
+
+// Maharashtra Professional Tax (men's slab): up to ₹7,500 nil, ₹7,501-10,000 ₹175,
+// above ₹10,000 ₹200 (₹300 in February) - ₹2,500 a year. Women earning up to
+// ₹25,000 are exempt: switch PT off for them on the Staff page.
+export const PT_PRESETS: Record<string, PtSlab[]> = {
+  MAHARASHTRA: [
+    { from: 0, amount: 0 },
+    { from: 750100, amount: 17500 },
+    { from: 1000100, amount: 20000, febAmount: 30000 },
+  ],
+};
+
+export async function loadPayrollSettings(institutionId: string): Promise<PayrollSettingsData> {
   const s = await academicDb().payrollSettings.findUnique({ where: { institutionId } });
-  return { dayBasis: (s?.dayBasis as DayBasis) ?? "CALENDAR", payDay: s?.payDay ?? 1 };
+  return {
+    dayBasis: (s?.dayBasis as DayBasis) ?? "CALENDAR",
+    payDay: s?.payDay ?? 1,
+    pfEnabled: s?.pfEnabled ?? false,
+    pf: {
+      ceiling: s?.pfCeiling ?? 2500000,
+      capWages: s?.pfCapWages ?? true,
+      employeeRate: s?.pfEmployeeRate ?? 1200,
+      employerRate: s?.pfEmployerRate ?? 1200,
+      epsRate: s?.pfEpsRate ?? 833,
+      edliRate: s?.pfEdliRate ?? 50,
+      adminRate: s?.pfAdminRate ?? 50,
+    },
+    esiEnabled: s?.esiEnabled ?? false,
+    esi: {
+      wageLimit: s?.esiWageLimit ?? 2100000,
+      employeeRate: s?.esiEmployeeRate ?? 75,
+      employerRate: s?.esiEmployerRate ?? 325,
+    },
+    ptEnabled: s?.ptEnabled ?? false,
+    ptState: s?.ptState ?? null,
+    tdsEnabled: s?.tdsEnabled ?? false,
+    pt: { slabs: Array.isArray(s?.ptSlabs) && (s!.ptSlabs as unknown[]).length ? (s!.ptSlabs as unknown as PtSlab[]) : (PT_PRESETS[s?.ptState ?? ""] ?? []) },
+  };
+}
+
+// All statutory rules (PF / ESI / PT) for one person, ready to pass to calculateSalary.
+export function statutoryFor(
+  settings: PayrollSettingsData,
+  staff: { pfApplicable?: boolean | null; epsApplicable?: boolean | null; esiApplicable?: boolean | null; ptApplicable?: boolean | null } | null | undefined,
+): { pf: PfConfig | null; esi: EsiConfig | null; pt: PtConfig | null } {
+  return {
+    pf: pfFor(settings, staff),
+    esi: settings.esiEnabled && staff?.esiApplicable !== false ? settings.esi : null,
+    pt: settings.ptEnabled && staff?.ptApplicable !== false && settings.pt.slabs.length ? settings.pt : null,
+  };
+}
+
+// PF rules for one person: only when the school has PF on and the person isn't excluded.
+// No EPS for this person (e.g. 58+): EPS rate 0, so the whole employer 12% goes to EPF.
+export function pfFor(settings: PayrollSettingsData, staff: { pfApplicable?: boolean | null; epsApplicable?: boolean | null } | null | undefined): PfConfig | null {
+  if (!settings.pfEnabled || staff?.pfApplicable === false) return null;
+  return staff?.epsApplicable === false ? { ...settings.pf, epsRate: 0 } : settings.pf;
 }
 
 export async function loadComponents(institutionId: string): Promise<CalcComponent[]> {
@@ -31,6 +97,7 @@ export async function loadComponents(institutionId: string): Promise<CalcCompone
     calcType: c.calcType as CalcType,
     isBasic: c.isBasic,
     lopApplicable: c.lopApplicable,
+    pfApplicable: c.pfApplicable,
     sortOrder: c.sortOrder,
   }));
 }

@@ -3,7 +3,7 @@ import { prisma } from "../utils/prisma";
 import { getAcademicClient } from "./tenantDb.service";
 import { getCache, setCache } from "../utils/cache";
 import { recordAiUsage, getInstitutionAiTokenLimit, getInstitutionPoolUsed } from "./ai-usage.service";
-import { computeDefaultAcademicYearWindow } from "../utils/academicYear";
+import { getCurrentAcademicYear } from "../utils/academicYear";
 
 // ── Raw fee-collection stats (shared by the admin's own view and the
 // cross-institution peer-benchmark pool) ───────────────────────────────────
@@ -40,35 +40,14 @@ const MONTH_NAMES = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-// Resolves the institution's current academic year using the *given* client
-// rather than the ambient request-scoped one (utils/academicYear.ts's
-// getCurrentAcademicYear relies on academicDb(), which is bound to whichever
-// institution's client is active in the current async scope). This function
-// is also called from getPeerAggregate's cross-institution loop below, which
-// deliberately uses each peer institution's own client (possibly a separate
-// BYOD database) rather than the calling admin's — using the ambient client
-// there would silently query the wrong institution's database.
-async function resolveCurrentAcademicYearForClient(client: AcademicClient, institutionId: string) {
-  const existing = await client.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
-  if (existing) return existing;
-  const { label, startDate, endDate } = computeDefaultAcademicYearWindow();
-  try {
-    return await client.academicYear.create({
-      data: { institutionId, label, startDate, endDate, isCurrent: true, status: "ACTIVE" },
-    });
-  } catch (err) {
-    const retry = await client.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
-    if (retry) return retry;
-    throw err;
-  }
-}
-
 // Same headcount-based "collection rate" convention as the existing
 // /admin/insights/fees endpoint (paid students / total students, not rupee
 // amounts) — kept consistent so the AI card's numbers never disagree with
 // the donut/accordion above it.
 export async function computeInstitutionFeeStats(client: AcademicClient, institutionId: string): Promise<FeeStatsResult> {
-  const currentYear = await resolveCurrentAcademicYearForClient(client, institutionId);
+  // Explicit client, not the ambient academicDb(): this is also called from
+  // getPeerAggregate's cross-institution loop with each peer's own client.
+  const currentYear = await getCurrentAcademicYear(institutionId, client);
   const standards = await client.standard.findMany({
     where: { institutionId },
     select: {

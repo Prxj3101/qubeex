@@ -389,7 +389,7 @@ router.get("/attendance", ...S, async (req: AuthRequest, res: Response, next: Ne
 // ── GET /student/marksheet?academicYear= ──────────────────────────────────────
 // Returns the logged-in student's own results, but ONLY if the class marksheet
 // has been PUBLISHED. Draft marksheets are never visible to students.
-function getCurrentAcademicYear(): string {
+function defaultYearLabel(): string {
   const now = new Date();
   const month = now.getMonth();
   const year = now.getFullYear();
@@ -405,7 +405,7 @@ function gradeFor(pct: number | null, scale: GradeScaleEntry[]): string {
 router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { userId, institutionId } = req.user!;
-    const academicYear = (req.query.academicYear as string) || getCurrentAcademicYear();
+    const academicYear = (req.query.academicYear as string) || defaultYearLabel();
 
     const student = await academicDb().student.findFirst({
       where: { userId, institutionId },

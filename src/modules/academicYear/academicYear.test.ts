@@ -26,6 +26,14 @@ describe("Academic year routes", () => {
     adminToken = jwt.sign({ userId: adminUser.id, role: "ADMIN", institutionId }, process.env.JWT_SECRET!);
   });
 
+  afterAll(async () => {
+    if (!institutionId) { await prisma.$disconnect(); return; }
+    await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
+    await prisma.institution.delete({ where: { id: institutionId } });
+    await prisma.$disconnect();
+  });
+
   it("lazily returns a default current year on first list call", async () => {
     const res = await request(app)
       .get("/api/academic-years")
@@ -97,5 +105,22 @@ describe("Academic year routes", () => {
     expect(statuses).toEqual([201, 201]); // both allowed to create years, but...
     const current = await prisma.academicYear.findMany({ where: { institutionId, isCurrent: true } });
     expect(current.length).toBe(1); // ...only one ends up current
+  });
+
+  it("returns 409, not a 500, when the label is already used by this institution", async () => {
+    // "2099-00" was created by the rollover test above.
+    const currentBefore = await prisma.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
+
+    const res = await request(app)
+      .post("/api/admin/academic-years")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send({ label: "2099-00", startDate: "2105-06-01T00:00:00.000Z", endDate: "2106-05-31T00:00:00.000Z" });
+    expect(res.status).toBe(409);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toBe("An academic year with this label already exists");
+
+    // Rolled back: the current year is untouched.
+    const currentAfter = await prisma.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
+    expect(currentAfter?.id).toBe(currentBefore?.id);
   });
 });

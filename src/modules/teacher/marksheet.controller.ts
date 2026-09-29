@@ -399,7 +399,7 @@ async function assertSubjectTeacher(
   }
 }
 
-function getCurrentAcademicYear(): string {
+function defaultYearLabel(): string {
   const now = new Date();
   const month = now.getMonth(); // 0-indexed, June = 5
   const year = now.getFullYear();
@@ -1390,7 +1390,7 @@ export async function getDivisionMarksheet(
       return;
     }
     const divisionId = req.params.divisionId as string;
-    const academicYear = (req.query.academicYear as string) || getCurrentAcademicYear();
+    const academicYear = (req.query.academicYear as string) || defaultYearLabel();
 
     const teacherId = await getTeacherId(userId, institutionId);
 

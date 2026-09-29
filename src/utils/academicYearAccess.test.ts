@@ -51,6 +51,22 @@ describe("assertAcademicYearAccess", () => {
     await prisma.studentEnrollment.create({ data: { institutionId: institutionA, studentId, academicYearId: yearA, standardId: standard.id, divisionId: divisionA, status: "ACTIVE" } });
   });
 
+  afterAll(async () => {
+    // Reverse dependency order; AcademicYear before Institution.
+    for (const iId of [institutionA, institutionB].filter(Boolean)) {
+      await prisma.studentEnrollment.deleteMany({ where: { institutionId: iId } });
+      await prisma.divisionAssignment.deleteMany({ where: { institutionId: iId } });
+      await prisma.student.deleteMany({ where: { institutionId: iId } });
+      await prisma.teacher.deleteMany({ where: { institutionId: iId } });
+      await prisma.division.deleteMany({ where: { institutionId: iId } });
+      await prisma.standard.deleteMany({ where: { institutionId: iId } });
+      await prisma.user.deleteMany({ where: { institutionId: iId } });
+      await prisma.academicYear.deleteMany({ where: { institutionId: iId } });
+      await prisma.institution.delete({ where: { id: iId } });
+    }
+    await prisma.$disconnect();
+  });
+
   it("rejects a year that belongs to a different institution", async () => {
     await runWithAcademicClient(prisma, async () => {
       await expect(

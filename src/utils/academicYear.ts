@@ -1,4 +1,5 @@
 import { academicDb } from "./academicContext";
+import type { AcademicClient } from "./academicContext";
 import type { AcademicYear } from "../generated/prisma/client";
 import { Prisma } from "../generated/prisma/client";
 
@@ -15,8 +16,15 @@ export function computeDefaultAcademicYearWindow(
   };
 }
 
-export async function getCurrentAcademicYear(institutionId: string): Promise<AcademicYear> {
-  const db = academicDb();
+// `client` defaults to the ambient request-scoped academicDb(). Pass an explicit
+// client when resolving a year for an institution other than the one bound to
+// the current async scope (e.g. feeInsights' cross-institution peer loop, where
+// each peer may live in its own BYOD database).
+export async function getCurrentAcademicYear(
+  institutionId: string,
+  client: AcademicClient = academicDb()
+): Promise<AcademicYear> {
+  const db = client;
   const existing = await db.academicYear.findFirst({ where: { institutionId, isCurrent: true } });
   if (existing) return existing;
 

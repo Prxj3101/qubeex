@@ -256,4 +256,37 @@ describe("Teacher promotion routes", () => {
       .send({ outcomes: [{ studentId: studentDId, outcome: "PROMOTED" }], targetDivisionId: division6AId });
     expect(res.status).toBe(400);
   });
+
+  it("returns 409, not a 500, when a REPEATED student is processed by a second batch in the same year", async () => {
+    // A REPEATED student stays ACTIVE in the source division, so a second batch
+    // for the same division in the same academic year reaches the
+    // StudentEnrollment (studentId, academicYearId) unique constraint.
+    const suffix = `${Date.now()}`;
+    const studentUserE = await prisma.user.create({
+      data: { name: "Student E", email: `student-e-promo-${suffix}@example.com`, role: "STUDENT", institutionId, isActive: true },
+    });
+    const studentE = await prisma.student.create({
+      data: { studentId: `STU-E-${suffix}`, userId: studentUserE.id, institutionId, standardId: standard5Id, divisionId: division5BId, rollNo: "3" },
+    });
+
+    const first = await request(app)
+      .post(`/api/teacher/promotions/divisions/${division5BId}`)
+      .set("Authorization", `Bearer ${teacherToken}`)
+      .send({ outcomes: [{ studentId: studentE.id, outcome: "REPEATED" }] });
+    expect(first.status).toBe(200);
+
+    const batchesBefore = await prisma.promotionBatch.count({ where: { institutionId } });
+
+    const second = await request(app)
+      .post(`/api/teacher/promotions/divisions/${division5BId}`)
+      .set("Authorization", `Bearer ${teacherToken}`)
+      .send({ outcomes: [{ studentId: studentE.id, outcome: "REPEATED" }] });
+    expect(second.status).toBe(409);
+    expect(second.body.success).toBe(false);
+    expect(second.body.error).toBe("This student already has an enrollment record for this academic year");
+
+    // The whole second batch rolled back — no orphaned PromotionBatch row.
+    const batchesAfter = await prisma.promotionBatch.count({ where: { institutionId } });
+    expect(batchesAfter).toBe(batchesBefore);
+  });
 });

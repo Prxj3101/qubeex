@@ -20,6 +20,19 @@ router.get("/academic-years", ...ANY, async (req: AuthRequest, res: Response, ne
   }
 });
 
+// KNOWN LIMITATION — do not call this against a real institution's production
+// data until Phase 2 of the academic-year feature ships. The endpoint itself is
+// correct and race-safe, but rolling a live institution over today exposes gaps
+// that have not been addressed yet:
+//   - Fee structures are NOT cloned into the new year. Fee reads are scoped to
+//     the current year, so every division will show no fee structure until an
+//     admin re-enters them.
+//   - StudentEnrollment semantics for promoted students (whether a promotion
+//     batch records where the student was vs. where they are going, relative
+//     to the rollover) are still being finalized, so enrollment history written
+//     around a rollover may need correcting later.
+//   - Existing teacher assignments are not yet year-filtered on read.
+// This is documentation only; the route is intentionally left fully functional.
 router.post("/admin/academic-years", ...ADMIN, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId } = req.user!;
@@ -32,6 +45,8 @@ router.post("/admin/academic-years", ...ADMIN, async (req: AuthRequest, res: Res
       res.status(400).json({ success: false, error: "Invalid input" });
       return;
     }
+    const e = err as { status?: number; message?: string };
+    if (e.status) { res.status(e.status).json({ success: false, error: e.message }); return; }
     next(err);
   }
 });

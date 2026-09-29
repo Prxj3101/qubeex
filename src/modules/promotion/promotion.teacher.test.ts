@@ -209,8 +209,14 @@ describe("Teacher promotion routes", () => {
       .send({ outcomes: [{ studentId: studentAId, outcome: "PROMOTED" }], targetDivisionId: division6AId });
     expect(res.status).toBe(200);
 
+    // PROMOTED students' enrollment belongs to the year AFTER the one being
+    // closed out (currentYear), not currentYear itself.
+    const nextWindow = computeDefaultAcademicYearWindow(new Date(currentYear!.endDate.getTime() + 24 * 60 * 60 * 1000));
+    const nextYear = await prisma.academicYear.findFirst({ where: { institutionId, label: nextWindow.label } });
+    expect(nextYear).not.toBeNull();
+
     const enrollment = await prisma.studentEnrollment.findUnique({
-      where: { studentId_academicYearId: { studentId: studentAId, academicYearId: currentYear!.id } },
+      where: { studentId_academicYearId: { studentId: studentAId, academicYearId: nextYear!.id } },
     });
     expect(enrollment).not.toBeNull();
     expect(enrollment!.divisionId).toBe(division6AId);
@@ -234,8 +240,12 @@ describe("Teacher promotion routes", () => {
       .send({ outcomes: [{ studentId: studentCId, outcome: "PROMOTED" }], targetDivisionId: division6AId });
     expect(res.status).toBe(200);
 
+    const nextWindow = computeDefaultAcademicYearWindow(new Date(currentYear!.endDate.getTime() + 24 * 60 * 60 * 1000));
+    const nextYear = await prisma.academicYear.findFirst({ where: { institutionId, label: nextWindow.label } });
+    expect(nextYear).not.toBeNull();
+
     const enrollment = await prisma.studentEnrollment.findUnique({
-      where: { studentId_academicYearId: { studentId: studentCId, academicYearId: currentYear!.id } },
+      where: { studentId_academicYearId: { studentId: studentCId, academicYearId: nextYear!.id } },
     });
     expect(enrollment).not.toBeNull();
     expect(enrollment!.divisionId).toBe(division6AId);

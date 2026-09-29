@@ -55,6 +55,7 @@ describe("Teacher — roll number uniqueness within a division", () => {
 
   afterAll(async () => {
     if (!institutionId) { await prisma.$disconnect(); return; }
+    await prisma.studentEnrollment.deleteMany({ where: { institutionId } });
     await prisma.student.deleteMany({ where: { institutionId } });
     await prisma.divisionAssignment.deleteMany({ where: { institutionId } });
     await prisma.teacher.deleteMany({ where: { institutionId } });

@@ -30,7 +30,6 @@ export type PromotionBatchMinAggregateOutputType = {
   fromStandardId: string | null
   fromDivisionId: string | null
   toDivisionId: string | null
-  academicYear: string | null
   academicYearId: string | null
   triggeredById: string | null
   triggeredByRole: string | null
@@ -44,7 +43,6 @@ export type PromotionBatchMaxAggregateOutputType = {
   fromStandardId: string | null
   fromDivisionId: string | null
   toDivisionId: string | null
-  academicYear: string | null
   academicYearId: string | null
   triggeredById: string | null
   triggeredByRole: string | null
@@ -58,7 +56,6 @@ export type PromotionBatchCountAggregateOutputType = {
   fromStandardId: number
   fromDivisionId: number
   toDivisionId: number
-  academicYear: number
   academicYearId: number
   triggeredById: number
   triggeredByRole: number
@@ -74,7 +71,6 @@ export type PromotionBatchMinAggregateInputType = {
   fromStandardId?: true
   fromDivisionId?: true
   toDivisionId?: true
-  academicYear?: true
   academicYearId?: true
   triggeredById?: true
   triggeredByRole?: true
@@ -88,7 +84,6 @@ export type PromotionBatchMaxAggregateInputType = {
   fromStandardId?: true
   fromDivisionId?: true
   toDivisionId?: true
-  academicYear?: true
   academicYearId?: true
   triggeredById?: true
   triggeredByRole?: true
@@ -102,7 +97,6 @@ export type PromotionBatchCountAggregateInputType = {
   fromStandardId?: true
   fromDivisionId?: true
   toDivisionId?: true
-  academicYear?: true
   academicYearId?: true
   triggeredById?: true
   triggeredByRole?: true
@@ -189,8 +183,7 @@ export type PromotionBatchGroupByOutputType = {
   fromStandardId: string
   fromDivisionId: string
   toDivisionId: string | null
-  academicYear: string
-  academicYearId: string | null
+  academicYearId: string
   triggeredById: string
   triggeredByRole: string
   undoneAt: Date | null
@@ -224,13 +217,12 @@ export type PromotionBatchWhereInput = {
   fromStandardId?: Prisma.StringFilter<"PromotionBatch"> | string
   fromDivisionId?: Prisma.StringFilter<"PromotionBatch"> | string
   toDivisionId?: Prisma.StringNullableFilter<"PromotionBatch"> | string | null
-  academicYear?: Prisma.StringFilter<"PromotionBatch"> | string
-  academicYearId?: Prisma.StringNullableFilter<"PromotionBatch"> | string | null
+  academicYearId?: Prisma.StringFilter<"PromotionBatch"> | string
   triggeredById?: Prisma.StringFilter<"PromotionBatch"> | string
   triggeredByRole?: Prisma.StringFilter<"PromotionBatch"> | string
   undoneAt?: Prisma.DateTimeNullableFilter<"PromotionBatch"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PromotionBatch"> | Date | string
-  academicYear2?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
+  academicYear?: Prisma.XOR<Prisma.AcademicYearScalarRelationFilter, Prisma.AcademicYearWhereInput>
   outcomes?: Prisma.StudentPromotionOutcomeListRelationFilter
 }
 
@@ -240,13 +232,12 @@ export type PromotionBatchOrderByWithRelationInput = {
   fromStandardId?: Prisma.SortOrder
   fromDivisionId?: Prisma.SortOrder
   toDivisionId?: Prisma.SortOrderInput | Prisma.SortOrder
-  academicYear?: Prisma.SortOrder
-  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   triggeredById?: Prisma.SortOrder
   triggeredByRole?: Prisma.SortOrder
   undoneAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  academicYear2?: Prisma.AcademicYearOrderByWithRelationInput
+  academicYear?: Prisma.AcademicYearOrderByWithRelationInput
   outcomes?: Prisma.StudentPromotionOutcomeOrderByRelationAggregateInput
 }
 
@@ -259,13 +250,12 @@ export type PromotionBatchWhereUniqueInput = Prisma.AtLeast<{
   fromStandardId?: Prisma.StringFilter<"PromotionBatch"> | string
   fromDivisionId?: Prisma.StringFilter<"PromotionBatch"> | string
   toDivisionId?: Prisma.StringNullableFilter<"PromotionBatch"> | string | null
-  academicYear?: Prisma.StringFilter<"PromotionBatch"> | string
-  academicYearId?: Prisma.StringNullableFilter<"PromotionBatch"> | string | null
+  academicYearId?: Prisma.StringFilter<"PromotionBatch"> | string
   triggeredById?: Prisma.StringFilter<"PromotionBatch"> | string
   triggeredByRole?: Prisma.StringFilter<"PromotionBatch"> | string
   undoneAt?: Prisma.DateTimeNullableFilter<"PromotionBatch"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PromotionBatch"> | Date | string
-  academicYear2?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
+  academicYear?: Prisma.XOR<Prisma.AcademicYearScalarRelationFilter, Prisma.AcademicYearWhereInput>
   outcomes?: Prisma.StudentPromotionOutcomeListRelationFilter
 }, "id">
 
@@ -275,8 +265,7 @@ export type PromotionBatchOrderByWithAggregationInput = {
   fromStandardId?: Prisma.SortOrder
   fromDivisionId?: Prisma.SortOrder
   toDivisionId?: Prisma.SortOrderInput | Prisma.SortOrder
-  academicYear?: Prisma.SortOrder
-  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   triggeredById?: Prisma.SortOrder
   triggeredByRole?: Prisma.SortOrder
   undoneAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -295,8 +284,7 @@ export type PromotionBatchScalarWhereWithAggregatesInput = {
   fromStandardId?: Prisma.StringWithAggregatesFilter<"PromotionBatch"> | string
   fromDivisionId?: Prisma.StringWithAggregatesFilter<"PromotionBatch"> | string
   toDivisionId?: Prisma.StringNullableWithAggregatesFilter<"PromotionBatch"> | string | null
-  academicYear?: Prisma.StringWithAggregatesFilter<"PromotionBatch"> | string
-  academicYearId?: Prisma.StringNullableWithAggregatesFilter<"PromotionBatch"> | string | null
+  academicYearId?: Prisma.StringWithAggregatesFilter<"PromotionBatch"> | string
   triggeredById?: Prisma.StringWithAggregatesFilter<"PromotionBatch"> | string
   triggeredByRole?: Prisma.StringWithAggregatesFilter<"PromotionBatch"> | string
   undoneAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PromotionBatch"> | Date | string | null
@@ -309,12 +297,11 @@ export type PromotionBatchCreateInput = {
   fromStandardId: string
   fromDivisionId: string
   toDivisionId?: string | null
-  academicYear: string
   triggeredById: string
   triggeredByRole: string
   undoneAt?: Date | string | null
   createdAt?: Date | string
-  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutPromotionBatchesInput
+  academicYear: Prisma.AcademicYearCreateNestedOneWithoutPromotionBatchesInput
   outcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutBatchInput
 }
 
@@ -324,8 +311,7 @@ export type PromotionBatchUncheckedCreateInput = {
   fromStandardId: string
   fromDivisionId: string
   toDivisionId?: string | null
-  academicYear: string
-  academicYearId?: string | null
+  academicYearId: string
   triggeredById: string
   triggeredByRole: string
   undoneAt?: Date | string | null
@@ -339,12 +325,11 @@ export type PromotionBatchUpdateInput = {
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  academicYear2?: Prisma.AcademicYearUpdateOneWithoutPromotionBatchesNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutPromotionBatchesNestedInput
   outcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutBatchNestedInput
 }
 
@@ -354,8 +339,7 @@ export type PromotionBatchUncheckedUpdateInput = {
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -369,8 +353,7 @@ export type PromotionBatchCreateManyInput = {
   fromStandardId: string
   fromDivisionId: string
   toDivisionId?: string | null
-  academicYear: string
-  academicYearId?: string | null
+  academicYearId: string
   triggeredById: string
   triggeredByRole: string
   undoneAt?: Date | string | null
@@ -383,7 +366,6 @@ export type PromotionBatchUpdateManyMutationInput = {
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -396,8 +378,7 @@ export type PromotionBatchUncheckedUpdateManyInput = {
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -420,7 +401,6 @@ export type PromotionBatchCountOrderByAggregateInput = {
   fromStandardId?: Prisma.SortOrder
   fromDivisionId?: Prisma.SortOrder
   toDivisionId?: Prisma.SortOrder
-  academicYear?: Prisma.SortOrder
   academicYearId?: Prisma.SortOrder
   triggeredById?: Prisma.SortOrder
   triggeredByRole?: Prisma.SortOrder
@@ -434,7 +414,6 @@ export type PromotionBatchMaxOrderByAggregateInput = {
   fromStandardId?: Prisma.SortOrder
   fromDivisionId?: Prisma.SortOrder
   toDivisionId?: Prisma.SortOrder
-  academicYear?: Prisma.SortOrder
   academicYearId?: Prisma.SortOrder
   triggeredById?: Prisma.SortOrder
   triggeredByRole?: Prisma.SortOrder
@@ -448,7 +427,6 @@ export type PromotionBatchMinOrderByAggregateInput = {
   fromStandardId?: Prisma.SortOrder
   fromDivisionId?: Prisma.SortOrder
   toDivisionId?: Prisma.SortOrder
-  academicYear?: Prisma.SortOrder
   academicYearId?: Prisma.SortOrder
   triggeredById?: Prisma.SortOrder
   triggeredByRole?: Prisma.SortOrder
@@ -461,45 +439,45 @@ export type PromotionBatchScalarRelationFilter = {
   isNot?: Prisma.PromotionBatchWhereInput
 }
 
-export type PromotionBatchCreateNestedManyWithoutAcademicYear2Input = {
-  create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYear2Input, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input> | Prisma.PromotionBatchCreateWithoutAcademicYear2Input[] | Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input[]
-  connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutAcademicYear2Input | Prisma.PromotionBatchCreateOrConnectWithoutAcademicYear2Input[]
-  createMany?: Prisma.PromotionBatchCreateManyAcademicYear2InputEnvelope
+export type PromotionBatchCreateNestedManyWithoutAcademicYearInput = {
+  create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYearInput, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput> | Prisma.PromotionBatchCreateWithoutAcademicYearInput[] | Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput[]
+  connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutAcademicYearInput | Prisma.PromotionBatchCreateOrConnectWithoutAcademicYearInput[]
+  createMany?: Prisma.PromotionBatchCreateManyAcademicYearInputEnvelope
   connect?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
 }
 
-export type PromotionBatchUncheckedCreateNestedManyWithoutAcademicYear2Input = {
-  create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYear2Input, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input> | Prisma.PromotionBatchCreateWithoutAcademicYear2Input[] | Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input[]
-  connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutAcademicYear2Input | Prisma.PromotionBatchCreateOrConnectWithoutAcademicYear2Input[]
-  createMany?: Prisma.PromotionBatchCreateManyAcademicYear2InputEnvelope
+export type PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput = {
+  create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYearInput, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput> | Prisma.PromotionBatchCreateWithoutAcademicYearInput[] | Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput[]
+  connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutAcademicYearInput | Prisma.PromotionBatchCreateOrConnectWithoutAcademicYearInput[]
+  createMany?: Prisma.PromotionBatchCreateManyAcademicYearInputEnvelope
   connect?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
 }
 
-export type PromotionBatchUpdateManyWithoutAcademicYear2NestedInput = {
-  create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYear2Input, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input> | Prisma.PromotionBatchCreateWithoutAcademicYear2Input[] | Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input[]
-  connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutAcademicYear2Input | Prisma.PromotionBatchCreateOrConnectWithoutAcademicYear2Input[]
-  upsert?: Prisma.PromotionBatchUpsertWithWhereUniqueWithoutAcademicYear2Input | Prisma.PromotionBatchUpsertWithWhereUniqueWithoutAcademicYear2Input[]
-  createMany?: Prisma.PromotionBatchCreateManyAcademicYear2InputEnvelope
+export type PromotionBatchUpdateManyWithoutAcademicYearNestedInput = {
+  create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYearInput, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput> | Prisma.PromotionBatchCreateWithoutAcademicYearInput[] | Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput[]
+  connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutAcademicYearInput | Prisma.PromotionBatchCreateOrConnectWithoutAcademicYearInput[]
+  upsert?: Prisma.PromotionBatchUpsertWithWhereUniqueWithoutAcademicYearInput | Prisma.PromotionBatchUpsertWithWhereUniqueWithoutAcademicYearInput[]
+  createMany?: Prisma.PromotionBatchCreateManyAcademicYearInputEnvelope
   set?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
   disconnect?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
   delete?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
   connect?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
-  update?: Prisma.PromotionBatchUpdateWithWhereUniqueWithoutAcademicYear2Input | Prisma.PromotionBatchUpdateWithWhereUniqueWithoutAcademicYear2Input[]
-  updateMany?: Prisma.PromotionBatchUpdateManyWithWhereWithoutAcademicYear2Input | Prisma.PromotionBatchUpdateManyWithWhereWithoutAcademicYear2Input[]
+  update?: Prisma.PromotionBatchUpdateWithWhereUniqueWithoutAcademicYearInput | Prisma.PromotionBatchUpdateWithWhereUniqueWithoutAcademicYearInput[]
+  updateMany?: Prisma.PromotionBatchUpdateManyWithWhereWithoutAcademicYearInput | Prisma.PromotionBatchUpdateManyWithWhereWithoutAcademicYearInput[]
   deleteMany?: Prisma.PromotionBatchScalarWhereInput | Prisma.PromotionBatchScalarWhereInput[]
 }
 
-export type PromotionBatchUncheckedUpdateManyWithoutAcademicYear2NestedInput = {
-  create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYear2Input, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input> | Prisma.PromotionBatchCreateWithoutAcademicYear2Input[] | Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input[]
-  connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutAcademicYear2Input | Prisma.PromotionBatchCreateOrConnectWithoutAcademicYear2Input[]
-  upsert?: Prisma.PromotionBatchUpsertWithWhereUniqueWithoutAcademicYear2Input | Prisma.PromotionBatchUpsertWithWhereUniqueWithoutAcademicYear2Input[]
-  createMany?: Prisma.PromotionBatchCreateManyAcademicYear2InputEnvelope
+export type PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput = {
+  create?: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYearInput, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput> | Prisma.PromotionBatchCreateWithoutAcademicYearInput[] | Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput[]
+  connectOrCreate?: Prisma.PromotionBatchCreateOrConnectWithoutAcademicYearInput | Prisma.PromotionBatchCreateOrConnectWithoutAcademicYearInput[]
+  upsert?: Prisma.PromotionBatchUpsertWithWhereUniqueWithoutAcademicYearInput | Prisma.PromotionBatchUpsertWithWhereUniqueWithoutAcademicYearInput[]
+  createMany?: Prisma.PromotionBatchCreateManyAcademicYearInputEnvelope
   set?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
   disconnect?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
   delete?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
   connect?: Prisma.PromotionBatchWhereUniqueInput | Prisma.PromotionBatchWhereUniqueInput[]
-  update?: Prisma.PromotionBatchUpdateWithWhereUniqueWithoutAcademicYear2Input | Prisma.PromotionBatchUpdateWithWhereUniqueWithoutAcademicYear2Input[]
-  updateMany?: Prisma.PromotionBatchUpdateManyWithWhereWithoutAcademicYear2Input | Prisma.PromotionBatchUpdateManyWithWhereWithoutAcademicYear2Input[]
+  update?: Prisma.PromotionBatchUpdateWithWhereUniqueWithoutAcademicYearInput | Prisma.PromotionBatchUpdateWithWhereUniqueWithoutAcademicYearInput[]
+  updateMany?: Prisma.PromotionBatchUpdateManyWithWhereWithoutAcademicYearInput | Prisma.PromotionBatchUpdateManyWithWhereWithoutAcademicYearInput[]
   deleteMany?: Prisma.PromotionBatchScalarWhereInput | Prisma.PromotionBatchScalarWhereInput[]
 }
 
@@ -517,13 +495,12 @@ export type PromotionBatchUpdateOneRequiredWithoutOutcomesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PromotionBatchUpdateToOneWithWhereWithoutOutcomesInput, Prisma.PromotionBatchUpdateWithoutOutcomesInput>, Prisma.PromotionBatchUncheckedUpdateWithoutOutcomesInput>
 }
 
-export type PromotionBatchCreateWithoutAcademicYear2Input = {
+export type PromotionBatchCreateWithoutAcademicYearInput = {
   id?: string
   institutionId: string
   fromStandardId: string
   fromDivisionId: string
   toDivisionId?: string | null
-  academicYear: string
   triggeredById: string
   triggeredByRole: string
   undoneAt?: Date | string | null
@@ -531,13 +508,12 @@ export type PromotionBatchCreateWithoutAcademicYear2Input = {
   outcomes?: Prisma.StudentPromotionOutcomeCreateNestedManyWithoutBatchInput
 }
 
-export type PromotionBatchUncheckedCreateWithoutAcademicYear2Input = {
+export type PromotionBatchUncheckedCreateWithoutAcademicYearInput = {
   id?: string
   institutionId: string
   fromStandardId: string
   fromDivisionId: string
   toDivisionId?: string | null
-  academicYear: string
   triggeredById: string
   triggeredByRole: string
   undoneAt?: Date | string | null
@@ -545,30 +521,30 @@ export type PromotionBatchUncheckedCreateWithoutAcademicYear2Input = {
   outcomes?: Prisma.StudentPromotionOutcomeUncheckedCreateNestedManyWithoutBatchInput
 }
 
-export type PromotionBatchCreateOrConnectWithoutAcademicYear2Input = {
+export type PromotionBatchCreateOrConnectWithoutAcademicYearInput = {
   where: Prisma.PromotionBatchWhereUniqueInput
-  create: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYear2Input, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input>
+  create: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYearInput, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput>
 }
 
-export type PromotionBatchCreateManyAcademicYear2InputEnvelope = {
-  data: Prisma.PromotionBatchCreateManyAcademicYear2Input | Prisma.PromotionBatchCreateManyAcademicYear2Input[]
+export type PromotionBatchCreateManyAcademicYearInputEnvelope = {
+  data: Prisma.PromotionBatchCreateManyAcademicYearInput | Prisma.PromotionBatchCreateManyAcademicYearInput[]
   skipDuplicates?: boolean
 }
 
-export type PromotionBatchUpsertWithWhereUniqueWithoutAcademicYear2Input = {
+export type PromotionBatchUpsertWithWhereUniqueWithoutAcademicYearInput = {
   where: Prisma.PromotionBatchWhereUniqueInput
-  update: Prisma.XOR<Prisma.PromotionBatchUpdateWithoutAcademicYear2Input, Prisma.PromotionBatchUncheckedUpdateWithoutAcademicYear2Input>
-  create: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYear2Input, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYear2Input>
+  update: Prisma.XOR<Prisma.PromotionBatchUpdateWithoutAcademicYearInput, Prisma.PromotionBatchUncheckedUpdateWithoutAcademicYearInput>
+  create: Prisma.XOR<Prisma.PromotionBatchCreateWithoutAcademicYearInput, Prisma.PromotionBatchUncheckedCreateWithoutAcademicYearInput>
 }
 
-export type PromotionBatchUpdateWithWhereUniqueWithoutAcademicYear2Input = {
+export type PromotionBatchUpdateWithWhereUniqueWithoutAcademicYearInput = {
   where: Prisma.PromotionBatchWhereUniqueInput
-  data: Prisma.XOR<Prisma.PromotionBatchUpdateWithoutAcademicYear2Input, Prisma.PromotionBatchUncheckedUpdateWithoutAcademicYear2Input>
+  data: Prisma.XOR<Prisma.PromotionBatchUpdateWithoutAcademicYearInput, Prisma.PromotionBatchUncheckedUpdateWithoutAcademicYearInput>
 }
 
-export type PromotionBatchUpdateManyWithWhereWithoutAcademicYear2Input = {
+export type PromotionBatchUpdateManyWithWhereWithoutAcademicYearInput = {
   where: Prisma.PromotionBatchScalarWhereInput
-  data: Prisma.XOR<Prisma.PromotionBatchUpdateManyMutationInput, Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYear2Input>
+  data: Prisma.XOR<Prisma.PromotionBatchUpdateManyMutationInput, Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearInput>
 }
 
 export type PromotionBatchScalarWhereInput = {
@@ -580,8 +556,7 @@ export type PromotionBatchScalarWhereInput = {
   fromStandardId?: Prisma.StringFilter<"PromotionBatch"> | string
   fromDivisionId?: Prisma.StringFilter<"PromotionBatch"> | string
   toDivisionId?: Prisma.StringNullableFilter<"PromotionBatch"> | string | null
-  academicYear?: Prisma.StringFilter<"PromotionBatch"> | string
-  academicYearId?: Prisma.StringNullableFilter<"PromotionBatch"> | string | null
+  academicYearId?: Prisma.StringFilter<"PromotionBatch"> | string
   triggeredById?: Prisma.StringFilter<"PromotionBatch"> | string
   triggeredByRole?: Prisma.StringFilter<"PromotionBatch"> | string
   undoneAt?: Prisma.DateTimeNullableFilter<"PromotionBatch"> | Date | string | null
@@ -594,12 +569,11 @@ export type PromotionBatchCreateWithoutOutcomesInput = {
   fromStandardId: string
   fromDivisionId: string
   toDivisionId?: string | null
-  academicYear: string
   triggeredById: string
   triggeredByRole: string
   undoneAt?: Date | string | null
   createdAt?: Date | string
-  academicYear2?: Prisma.AcademicYearCreateNestedOneWithoutPromotionBatchesInput
+  academicYear: Prisma.AcademicYearCreateNestedOneWithoutPromotionBatchesInput
 }
 
 export type PromotionBatchUncheckedCreateWithoutOutcomesInput = {
@@ -608,8 +582,7 @@ export type PromotionBatchUncheckedCreateWithoutOutcomesInput = {
   fromStandardId: string
   fromDivisionId: string
   toDivisionId?: string | null
-  academicYear: string
-  academicYearId?: string | null
+  academicYearId: string
   triggeredById: string
   triggeredByRole: string
   undoneAt?: Date | string | null
@@ -638,12 +611,11 @@ export type PromotionBatchUpdateWithoutOutcomesInput = {
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  academicYear2?: Prisma.AcademicYearUpdateOneWithoutPromotionBatchesNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutPromotionBatchesNestedInput
 }
 
 export type PromotionBatchUncheckedUpdateWithoutOutcomesInput = {
@@ -652,34 +624,31 @@ export type PromotionBatchUncheckedUpdateWithoutOutcomesInput = {
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type PromotionBatchCreateManyAcademicYear2Input = {
+export type PromotionBatchCreateManyAcademicYearInput = {
   id?: string
   institutionId: string
   fromStandardId: string
   fromDivisionId: string
   toDivisionId?: string | null
-  academicYear: string
   triggeredById: string
   triggeredByRole: string
   undoneAt?: Date | string | null
   createdAt?: Date | string
 }
 
-export type PromotionBatchUpdateWithoutAcademicYear2Input = {
+export type PromotionBatchUpdateWithoutAcademicYearInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -687,13 +656,12 @@ export type PromotionBatchUpdateWithoutAcademicYear2Input = {
   outcomes?: Prisma.StudentPromotionOutcomeUpdateManyWithoutBatchNestedInput
 }
 
-export type PromotionBatchUncheckedUpdateWithoutAcademicYear2Input = {
+export type PromotionBatchUncheckedUpdateWithoutAcademicYearInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -701,13 +669,12 @@ export type PromotionBatchUncheckedUpdateWithoutAcademicYear2Input = {
   outcomes?: Prisma.StudentPromotionOutcomeUncheckedUpdateManyWithoutBatchNestedInput
 }
 
-export type PromotionBatchUncheckedUpdateManyWithoutAcademicYear2Input = {
+export type PromotionBatchUncheckedUpdateManyWithoutAcademicYearInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   fromStandardId?: Prisma.StringFieldUpdateOperationsInput | string
   fromDivisionId?: Prisma.StringFieldUpdateOperationsInput | string
   toDivisionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  academicYear?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredById?: Prisma.StringFieldUpdateOperationsInput | string
   triggeredByRole?: Prisma.StringFieldUpdateOperationsInput | string
   undoneAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -751,13 +718,12 @@ export type PromotionBatchSelect<ExtArgs extends runtime.Types.Extensions.Intern
   fromStandardId?: boolean
   fromDivisionId?: boolean
   toDivisionId?: boolean
-  academicYear?: boolean
   academicYearId?: boolean
   triggeredById?: boolean
   triggeredByRole?: boolean
   undoneAt?: boolean
   createdAt?: boolean
-  academicYear2?: boolean | Prisma.PromotionBatch$academicYear2Args<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
   outcomes?: boolean | Prisma.PromotionBatch$outcomesArgs<ExtArgs>
   _count?: boolean | Prisma.PromotionBatchCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["promotionBatch"]>
@@ -768,13 +734,12 @@ export type PromotionBatchSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   fromStandardId?: boolean
   fromDivisionId?: boolean
   toDivisionId?: boolean
-  academicYear?: boolean
   academicYearId?: boolean
   triggeredById?: boolean
   triggeredByRole?: boolean
   undoneAt?: boolean
   createdAt?: boolean
-  academicYear2?: boolean | Prisma.PromotionBatch$academicYear2Args<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["promotionBatch"]>
 
 export type PromotionBatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -783,13 +748,12 @@ export type PromotionBatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   fromStandardId?: boolean
   fromDivisionId?: boolean
   toDivisionId?: boolean
-  academicYear?: boolean
   academicYearId?: boolean
   triggeredById?: boolean
   triggeredByRole?: boolean
   undoneAt?: boolean
   createdAt?: boolean
-  academicYear2?: boolean | Prisma.PromotionBatch$academicYear2Args<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["promotionBatch"]>
 
 export type PromotionBatchSelectScalar = {
@@ -798,7 +762,6 @@ export type PromotionBatchSelectScalar = {
   fromStandardId?: boolean
   fromDivisionId?: boolean
   toDivisionId?: boolean
-  academicYear?: boolean
   academicYearId?: boolean
   triggeredById?: boolean
   triggeredByRole?: boolean
@@ -806,23 +769,23 @@ export type PromotionBatchSelectScalar = {
   createdAt?: boolean
 }
 
-export type PromotionBatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "fromStandardId" | "fromDivisionId" | "toDivisionId" | "academicYear" | "academicYearId" | "triggeredById" | "triggeredByRole" | "undoneAt" | "createdAt", ExtArgs["result"]["promotionBatch"]>
+export type PromotionBatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "fromStandardId" | "fromDivisionId" | "toDivisionId" | "academicYearId" | "triggeredById" | "triggeredByRole" | "undoneAt" | "createdAt", ExtArgs["result"]["promotionBatch"]>
 export type PromotionBatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  academicYear2?: boolean | Prisma.PromotionBatch$academicYear2Args<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
   outcomes?: boolean | Prisma.PromotionBatch$outcomesArgs<ExtArgs>
   _count?: boolean | Prisma.PromotionBatchCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PromotionBatchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  academicYear2?: boolean | Prisma.PromotionBatch$academicYear2Args<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }
 export type PromotionBatchIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  academicYear2?: boolean | Prisma.PromotionBatch$academicYear2Args<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }
 
 export type $PromotionBatchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PromotionBatch"
   objects: {
-    academicYear2: Prisma.$AcademicYearPayload<ExtArgs> | null
+    academicYear: Prisma.$AcademicYearPayload<ExtArgs>
     outcomes: Prisma.$StudentPromotionOutcomePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -831,8 +794,7 @@ export type $PromotionBatchPayload<ExtArgs extends runtime.Types.Extensions.Inte
     fromStandardId: string
     fromDivisionId: string
     toDivisionId: string | null
-    academicYear: string
-    academicYearId: string | null
+    academicYearId: string
     triggeredById: string
     triggeredByRole: string
     undoneAt: Date | null
@@ -1231,7 +1193,7 @@ readonly fields: PromotionBatchFieldRefs;
  */
 export interface Prisma__PromotionBatchClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  academicYear2<T extends Prisma.PromotionBatch$academicYear2Args<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PromotionBatch$academicYear2Args<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  academicYear<T extends Prisma.AcademicYearDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYearDefaultArgs<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   outcomes<T extends Prisma.PromotionBatch$outcomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PromotionBatch$outcomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentPromotionOutcomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1267,7 +1229,6 @@ export interface PromotionBatchFieldRefs {
   readonly fromStandardId: Prisma.FieldRef<"PromotionBatch", 'String'>
   readonly fromDivisionId: Prisma.FieldRef<"PromotionBatch", 'String'>
   readonly toDivisionId: Prisma.FieldRef<"PromotionBatch", 'String'>
-  readonly academicYear: Prisma.FieldRef<"PromotionBatch", 'String'>
   readonly academicYearId: Prisma.FieldRef<"PromotionBatch", 'String'>
   readonly triggeredById: Prisma.FieldRef<"PromotionBatch", 'String'>
   readonly triggeredByRole: Prisma.FieldRef<"PromotionBatch", 'String'>
@@ -1671,25 +1632,6 @@ export type PromotionBatchDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many PromotionBatches to delete.
    */
   limit?: number
-}
-
-/**
- * PromotionBatch.academicYear2
- */
-export type PromotionBatch$academicYear2Args<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AcademicYear
-   */
-  select?: Prisma.AcademicYearSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the AcademicYear
-   */
-  omit?: Prisma.AcademicYearOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AcademicYearInclude<ExtArgs> | null
-  where?: Prisma.AcademicYearWhereInput
 }
 
 /**

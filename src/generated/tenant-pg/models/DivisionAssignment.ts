@@ -165,7 +165,7 @@ export type DivisionAssignmentGroupByOutputType = {
   subjectId: string | null
   teacherId: string
   institutionId: string
-  academicYearId: string | null
+  academicYearId: string
   createdAt: Date
   _count: DivisionAssignmentCountAggregateOutputType | null
   _min: DivisionAssignmentMinAggregateOutputType | null
@@ -196,12 +196,12 @@ export type DivisionAssignmentWhereInput = {
   subjectId?: Prisma.StringNullableFilter<"DivisionAssignment"> | string | null
   teacherId?: Prisma.StringFilter<"DivisionAssignment"> | string
   institutionId?: Prisma.StringFilter<"DivisionAssignment"> | string
-  academicYearId?: Prisma.StringNullableFilter<"DivisionAssignment"> | string | null
+  academicYearId?: Prisma.StringFilter<"DivisionAssignment"> | string
   createdAt?: Prisma.DateTimeFilter<"DivisionAssignment"> | Date | string
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
   subject?: Prisma.XOR<Prisma.SubjectNullableScalarRelationFilter, Prisma.SubjectWhereInput> | null
   teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  academicYear?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
+  academicYear?: Prisma.XOR<Prisma.AcademicYearScalarRelationFilter, Prisma.AcademicYearWhereInput>
 }
 
 export type DivisionAssignmentOrderByWithRelationInput = {
@@ -210,7 +210,7 @@ export type DivisionAssignmentOrderByWithRelationInput = {
   subjectId?: Prisma.SortOrderInput | Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
-  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   division?: Prisma.DivisionOrderByWithRelationInput
   subject?: Prisma.SubjectOrderByWithRelationInput
@@ -220,6 +220,7 @@ export type DivisionAssignmentOrderByWithRelationInput = {
 
 export type DivisionAssignmentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  divisionId_subjectId_teacherId_academicYearId?: Prisma.DivisionAssignmentDivisionIdSubjectIdTeacherIdAcademicYearIdCompoundUniqueInput
   AND?: Prisma.DivisionAssignmentWhereInput | Prisma.DivisionAssignmentWhereInput[]
   OR?: Prisma.DivisionAssignmentWhereInput[]
   NOT?: Prisma.DivisionAssignmentWhereInput | Prisma.DivisionAssignmentWhereInput[]
@@ -227,13 +228,13 @@ export type DivisionAssignmentWhereUniqueInput = Prisma.AtLeast<{
   subjectId?: Prisma.StringNullableFilter<"DivisionAssignment"> | string | null
   teacherId?: Prisma.StringFilter<"DivisionAssignment"> | string
   institutionId?: Prisma.StringFilter<"DivisionAssignment"> | string
-  academicYearId?: Prisma.StringNullableFilter<"DivisionAssignment"> | string | null
+  academicYearId?: Prisma.StringFilter<"DivisionAssignment"> | string
   createdAt?: Prisma.DateTimeFilter<"DivisionAssignment"> | Date | string
   division?: Prisma.XOR<Prisma.DivisionScalarRelationFilter, Prisma.DivisionWhereInput>
   subject?: Prisma.XOR<Prisma.SubjectNullableScalarRelationFilter, Prisma.SubjectWhereInput> | null
   teacher?: Prisma.XOR<Prisma.TeacherScalarRelationFilter, Prisma.TeacherWhereInput>
-  academicYear?: Prisma.XOR<Prisma.AcademicYearNullableScalarRelationFilter, Prisma.AcademicYearWhereInput> | null
-}, "id">
+  academicYear?: Prisma.XOR<Prisma.AcademicYearScalarRelationFilter, Prisma.AcademicYearWhereInput>
+}, "id" | "divisionId_subjectId_teacherId_academicYearId">
 
 export type DivisionAssignmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -241,7 +242,7 @@ export type DivisionAssignmentOrderByWithAggregationInput = {
   subjectId?: Prisma.SortOrderInput | Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
-  academicYearId?: Prisma.SortOrderInput | Prisma.SortOrder
+  academicYearId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.DivisionAssignmentCountOrderByAggregateInput
   _max?: Prisma.DivisionAssignmentMaxOrderByAggregateInput
@@ -257,7 +258,7 @@ export type DivisionAssignmentScalarWhereWithAggregatesInput = {
   subjectId?: Prisma.StringNullableWithAggregatesFilter<"DivisionAssignment"> | string | null
   teacherId?: Prisma.StringWithAggregatesFilter<"DivisionAssignment"> | string
   institutionId?: Prisma.StringWithAggregatesFilter<"DivisionAssignment"> | string
-  academicYearId?: Prisma.StringNullableWithAggregatesFilter<"DivisionAssignment"> | string | null
+  academicYearId?: Prisma.StringWithAggregatesFilter<"DivisionAssignment"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DivisionAssignment"> | Date | string
 }
 
@@ -268,7 +269,7 @@ export type DivisionAssignmentCreateInput = {
   division: Prisma.DivisionCreateNestedOneWithoutAssignmentsInput
   subject?: Prisma.SubjectCreateNestedOneWithoutAssignmentsInput
   teacher: Prisma.TeacherCreateNestedOneWithoutAssignmentsInput
-  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput
+  academicYear: Prisma.AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput
 }
 
 export type DivisionAssignmentUncheckedCreateInput = {
@@ -277,7 +278,7 @@ export type DivisionAssignmentUncheckedCreateInput = {
   subjectId?: string | null
   teacherId: string
   institutionId: string
-  academicYearId?: string | null
+  academicYearId: string
   createdAt?: Date | string
 }
 
@@ -288,7 +289,7 @@ export type DivisionAssignmentUpdateInput = {
   division?: Prisma.DivisionUpdateOneRequiredWithoutAssignmentsNestedInput
   subject?: Prisma.SubjectUpdateOneWithoutAssignmentsNestedInput
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutAssignmentsNestedInput
-  academicYear?: Prisma.AcademicYearUpdateOneWithoutDivisionAssignmentsNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutDivisionAssignmentsNestedInput
 }
 
 export type DivisionAssignmentUncheckedUpdateInput = {
@@ -297,7 +298,7 @@ export type DivisionAssignmentUncheckedUpdateInput = {
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -307,7 +308,7 @@ export type DivisionAssignmentCreateManyInput = {
   subjectId?: string | null
   teacherId: string
   institutionId: string
-  academicYearId?: string | null
+  academicYearId: string
   createdAt?: Date | string
 }
 
@@ -323,7 +324,7 @@ export type DivisionAssignmentUncheckedUpdateManyInput = {
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -335,6 +336,13 @@ export type DivisionAssignmentListRelationFilter = {
 
 export type DivisionAssignmentOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type DivisionAssignmentDivisionIdSubjectIdTeacherIdAcademicYearIdCompoundUniqueInput = {
+  divisionId: string
+  subjectId: string
+  teacherId: string
+  academicYearId: string
 }
 
 export type DivisionAssignmentCountOrderByAggregateInput = {
@@ -541,7 +549,7 @@ export type DivisionAssignmentCreateWithoutTeacherInput = {
   createdAt?: Date | string
   division: Prisma.DivisionCreateNestedOneWithoutAssignmentsInput
   subject?: Prisma.SubjectCreateNestedOneWithoutAssignmentsInput
-  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput
+  academicYear: Prisma.AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput
 }
 
 export type DivisionAssignmentUncheckedCreateWithoutTeacherInput = {
@@ -549,7 +557,7 @@ export type DivisionAssignmentUncheckedCreateWithoutTeacherInput = {
   divisionId: string
   subjectId?: string | null
   institutionId: string
-  academicYearId?: string | null
+  academicYearId: string
   createdAt?: Date | string
 }
 
@@ -588,7 +596,7 @@ export type DivisionAssignmentScalarWhereInput = {
   subjectId?: Prisma.StringNullableFilter<"DivisionAssignment"> | string | null
   teacherId?: Prisma.StringFilter<"DivisionAssignment"> | string
   institutionId?: Prisma.StringFilter<"DivisionAssignment"> | string
-  academicYearId?: Prisma.StringNullableFilter<"DivisionAssignment"> | string | null
+  academicYearId?: Prisma.StringFilter<"DivisionAssignment"> | string
   createdAt?: Prisma.DateTimeFilter<"DivisionAssignment"> | Date | string
 }
 
@@ -598,7 +606,7 @@ export type DivisionAssignmentCreateWithoutDivisionInput = {
   createdAt?: Date | string
   subject?: Prisma.SubjectCreateNestedOneWithoutAssignmentsInput
   teacher: Prisma.TeacherCreateNestedOneWithoutAssignmentsInput
-  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput
+  academicYear: Prisma.AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput
 }
 
 export type DivisionAssignmentUncheckedCreateWithoutDivisionInput = {
@@ -606,7 +614,7 @@ export type DivisionAssignmentUncheckedCreateWithoutDivisionInput = {
   subjectId?: string | null
   teacherId: string
   institutionId: string
-  academicYearId?: string | null
+  academicYearId: string
   createdAt?: Date | string
 }
 
@@ -642,7 +650,7 @@ export type DivisionAssignmentCreateWithoutSubjectInput = {
   createdAt?: Date | string
   division: Prisma.DivisionCreateNestedOneWithoutAssignmentsInput
   teacher: Prisma.TeacherCreateNestedOneWithoutAssignmentsInput
-  academicYear?: Prisma.AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput
+  academicYear: Prisma.AcademicYearCreateNestedOneWithoutDivisionAssignmentsInput
 }
 
 export type DivisionAssignmentUncheckedCreateWithoutSubjectInput = {
@@ -650,7 +658,7 @@ export type DivisionAssignmentUncheckedCreateWithoutSubjectInput = {
   divisionId: string
   teacherId: string
   institutionId: string
-  academicYearId?: string | null
+  academicYearId: string
   createdAt?: Date | string
 }
 
@@ -729,7 +737,7 @@ export type DivisionAssignmentCreateManyTeacherInput = {
   divisionId: string
   subjectId?: string | null
   institutionId: string
-  academicYearId?: string | null
+  academicYearId: string
   createdAt?: Date | string
 }
 
@@ -739,7 +747,7 @@ export type DivisionAssignmentUpdateWithoutTeacherInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   division?: Prisma.DivisionUpdateOneRequiredWithoutAssignmentsNestedInput
   subject?: Prisma.SubjectUpdateOneWithoutAssignmentsNestedInput
-  academicYear?: Prisma.AcademicYearUpdateOneWithoutDivisionAssignmentsNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutDivisionAssignmentsNestedInput
 }
 
 export type DivisionAssignmentUncheckedUpdateWithoutTeacherInput = {
@@ -747,7 +755,7 @@ export type DivisionAssignmentUncheckedUpdateWithoutTeacherInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -756,7 +764,7 @@ export type DivisionAssignmentUncheckedUpdateManyWithoutTeacherInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -765,7 +773,7 @@ export type DivisionAssignmentCreateManyDivisionInput = {
   subjectId?: string | null
   teacherId: string
   institutionId: string
-  academicYearId?: string | null
+  academicYearId: string
   createdAt?: Date | string
 }
 
@@ -775,7 +783,7 @@ export type DivisionAssignmentUpdateWithoutDivisionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subject?: Prisma.SubjectUpdateOneWithoutAssignmentsNestedInput
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutAssignmentsNestedInput
-  academicYear?: Prisma.AcademicYearUpdateOneWithoutDivisionAssignmentsNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutDivisionAssignmentsNestedInput
 }
 
 export type DivisionAssignmentUncheckedUpdateWithoutDivisionInput = {
@@ -783,7 +791,7 @@ export type DivisionAssignmentUncheckedUpdateWithoutDivisionInput = {
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -792,7 +800,7 @@ export type DivisionAssignmentUncheckedUpdateManyWithoutDivisionInput = {
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -801,7 +809,7 @@ export type DivisionAssignmentCreateManySubjectInput = {
   divisionId: string
   teacherId: string
   institutionId: string
-  academicYearId?: string | null
+  academicYearId: string
   createdAt?: Date | string
 }
 
@@ -811,7 +819,7 @@ export type DivisionAssignmentUpdateWithoutSubjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   division?: Prisma.DivisionUpdateOneRequiredWithoutAssignmentsNestedInput
   teacher?: Prisma.TeacherUpdateOneRequiredWithoutAssignmentsNestedInput
-  academicYear?: Prisma.AcademicYearUpdateOneWithoutDivisionAssignmentsNestedInput
+  academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutDivisionAssignmentsNestedInput
 }
 
 export type DivisionAssignmentUncheckedUpdateWithoutSubjectInput = {
@@ -819,7 +827,7 @@ export type DivisionAssignmentUncheckedUpdateWithoutSubjectInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -828,7 +836,7 @@ export type DivisionAssignmentUncheckedUpdateManyWithoutSubjectInput = {
   divisionId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
-  academicYearId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  academicYearId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -881,7 +889,7 @@ export type DivisionAssignmentSelect<ExtArgs extends runtime.Types.Extensions.In
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.DivisionAssignment$subjectArgs<ExtArgs>
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionAssignment$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["divisionAssignment"]>
 
 export type DivisionAssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -895,7 +903,7 @@ export type DivisionAssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.DivisionAssignment$subjectArgs<ExtArgs>
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionAssignment$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["divisionAssignment"]>
 
 export type DivisionAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -909,7 +917,7 @@ export type DivisionAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.DivisionAssignment$subjectArgs<ExtArgs>
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionAssignment$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["divisionAssignment"]>
 
 export type DivisionAssignmentSelectScalar = {
@@ -927,19 +935,19 @@ export type DivisionAssignmentInclude<ExtArgs extends runtime.Types.Extensions.I
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.DivisionAssignment$subjectArgs<ExtArgs>
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionAssignment$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }
 export type DivisionAssignmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.DivisionAssignment$subjectArgs<ExtArgs>
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionAssignment$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }
 export type DivisionAssignmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   division?: boolean | Prisma.DivisionDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.DivisionAssignment$subjectArgs<ExtArgs>
   teacher?: boolean | Prisma.TeacherDefaultArgs<ExtArgs>
-  academicYear?: boolean | Prisma.DivisionAssignment$academicYearArgs<ExtArgs>
+  academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>
 }
 
 export type $DivisionAssignmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -948,7 +956,7 @@ export type $DivisionAssignmentPayload<ExtArgs extends runtime.Types.Extensions.
     division: Prisma.$DivisionPayload<ExtArgs>
     subject: Prisma.$SubjectPayload<ExtArgs> | null
     teacher: Prisma.$TeacherPayload<ExtArgs>
-    academicYear: Prisma.$AcademicYearPayload<ExtArgs> | null
+    academicYear: Prisma.$AcademicYearPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -956,7 +964,7 @@ export type $DivisionAssignmentPayload<ExtArgs extends runtime.Types.Extensions.
     subjectId: string | null
     teacherId: string
     institutionId: string
-    academicYearId: string | null
+    academicYearId: string
     createdAt: Date
   }, ExtArgs["result"]["divisionAssignment"]>
   composites: {}
@@ -1355,7 +1363,7 @@ export interface Prisma__DivisionAssignmentClient<T, Null = never, ExtArgs exten
   division<T extends Prisma.DivisionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionDefaultArgs<ExtArgs>>): Prisma.Prisma__DivisionClient<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   subject<T extends Prisma.DivisionAssignment$subjectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionAssignment$subjectArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   teacher<T extends Prisma.TeacherDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  academicYear<T extends Prisma.DivisionAssignment$academicYearArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DivisionAssignment$academicYearArgs<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  academicYear<T extends Prisma.AcademicYearDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYearDefaultArgs<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1809,25 +1817,6 @@ export type DivisionAssignment$subjectArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.SubjectInclude<ExtArgs> | null
   where?: Prisma.SubjectWhereInput
-}
-
-/**
- * DivisionAssignment.academicYear
- */
-export type DivisionAssignment$academicYearArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AcademicYear
-   */
-  select?: Prisma.AcademicYearSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the AcademicYear
-   */
-  omit?: Prisma.AcademicYearOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AcademicYearInclude<ExtArgs> | null
-  where?: Prisma.AcademicYearWhereInput
 }
 
 /**

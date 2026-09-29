@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("Teacher — roll number uniqueness within a division", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let otherDivisionId: string;
   let teacherToken: string;
@@ -23,6 +25,10 @@ describe("Teacher — roll number uniqueness within a division", () => {
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({ data: { institutionId, name: `Class ${suffix}`, order: 1 } });
     const division = await prisma.division.create({ data: { standardId: standard.id, institutionId, name: "A" } });
@@ -34,8 +40,8 @@ describe("Teacher — roll number uniqueness within a division", () => {
       data: { name: "Class Teacher", email: `teacher-rollno-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
     });
     const teacher = await prisma.teacher.create({ data: { teacherId: `TCH-ROLLNO-${suffix}`, userId: teacherUser.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId, subjectId: null, teacherId: teacher.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId: otherDivisionId, subjectId: null, teacherId: teacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId, subjectId: null, teacherId: teacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId: otherDivisionId, subjectId: null, teacherId: teacher.id, institutionId } });
     teacherToken = jwt.sign({ userId: teacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const existingStudentUser = await prisma.user.create({
@@ -56,6 +62,7 @@ describe("Teacher — roll number uniqueness within a division", () => {
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.userStatusEvent.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

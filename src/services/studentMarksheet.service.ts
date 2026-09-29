@@ -92,8 +92,8 @@ export async function getStudentMarksheetData(
 
   const marksheet = await academicDb().marksheet.findFirst({
     where: { divisionId, institutionId, status: "PUBLISHED" },
-    orderBy: { academicYear: "desc" },
-    select: { id: true, academicYear: true, gradeScale: true, publishedSnapshot: true },
+    orderBy: { academicYear: { label: "desc" } },
+    select: { id: true, academicYear: { select: { label: true } }, gradeScale: true, publishedSnapshot: true },
   });
   if (!marksheet) return null;
 
@@ -275,7 +275,7 @@ export async function getStudentMarksheetData(
   const combinedClassRank = (grandMax + onlineGrandMax) > 0 ? combinedAboveMe + 1 : null;
 
   return {
-    academicYear: marksheet.academicYear,
+    academicYear: marksheet.academicYear.label,
     gradeScale,
     subjects: subjectResults,
     grandTotal: { scored: grandScored, max: grandMax },

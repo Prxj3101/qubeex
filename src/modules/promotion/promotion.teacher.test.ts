@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("Teacher promotion routes", () => {
   let institutionId: string;
+  let academicYearId: string;
   let standard5Id: string;
   let standard6Id: string;
   let division5AId: string;
@@ -30,6 +32,10 @@ describe("Teacher promotion routes", () => {
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard5 = await prisma.standard.create({ data: { institutionId, name: `Class 5 ${suffix}`, order: 5 } });
     const standard6 = await prisma.standard.create({ data: { institutionId, name: `Class 6 ${suffix}`, order: 6 } });
@@ -47,8 +53,8 @@ describe("Teacher promotion routes", () => {
       data: { name: "Class Teacher", email: `teacher-promo-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
     });
     const teacher = await prisma.teacher.create({ data: { teacherId: `TCH-PROMO-${suffix}`, userId: teacherUser.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId: division5AId, subjectId: null, teacherId: teacher.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId: division5BId, subjectId: null, teacherId: teacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId: division5AId, subjectId: null, teacherId: teacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId: division5BId, subjectId: null, teacherId: teacher.id, institutionId } });
     teacherToken = jwt.sign({ userId: teacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const subjectTeacherUser = await prisma.user.create({
@@ -56,7 +62,7 @@ describe("Teacher promotion routes", () => {
     });
     const subjectTeacher = await prisma.teacher.create({ data: { teacherId: `TCH-PROMO-2-${suffix}`, userId: subjectTeacherUser.id, institutionId } });
     const subject = await prisma.subject.create({ data: { institutionId, standardId: standard5Id, name: "Maths", order: 1 } });
-    await prisma.divisionAssignment.create({ data: { divisionId: division5AId, subjectId: subject.id, teacherId: subjectTeacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId: division5AId, subjectId: subject.id, teacherId: subjectTeacher.id, institutionId } });
     subjectTeacherToken = jwt.sign({ userId: subjectTeacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const studentUserA = await prisma.user.create({
@@ -101,7 +107,6 @@ describe("Teacher promotion routes", () => {
     await prisma.studentEnrollment.deleteMany({ where: { institutionId } });
     await prisma.studentPromotionOutcome.deleteMany({ where: { institutionId } });
     await prisma.promotionBatch.deleteMany({ where: { institutionId } });
-    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.divisionAssignment.deleteMany({ where: { institutionId } });
     await prisma.subject.deleteMany({ where: { institutionId } });
     await prisma.student.deleteMany({ where: { institutionId } });
@@ -109,6 +114,7 @@ describe("Teacher promotion routes", () => {
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

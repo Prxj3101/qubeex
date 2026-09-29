@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("GET /api/admin/campus/divisions/:divisionId/students/:studentId/stats — subjects parity", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let studentId: string;
   let adminToken: string;
@@ -22,6 +24,10 @@ describe("GET /api/admin/campus/divisions/:divisionId/students/:studentId/stats 
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({
       data: { institutionId, name: `Class Stats ${suffix}`, order: 1 },
@@ -58,7 +64,7 @@ describe("GET /api/admin/campus/divisions/:divisionId/students/:studentId/stats 
     const marksheet = await prisma.marksheet.create({
       data: {
         institutionId, divisionId, createdByTeacherId: teacher.id,
-        academicYear: "2026-2027", status: "PUBLISHED", shareToken: `share-${suffix}`,
+        academicYearId, status: "PUBLISHED", shareToken: `share-${suffix}`,
       },
     });
     const column = await prisma.marksheetExamColumn.create({
@@ -83,6 +89,7 @@ describe("GET /api/admin/campus/divisions/:divisionId/students/:studentId/stats 
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

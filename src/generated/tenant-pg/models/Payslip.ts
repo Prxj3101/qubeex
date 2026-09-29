@@ -58,6 +58,7 @@ export type PayslipMinAggregateOutputType = {
   grossPay: number | null
   netPay: number | null
   lopDays: number | null
+  lopSource: string | null
   paidDays: number | null
   basisDays: number | null
   bonus: number | null
@@ -84,6 +85,7 @@ export type PayslipMaxAggregateOutputType = {
   grossPay: number | null
   netPay: number | null
   lopDays: number | null
+  lopSource: string | null
   paidDays: number | null
   basisDays: number | null
   bonus: number | null
@@ -112,6 +114,8 @@ export type PayslipCountAggregateOutputType = {
   grossPay: number
   netPay: number
   lopDays: number
+  lopSource: number
+  attendanceSummary: number
   paidDays: number
   basisDays: number
   bonus: number
@@ -164,6 +168,7 @@ export type PayslipMinAggregateInputType = {
   grossPay?: true
   netPay?: true
   lopDays?: true
+  lopSource?: true
   paidDays?: true
   basisDays?: true
   bonus?: true
@@ -190,6 +195,7 @@ export type PayslipMaxAggregateInputType = {
   grossPay?: true
   netPay?: true
   lopDays?: true
+  lopSource?: true
   paidDays?: true
   basisDays?: true
   bonus?: true
@@ -218,6 +224,8 @@ export type PayslipCountAggregateInputType = {
   grossPay?: true
   netPay?: true
   lopDays?: true
+  lopSource?: true
+  attendanceSummary?: true
   paidDays?: true
   basisDays?: true
   bonus?: true
@@ -335,6 +343,8 @@ export type PayslipGroupByOutputType = {
   grossPay: number
   netPay: number
   lopDays: number
+  lopSource: string | null
+  attendanceSummary: runtime.JsonValue | null
   paidDays: number
   basisDays: number
   bonus: number
@@ -388,6 +398,8 @@ export type PayslipWhereInput = {
   grossPay?: Prisma.IntFilter<"Payslip"> | number
   netPay?: Prisma.IntFilter<"Payslip"> | number
   lopDays?: Prisma.FloatFilter<"Payslip"> | number
+  lopSource?: Prisma.StringNullableFilter<"Payslip"> | string | null
+  attendanceSummary?: Prisma.JsonNullableFilter<"Payslip">
   paidDays?: Prisma.FloatFilter<"Payslip"> | number
   basisDays?: Prisma.IntFilter<"Payslip"> | number
   bonus?: Prisma.IntFilter<"Payslip"> | number
@@ -420,6 +432,8 @@ export type PayslipOrderByWithRelationInput = {
   grossPay?: Prisma.SortOrder
   netPay?: Prisma.SortOrder
   lopDays?: Prisma.SortOrder
+  lopSource?: Prisma.SortOrderInput | Prisma.SortOrder
+  attendanceSummary?: Prisma.SortOrderInput | Prisma.SortOrder
   paidDays?: Prisma.SortOrder
   basisDays?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
@@ -456,6 +470,8 @@ export type PayslipWhereUniqueInput = Prisma.AtLeast<{
   grossPay?: Prisma.IntFilter<"Payslip"> | number
   netPay?: Prisma.IntFilter<"Payslip"> | number
   lopDays?: Prisma.FloatFilter<"Payslip"> | number
+  lopSource?: Prisma.StringNullableFilter<"Payslip"> | string | null
+  attendanceSummary?: Prisma.JsonNullableFilter<"Payslip">
   paidDays?: Prisma.FloatFilter<"Payslip"> | number
   basisDays?: Prisma.IntFilter<"Payslip"> | number
   bonus?: Prisma.IntFilter<"Payslip"> | number
@@ -488,6 +504,8 @@ export type PayslipOrderByWithAggregationInput = {
   grossPay?: Prisma.SortOrder
   netPay?: Prisma.SortOrder
   lopDays?: Prisma.SortOrder
+  lopSource?: Prisma.SortOrderInput | Prisma.SortOrder
+  attendanceSummary?: Prisma.SortOrderInput | Prisma.SortOrder
   paidDays?: Prisma.SortOrder
   basisDays?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
@@ -526,6 +544,8 @@ export type PayslipScalarWhereWithAggregatesInput = {
   grossPay?: Prisma.IntWithAggregatesFilter<"Payslip"> | number
   netPay?: Prisma.IntWithAggregatesFilter<"Payslip"> | number
   lopDays?: Prisma.FloatWithAggregatesFilter<"Payslip"> | number
+  lopSource?: Prisma.StringNullableWithAggregatesFilter<"Payslip"> | string | null
+  attendanceSummary?: Prisma.JsonNullableWithAggregatesFilter<"Payslip">
   paidDays?: Prisma.FloatWithAggregatesFilter<"Payslip"> | number
   basisDays?: Prisma.IntWithAggregatesFilter<"Payslip"> | number
   bonus?: Prisma.IntWithAggregatesFilter<"Payslip"> | number
@@ -554,6 +574,8 @@ export type PayslipCreateInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -586,6 +608,8 @@ export type PayslipUncheckedCreateInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -614,6 +638,8 @@ export type PayslipUpdateInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -646,6 +672,8 @@ export type PayslipUncheckedUpdateInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -676,6 +704,8 @@ export type PayslipCreateManyInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -704,6 +734,8 @@ export type PayslipUpdateManyMutationInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -734,6 +766,8 @@ export type PayslipUncheckedUpdateManyInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -779,6 +813,8 @@ export type PayslipCountOrderByAggregateInput = {
   grossPay?: Prisma.SortOrder
   netPay?: Prisma.SortOrder
   lopDays?: Prisma.SortOrder
+  lopSource?: Prisma.SortOrder
+  attendanceSummary?: Prisma.SortOrder
   paidDays?: Prisma.SortOrder
   basisDays?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
@@ -818,6 +854,7 @@ export type PayslipMaxOrderByAggregateInput = {
   grossPay?: Prisma.SortOrder
   netPay?: Prisma.SortOrder
   lopDays?: Prisma.SortOrder
+  lopSource?: Prisma.SortOrder
   paidDays?: Prisma.SortOrder
   basisDays?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
@@ -844,6 +881,7 @@ export type PayslipMinOrderByAggregateInput = {
   grossPay?: Prisma.SortOrder
   netPay?: Prisma.SortOrder
   lopDays?: Prisma.SortOrder
+  lopSource?: Prisma.SortOrder
   paidDays?: Prisma.SortOrder
   basisDays?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
@@ -965,6 +1003,8 @@ export type PayslipCreateWithoutStaffInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -995,6 +1035,8 @@ export type PayslipUncheckedCreateWithoutStaffInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -1054,6 +1096,8 @@ export type PayslipScalarWhereInput = {
   grossPay?: Prisma.IntFilter<"Payslip"> | number
   netPay?: Prisma.IntFilter<"Payslip"> | number
   lopDays?: Prisma.FloatFilter<"Payslip"> | number
+  lopSource?: Prisma.StringNullableFilter<"Payslip"> | string | null
+  attendanceSummary?: Prisma.JsonNullableFilter<"Payslip">
   paidDays?: Prisma.FloatFilter<"Payslip"> | number
   basisDays?: Prisma.IntFilter<"Payslip"> | number
   bonus?: Prisma.IntFilter<"Payslip"> | number
@@ -1082,6 +1126,8 @@ export type PayslipCreateWithoutPayrollRunInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -1112,6 +1158,8 @@ export type PayslipUncheckedCreateWithoutPayrollRunInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -1167,6 +1215,8 @@ export type PayslipCreateManyStaffInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -1195,6 +1245,8 @@ export type PayslipUpdateWithoutStaffInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1225,6 +1277,8 @@ export type PayslipUncheckedUpdateWithoutStaffInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1254,6 +1308,8 @@ export type PayslipUncheckedUpdateManyWithoutStaffInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1283,6 +1339,8 @@ export type PayslipCreateManyPayrollRunInput = {
   grossPay: number
   netPay: number
   lopDays?: number
+  lopSource?: string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: number
   basisDays?: number
   bonus?: number
@@ -1311,6 +1369,8 @@ export type PayslipUpdateWithoutPayrollRunInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1341,6 +1401,8 @@ export type PayslipUncheckedUpdateWithoutPayrollRunInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1370,6 +1432,8 @@ export type PayslipUncheckedUpdateManyWithoutPayrollRunInput = {
   grossPay?: Prisma.IntFieldUpdateOperationsInput | number
   netPay?: Prisma.IntFieldUpdateOperationsInput | number
   lopDays?: Prisma.FloatFieldUpdateOperationsInput | number
+  lopSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendanceSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   paidDays?: Prisma.FloatFieldUpdateOperationsInput | number
   basisDays?: Prisma.IntFieldUpdateOperationsInput | number
   bonus?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1402,6 +1466,8 @@ export type PayslipSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   grossPay?: boolean
   netPay?: boolean
   lopDays?: boolean
+  lopSource?: boolean
+  attendanceSummary?: boolean
   paidDays?: boolean
   basisDays?: boolean
   bonus?: boolean
@@ -1434,6 +1500,8 @@ export type PayslipSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   grossPay?: boolean
   netPay?: boolean
   lopDays?: boolean
+  lopSource?: boolean
+  attendanceSummary?: boolean
   paidDays?: boolean
   basisDays?: boolean
   bonus?: boolean
@@ -1466,6 +1534,8 @@ export type PayslipSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   grossPay?: boolean
   netPay?: boolean
   lopDays?: boolean
+  lopSource?: boolean
+  attendanceSummary?: boolean
   paidDays?: boolean
   basisDays?: boolean
   bonus?: boolean
@@ -1498,6 +1568,8 @@ export type PayslipSelectScalar = {
   grossPay?: boolean
   netPay?: boolean
   lopDays?: boolean
+  lopSource?: boolean
+  attendanceSummary?: boolean
   paidDays?: boolean
   basisDays?: boolean
   bonus?: boolean
@@ -1516,7 +1588,7 @@ export type PayslipSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PayslipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "payrollRunId" | "staffId" | "institutionId" | "staffName" | "staffEmail" | "earnings" | "deductions" | "grossPay" | "netPay" | "lopDays" | "paidDays" | "basisDays" | "bonus" | "otherDeduction" | "inputNote" | "employerContributions" | "pfWages" | "tdsInfo" | "status" | "paidAt" | "paymentMethod" | "paymentRef" | "pdfUrl" | "notifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["payslip"]>
+export type PayslipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "payrollRunId" | "staffId" | "institutionId" | "staffName" | "staffEmail" | "earnings" | "deductions" | "grossPay" | "netPay" | "lopDays" | "lopSource" | "attendanceSummary" | "paidDays" | "basisDays" | "bonus" | "otherDeduction" | "inputNote" | "employerContributions" | "pfWages" | "tdsInfo" | "status" | "paidAt" | "paymentMethod" | "paymentRef" | "pdfUrl" | "notifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["payslip"]>
 export type PayslipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   payrollRun?: boolean | Prisma.PayrollRunDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.StaffDefaultArgs<ExtArgs>
@@ -1548,6 +1620,8 @@ export type $PayslipPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     grossPay: number
     netPay: number
     lopDays: number
+    lopSource: string | null
+    attendanceSummary: runtime.JsonValue | null
     paidDays: number
     basisDays: number
     bonus: number
@@ -2000,6 +2074,8 @@ export interface PayslipFieldRefs {
   readonly grossPay: Prisma.FieldRef<"Payslip", 'Int'>
   readonly netPay: Prisma.FieldRef<"Payslip", 'Int'>
   readonly lopDays: Prisma.FieldRef<"Payslip", 'Float'>
+  readonly lopSource: Prisma.FieldRef<"Payslip", 'String'>
+  readonly attendanceSummary: Prisma.FieldRef<"Payslip", 'Json'>
   readonly paidDays: Prisma.FieldRef<"Payslip", 'Float'>
   readonly basisDays: Prisma.FieldRef<"Payslip", 'Int'>
   readonly bonus: Prisma.FieldRef<"Payslip", 'Int'>

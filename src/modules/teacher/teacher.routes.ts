@@ -186,7 +186,7 @@ import {
   deleteTask,
 } from "./notepad.controller";
 import { getOverview, getMyAiUsage } from "./overview.controller";
-import { listMyPayslips, redirectToMyPayslipPdf } from "./payroll.controller";
+import { listMyPayslips, redirectToMyPayslipPdf, getMyAttendance } from "./payroll.controller";
 import { getProfile, updateProfile, changePassword, getLoginActivity } from "../shared/profile.controller";
 import { listMyAuditLogs } from "./audit.controller";
 import {
@@ -225,6 +225,7 @@ router.get("/overview", ...T, getOverview);
 router.get("/ai-usage", ...T, getMyAiUsage);
 router.get("/payroll/payslips", ...T, listMyPayslips);
 router.get("/payroll/payslips/:id/pdf", ...T, redirectToMyPayslipPdf);
+router.get("/payroll/attendance", ...T, getMyAttendance);
 
 // ── Notifications ─────────────────────────────────────────────────────────────
 router.get("/notifications", ...T, listNotifications);

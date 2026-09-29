@@ -37,6 +37,9 @@ export type PayrollSettingsAvgAggregateOutputType = {
   esiWageLimit: number | null
   esiEmployeeRate: number | null
   esiEmployerRate: number | null
+  graceMinutes: number | null
+  halfDayMinutes: number | null
+  lateRuleCount: number | null
 }
 
 export type PayrollSettingsSumAggregateOutputType = {
@@ -50,6 +53,9 @@ export type PayrollSettingsSumAggregateOutputType = {
   esiWageLimit: number | null
   esiEmployeeRate: number | null
   esiEmployerRate: number | null
+  graceMinutes: number | null
+  halfDayMinutes: number | null
+  lateRuleCount: number | null
 }
 
 export type PayrollSettingsMinAggregateOutputType = {
@@ -72,6 +78,12 @@ export type PayrollSettingsMinAggregateOutputType = {
   ptEnabled: boolean | null
   ptState: string | null
   tdsEnabled: boolean | null
+  attendanceLop: boolean | null
+  officeStart: string | null
+  graceMinutes: number | null
+  halfDayMinutes: number | null
+  lateRuleEnabled: boolean | null
+  lateRuleCount: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -96,6 +108,12 @@ export type PayrollSettingsMaxAggregateOutputType = {
   ptEnabled: boolean | null
   ptState: string | null
   tdsEnabled: boolean | null
+  attendanceLop: boolean | null
+  officeStart: string | null
+  graceMinutes: number | null
+  halfDayMinutes: number | null
+  lateRuleEnabled: boolean | null
+  lateRuleCount: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -121,6 +139,14 @@ export type PayrollSettingsCountAggregateOutputType = {
   ptState: number
   ptSlabs: number
   tdsEnabled: number
+  attendanceLop: number
+  officeStart: number
+  graceMinutes: number
+  halfDayMinutes: number
+  weeklyOffDays: number
+  offSaturdays: number
+  lateRuleEnabled: number
+  lateRuleCount: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -138,6 +164,9 @@ export type PayrollSettingsAvgAggregateInputType = {
   esiWageLimit?: true
   esiEmployeeRate?: true
   esiEmployerRate?: true
+  graceMinutes?: true
+  halfDayMinutes?: true
+  lateRuleCount?: true
 }
 
 export type PayrollSettingsSumAggregateInputType = {
@@ -151,6 +180,9 @@ export type PayrollSettingsSumAggregateInputType = {
   esiWageLimit?: true
   esiEmployeeRate?: true
   esiEmployerRate?: true
+  graceMinutes?: true
+  halfDayMinutes?: true
+  lateRuleCount?: true
 }
 
 export type PayrollSettingsMinAggregateInputType = {
@@ -173,6 +205,12 @@ export type PayrollSettingsMinAggregateInputType = {
   ptEnabled?: true
   ptState?: true
   tdsEnabled?: true
+  attendanceLop?: true
+  officeStart?: true
+  graceMinutes?: true
+  halfDayMinutes?: true
+  lateRuleEnabled?: true
+  lateRuleCount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -197,6 +235,12 @@ export type PayrollSettingsMaxAggregateInputType = {
   ptEnabled?: true
   ptState?: true
   tdsEnabled?: true
+  attendanceLop?: true
+  officeStart?: true
+  graceMinutes?: true
+  halfDayMinutes?: true
+  lateRuleEnabled?: true
+  lateRuleCount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -222,6 +266,14 @@ export type PayrollSettingsCountAggregateInputType = {
   ptState?: true
   ptSlabs?: true
   tdsEnabled?: true
+  attendanceLop?: true
+  officeStart?: true
+  graceMinutes?: true
+  halfDayMinutes?: true
+  weeklyOffDays?: true
+  offSaturdays?: true
+  lateRuleEnabled?: true
+  lateRuleCount?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -334,6 +386,14 @@ export type PayrollSettingsGroupByOutputType = {
   ptState: string | null
   ptSlabs: runtime.JsonValue | null
   tdsEnabled: boolean
+  attendanceLop: boolean
+  officeStart: string
+  graceMinutes: number
+  halfDayMinutes: number
+  weeklyOffDays: runtime.JsonValue | null
+  offSaturdays: runtime.JsonValue | null
+  lateRuleEnabled: boolean
+  lateRuleCount: number
   createdAt: Date
   updatedAt: Date
   _count: PayrollSettingsCountAggregateOutputType | null
@@ -382,6 +442,14 @@ export type PayrollSettingsWhereInput = {
   ptState?: Prisma.StringNullableFilter<"PayrollSettings"> | string | null
   ptSlabs?: Prisma.JsonNullableFilter<"PayrollSettings">
   tdsEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  attendanceLop?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  officeStart?: Prisma.StringFilter<"PayrollSettings"> | string
+  graceMinutes?: Prisma.IntFilter<"PayrollSettings"> | number
+  halfDayMinutes?: Prisma.IntFilter<"PayrollSettings"> | number
+  weeklyOffDays?: Prisma.JsonNullableFilter<"PayrollSettings">
+  offSaturdays?: Prisma.JsonNullableFilter<"PayrollSettings">
+  lateRuleEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  lateRuleCount?: Prisma.IntFilter<"PayrollSettings"> | number
   createdAt?: Prisma.DateTimeFilter<"PayrollSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PayrollSettings"> | Date | string
 }
@@ -407,6 +475,14 @@ export type PayrollSettingsOrderByWithRelationInput = {
   ptState?: Prisma.SortOrderInput | Prisma.SortOrder
   ptSlabs?: Prisma.SortOrderInput | Prisma.SortOrder
   tdsEnabled?: Prisma.SortOrder
+  attendanceLop?: Prisma.SortOrder
+  officeStart?: Prisma.SortOrder
+  graceMinutes?: Prisma.SortOrder
+  halfDayMinutes?: Prisma.SortOrder
+  weeklyOffDays?: Prisma.SortOrderInput | Prisma.SortOrder
+  offSaturdays?: Prisma.SortOrderInput | Prisma.SortOrder
+  lateRuleEnabled?: Prisma.SortOrder
+  lateRuleCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -435,6 +511,14 @@ export type PayrollSettingsWhereUniqueInput = Prisma.AtLeast<{
   ptState?: Prisma.StringNullableFilter<"PayrollSettings"> | string | null
   ptSlabs?: Prisma.JsonNullableFilter<"PayrollSettings">
   tdsEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  attendanceLop?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  officeStart?: Prisma.StringFilter<"PayrollSettings"> | string
+  graceMinutes?: Prisma.IntFilter<"PayrollSettings"> | number
+  halfDayMinutes?: Prisma.IntFilter<"PayrollSettings"> | number
+  weeklyOffDays?: Prisma.JsonNullableFilter<"PayrollSettings">
+  offSaturdays?: Prisma.JsonNullableFilter<"PayrollSettings">
+  lateRuleEnabled?: Prisma.BoolFilter<"PayrollSettings"> | boolean
+  lateRuleCount?: Prisma.IntFilter<"PayrollSettings"> | number
   createdAt?: Prisma.DateTimeFilter<"PayrollSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PayrollSettings"> | Date | string
 }, "id" | "institutionId">
@@ -460,6 +544,14 @@ export type PayrollSettingsOrderByWithAggregationInput = {
   ptState?: Prisma.SortOrderInput | Prisma.SortOrder
   ptSlabs?: Prisma.SortOrderInput | Prisma.SortOrder
   tdsEnabled?: Prisma.SortOrder
+  attendanceLop?: Prisma.SortOrder
+  officeStart?: Prisma.SortOrder
+  graceMinutes?: Prisma.SortOrder
+  halfDayMinutes?: Prisma.SortOrder
+  weeklyOffDays?: Prisma.SortOrderInput | Prisma.SortOrder
+  offSaturdays?: Prisma.SortOrderInput | Prisma.SortOrder
+  lateRuleEnabled?: Prisma.SortOrder
+  lateRuleCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PayrollSettingsCountOrderByAggregateInput
@@ -493,6 +585,14 @@ export type PayrollSettingsScalarWhereWithAggregatesInput = {
   ptState?: Prisma.StringNullableWithAggregatesFilter<"PayrollSettings"> | string | null
   ptSlabs?: Prisma.JsonNullableWithAggregatesFilter<"PayrollSettings">
   tdsEnabled?: Prisma.BoolWithAggregatesFilter<"PayrollSettings"> | boolean
+  attendanceLop?: Prisma.BoolWithAggregatesFilter<"PayrollSettings"> | boolean
+  officeStart?: Prisma.StringWithAggregatesFilter<"PayrollSettings"> | string
+  graceMinutes?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  halfDayMinutes?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
+  weeklyOffDays?: Prisma.JsonNullableWithAggregatesFilter<"PayrollSettings">
+  offSaturdays?: Prisma.JsonNullableWithAggregatesFilter<"PayrollSettings">
+  lateRuleEnabled?: Prisma.BoolWithAggregatesFilter<"PayrollSettings"> | boolean
+  lateRuleCount?: Prisma.IntWithAggregatesFilter<"PayrollSettings"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PayrollSettings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PayrollSettings"> | Date | string
 }
@@ -518,6 +618,14 @@ export type PayrollSettingsCreateInput = {
   ptState?: string | null
   ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tdsEnabled?: boolean
+  attendanceLop?: boolean
+  officeStart?: string
+  graceMinutes?: number
+  halfDayMinutes?: number
+  weeklyOffDays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  offSaturdays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lateRuleEnabled?: boolean
+  lateRuleCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -543,6 +651,14 @@ export type PayrollSettingsUncheckedCreateInput = {
   ptState?: string | null
   ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tdsEnabled?: boolean
+  attendanceLop?: boolean
+  officeStart?: string
+  graceMinutes?: number
+  halfDayMinutes?: number
+  weeklyOffDays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  offSaturdays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lateRuleEnabled?: boolean
+  lateRuleCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -568,6 +684,14 @@ export type PayrollSettingsUpdateInput = {
   ptState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tdsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendanceLop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  officeStart?: Prisma.StringFieldUpdateOperationsInput | string
+  graceMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  halfDayMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  weeklyOffDays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  offSaturdays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lateRuleEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lateRuleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -593,6 +717,14 @@ export type PayrollSettingsUncheckedUpdateInput = {
   ptState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tdsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendanceLop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  officeStart?: Prisma.StringFieldUpdateOperationsInput | string
+  graceMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  halfDayMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  weeklyOffDays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  offSaturdays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lateRuleEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lateRuleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -618,6 +750,14 @@ export type PayrollSettingsCreateManyInput = {
   ptState?: string | null
   ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tdsEnabled?: boolean
+  attendanceLop?: boolean
+  officeStart?: string
+  graceMinutes?: number
+  halfDayMinutes?: number
+  weeklyOffDays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  offSaturdays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lateRuleEnabled?: boolean
+  lateRuleCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -643,6 +783,14 @@ export type PayrollSettingsUpdateManyMutationInput = {
   ptState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tdsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendanceLop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  officeStart?: Prisma.StringFieldUpdateOperationsInput | string
+  graceMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  halfDayMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  weeklyOffDays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  offSaturdays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lateRuleEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lateRuleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -668,6 +816,14 @@ export type PayrollSettingsUncheckedUpdateManyInput = {
   ptState?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ptSlabs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tdsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendanceLop?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  officeStart?: Prisma.StringFieldUpdateOperationsInput | string
+  graceMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  halfDayMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  weeklyOffDays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  offSaturdays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lateRuleEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lateRuleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -693,6 +849,14 @@ export type PayrollSettingsCountOrderByAggregateInput = {
   ptState?: Prisma.SortOrder
   ptSlabs?: Prisma.SortOrder
   tdsEnabled?: Prisma.SortOrder
+  attendanceLop?: Prisma.SortOrder
+  officeStart?: Prisma.SortOrder
+  graceMinutes?: Prisma.SortOrder
+  halfDayMinutes?: Prisma.SortOrder
+  weeklyOffDays?: Prisma.SortOrder
+  offSaturdays?: Prisma.SortOrder
+  lateRuleEnabled?: Prisma.SortOrder
+  lateRuleCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -708,6 +872,9 @@ export type PayrollSettingsAvgOrderByAggregateInput = {
   esiWageLimit?: Prisma.SortOrder
   esiEmployeeRate?: Prisma.SortOrder
   esiEmployerRate?: Prisma.SortOrder
+  graceMinutes?: Prisma.SortOrder
+  halfDayMinutes?: Prisma.SortOrder
+  lateRuleCount?: Prisma.SortOrder
 }
 
 export type PayrollSettingsMaxOrderByAggregateInput = {
@@ -730,6 +897,12 @@ export type PayrollSettingsMaxOrderByAggregateInput = {
   ptEnabled?: Prisma.SortOrder
   ptState?: Prisma.SortOrder
   tdsEnabled?: Prisma.SortOrder
+  attendanceLop?: Prisma.SortOrder
+  officeStart?: Prisma.SortOrder
+  graceMinutes?: Prisma.SortOrder
+  halfDayMinutes?: Prisma.SortOrder
+  lateRuleEnabled?: Prisma.SortOrder
+  lateRuleCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -754,6 +927,12 @@ export type PayrollSettingsMinOrderByAggregateInput = {
   ptEnabled?: Prisma.SortOrder
   ptState?: Prisma.SortOrder
   tdsEnabled?: Prisma.SortOrder
+  attendanceLop?: Prisma.SortOrder
+  officeStart?: Prisma.SortOrder
+  graceMinutes?: Prisma.SortOrder
+  halfDayMinutes?: Prisma.SortOrder
+  lateRuleEnabled?: Prisma.SortOrder
+  lateRuleCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -769,6 +948,9 @@ export type PayrollSettingsSumOrderByAggregateInput = {
   esiWageLimit?: Prisma.SortOrder
   esiEmployeeRate?: Prisma.SortOrder
   esiEmployerRate?: Prisma.SortOrder
+  graceMinutes?: Prisma.SortOrder
+  halfDayMinutes?: Prisma.SortOrder
+  lateRuleCount?: Prisma.SortOrder
 }
 
 
@@ -794,6 +976,14 @@ export type PayrollSettingsSelect<ExtArgs extends runtime.Types.Extensions.Inter
   ptState?: boolean
   ptSlabs?: boolean
   tdsEnabled?: boolean
+  attendanceLop?: boolean
+  officeStart?: boolean
+  graceMinutes?: boolean
+  halfDayMinutes?: boolean
+  weeklyOffDays?: boolean
+  offSaturdays?: boolean
+  lateRuleEnabled?: boolean
+  lateRuleCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["payrollSettings"]>
@@ -819,6 +1009,14 @@ export type PayrollSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   ptState?: boolean
   ptSlabs?: boolean
   tdsEnabled?: boolean
+  attendanceLop?: boolean
+  officeStart?: boolean
+  graceMinutes?: boolean
+  halfDayMinutes?: boolean
+  weeklyOffDays?: boolean
+  offSaturdays?: boolean
+  lateRuleEnabled?: boolean
+  lateRuleCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["payrollSettings"]>
@@ -844,6 +1042,14 @@ export type PayrollSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   ptState?: boolean
   ptSlabs?: boolean
   tdsEnabled?: boolean
+  attendanceLop?: boolean
+  officeStart?: boolean
+  graceMinutes?: boolean
+  halfDayMinutes?: boolean
+  weeklyOffDays?: boolean
+  offSaturdays?: boolean
+  lateRuleEnabled?: boolean
+  lateRuleCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["payrollSettings"]>
@@ -869,11 +1075,19 @@ export type PayrollSettingsSelectScalar = {
   ptState?: boolean
   ptSlabs?: boolean
   tdsEnabled?: boolean
+  attendanceLop?: boolean
+  officeStart?: boolean
+  graceMinutes?: boolean
+  halfDayMinutes?: boolean
+  weeklyOffDays?: boolean
+  offSaturdays?: boolean
+  lateRuleEnabled?: boolean
+  lateRuleCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PayrollSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "dayBasis" | "payDay" | "pfEnabled" | "pfCeiling" | "pfCapWages" | "pfEmployeeRate" | "pfEmployerRate" | "pfEpsRate" | "pfEdliRate" | "pfAdminRate" | "esiEnabled" | "esiWageLimit" | "esiEmployeeRate" | "esiEmployerRate" | "ptEnabled" | "ptState" | "ptSlabs" | "tdsEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["payrollSettings"]>
+export type PayrollSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "dayBasis" | "payDay" | "pfEnabled" | "pfCeiling" | "pfCapWages" | "pfEmployeeRate" | "pfEmployerRate" | "pfEpsRate" | "pfEdliRate" | "pfAdminRate" | "esiEnabled" | "esiWageLimit" | "esiEmployeeRate" | "esiEmployerRate" | "ptEnabled" | "ptState" | "ptSlabs" | "tdsEnabled" | "attendanceLop" | "officeStart" | "graceMinutes" | "halfDayMinutes" | "weeklyOffDays" | "offSaturdays" | "lateRuleEnabled" | "lateRuleCount" | "createdAt" | "updatedAt", ExtArgs["result"]["payrollSettings"]>
 
 export type $PayrollSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PayrollSettings"
@@ -899,6 +1113,14 @@ export type $PayrollSettingsPayload<ExtArgs extends runtime.Types.Extensions.Int
     ptState: string | null
     ptSlabs: runtime.JsonValue | null
     tdsEnabled: boolean
+    attendanceLop: boolean
+    officeStart: string
+    graceMinutes: number
+    halfDayMinutes: number
+    weeklyOffDays: runtime.JsonValue | null
+    offSaturdays: runtime.JsonValue | null
+    lateRuleEnabled: boolean
+    lateRuleCount: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["payrollSettings"]>
@@ -1344,6 +1566,14 @@ export interface PayrollSettingsFieldRefs {
   readonly ptState: Prisma.FieldRef<"PayrollSettings", 'String'>
   readonly ptSlabs: Prisma.FieldRef<"PayrollSettings", 'Json'>
   readonly tdsEnabled: Prisma.FieldRef<"PayrollSettings", 'Boolean'>
+  readonly attendanceLop: Prisma.FieldRef<"PayrollSettings", 'Boolean'>
+  readonly officeStart: Prisma.FieldRef<"PayrollSettings", 'String'>
+  readonly graceMinutes: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly halfDayMinutes: Prisma.FieldRef<"PayrollSettings", 'Int'>
+  readonly weeklyOffDays: Prisma.FieldRef<"PayrollSettings", 'Json'>
+  readonly offSaturdays: Prisma.FieldRef<"PayrollSettings", 'Json'>
+  readonly lateRuleEnabled: Prisma.FieldRef<"PayrollSettings", 'Boolean'>
+  readonly lateRuleCount: Prisma.FieldRef<"PayrollSettings", 'Int'>
   readonly createdAt: Prisma.FieldRef<"PayrollSettings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PayrollSettings", 'DateTime'>
 }

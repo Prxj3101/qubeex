@@ -58,6 +58,7 @@ export type StaffMinAggregateOutputType = {
   taxRegime: string | null
   bankDetails: string | null
   sortOrder: number | null
+  machineId: string | null
   userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -87,6 +88,7 @@ export type StaffMaxAggregateOutputType = {
   taxRegime: string | null
   bankDetails: string | null
   sortOrder: number | null
+  machineId: string | null
   userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -117,6 +119,7 @@ export type StaffCountAggregateOutputType = {
   taxDeclaration: number
   bankDetails: number
   sortOrder: number
+  machineId: number
   userId: number
   createdAt: number
   updatedAt: number
@@ -156,6 +159,7 @@ export type StaffMinAggregateInputType = {
   taxRegime?: true
   bankDetails?: true
   sortOrder?: true
+  machineId?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -185,6 +189,7 @@ export type StaffMaxAggregateInputType = {
   taxRegime?: true
   bankDetails?: true
   sortOrder?: true
+  machineId?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -215,6 +220,7 @@ export type StaffCountAggregateInputType = {
   taxDeclaration?: true
   bankDetails?: true
   sortOrder?: true
+  machineId?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -332,6 +338,7 @@ export type StaffGroupByOutputType = {
   taxDeclaration: runtime.JsonValue | null
   bankDetails: string | null
   sortOrder: number
+  machineId: string | null
   userId: string | null
   createdAt: Date
   updatedAt: Date
@@ -385,11 +392,13 @@ export type StaffWhereInput = {
   taxDeclaration?: Prisma.JsonNullableFilter<"Staff">
   bankDetails?: Prisma.StringNullableFilter<"Staff"> | string | null
   sortOrder?: Prisma.IntFilter<"Staff"> | number
+  machineId?: Prisma.StringNullableFilter<"Staff"> | string | null
   userId?: Prisma.StringNullableFilter<"Staff"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   salaryStructures?: Prisma.StaffSalaryStructureListRelationFilter
   payslips?: Prisma.PayslipListRelationFilter
+  attendance?: Prisma.StaffAttendanceListRelationFilter
 }
 
 export type StaffOrderByWithRelationInput = {
@@ -417,11 +426,13 @@ export type StaffOrderByWithRelationInput = {
   taxDeclaration?: Prisma.SortOrderInput | Prisma.SortOrder
   bankDetails?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  machineId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   salaryStructures?: Prisma.StaffSalaryStructureOrderByRelationAggregateInput
   payslips?: Prisma.PayslipOrderByRelationAggregateInput
+  attendance?: Prisma.StaffAttendanceOrderByRelationAggregateInput
 }
 
 export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -453,10 +464,12 @@ export type StaffWhereUniqueInput = Prisma.AtLeast<{
   taxDeclaration?: Prisma.JsonNullableFilter<"Staff">
   bankDetails?: Prisma.StringNullableFilter<"Staff"> | string | null
   sortOrder?: Prisma.IntFilter<"Staff"> | number
+  machineId?: Prisma.StringNullableFilter<"Staff"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   salaryStructures?: Prisma.StaffSalaryStructureListRelationFilter
   payslips?: Prisma.PayslipListRelationFilter
+  attendance?: Prisma.StaffAttendanceListRelationFilter
 }, "id" | "userId">
 
 export type StaffOrderByWithAggregationInput = {
@@ -484,6 +497,7 @@ export type StaffOrderByWithAggregationInput = {
   taxDeclaration?: Prisma.SortOrderInput | Prisma.SortOrder
   bankDetails?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  machineId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -522,6 +536,7 @@ export type StaffScalarWhereWithAggregatesInput = {
   taxDeclaration?: Prisma.JsonNullableWithAggregatesFilter<"Staff">
   bankDetails?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"Staff"> | number
+  machineId?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
   userId?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Staff"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Staff"> | Date | string
@@ -552,11 +567,13 @@ export type StaffCreateInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
+  machineId?: string | null
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salaryStructures?: Prisma.StaffSalaryStructureCreateNestedManyWithoutStaffInput
   payslips?: Prisma.PayslipCreateNestedManyWithoutStaffInput
+  attendance?: Prisma.StaffAttendanceCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUncheckedCreateInput = {
@@ -584,11 +601,13 @@ export type StaffUncheckedCreateInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
+  machineId?: string | null
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salaryStructures?: Prisma.StaffSalaryStructureUncheckedCreateNestedManyWithoutStaffInput
   payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutStaffInput
+  attendance?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUpdateInput = {
@@ -616,11 +635,13 @@ export type StaffUpdateInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salaryStructures?: Prisma.StaffSalaryStructureUpdateManyWithoutStaffNestedInput
   payslips?: Prisma.PayslipUpdateManyWithoutStaffNestedInput
+  attendance?: Prisma.StaffAttendanceUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateInput = {
@@ -648,11 +669,13 @@ export type StaffUncheckedUpdateInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salaryStructures?: Prisma.StaffSalaryStructureUncheckedUpdateManyWithoutStaffNestedInput
   payslips?: Prisma.PayslipUncheckedUpdateManyWithoutStaffNestedInput
+  attendance?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffCreateManyInput = {
@@ -680,6 +703,7 @@ export type StaffCreateManyInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
+  machineId?: string | null
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -710,6 +734,7 @@ export type StaffUpdateManyMutationInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -740,9 +765,15 @@ export type StaffUncheckedUpdateManyInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type StaffScalarRelationFilter = {
+  is?: Prisma.StaffWhereInput
+  isNot?: Prisma.StaffWhereInput
 }
 
 export type StaffCountOrderByAggregateInput = {
@@ -770,6 +801,7 @@ export type StaffCountOrderByAggregateInput = {
   taxDeclaration?: Prisma.SortOrder
   bankDetails?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  machineId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -803,6 +835,7 @@ export type StaffMaxOrderByAggregateInput = {
   taxRegime?: Prisma.SortOrder
   bankDetails?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  machineId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -832,6 +865,7 @@ export type StaffMinOrderByAggregateInput = {
   taxRegime?: Prisma.SortOrder
   bankDetails?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
+  machineId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -841,9 +875,18 @@ export type StaffSumOrderByAggregateInput = {
   sortOrder?: Prisma.SortOrder
 }
 
-export type StaffScalarRelationFilter = {
-  is?: Prisma.StaffWhereInput
-  isNot?: Prisma.StaffWhereInput
+export type StaffCreateNestedOneWithoutAttendanceInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutAttendanceInput, Prisma.StaffUncheckedCreateWithoutAttendanceInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutAttendanceInput
+  connect?: Prisma.StaffWhereUniqueInput
+}
+
+export type StaffUpdateOneRequiredWithoutAttendanceNestedInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutAttendanceInput, Prisma.StaffUncheckedCreateWithoutAttendanceInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutAttendanceInput
+  upsert?: Prisma.StaffUpsertWithoutAttendanceInput
+  connect?: Prisma.StaffWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutAttendanceInput, Prisma.StaffUpdateWithoutAttendanceInput>, Prisma.StaffUncheckedUpdateWithoutAttendanceInput>
 }
 
 export type StaffCreateNestedOneWithoutSalaryStructuresInput = {
@@ -874,6 +917,154 @@ export type StaffUpdateOneRequiredWithoutPayslipsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutPayslipsInput, Prisma.StaffUpdateWithoutPayslipsInput>, Prisma.StaffUncheckedUpdateWithoutPayslipsInput>
 }
 
+export type StaffCreateWithoutAttendanceInput = {
+  id?: string
+  institutionId: string
+  name: string
+  email?: string | null
+  phone?: string | null
+  designation?: string | null
+  staffType: string
+  status?: string
+  joinedAt?: Date | string | null
+  exitDate?: Date | string | null
+  employeeCode?: string | null
+  pan?: string | null
+  uan?: string | null
+  paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  bankDetails?: string | null
+  sortOrder?: number
+  machineId?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salaryStructures?: Prisma.StaffSalaryStructureCreateNestedManyWithoutStaffInput
+  payslips?: Prisma.PayslipCreateNestedManyWithoutStaffInput
+}
+
+export type StaffUncheckedCreateWithoutAttendanceInput = {
+  id?: string
+  institutionId: string
+  name: string
+  email?: string | null
+  phone?: string | null
+  designation?: string | null
+  staffType: string
+  status?: string
+  joinedAt?: Date | string | null
+  exitDate?: Date | string | null
+  employeeCode?: string | null
+  pan?: string | null
+  uan?: string | null
+  paymentMode?: string
+  pfApplicable?: boolean
+  epsApplicable?: boolean
+  esiApplicable?: boolean
+  esiNumber?: string | null
+  ptApplicable?: boolean
+  tdsApplicable?: boolean
+  taxRegime?: string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  bankDetails?: string | null
+  sortOrder?: number
+  machineId?: string | null
+  userId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salaryStructures?: Prisma.StaffSalaryStructureUncheckedCreateNestedManyWithoutStaffInput
+  payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutStaffInput
+}
+
+export type StaffCreateOrConnectWithoutAttendanceInput = {
+  where: Prisma.StaffWhereUniqueInput
+  create: Prisma.XOR<Prisma.StaffCreateWithoutAttendanceInput, Prisma.StaffUncheckedCreateWithoutAttendanceInput>
+}
+
+export type StaffUpsertWithoutAttendanceInput = {
+  update: Prisma.XOR<Prisma.StaffUpdateWithoutAttendanceInput, Prisma.StaffUncheckedUpdateWithoutAttendanceInput>
+  create: Prisma.XOR<Prisma.StaffCreateWithoutAttendanceInput, Prisma.StaffUncheckedCreateWithoutAttendanceInput>
+  where?: Prisma.StaffWhereInput
+}
+
+export type StaffUpdateToOneWithWhereWithoutAttendanceInput = {
+  where?: Prisma.StaffWhereInput
+  data: Prisma.XOR<Prisma.StaffUpdateWithoutAttendanceInput, Prisma.StaffUncheckedUpdateWithoutAttendanceInput>
+}
+
+export type StaffUpdateWithoutAttendanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  designation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  exitDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  employeeCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salaryStructures?: Prisma.StaffSalaryStructureUpdateManyWithoutStaffNestedInput
+  payslips?: Prisma.PayslipUpdateManyWithoutStaffNestedInput
+}
+
+export type StaffUncheckedUpdateWithoutAttendanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  designation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffType?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  exitDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  employeeCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMode?: Prisma.StringFieldUpdateOperationsInput | string
+  pfApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  epsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  esiNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tdsApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxRegime?: Prisma.StringFieldUpdateOperationsInput | string
+  taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salaryStructures?: Prisma.StaffSalaryStructureUncheckedUpdateManyWithoutStaffNestedInput
+  payslips?: Prisma.PayslipUncheckedUpdateManyWithoutStaffNestedInput
+}
+
 export type StaffCreateWithoutSalaryStructuresInput = {
   id?: string
   institutionId: string
@@ -899,10 +1090,12 @@ export type StaffCreateWithoutSalaryStructuresInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
+  machineId?: string | null
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   payslips?: Prisma.PayslipCreateNestedManyWithoutStaffInput
+  attendance?: Prisma.StaffAttendanceCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUncheckedCreateWithoutSalaryStructuresInput = {
@@ -930,10 +1123,12 @@ export type StaffUncheckedCreateWithoutSalaryStructuresInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
+  machineId?: string | null
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   payslips?: Prisma.PayslipUncheckedCreateNestedManyWithoutStaffInput
+  attendance?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type StaffCreateOrConnectWithoutSalaryStructuresInput = {
@@ -977,10 +1172,12 @@ export type StaffUpdateWithoutSalaryStructuresInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payslips?: Prisma.PayslipUpdateManyWithoutStaffNestedInput
+  attendance?: Prisma.StaffAttendanceUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutSalaryStructuresInput = {
@@ -1008,10 +1205,12 @@ export type StaffUncheckedUpdateWithoutSalaryStructuresInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payslips?: Prisma.PayslipUncheckedUpdateManyWithoutStaffNestedInput
+  attendance?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffCreateWithoutPayslipsInput = {
@@ -1039,10 +1238,12 @@ export type StaffCreateWithoutPayslipsInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
+  machineId?: string | null
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salaryStructures?: Prisma.StaffSalaryStructureCreateNestedManyWithoutStaffInput
+  attendance?: Prisma.StaffAttendanceCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUncheckedCreateWithoutPayslipsInput = {
@@ -1070,10 +1271,12 @@ export type StaffUncheckedCreateWithoutPayslipsInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: string | null
   sortOrder?: number
+  machineId?: string | null
   userId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salaryStructures?: Prisma.StaffSalaryStructureUncheckedCreateNestedManyWithoutStaffInput
+  attendance?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type StaffCreateOrConnectWithoutPayslipsInput = {
@@ -1117,10 +1320,12 @@ export type StaffUpdateWithoutPayslipsInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salaryStructures?: Prisma.StaffSalaryStructureUpdateManyWithoutStaffNestedInput
+  attendance?: Prisma.StaffAttendanceUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutPayslipsInput = {
@@ -1148,10 +1353,12 @@ export type StaffUncheckedUpdateWithoutPayslipsInput = {
   taxDeclaration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   bankDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  machineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salaryStructures?: Prisma.StaffSalaryStructureUncheckedUpdateManyWithoutStaffNestedInput
+  attendance?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 
@@ -1162,11 +1369,13 @@ export type StaffUncheckedUpdateWithoutPayslipsInput = {
 export type StaffCountOutputType = {
   salaryStructures: number
   payslips: number
+  attendance: number
 }
 
 export type StaffCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salaryStructures?: boolean | StaffCountOutputTypeCountSalaryStructuresArgs
   payslips?: boolean | StaffCountOutputTypeCountPayslipsArgs
+  attendance?: boolean | StaffCountOutputTypeCountAttendanceArgs
 }
 
 /**
@@ -1191,6 +1400,13 @@ export type StaffCountOutputTypeCountSalaryStructuresArgs<ExtArgs extends runtim
  */
 export type StaffCountOutputTypeCountPayslipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PayslipWhereInput
+}
+
+/**
+ * StaffCountOutputType without action
+ */
+export type StaffCountOutputTypeCountAttendanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StaffAttendanceWhereInput
 }
 
 
@@ -1219,11 +1435,13 @@ export type StaffSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   taxDeclaration?: boolean
   bankDetails?: boolean
   sortOrder?: boolean
+  machineId?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   salaryStructures?: boolean | Prisma.Staff$salaryStructuresArgs<ExtArgs>
   payslips?: boolean | Prisma.Staff$payslipsArgs<ExtArgs>
+  attendance?: boolean | Prisma.Staff$attendanceArgs<ExtArgs>
   _count?: boolean | Prisma.StaffCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staff"]>
 
@@ -1252,6 +1470,7 @@ export type StaffSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   taxDeclaration?: boolean
   bankDetails?: boolean
   sortOrder?: boolean
+  machineId?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1282,6 +1501,7 @@ export type StaffSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   taxDeclaration?: boolean
   bankDetails?: boolean
   sortOrder?: boolean
+  machineId?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1312,15 +1532,17 @@ export type StaffSelectScalar = {
   taxDeclaration?: boolean
   bankDetails?: boolean
   sortOrder?: boolean
+  machineId?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type StaffOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "email" | "phone" | "designation" | "staffType" | "status" | "joinedAt" | "exitDate" | "employeeCode" | "pan" | "uan" | "paymentMode" | "pfApplicable" | "epsApplicable" | "esiApplicable" | "esiNumber" | "ptApplicable" | "tdsApplicable" | "taxRegime" | "taxDeclaration" | "bankDetails" | "sortOrder" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["staff"]>
+export type StaffOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "email" | "phone" | "designation" | "staffType" | "status" | "joinedAt" | "exitDate" | "employeeCode" | "pan" | "uan" | "paymentMode" | "pfApplicable" | "epsApplicable" | "esiApplicable" | "esiNumber" | "ptApplicable" | "tdsApplicable" | "taxRegime" | "taxDeclaration" | "bankDetails" | "sortOrder" | "machineId" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["staff"]>
 export type StaffInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salaryStructures?: boolean | Prisma.Staff$salaryStructuresArgs<ExtArgs>
   payslips?: boolean | Prisma.Staff$payslipsArgs<ExtArgs>
+  attendance?: boolean | Prisma.Staff$attendanceArgs<ExtArgs>
   _count?: boolean | Prisma.StaffCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StaffIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1331,6 +1553,7 @@ export type $StaffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     salaryStructures: Prisma.$StaffSalaryStructurePayload<ExtArgs>[]
     payslips: Prisma.$PayslipPayload<ExtArgs>[]
+    attendance: Prisma.$StaffAttendancePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1357,6 +1580,7 @@ export type $StaffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     taxDeclaration: runtime.JsonValue | null
     bankDetails: string | null
     sortOrder: number
+    machineId: string | null
     userId: string | null
     createdAt: Date
     updatedAt: Date
@@ -1756,6 +1980,7 @@ export interface Prisma__StaffClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   salaryStructures<T extends Prisma.Staff$salaryStructuresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$salaryStructuresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffSalaryStructurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payslips<T extends Prisma.Staff$payslipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$payslipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PayslipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  attendance<T extends Prisma.Staff$attendanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1809,6 +2034,7 @@ export interface StaffFieldRefs {
   readonly taxDeclaration: Prisma.FieldRef<"Staff", 'Json'>
   readonly bankDetails: Prisma.FieldRef<"Staff", 'String'>
   readonly sortOrder: Prisma.FieldRef<"Staff", 'Int'>
+  readonly machineId: Prisma.FieldRef<"Staff", 'String'>
   readonly userId: Prisma.FieldRef<"Staff", 'String'>
   readonly createdAt: Prisma.FieldRef<"Staff", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Staff", 'DateTime'>
@@ -2250,6 +2476,30 @@ export type Staff$payslipsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.PayslipScalarFieldEnum | Prisma.PayslipScalarFieldEnum[]
+}
+
+/**
+ * Staff.attendance
+ */
+export type Staff$attendanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffAttendance
+   */
+  select?: Prisma.StaffAttendanceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffAttendance
+   */
+  omit?: Prisma.StaffAttendanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffAttendanceInclude<ExtArgs> | null
+  where?: Prisma.StaffAttendanceWhereInput
+  orderBy?: Prisma.StaffAttendanceOrderByWithRelationInput | Prisma.StaffAttendanceOrderByWithRelationInput[]
+  cursor?: Prisma.StaffAttendanceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StaffAttendanceScalarFieldEnum | Prisma.StaffAttendanceScalarFieldEnum[]
 }
 
 /**

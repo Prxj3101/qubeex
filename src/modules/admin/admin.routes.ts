@@ -11,6 +11,7 @@ import { listTickets, createTicket, addTicketReply, listReviews, createReview, u
 import { listAuditLogs } from "./audit.controller";
 import { listNotifications, markNotificationRead, dismissNotification, markAllNotificationsRead } from "./notifications.controller";
 import { getOverview } from "./overview.controller";
+import { getStaffAttendanceDay, saveStaffAttendanceDay, getStaffAttendanceMonth, importStaffPunches, rebuildStaffAttendance } from "./staffAttendance.controller";
 import {
   getNotepad,
   createNote,
@@ -265,6 +266,12 @@ router.delete("/payroll/templates/:id", ...PAYROLL_PERM, deleteSalaryTemplate);
 router.get("/payroll/staff/:staffId/structure", ...PAYROLL_PERM, getStaffSalaryStructure);
 router.put("/payroll/staff/:staffId/structure", ...PAYROLL_PERM, saveStaffSalaryStructure);
 router.delete("/payroll/staff/:staffId/structure/:versionId", ...PAYROLL_PERM, deleteStaffSalaryVersion);
+// Staff attendance (Payroll -> Attendance)
+router.get("/payroll/attendance/day", ...PAYROLL_PERM, getStaffAttendanceDay);
+router.put("/payroll/attendance/day", ...PAYROLL_PERM, saveStaffAttendanceDay);
+router.get("/payroll/attendance/month", ...PAYROLL_PERM, getStaffAttendanceMonth);
+router.post("/payroll/attendance/import", ...PAYROLL_PERM, importStaffPunches);
+router.post("/payroll/attendance/rebuild", ...PAYROLL_PERM, rebuildStaffAttendance);
 router.get("/payroll/runs", ...PAYROLL_PERM, listPayrollRuns);
 router.post("/payroll/runs", ...PAYROLL_PERM, createPayrollRun);
 router.get("/payroll/runs/:id", ...PAYROLL_PERM, getPayrollRun);

@@ -44,6 +44,7 @@ const createStaffSchema = z.object({
   staffType: z.enum(STAFF_TYPES),
   userId: z.string().optional(),
   employeeCode: optionalText(40),
+  machineId: optionalText(40),
   joinedAt: optionalDate,
   pan: optionalText(10),
   uan: optionalText(12),
@@ -67,6 +68,7 @@ const updateStaffSchema = z.object({
   staffType: z.enum(STAFF_TYPES).optional(),
   status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
   employeeCode: optionalText(40),
+  machineId: optionalText(40),
   joinedAt: optionalDate,
   exitDate: dateOnly.nullable().optional(),
   pan: optionalText(10),
@@ -234,6 +236,13 @@ export const searchLinkableProfiles = async (req: AuthRequest, res: Response, ne
   }
 };
 
+// One machine ID per person (it's how attendance punches find their owner).
+async function assertMachineIdFree(institutionId: string, machineId: string | null | undefined, exceptId?: string) {
+  if (!machineId) return;
+  const clash = await academicDb().staff.findFirst({ where: { institutionId, machineId, ...(exceptId ? { id: { not: exceptId } } : {}) }, select: { name: true } });
+  if (clash) throw new ConflictError(`Machine ID ${machineId} is already given to ${clash.name}`);
+}
+
 export const createStaff = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { institutionId } = req.user!;
@@ -248,6 +257,7 @@ export const createStaff = async (req: AuthRequest, res: Response, next: NextFun
       if (existing) throw new ConflictError("This profile is already linked to a staff record");
     }
 
+    await assertMachineIdFree(institutionId, data.machineId);
     const sortOrder = await nextSortOrder(institutionId);
     const staff = await academicDb().staff.create({
       data: {
@@ -260,6 +270,7 @@ export const createStaff = async (req: AuthRequest, res: Response, next: NextFun
         staffType: data.staffType,
         userId: data.userId ?? null,
         employeeCode: data.employeeCode ?? null,
+        machineId: data.machineId ?? null,
         pan: data.pan ? data.pan.toUpperCase() : null,
         uan: data.uan ?? null,
         paymentMode: data.paymentMode ?? "BANK",
@@ -291,6 +302,7 @@ export const updateStaff = async (req: AuthRequest, res: Response, next: NextFun
     const existing = await academicDb().staff.findFirst({ where: { id, institutionId } });
     if (!existing) throw new NotFoundError("Staff member not found");
 
+    if (data.machineId !== undefined) await assertMachineIdFree(institutionId, data.machineId, id);
     const { bankDetails, joinedAt, exitDate, pan, ...rest } = data;
     const joined = joinedAt === undefined ? existing.joinedAt : joinedAt ? toDateOnly(joinedAt) : null;
     const exit = exitDate === undefined ? existing.exitDate : exitDate === null ? null : toDateOnly(exitDate);

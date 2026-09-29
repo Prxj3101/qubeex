@@ -25,7 +25,23 @@ export interface PayrollSettingsData {
   ptState: string | null;
   pt: PtConfig;
   tdsEnabled: boolean;
+  attendance: AttendanceConfig;
 }
+
+// Staff attendance rules (Payroll Settings -> Attendance).
+export interface AttendanceConfig {
+  lopEnabled: boolean; // draft runs take LOP days from staff attendance
+  officeStart: string; // HH:MM
+  graceMinutes: number;
+  halfDayMinutes: number; // worked less than this = half day
+  weeklyOffDays: number[]; // 0 = Sunday ... 6 = Saturday
+  offSaturdays: number[]; // e.g. [2, 4] = 2nd and 4th Saturday off
+  lateRuleEnabled: boolean; // every lateRuleCount lates = half day LOP
+  lateRuleCount: number;
+}
+
+const intList = (v: unknown, fallback: number[]): number[] =>
+  Array.isArray(v) ? v.filter((n): n is number => Number.isInteger(n)) : fallback;
 
 // Maharashtra Professional Tax (men's slab): up to ₹7,500 nil, ₹7,501-10,000 ₹175,
 // above ₹10,000 ₹200 (₹300 in February) - ₹2,500 a year. Women earning up to
@@ -63,6 +79,16 @@ export async function loadPayrollSettings(institutionId: string): Promise<Payrol
     ptState: s?.ptState ?? null,
     tdsEnabled: s?.tdsEnabled ?? false,
     pt: { slabs: Array.isArray(s?.ptSlabs) && (s!.ptSlabs as unknown[]).length ? (s!.ptSlabs as unknown as PtSlab[]) : (PT_PRESETS[s?.ptState ?? ""] ?? []) },
+    attendance: {
+      lopEnabled: s?.attendanceLop ?? false,
+      officeStart: s?.officeStart ?? "08:00",
+      graceMinutes: s?.graceMinutes ?? 10,
+      halfDayMinutes: s?.halfDayMinutes ?? 240,
+      weeklyOffDays: intList(s?.weeklyOffDays, [0]),
+      offSaturdays: intList(s?.offSaturdays, []),
+      lateRuleEnabled: s?.lateRuleEnabled ?? false,
+      lateRuleCount: s?.lateRuleCount ?? 3,
+    },
   };
 }
 

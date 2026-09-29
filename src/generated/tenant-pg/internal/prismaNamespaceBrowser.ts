@@ -103,6 +103,8 @@ export const ModelName = {
   MarksheetRemark: 'MarksheetRemark',
   TranslationCache: 'TranslationCache',
   PayrollSettings: 'PayrollSettings',
+  StaffAttendance: 'StaffAttendance',
+  StaffPunch: 'StaffPunch',
   SalaryComponent: 'SalaryComponent',
   SalaryTemplate: 'SalaryTemplate',
   Staff: 'Staff',
@@ -964,11 +966,50 @@ export const PayrollSettingsScalarFieldEnum = {
   ptState: 'ptState',
   ptSlabs: 'ptSlabs',
   tdsEnabled: 'tdsEnabled',
+  attendanceLop: 'attendanceLop',
+  officeStart: 'officeStart',
+  graceMinutes: 'graceMinutes',
+  halfDayMinutes: 'halfDayMinutes',
+  weeklyOffDays: 'weeklyOffDays',
+  offSaturdays: 'offSaturdays',
+  lateRuleEnabled: 'lateRuleEnabled',
+  lateRuleCount: 'lateRuleCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PayrollSettingsScalarFieldEnum = (typeof PayrollSettingsScalarFieldEnum)[keyof typeof PayrollSettingsScalarFieldEnum]
+
+
+export const StaffAttendanceScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  staffId: 'staffId',
+  date: 'date',
+  status: 'status',
+  checkIn: 'checkIn',
+  checkOut: 'checkOut',
+  source: 'source',
+  note: 'note',
+  markedById: 'markedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffAttendanceScalarFieldEnum = (typeof StaffAttendanceScalarFieldEnum)[keyof typeof StaffAttendanceScalarFieldEnum]
+
+
+export const StaffPunchScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  machineId: 'machineId',
+  date: 'date',
+  time: 'time',
+  source: 'source',
+  createdAt: 'createdAt'
+} as const
+
+export type StaffPunchScalarFieldEnum = (typeof StaffPunchScalarFieldEnum)[keyof typeof StaffPunchScalarFieldEnum]
 
 
 export const SalaryComponentScalarFieldEnum = {
@@ -1027,6 +1068,7 @@ export const StaffScalarFieldEnum = {
   taxDeclaration: 'taxDeclaration',
   bankDetails: 'bankDetails',
   sortOrder: 'sortOrder',
+  machineId: 'machineId',
   userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1093,6 +1135,8 @@ export const PayslipScalarFieldEnum = {
   grossPay: 'grossPay',
   netPay: 'netPay',
   lopDays: 'lopDays',
+  lopSource: 'lopSource',
+  attendanceSummary: 'attendanceSummary',
   paidDays: 'paidDays',
   basisDays: 'basisDays',
   bonus: 'bonus',

@@ -54,6 +54,10 @@ app.post(
   razorpayWebhookHandler
 );
 
+// Staff attendance: a month of machine punches / a whole staff day can be bigger than 10kb.
+app.use("/api/admin/payroll/attendance/import", express.json({ limit: "5mb" }));
+app.use("/api/admin/payroll/attendance/day", express.json({ limit: "512kb" }));
+
 app.use(express.json({ limit: "10kb" }));
 
 app.use(generalLimiter);

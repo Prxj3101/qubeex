@@ -19,6 +19,7 @@ import {
 import { loadComponents, loadPayrollSettings, readStaffBankDetails, loadLinkedProfiles, pfFor, statutoryFor } from "../../services/payrollData.service";
 import { generatePayrollAiSummary, reviewHash } from "../../services/payrollAiReview.service";
 import { computeMonthlyTds, fyRange, type TaxDeclaration, type TdsResult } from "../../services/tds.service";
+import { monthAttendanceLop } from "../../services/staffAttendance.service";
 
 // All money in this module is integer PAISE. Percentages are basis points.
 
@@ -65,6 +66,15 @@ const settingsSchema = z.object({
   ptEnabled: z.boolean().optional(),
   ptState: z.string().max(40).nullable().optional(),
   tdsEnabled: z.boolean().optional(),
+  // staff attendance -> LOP
+  attendanceLop: z.boolean().optional(),
+  officeStart: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Office time must be HH:MM").optional(),
+  graceMinutes: z.number().int().min(0).max(180).optional(),
+  halfDayMinutes: z.number().int().min(30).max(720).optional(),
+  weeklyOffDays: z.array(z.number().int().min(0).max(6)).max(7).optional(),
+  offSaturdays: z.array(z.number().int().min(1).max(5)).max(5).optional(),
+  lateRuleEnabled: z.boolean().optional(),
+  lateRuleCount: z.number().int().min(1).max(31).optional(),
   ptSlabs: z.array(z.object({
     from: z.number().int().min(0),
     amount: z.number().int().min(0).max(1_000_000),
@@ -76,7 +86,12 @@ export const savePayrollSettings = async (req: AuthRequest, res: Response, next:
   try {
     const institutionId = requireInstitution(req);
     const parsed = settingsSchema.parse(req.body);
-    const data = { ...parsed, ...(parsed.ptSlabs !== undefined ? { ptSlabs: toJson(parsed.ptSlabs ?? []) /* [] = use the state preset */ } : {}) };
+    const data = {
+      ...parsed,
+      ...(parsed.ptSlabs !== undefined ? { ptSlabs: toJson(parsed.ptSlabs ?? []) /* [] = use the state preset */ } : {}),
+      ...(parsed.weeklyOffDays !== undefined ? { weeklyOffDays: toJson(parsed.weeklyOffDays) } : {}),
+      ...(parsed.offSaturdays !== undefined ? { offSaturdays: toJson(parsed.offSaturdays) } : {}),
+    };
     const saved = await academicDb().payrollSettings.upsert({
       where: { institutionId },
       create: { institutionId, ...data },
@@ -575,6 +590,8 @@ export const createPayrollRun = async (req: AuthRequest, res: Response, next: Ne
       academicDb().staffSalaryStructure.findMany({ where: { institutionId } }),
     ]);
     const tdsPast = await loadTdsPast(institutionId, month, staffList.map((s) => s.id));
+    // LOP days straight from staff attendance, when the school uses it.
+    const attLop = settings.attendance.lopEnabled ? await monthAttendanceLop(institutionId, month, staffList, settings.attendance) : null;
 
     const structuresByStaff = new Map<string, typeof structures>();
     for (const s of structures) {
@@ -589,8 +606,10 @@ export const createPayrollRun = async (req: AuthRequest, res: Response, next: Ne
       for (const staff of staffList) {
         const structure = structureForMonth(structuresByStaff.get(staff.id) ?? [], month);
         if (!structure) continue;
+        const att = attLop?.get(staff.id);
         const { result, tdsInfo } = salaryWithTds({
           month, items: structure.items as unknown as StructureItem[], components, settings, staff, past: tdsPast.get(staff.id),
+          lopDays: att?.lopDays ?? 0,
         });
         if (result.employedDays === 0) continue; // not on the rolls this month
 
@@ -603,6 +622,7 @@ export const createPayrollRun = async (req: AuthRequest, res: Response, next: Ne
             lopDays: result.lopDays, paidDays: result.paidDays, basisDays: result.basisDays,
             employerContributions: toJson(result.employer), pfWages: result.pfWages,
             tdsInfo: toJson(tdsInfo ?? {}),
+            ...(att ? { lopSource: "ATTENDANCE", attendanceSummary: toJson(att.summary) } : {}),
           },
         });
       }
@@ -648,7 +668,7 @@ const T = {
 async function buildRunReview(
   institutionId: string,
   run: { id: string; month: string },
-  payslips: { staffId: string; staffName: string; netPay: number; grossPay: number; paidDays: number; basisDays: number; lopDays: number; bonus: number; otherDeduction: number; inputNote?: string | null; deductions?: unknown; tdsInfo?: unknown }[],
+  payslips: { staffId: string; staffName: string; netPay: number; grossPay: number; paidDays: number; basisDays: number; lopDays: number; bonus: number; otherDeduction: number; inputNote?: string | null; deductions?: unknown; tdsInfo?: unknown; lopSource?: string | null; attendanceSummary?: unknown }[],
   staffList: { id: string; paymentMode: string; bankDetails: string | null }[],
 ) {
   const warnings: RunWarning[] = [];
@@ -728,6 +748,16 @@ async function buildRunReview(
     }
 
     // Leave
+    // Staff attendance: working days nobody marked are counted as present - flag them.
+    const att = (p.attendanceSummary && typeof p.attendanceSummary === "object" ? p.attendanceSummary : null) as { unmarked?: number; absent?: number; halfDay?: number; unpaidLeave?: number; late?: number } | null;
+    if (att?.unmarked) {
+      add({ type: "ATTENDANCE_UNMARKED", level: att.unmarked > 3 ? "warning" : "info", staffIds: ids,
+        message: `${p.staffName} has ${att.unmarked} working day${att.unmarked === 1 ? "" : "s"} with no attendance marked. They are counted as present.` });
+    }
+    if (p.lopSource === "MANUAL" && att) {
+      add({ type: "LOP_EDITED", level: "info", staffIds: ids,
+        message: `${p.staffName}'s LOP days were changed by hand (attendance says ${(att.absent ?? 0) + (att.unpaidLeave ?? 0) + (att.halfDay ?? 0) * 0.5}${att.late ? `, ${att.late} late` : ""}).` });
+    }
     if (p.lopDays > 0) {
       const heavy = p.lopDays > p.basisDays / 2;
       const level = heavy ? "critical" : p.lopDays > T.lopWarnDays ? "warning" : "info";
@@ -858,9 +888,16 @@ export const getPayrollRun = async (req: AuthRequest, res: Response, next: NextF
       try {
         const existing = await academicDb().payslip.findMany({ where: { payrollRunId: id } });
         if (existing.length) {
-          await applyRunInputs(institutionId, run, existing.map((p) => ({
-            payslipId: p.id, lopDays: p.lopDays, bonus: p.bonus, otherDeduction: p.otherDeduction, note: p.inputNote,
-          })), { auto: true });
+          const att = await attendanceLopFor(institutionId, run.month, existing.map((p) => p.staffId));
+          await applyRunInputs(institutionId, run, existing.map((p) => {
+            const a = att?.get(p.staffId);
+            // Attendance-based LOP keeps following attendance until someone types a number.
+            const followAttendance = !!a && p.lopSource === "ATTENDANCE";
+            return {
+              payslipId: p.id, lopDays: followAttendance ? a!.lopDays : p.lopDays, bonus: p.bonus, otherDeduction: p.otherDeduction, note: p.inputNote,
+              ...(a ? { lopSource: followAttendance ? "ATTENDANCE" : (p.lopSource ?? "MANUAL"), attendanceSummary: a.summary } : {}),
+            };
+          }), { auto: true });
         }
       } catch {
         // Never block viewing the run because of a refresh problem.
@@ -1263,7 +1300,15 @@ const runInputsSchema = z.object({
 
 // Save the grid and recalculate each changed payslip from the staff's salary
 // structure for that month (same engine as run creation).
-type RunInputItem = z.infer<typeof runInputsSchema>["items"][number];
+type RunInputItem = z.infer<typeof runInputsSchema>["items"][number] & { lopSource?: string | null; attendanceSummary?: unknown };
+
+// Attendance LOP for these staff in a month (null when the school doesn't use attendance for LOP).
+async function attendanceLopFor(institutionId: string, month: string, staffIds: string[]) {
+  const settings = await loadPayrollSettings(institutionId);
+  if (!settings.attendance.lopEnabled || !staffIds.length) return null;
+  const staff = await academicDb().staff.findMany({ where: { id: { in: staffIds } }, select: { id: true, joinedAt: true, exitDate: true } });
+  return monthAttendanceLop(institutionId, month, staff, settings.attendance);
+}
 
 // Recalculate payslips of a draft run from each person's salary for the month
 // plus the given LOP / bonus inputs (same engine as run creation).
@@ -1311,7 +1356,9 @@ async function applyRunInputs(institutionId: string, run: { id: string; month: s
         && payslip.grossPay === result.grossPay && payslip.netPay === result.netPay && payslip.paidDays === result.paidDays
         && JSON.stringify(payslip.earnings) === JSON.stringify(result.earnings)
         && JSON.stringify(payslip.deductions) === JSON.stringify(result.deductions)
-        && JSON.stringify(payslip.employerContributions ?? []) === JSON.stringify(result.employer)) continue;
+        && JSON.stringify(payslip.employerContributions ?? []) === JSON.stringify(result.employer)
+        && (item.lopSource === undefined || (payslip.lopSource === item.lopSource
+          && JSON.stringify(payslip.attendanceSummary ?? null) === JSON.stringify(item.attendanceSummary ?? null)))) continue;
       updates.push(academicDb().payslip.update({
         where: { id: payslip.id },
         data: {
@@ -1321,6 +1368,8 @@ async function applyRunInputs(institutionId: string, run: { id: string; month: s
           bonus: item.bonus, otherDeduction: item.otherDeduction, inputNote: note,
           employerContributions: toJson(result.employer), pfWages: result.pfWages,
           tdsInfo: toJson(tdsInfo ?? {}),
+          ...(item.lopSource !== undefined ? { lopSource: item.lopSource } : {}),
+          ...(item.attendanceSummary !== undefined ? { attendanceSummary: toJson(item.attendanceSummary) } : {}),
         },
       }));
     }
@@ -1338,7 +1387,13 @@ export const saveRunInputs = async (req: AuthRequest, res: Response, next: NextF
     if (!run) throw new NotFoundError("Payroll run not found");
     if (run.status !== "DRAFT") throw new BadRequestError(DRAFT_ONLY);
 
-    const count = await applyRunInputs(institutionId, run, items);
+    const slips = await academicDb().payslip.findMany({ where: { payrollRunId: runId, id: { in: items.map((i) => i.payslipId) } }, select: { id: true, staffId: true } });
+    const staffOf = new Map(slips.map((p) => [p.id, p.staffId]));
+    const att = await attendanceLopFor(institutionId, run.month, slips.map((p) => p.staffId));
+    const count = await applyRunInputs(institutionId, run, items.map((i) => {
+      const a = att?.get(staffOf.get(i.payslipId) ?? "");
+      return a ? { ...i, lopSource: i.lopDays === a.lopDays ? "ATTENDANCE" : "MANUAL", attendanceSummary: a.summary } : i;
+    }));
     res.json({ success: true, data: { count } });
   } catch (err) {
     next(err);

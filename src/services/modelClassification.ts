@@ -31,6 +31,10 @@ export const PLATFORM_MODELS = [
   // AI token-pool usage/billing events — references User directly, same domain
   // as the shared per-institution AI token pool tracked centrally.
   "AiUsageEvent",
+  // Per-user device push tokens and Jarvis chat history - both keyed by User and
+  // read/written through the central client.
+  "PushToken",
+  "AiChatMessage",
 ] as const;
 
 // Academic / institution-owned data — routes to the tenant DB for BYOD institutions,
@@ -95,6 +99,8 @@ export const ACADEMIC_MODELS = [
   "StaffSalaryStructure",
   "PayrollRun",
   "Payslip",
+  "StaffAttendance",
+  "StaffPunch",
 ] as const;
 
 const academicSet = new Set<string>(ACADEMIC_MODELS);

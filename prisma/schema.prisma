@@ -1522,8 +1522,57 @@ model PayrollSettings {
   // Income tax deducted at source on salary (section 192), worked out monthly.
   tdsEnabled Boolean @default(false)
 
+  // Staff attendance -> LOP. When on, a draft run takes each person's LOP days
+  // from staff attendance (absent + unpaid leave + half days [+ late rule]).
+  attendanceLop     Boolean @default(false)
+  officeStart       String  @default("08:00") // HH:MM, check-in after start + grace = Late
+  graceMinutes      Int     @default(10)
+  halfDayMinutes    Int     @default(240) // worked less than this (check-in to check-out) = Half day
+  weeklyOffDays     Json? // weekdays off, 0 = Sunday ... 6 = Saturday. Default [0]
+  offSaturdays      Json? // which Saturdays of the month are off, e.g. [2, 4]
+  lateRuleEnabled   Boolean @default(false) // every N lates = half day LOP
+  lateRuleCount     Int     @default(3)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// One row per staff member per day. Status comes from machine punches (IMPORT /
+// DEVICE) or is marked by hand (MANUAL). A manual mark is never overwritten by a
+// later import.
+model StaffAttendance {
+  id            String   @id @default(uuid())
+  institutionId String
+  staffId       String
+  staff         Staff    @relation(fields: [staffId], references: [id])
+  date          String // YYYY-MM-DD
+  status        String // PRESENT | LATE | HALF_DAY | ABSENT | PAID_LEAVE | UNPAID_LEAVE
+  checkIn       String? // HH:MM
+  checkOut      String? // HH:MM
+  source        String   @default("MANUAL") // MANUAL | IMPORT | DEVICE
+  note          String?
+  markedById    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([staffId, date])
+  @@index([institutionId, date])
+}
+
+// Raw punches from an attendance machine (imported file or, later, device push).
+// Kept so re-importing the same file adds nothing, and unknown machine IDs can be
+// matched to staff later.
+model StaffPunch {
+  id            String   @id @default(uuid())
+  institutionId String
+  machineId     String
+  date          String // YYYY-MM-DD
+  time          String // HH:MM:SS
+  source        String   @default("IMPORT") // IMPORT | DEVICE
+  createdAt     DateTime @default(now())
+
+  @@unique([institutionId, machineId, date, time])
+  @@index([institutionId, date])
 }
 
 // The institution's own catalog of salary heads (Basic, HRA, DA, PT...).
@@ -1589,12 +1638,14 @@ model Staff {
   taxDeclaration Json? // { sec80C, sec80D, hraExempt, otherDeductions, prevEmployerIncome, prevEmployerTds } in paise
   bankDetails  String? // AES-GCM encrypted JSON {accountName, accountNumber, ifsc, bankName} (fieldEncryption.service)
   sortOrder    Int       @default(0) // admin-chosen list order (drag to reorder); new staff go to the end
+  machineId    String? // this person's ID on the school's fingerprint / RFID attendance machine
 
   userId String? @unique // optional link to an existing Teacher/Admin/Sub-Admin User. Null = payroll-only staff.
   user   User?   @relation(fields: [userId], references: [id])
 
   salaryStructures StaffSalaryStructure[]
   payslips         Payslip[]
+  attendance       StaffAttendance[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1689,6 +1740,8 @@ model Payslip {
 
   // Attendance-driven inputs/results for the month.
   lopDays   Float @default(0) // loss-of-pay days entered for this month (half days allowed)
+  lopSource String? // ATTENDANCE (taken from staff attendance, refreshed while draft) | MANUAL (typed in the grid)
+  attendanceSummary Json? // { absent, halfDay, unpaidLeave, late, unmarked, workingDays } behind the ATTENDANCE LOP
   paidDays  Float @default(0) // days actually paid after LOP + joining/exit proration
   basisDays Int   @default(0) // day count one day's salary was based on (per PayrollSettings.dayBasis)
 

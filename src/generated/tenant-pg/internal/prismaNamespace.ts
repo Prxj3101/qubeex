@@ -449,6 +449,8 @@ export const ModelName = {
   MarksheetRemark: 'MarksheetRemark',
   TranslationCache: 'TranslationCache',
   PayrollSettings: 'PayrollSettings',
+  StaffAttendance: 'StaffAttendance',
+  StaffPunch: 'StaffPunch',
   SalaryComponent: 'SalaryComponent',
   SalaryTemplate: 'SalaryTemplate',
   Staff: 'Staff',
@@ -470,7 +472,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4322,6 +4324,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    StaffAttendance: {
+      payload: Prisma.$StaffAttendancePayload<ExtArgs>
+      fields: Prisma.StaffAttendanceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffAttendanceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffAttendanceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>
+        }
+        findFirst: {
+          args: Prisma.StaffAttendanceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffAttendanceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>
+        }
+        findMany: {
+          args: Prisma.StaffAttendanceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>[]
+        }
+        create: {
+          args: Prisma.StaffAttendanceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>
+        }
+        createMany: {
+          args: Prisma.StaffAttendanceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StaffAttendanceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>[]
+        }
+        delete: {
+          args: Prisma.StaffAttendanceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>
+        }
+        update: {
+          args: Prisma.StaffAttendanceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffAttendanceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffAttendanceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StaffAttendanceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>[]
+        }
+        upsert: {
+          args: Prisma.StaffAttendanceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffAttendancePayload>
+        }
+        aggregate: {
+          args: Prisma.StaffAttendanceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaffAttendance>
+        }
+        groupBy: {
+          args: Prisma.StaffAttendanceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffAttendanceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffAttendanceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffAttendanceCountAggregateOutputType> | number
+        }
+      }
+    }
+    StaffPunch: {
+      payload: Prisma.$StaffPunchPayload<ExtArgs>
+      fields: Prisma.StaffPunchFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffPunchFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffPunchFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>
+        }
+        findFirst: {
+          args: Prisma.StaffPunchFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffPunchFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>
+        }
+        findMany: {
+          args: Prisma.StaffPunchFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>[]
+        }
+        create: {
+          args: Prisma.StaffPunchCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>
+        }
+        createMany: {
+          args: Prisma.StaffPunchCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StaffPunchCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>[]
+        }
+        delete: {
+          args: Prisma.StaffPunchDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>
+        }
+        update: {
+          args: Prisma.StaffPunchUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffPunchDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffPunchUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StaffPunchUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>[]
+        }
+        upsert: {
+          args: Prisma.StaffPunchUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPunchPayload>
+        }
+        aggregate: {
+          args: Prisma.StaffPunchAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaffPunch>
+        }
+        groupBy: {
+          args: Prisma.StaffPunchGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffPunchGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffPunchCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffPunchCountAggregateOutputType> | number
+        }
+      }
+    }
     SalaryComponent: {
       payload: Prisma.$SalaryComponentPayload<ExtArgs>
       fields: Prisma.SalaryComponentFieldRefs
@@ -5642,11 +5792,50 @@ export const PayrollSettingsScalarFieldEnum = {
   ptState: 'ptState',
   ptSlabs: 'ptSlabs',
   tdsEnabled: 'tdsEnabled',
+  attendanceLop: 'attendanceLop',
+  officeStart: 'officeStart',
+  graceMinutes: 'graceMinutes',
+  halfDayMinutes: 'halfDayMinutes',
+  weeklyOffDays: 'weeklyOffDays',
+  offSaturdays: 'offSaturdays',
+  lateRuleEnabled: 'lateRuleEnabled',
+  lateRuleCount: 'lateRuleCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PayrollSettingsScalarFieldEnum = (typeof PayrollSettingsScalarFieldEnum)[keyof typeof PayrollSettingsScalarFieldEnum]
+
+
+export const StaffAttendanceScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  staffId: 'staffId',
+  date: 'date',
+  status: 'status',
+  checkIn: 'checkIn',
+  checkOut: 'checkOut',
+  source: 'source',
+  note: 'note',
+  markedById: 'markedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffAttendanceScalarFieldEnum = (typeof StaffAttendanceScalarFieldEnum)[keyof typeof StaffAttendanceScalarFieldEnum]
+
+
+export const StaffPunchScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  machineId: 'machineId',
+  date: 'date',
+  time: 'time',
+  source: 'source',
+  createdAt: 'createdAt'
+} as const
+
+export type StaffPunchScalarFieldEnum = (typeof StaffPunchScalarFieldEnum)[keyof typeof StaffPunchScalarFieldEnum]
 
 
 export const SalaryComponentScalarFieldEnum = {
@@ -5705,6 +5894,7 @@ export const StaffScalarFieldEnum = {
   taxDeclaration: 'taxDeclaration',
   bankDetails: 'bankDetails',
   sortOrder: 'sortOrder',
+  machineId: 'machineId',
   userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -5771,6 +5961,8 @@ export const PayslipScalarFieldEnum = {
   grossPay: 'grossPay',
   netPay: 'netPay',
   lopDays: 'lopDays',
+  lopSource: 'lopSource',
+  attendanceSummary: 'attendanceSummary',
   paidDays: 'paidDays',
   basisDays: 'basisDays',
   bonus: 'bonus',
@@ -6321,6 +6513,8 @@ export type GlobalOmitConfig = {
   marksheetRemark?: Prisma.MarksheetRemarkOmit
   translationCache?: Prisma.TranslationCacheOmit
   payrollSettings?: Prisma.PayrollSettingsOmit
+  staffAttendance?: Prisma.StaffAttendanceOmit
+  staffPunch?: Prisma.StaffPunchOmit
   salaryComponent?: Prisma.SalaryComponentOmit
   salaryTemplate?: Prisma.SalaryTemplateOmit
   staff?: Prisma.StaffOmit

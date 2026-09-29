@@ -300,6 +300,16 @@ export type TranslationCache = Prisma.TranslationCacheModel
  */
 export type PayrollSettings = Prisma.PayrollSettingsModel
 /**
+ * Model StaffAttendance
+ * 
+ */
+export type StaffAttendance = Prisma.StaffAttendanceModel
+/**
+ * Model StaffPunch
+ * 
+ */
+export type StaffPunch = Prisma.StaffPunchModel
+/**
  * Model SalaryComponent
  * 
  */

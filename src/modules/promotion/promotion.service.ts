@@ -1,6 +1,7 @@
 import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
 import { getCurrentAcademicYear } from "../../utils/academicYear";
+import { Prisma } from "../../generated/prisma/client";
 import { SubmitOutcomesInput } from "./promotion.schema";
 
 export interface PreviewStudent { id: string; studentId: string; name: string | null; rollNo: string | null }
@@ -152,16 +153,27 @@ export async function applyPromotionOutcomes(params: {
       const enrollmentStatus =
         o.outcome === "GRADUATED" ? "GRADUATED" : o.outcome === "WITHDRAWN" ? "WITHDRAWN" : "ACTIVE";
 
-      await tx.studentEnrollment.create({
-        data: {
-          institutionId,
-          studentId: o.studentId,
-          academicYearId: currentYear.id,
-          standardId: enrollmentStandardId,
-          divisionId: enrollmentDivisionId,
-          status: enrollmentStatus,
-        },
-      });
+      try {
+        await tx.studentEnrollment.create({
+          data: {
+            institutionId,
+            studentId: o.studentId,
+            academicYearId: currentYear.id,
+            standardId: enrollmentStandardId,
+            divisionId: enrollmentDivisionId,
+            status: enrollmentStatus,
+          },
+        });
+      } catch (err) {
+        // StudentEnrollment is unique per (studentId, academicYearId). A REPEATED
+        // student stays ACTIVE in this division, so a second batch for the same
+        // division in the same academic year collides here. Throwing out of the
+        // interactive transaction rolls the whole batch back.
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+          throw { status: 409, message: "This student already has an enrollment record for this academic year" };
+        }
+        throw err;
+      }
     }
 
     return batch.id;

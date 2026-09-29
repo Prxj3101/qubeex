@@ -1377,8 +1377,11 @@ router.post(
         dateNote: z.string().optional(),
       }).parse(req.body);
 
+      // Year resolution and the writes below must use the same client —
+      // academicDb() — so a BYOD institution's academicYearId and its
+      // Attendance rows live in the same (tenant) database.
       const currentYear = await getCurrentAcademicYear(institutionId);
-      await prisma.$transaction(async (tx) => {
+      await academicDb().$transaction(async (tx) => {
         // Upsert each attendance record
         for (const rec of records) {
           await tx.attendance.upsert({

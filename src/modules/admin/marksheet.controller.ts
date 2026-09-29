@@ -75,7 +75,7 @@ export async function adminGetDivisionMarksheet(
     const { institutionId } = req.user!;
     if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
     const divisionId = req.params.divisionId as string;
-    const academicYear = (req.query.academicYear as string) || getCurrentAcademicYear();
+    const academicYear = (req.query.academicYear as string) || defaultYearLabel();
 
     const marksheet = await academicDb().marksheet.findFirst({
       where: { divisionId, institutionId, academicYear: { label: academicYear } },
@@ -263,6 +263,10 @@ export async function assignClassTeacher(
       }
     }
 
+    // Resolved before the transaction: the lazy find-or-create runs on
+    // academicDb(), not on `tx`, so it must not be interleaved with tx writes.
+    const currentYear = await resolveCurrentAcademicYear(institutionId);
+
     await academicDb().$transaction(async (tx) => {
       await tx.division.update({
         where: { id: divisionId },
@@ -270,9 +274,11 @@ export async function assignClassTeacher(
       });
 
       // Keep DivisionAssignment (the class-teacher slot: subjectId = null) in
-      // sync with the denormalized Division.classTeacherId field.
+      // sync with the denormalized Division.classTeacherId field. Scoped to the
+      // current academic year so a post-rollover change creates/edits this
+      // year's row instead of overwriting (or deleting) a prior year's history.
       const existingSlot = await tx.divisionAssignment.findFirst({
-        where: { divisionId, subjectId: null },
+        where: { divisionId, subjectId: null, institutionId, academicYearId: currentYear.id },
       });
 
       if (teacherId === null) {
@@ -280,7 +286,6 @@ export async function assignClassTeacher(
       } else if (existingSlot) {
         await tx.divisionAssignment.update({ where: { id: existingSlot.id }, data: { teacherId } });
       } else {
-        const currentYear = await resolveCurrentAcademicYear(institutionId);
         await tx.divisionAssignment.create({
           data: { divisionId, institutionId, teacherId, subjectId: null, academicYearId: currentYear.id },
         });
@@ -318,7 +323,7 @@ export async function adminGetDivisionOnlineMarksheet(
   }
 }
 
-function getCurrentAcademicYear(): string {
+function defaultYearLabel(): string {
   const now = new Date();
   const month = now.getMonth();
   const year = now.getFullYear();

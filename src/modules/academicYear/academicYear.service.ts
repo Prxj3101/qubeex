@@ -1,5 +1,6 @@
 import { academicDb } from "../../utils/academicContext";
 import { getCurrentAcademicYear } from "../../utils/academicYear";
+import { Prisma } from "../../generated/prisma/client";
 import { StartNewAcademicYearInput } from "./academicYear.schema";
 
 export interface AcademicYearSummary {
@@ -61,16 +62,25 @@ export async function startNewAcademicYear(
     // count and doesn't attempt to decode a result set.
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${institutionId})::bigint)`;
 
-    const year = await tx.academicYear.create({
-      data: {
-        institutionId,
-        label: input.label,
-        startDate: new Date(input.startDate),
-        endDate: new Date(input.endDate),
-        status: "ACTIVE",
-        isCurrent: false,
-      },
-    });
+    // @@unique([institutionId, label]) — surface a reused label as a 409 rather
+    // than an unhandled 500. Throwing out of the callback rolls the tx back.
+    const year = await tx.academicYear
+      .create({
+        data: {
+          institutionId,
+          label: input.label,
+          startDate: new Date(input.startDate),
+          endDate: new Date(input.endDate),
+          status: "ACTIVE",
+          isCurrent: false,
+        },
+      })
+      .catch((err: unknown) => {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+          throw { status: 409, message: "An academic year with this label already exists" };
+        }
+        throw err;
+      });
 
     await tx.academicYear.updateMany({
       where: { institutionId, isCurrent: true, id: { not: year.id } },

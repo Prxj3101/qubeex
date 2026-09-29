@@ -105,44 +105,47 @@ model AdminTask {
 }
 
 model Standard {
-  id            String      @id @default(uuid())
+  id            String              @id @default(uuid())
   institutionId String
   name          String
   order         Int
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
   divisions     Division[]
   students      Student[]
   subjects      Subject[]
+  enrollments   StudentEnrollment[]
 
   @@unique([institutionId, name])
   @@index([institutionId])
 }
 
 model Division {
-  id                 String                @id @default(uuid())
+  id                 String                 @id @default(uuid())
   standardId         String
   institutionId      String
   name               String
   capacity           Int?
-  createdAt          DateTime              @default(now())
-  updatedAt          DateTime              @updatedAt
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
   classTeacherId     String?
   timetableUrl       String?
   attendances        Attendance[]
   attendanceDayNotes AttendanceDayNote[]
   calendarEvents     CalendarEvent[]
   campusPosts        CampusFeedPost[]
-  classTeacher       Teacher?              @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
-  standard           Standard              @relation(fields: [standardId], references: [id])
+  classTeacher       Teacher?               @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
+  standard           Standard               @relation(fields: [standardId], references: [id])
   assignments        DivisionAssignment[]
-  feeStructure       DivisionFeeStructure?
+  feeStructures      DivisionFeeStructure[]
   divisionSubjects   DivisionSubject[]
   marksheets         Marksheet[]
   students           Student[]
   taskAssignments    TaskAssignment[]
   taskContainers     TaskContainer[]
   taskTests          TaskTest[]
+  enrollments        StudentEnrollment[]
+  timetables         DivisionTimetable[]
 
   @@unique([standardId, name])
   @@index([institutionId])
@@ -189,19 +192,23 @@ model DivisionSubject {
 }
 
 model DivisionAssignment {
-  id            String      @id @default(uuid())
-  divisionId    String
-  subjectId     String?
-  teacherId     String
-  institutionId String
-  createdAt     DateTime    @default(now())
-  division      Division    @relation(fields: [divisionId], references: [id])
-  subject       Subject?    @relation(fields: [subjectId], references: [id])
-  teacher       Teacher     @relation(fields: [teacherId], references: [id])
+  id             String       @id @default(uuid())
+  divisionId     String
+  subjectId      String?
+  teacherId      String
+  institutionId  String
+  academicYearId String
+  createdAt      DateTime     @default(now())
+  division       Division     @relation(fields: [divisionId], references: [id])
+  subject        Subject?     @relation(fields: [subjectId], references: [id])
+  teacher        Teacher      @relation(fields: [teacherId], references: [id])
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
 
+  @@unique([divisionId, subjectId, teacherId, academicYearId])
   @@index([divisionId])
   @@index([teacherId])
   @@index([institutionId])
+  @@index([academicYearId])
 }
 
 model Student {
@@ -252,6 +259,7 @@ model Student {
   taskAssignmentSubmissions        TaskAssignmentSubmission[]
   taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
   taskTestAttempts                 TaskTestAttempt[]
+  enrollments                      StudentEnrollment[]
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
@@ -268,13 +276,76 @@ model ParentModeEvent {
   @@index([studentId, openedAt])
 }
 
+enum AcademicYearStatus {
+  ACTIVE
+  CLOSED
+}
+
+model AcademicYear {
+  id            String             @id @default(uuid())
+  institutionId String
+  label         String
+  startDate     DateTime
+  endDate       DateTime
+  status        AcademicYearStatus @default(ACTIVE)
+  isCurrent     Boolean            @default(false)
+  createdAt     DateTime           @default(now())
+
+  studentEnrollments  StudentEnrollment[]
+  divisionAssignments DivisionAssignment[]
+  attendances         Attendance[]
+  feeStructures       DivisionFeeStructure[]
+  timetables          DivisionTimetable[]
+  marksheets          Marksheet[]
+  promotionBatches    PromotionBatch[]
+
+  @@unique([institutionId, label])
+  @@index([institutionId, isCurrent])
+}
+
+model StudentEnrollment {
+  id             String        @id @default(uuid())
+  institutionId  String
+  studentId      String
+  student        Student       @relation(fields: [studentId], references: [id])
+  academicYearId String
+  academicYear   AcademicYear  @relation(fields: [academicYearId], references: [id])
+  standardId     String
+  standard       Standard      @relation(fields: [standardId], references: [id])
+  divisionId     String
+  division       Division      @relation(fields: [divisionId], references: [id])
+  rollNo         String?
+  status         StudentStatus
+  createdAt      DateTime      @default(now())
+
+  @@unique([studentId, academicYearId])
+  @@index([divisionId, academicYearId])
+  @@index([institutionId, academicYearId])
+}
+
+model DivisionTimetable {
+  id             String       @id @default(uuid())
+  institutionId  String
+  divisionId     String
+  division       Division     @relation(fields: [divisionId], references: [id])
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  timetableUrl   String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([divisionId, academicYearId])
+  @@index([institutionId, academicYearId])
+}
+
 model PromotionBatch {
   id              String                    @id @default(uuid())
   institutionId   String
   fromStandardId  String
   fromDivisionId  String
   toDivisionId    String?
-  academicYear    String
+  academicYearId  String
+  academicYear    AcademicYear              @relation(fields: [academicYearId], references: [id])
   triggeredById   String
   triggeredByRole String
   undoneAt        DateTime?
@@ -346,22 +417,25 @@ model PTMNote {
 }
 
 model Attendance {
-  id            String      @id @default(uuid())
-  institutionId String
-  divisionId    String
-  studentId     String
-  date          String
-  status        String
-  remark        String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  division      Division    @relation(fields: [divisionId], references: [id])
-  student       Student     @relation(fields: [studentId], references: [id])
+  id             String       @id @default(uuid())
+  institutionId  String
+  divisionId     String
+  studentId      String
+  date           String
+  status         String
+  remark         String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  academicYearId String
+  division       Division     @relation(fields: [divisionId], references: [id])
+  student        Student      @relation(fields: [studentId], references: [id])
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
 
   @@unique([divisionId, studentId, date])
   @@index([divisionId, date])
   @@index([studentId])
   @@index([institutionId])
+  @@index([divisionId, academicYearId, date])
 }
 
 model SchoolHoliday {
@@ -426,17 +500,17 @@ model StaffPostComment {
 }
 
 model StaffMessage {
-  id             String    @id @default(uuid())
-  institutionId  String
-  senderId       String
-  receiverId     String
-  text           String?
+  id            String    @id @default(uuid())
+  institutionId String
+  senderId      String
+  receiverId    String
+  text          String?
   // Multiple attachments per message — array of {url, type, name} objects,
   // replaces the old single attachmentUrl/attachmentType/attachmentName
   // scalars.
-  attachments    Json?
-  readAt         DateTime?
-  createdAt      DateTime  @default(now())
+  attachments   Json?
+  readAt        DateTime?
+  createdAt     DateTime  @default(now())
 
   @@index([institutionId])
   @@index([senderId])
@@ -480,25 +554,29 @@ model CalendarEvent {
 }
 
 model DivisionFeeStructure {
-  id                 String      @id @default(uuid())
-  divisionId         String      @unique
+  id                 String       @id @default(uuid())
+  divisionId         String
+  academicYearId     String
   institutionId      String
   feeMonths          Json
   bankDetails        Json?
   qrImageUrl         String?
   extraColumns       Json
   extraStudentFields Json
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
   feeStructures      Json
   generalRemark      String?
   feeCardTheme       String?
   schoolLogoUrl      String?
   schoolName         String?
   rulesAndRegs       Json?
-  division           Division    @relation(fields: [divisionId], references: [id])
+  division           Division     @relation(fields: [divisionId], references: [id])
+  academicYear       AcademicYear @relation(fields: [academicYearId], references: [id])
 
+  @@unique([divisionId, academicYearId])
   @@index([institutionId])
+  @@index([academicYearId])
 }
 
 model StudentFeePayment {
@@ -648,33 +726,33 @@ model TaskModuleQuestion {
 }
 
 model TaskTest {
-  id                String             @id @default(uuid())
-  institutionId     String
-  teacherId         String
-  subjectId         String
-  divisionId        String
-  title             String
-  description       String?
-  testLink          String             @unique
-  status            TaskTestStatus     @default(DRAFT)
-  durationMinutes   Int                @default(60)
-  numberOfQuestions Int
-  maxAttempts       Int                @default(1)
-  validUntil        DateTime?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  isRandomized      Boolean            @default(false)
-  paperType         String             @default("TEST")
-  sections          Json?
-  totalMarks        Int                @default(100)
-  answerSpace       Boolean            @default(true)
-  startDate         DateTime?
-  deadlineReminderSent Boolean         @default(false)
-  division          Division           @relation(fields: [divisionId], references: [id])
-  subject           Subject            @relation(fields: [subjectId], references: [id])
-  teacher           Teacher            @relation(fields: [teacherId], references: [id])
-  attempts          TaskTestAttempt[]
-  questions         TaskTestQuestion[]
+  id                   String             @id @default(uuid())
+  institutionId        String
+  teacherId            String
+  subjectId            String
+  divisionId           String
+  title                String
+  description          String?
+  testLink             String             @unique
+  status               TaskTestStatus     @default(DRAFT)
+  durationMinutes      Int                @default(60)
+  numberOfQuestions    Int
+  maxAttempts          Int                @default(1)
+  validUntil           DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  isRandomized         Boolean            @default(false)
+  paperType            String             @default("TEST")
+  sections             Json?
+  totalMarks           Int                @default(100)
+  answerSpace          Boolean            @default(true)
+  startDate            DateTime?
+  deadlineReminderSent Boolean            @default(false)
+  division             Division           @relation(fields: [divisionId], references: [id])
+  subject              Subject            @relation(fields: [subjectId], references: [id])
+  teacher              Teacher            @relation(fields: [teacherId], references: [id])
+  attempts             TaskTestAttempt[]
+  questions            TaskTestQuestion[]
 
   @@index([teacherId])
   @@index([institutionId])
@@ -769,31 +847,31 @@ model QuestionShareToken {
 }
 
 model TaskAssignment {
-  id                 String                            @id @default(uuid())
-  institutionId      String
-  teacherId          String
-  subjectId          String
-  divisionId         String
-  title              String
-  description        String?
-  totalMarks         Int                               @default(10)
-  dueDate            DateTime?
-  status             TaskAssignmentStatus              @default(DRAFT)
-  createdAt          DateTime                          @default(now())
-  updatedAt          DateTime                          @updatedAt
-  answerSpace        Boolean                           @default(true)
-  isRandomized       Boolean                           @default(false)
-  numberOfQuestions  Int                               @default(0)
-  questions          Json?
-  sections           Json?
-  submissionType     String                            @default("OFFLINE")
-  completedAt        DateTime?
-  deadlineReminderSent Boolean                         @default(false)
-  division           Division                          @relation(fields: [divisionId], references: [id])
-  subject            Subject                           @relation(fields: [subjectId], references: [id])
-  teacher            Teacher                           @relation(fields: [teacherId], references: [id])
-  submissions        TaskAssignmentSubmission[]
-  submissionAttempts TaskAssignmentSubmissionAttempt[]
+  id                   String                            @id @default(uuid())
+  institutionId        String
+  teacherId            String
+  subjectId            String
+  divisionId           String
+  title                String
+  description          String?
+  totalMarks           Int                               @default(10)
+  dueDate              DateTime?
+  status               TaskAssignmentStatus              @default(DRAFT)
+  createdAt            DateTime                          @default(now())
+  updatedAt            DateTime                          @updatedAt
+  answerSpace          Boolean                           @default(true)
+  isRandomized         Boolean                           @default(false)
+  numberOfQuestions    Int                               @default(0)
+  questions            Json?
+  sections             Json?
+  submissionType       String                            @default("OFFLINE")
+  completedAt          DateTime?
+  deadlineReminderSent Boolean                           @default(false)
+  division             Division                          @relation(fields: [divisionId], references: [id])
+  subject              Subject                           @relation(fields: [subjectId], references: [id])
+  teacher              Teacher                           @relation(fields: [teacherId], references: [id])
+  submissions          TaskAssignmentSubmission[]
+  submissionAttempts   TaskAssignmentSubmissionAttempt[]
 
   @@index([teacherId, divisionId])
   @@index([institutionId])
@@ -857,7 +935,8 @@ model Marksheet {
   institutionId         String
   divisionId            String
   createdByTeacherId    String
-  academicYear          String
+  academicYearId        String
+  academicYear          AcademicYear             @relation(fields: [academicYearId], references: [id])
   status                MarksheetStatus          @default(DRAFT)
   pdfR2Key              String?
   shareToken            String                   @unique
@@ -877,7 +956,7 @@ model Marksheet {
   scores                MarksheetScore[]
   subjectConfigs        MarksheetSubjectConfig[]
 
-  @@unique([divisionId, academicYear])
+  @@unique([divisionId, academicYearId])
   @@index([institutionId])
   @@index([divisionId])
 }
@@ -1111,24 +1190,24 @@ model StaffSalaryStructure {
 }
 
 model PayrollRun {
-  id            String      @id @default(uuid())
-  institutionId String
-  month         String // "2026-10"
+  id                String      @id @default(uuid())
+  institutionId     String
+  month             String // "2026-10"
   // DRAFT -> PENDING_APPROVAL (accountant sends) -> APPROVED (admin) -> PUBLISHED.
   // Admin can send back to DRAFT with a note; admin may also publish directly.
-  status        String      @default("DRAFT") // DRAFT | PENDING_APPROVAL | APPROVED | PUBLISHED
+  status            String      @default("DRAFT") // DRAFT | PENDING_APPROVAL | APPROVED | PUBLISHED
   // Set when someone has gone through the LOP / bonus grid (saved it, or
   // confirmed "nothing to add"). Needed before sending for approval / publishing.
   inputsCheckedAt   DateTime?
   inputsCheckedById String?
-  submittedAt   DateTime?
-  submittedById String?
-  approvedAt    DateTime?
-  approvedById  String?
-  reviewNote    String? // admin's note when sending the run back
-  reviewNoteAt  DateTime?
-  publishedAt   DateTime?
-  publishedBy   String?
+  submittedAt       DateTime?
+  submittedById     String?
+  approvedAt        DateTime?
+  approvedById      String?
+  reviewNote        String? // admin's note when sending the run back
+  reviewNoteAt      DateTime?
+  publishedAt       DateTime?
+  publishedBy       String?
 
   // Background publish (PDFs + emails run on the server, page can be closed).
   publishState       String? // null | RUNNING | FAILED

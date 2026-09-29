@@ -3,6 +3,7 @@ import { prisma } from "../utils/prisma";
 import { getAcademicClient } from "./tenantDb.service";
 import { getCache, setCache } from "../utils/cache";
 import { recordAiUsage, getInstitutionAiTokenLimit, getInstitutionPoolUsed } from "./ai-usage.service";
+import { getCurrentAcademicYear } from "../utils/academicYear";
 
 // ── Raw fee-collection stats (shared by the admin's own view and the
 // cross-institution peer-benchmark pool) ───────────────────────────────────
@@ -44,6 +45,9 @@ const MONTH_NAMES = [
 // amounts) — kept consistent so the AI card's numbers never disagree with
 // the donut/accordion above it.
 export async function computeInstitutionFeeStats(client: AcademicClient, institutionId: string): Promise<FeeStatsResult> {
+  // Explicit client, not the ambient academicDb(): this is also called from
+  // getPeerAggregate's cross-institution loop with each peer's own client.
+  const currentYear = await getCurrentAcademicYear(institutionId, client);
   const standards = await client.standard.findMany({
     where: { institutionId },
     select: {
@@ -51,7 +55,7 @@ export async function computeInstitutionFeeStats(client: AcademicClient, institu
         select: {
           id: true,
           _count: { select: { students: { where: { status: "ACTIVE" } } } },
-          feeStructure: { select: { feeMonths: true } },
+          feeStructures: { select: { feeMonths: true }, where: { academicYearId: currentYear.id } },
         },
       },
     },
@@ -76,7 +80,7 @@ export async function computeInstitutionFeeStats(client: AcademicClient, institu
   for (const d of divisions) {
     const total = d._count.students;
     studentCount += total;
-    const months = (d.feeStructure?.feeMonths as FeeMonth[] | null) ?? [];
+    const months = (d.feeStructures[0]?.feeMonths as FeeMonth[] | null) ?? [];
     if (months.length === 0) continue;
 
     const sorted = [...months].sort((a, b) => dueDateMs(a.dueDate) - dueDateMs(b.dueDate));

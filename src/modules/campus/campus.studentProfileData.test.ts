@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("Student marksheet + attendance-trend (teacher + admin)", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let studentId: string;
   let adminToken: string;
@@ -23,6 +25,10 @@ describe("Student marksheet + attendance-trend (teacher + admin)", () => {
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({
       data: { institutionId, name: `Class Prof ${suffix}`, order: 1 },
@@ -48,7 +54,7 @@ describe("Student marksheet + attendance-trend (teacher + admin)", () => {
       data: { teacherId: `TCH-PROF-${suffix}`, userId: teacherUser.id, institutionId },
     });
     await prisma.divisionAssignment.create({
-      data: { divisionId, subjectId: null, teacherId: teacher.id, institutionId },
+      data: { academicYearId, divisionId, subjectId: null, teacherId: teacher.id, institutionId },
     });
     teacherToken = jwt.sign({ userId: teacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
@@ -63,7 +69,7 @@ describe("Student marksheet + attendance-trend (teacher + admin)", () => {
     const marksheet = await prisma.marksheet.create({
       data: {
         institutionId, divisionId, createdByTeacherId: teacher.id,
-        academicYear: "2026-2027", status: "PUBLISHED", shareToken: `share-prof-${suffix}`,
+        academicYearId, status: "PUBLISHED", shareToken: `share-prof-${suffix}`,
       },
     });
     const column = await prisma.marksheetExamColumn.create({
@@ -79,7 +85,7 @@ describe("Student marksheet + attendance-trend (teacher + admin)", () => {
     const now = new Date();
     const todayStr = now.toISOString().slice(0, 10);
     await prisma.attendance.create({
-      data: { institutionId, divisionId, studentId, date: todayStr, status: "P" },
+      data: { academicYearId, institutionId, divisionId, studentId, date: todayStr, status: "P" },
     });
   });
 
@@ -96,6 +102,7 @@ describe("Student marksheet + attendance-trend (teacher + admin)", () => {
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

@@ -9,10 +9,10 @@ import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { logAudit } from "../../services/audit.service";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
+import { getCurrentAcademicYear as resolveCurrentAcademicYear } from "../../utils/academicYear";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const PDFDocument = require("pdfkit");
 import {
-  initMarksheetSchema,
   addColumnSchema,
   editColumnSchema,
   reorderColumnsSchema,
@@ -399,7 +399,7 @@ async function assertSubjectTeacher(
   }
 }
 
-function getCurrentAcademicYear(): string {
+function defaultYearLabel(): string {
   const now = new Date();
   const month = now.getMonth(); // 0-indexed, June = 5
   const year = now.getFullYear();
@@ -437,7 +437,7 @@ async function fetchMarksheetFull(
         select: {
           id: true,
           institutionId: true,
-          academicYear: true,
+          academicYear: { select: { label: true } },
           status: true,
           shareToken: true,
           gradedSectionTitle: true,
@@ -559,7 +559,7 @@ async function fetchMarksheetFull(
   return {
     marksheet: {
       id: marksheet.id,
-      academicYear: marksheet.academicYear,
+      academicYear: marksheet.academicYear.label,
       status: marksheet.status,
       shareToken: marksheet.shareToken,
       gradedSectionTitle: marksheet.gradedSectionTitle,
@@ -598,7 +598,8 @@ export async function initMarksheet(
     }
     const divisionId = req.params.divisionId as string;
     const teacherId = await getTeacherId(userId, institutionId);
-    const { academicYear } = initMarksheetSchema.parse(req.body);
+    // No request body: the marksheet is always created under the institution's
+    // current AcademicYear (academicYearId is the only year reference).
 
     // Single division fetch with subjects — guard handled via DivisionAssignment below
     const division = await academicDb().division.findFirst({
@@ -623,9 +624,11 @@ export async function initMarksheet(
       return;
     }
 
+    const currentYear = await resolveCurrentAcademicYear(institutionId);
+
     // Check not already initialized
     const existing = await academicDb().marksheet.findUnique({
-      where: { divisionId_academicYear: { divisionId, academicYear } },
+      where: { divisionId_academicYearId: { divisionId, academicYearId: currentYear.id } },
       select: { id: true },
     });
     if (existing) {
@@ -642,7 +645,7 @@ export async function initMarksheet(
           institutionId,
           divisionId,
           createdByTeacherId: teacherId,
-          academicYear,
+          academicYearId: currentYear.id,
           shareToken,
         },
       });
@@ -1387,7 +1390,7 @@ export async function getDivisionMarksheet(
       return;
     }
     const divisionId = req.params.divisionId as string;
-    const academicYear = (req.query.academicYear as string) || getCurrentAcademicYear();
+    const academicYear = (req.query.academicYear as string) || defaultYearLabel();
 
     const teacherId = await getTeacherId(userId, institutionId);
 
@@ -1403,8 +1406,8 @@ export async function getDivisionMarksheet(
     }
     const mySubjectIds = assignments.map(a => a.subjectId).filter((id): id is string => id !== null);
 
-    const marksheet = await academicDb().marksheet.findUnique({
-      where: { divisionId_academicYear: { divisionId, academicYear } },
+    const marksheet = await academicDb().marksheet.findFirst({
+      where: { divisionId, institutionId, academicYear: { label: academicYear } },
       select: { id: true },
     });
     if (!marksheet) {
@@ -1471,7 +1474,7 @@ async function buildMarksheetPdfData(
 ): Promise<{ params: MarksheetPdfParams; columnCount: number }> {
   const marksheet = await academicDb().marksheet.findFirst({
     where: { id: marksheetId, institutionId },
-    include: { division: { include: { standard: true } } },
+    include: { division: { include: { standard: true } }, academicYear: { select: { label: true } } },
   });
   if (!marksheet) throw { status: 404, message: "Marksheet not found" };
 
@@ -1533,7 +1536,7 @@ async function buildMarksheetPdfData(
       divisionName: marksheet.division.name,
       standardName: marksheet.division.standard.name,
       institutionName: institution?.name ?? "Institution",
-      academicYear: marksheet.academicYear,
+      academicYear: marksheet.academicYear.label,
       subjects: subjects
         .filter((s) => (columnsBySubject[s.id]?.length ?? 0) > 0)
         .map((s) => ({ id: s.id, name: s.name, code: s.code ?? s.name.slice(0, 4) })),

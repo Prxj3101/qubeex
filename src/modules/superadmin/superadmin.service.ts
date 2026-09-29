@@ -984,6 +984,10 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
     // Promotion batches, blackboard folders (self-referential) now safe.
     c.promotionBatch.deleteMany({ where: { institutionId: id } }),
     c.blackboardFolder.deleteMany({ where: { institutionId: id } }),
+    // Year-scoped snapshot rows reference Student/Standard/Division — must go
+    // before the campus structure below.
+    c.studentEnrollment.deleteMany({ where: { institutionId: id } }),
+    c.divisionTimetable.deleteMany({ where: { institutionId: id } }),
     // Campus structure — Division before Standard/Subject, both before Student.
     c.division.deleteMany({ where: { institutionId: id } }),
     c.subject.deleteMany({ where: { institutionId: id } }),
@@ -991,6 +995,10 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
     c.standard.deleteMany({ where: { institutionId: id } }),
     // Teacher after everything above that references it.
     c.teacher.deleteMany({ where: { institutionId: id } }),
+    // AcademicYear last — every year-scoped table above (DivisionAssignment,
+    // Attendance, DivisionFeeStructure, Marksheet, PromotionBatch,
+    // StudentEnrollment, DivisionTimetable) has a required FK to it.
+    c.academicYear.deleteMany({ where: { institutionId: id } }),
   ];
 
   // Platform deletes, in dependency order (always central).

@@ -7,6 +7,7 @@ import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 import { assignSubjectColor } from "../../utils/subjectColors";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { getCurrentAcademicYear } from "../../utils/academicYear";
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
@@ -217,6 +218,10 @@ const divisionCleanupOps = (divisionIds: string[]) => {
     db.taskContainer.deleteMany({ where }),
     db.divisionAssignment.deleteMany({ where }),
     db.divisionSubject.deleteMany({ where }),
+    // Year-scoped snapshots (enrollment history from promotions, per-year
+    // timetables) also hold a required FK to Division.
+    db.studentEnrollment.deleteMany({ where }),
+    db.divisionTimetable.deleteMany({ where }),
   ];
 };
 
@@ -263,6 +268,10 @@ export const deleteStandard = async (req: AuthRequest, res: Response, next: Next
       academicDb().taskContainer.deleteMany({ where: bySubject }),
       academicDb().divisionAssignment.deleteMany({ where: bySubject }),
       academicDb().divisionSubject.deleteMany({ where: bySubject }),
+      // Safety net: enrollment rows reference Standard directly as well as
+      // Division. Deleting the divisions above already removed any consistent
+      // rows, but a stray one would otherwise trip StudentEnrollment_standardId_fkey.
+      academicDb().studentEnrollment.deleteMany({ where: { standardId: id } }),
       academicDb().subject.deleteMany({ where: { standardId: id } }),
       academicDb().standard.delete({ where: { id } }),
     ]);
@@ -561,11 +570,15 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
       }
     }
 
-    // Upsert: replace existing assignment for this slot
+    // Upsert: replace existing assignment for this slot IN THE CURRENT YEAR.
+    // Scoping by academicYearId matters: without it, a reassignment after a
+    // rollover would find and overwrite the prior year's row, destroying the
+    // year-over-year teacher history. Each year gets its own rows.
     // findUnique can't handle null in compound unique, so use findFirst
     const subjectId = data.subjectId ?? null;
+    const currentYear = await getCurrentAcademicYear(institutionId);
     const existing = await academicDb().divisionAssignment.findFirst({
-      where: { divisionId, subjectId },
+      where: { divisionId, subjectId, institutionId, academicYearId: currentYear.id },
     });
 
     let assignment;
@@ -577,7 +590,7 @@ export const assignTeacher = async (req: AuthRequest, res: Response, next: NextF
       });
     } else {
       assignment = await academicDb().divisionAssignment.create({
-        data: { divisionId, institutionId, teacherId: data.teacherId, subjectId },
+        data: { divisionId, institutionId, teacherId: data.teacherId, subjectId, academicYearId: currentYear.id },
         include: { teacher: true, subject: true },
       });
     }
@@ -679,8 +692,12 @@ export const deselectSubject = async (req: AuthRequest, res: Response, next: Nex
     if (!division) throw new NotFoundError("Division not found");
 
     await academicDb().divisionSubject.deleteMany({ where: { divisionId, subjectId } });
-    // Also remove any teacher assignment for this subject in this division
-    await academicDb().divisionAssignment.deleteMany({ where: { divisionId, subjectId } });
+    // Also remove the current year's teacher assignment for this subject in this
+    // division. Prior years' assignment rows are history and are left intact.
+    const currentYear = await getCurrentAcademicYear(institutionId);
+    await academicDb().divisionAssignment.deleteMany({
+      where: { divisionId, subjectId, institutionId, academicYearId: currentYear.id },
+    });
 
     res.json({ success: true });
   } catch (err) {

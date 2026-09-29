@@ -409,6 +409,9 @@ export const ModelName = {
   DivisionAssignment: 'DivisionAssignment',
   Student: 'Student',
   ParentModeEvent: 'ParentModeEvent',
+  AcademicYear: 'AcademicYear',
+  StudentEnrollment: 'StudentEnrollment',
+  DivisionTimetable: 'DivisionTimetable',
   PromotionBatch: 'PromotionBatch',
   StudentPromotionOutcome: 'StudentPromotionOutcome',
   StudentRemark: 'StudentRemark',
@@ -470,7 +473,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1359,6 +1362,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ParentModeEventCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ParentModeEventCountAggregateOutputType> | number
+        }
+      }
+    }
+    AcademicYear: {
+      payload: Prisma.$AcademicYearPayload<ExtArgs>
+      fields: Prisma.AcademicYearFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AcademicYearFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AcademicYearFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>
+        }
+        findFirst: {
+          args: Prisma.AcademicYearFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AcademicYearFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>
+        }
+        findMany: {
+          args: Prisma.AcademicYearFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>[]
+        }
+        create: {
+          args: Prisma.AcademicYearCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>
+        }
+        createMany: {
+          args: Prisma.AcademicYearCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AcademicYearCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>[]
+        }
+        delete: {
+          args: Prisma.AcademicYearDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>
+        }
+        update: {
+          args: Prisma.AcademicYearUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>
+        }
+        deleteMany: {
+          args: Prisma.AcademicYearDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AcademicYearUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AcademicYearUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>[]
+        }
+        upsert: {
+          args: Prisma.AcademicYearUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AcademicYearPayload>
+        }
+        aggregate: {
+          args: Prisma.AcademicYearAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAcademicYear>
+        }
+        groupBy: {
+          args: Prisma.AcademicYearGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AcademicYearGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AcademicYearCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AcademicYearCountAggregateOutputType> | number
+        }
+      }
+    }
+    StudentEnrollment: {
+      payload: Prisma.$StudentEnrollmentPayload<ExtArgs>
+      fields: Prisma.StudentEnrollmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StudentEnrollmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StudentEnrollmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>
+        }
+        findFirst: {
+          args: Prisma.StudentEnrollmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StudentEnrollmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>
+        }
+        findMany: {
+          args: Prisma.StudentEnrollmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>[]
+        }
+        create: {
+          args: Prisma.StudentEnrollmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>
+        }
+        createMany: {
+          args: Prisma.StudentEnrollmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StudentEnrollmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>[]
+        }
+        delete: {
+          args: Prisma.StudentEnrollmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>
+        }
+        update: {
+          args: Prisma.StudentEnrollmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.StudentEnrollmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StudentEnrollmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StudentEnrollmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.StudentEnrollmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentEnrollmentPayload>
+        }
+        aggregate: {
+          args: Prisma.StudentEnrollmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStudentEnrollment>
+        }
+        groupBy: {
+          args: Prisma.StudentEnrollmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StudentEnrollmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StudentEnrollmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StudentEnrollmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    DivisionTimetable: {
+      payload: Prisma.$DivisionTimetablePayload<ExtArgs>
+      fields: Prisma.DivisionTimetableFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DivisionTimetableFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DivisionTimetableFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>
+        }
+        findFirst: {
+          args: Prisma.DivisionTimetableFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DivisionTimetableFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>
+        }
+        findMany: {
+          args: Prisma.DivisionTimetableFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>[]
+        }
+        create: {
+          args: Prisma.DivisionTimetableCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>
+        }
+        createMany: {
+          args: Prisma.DivisionTimetableCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DivisionTimetableCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>[]
+        }
+        delete: {
+          args: Prisma.DivisionTimetableDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>
+        }
+        update: {
+          args: Prisma.DivisionTimetableUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>
+        }
+        deleteMany: {
+          args: Prisma.DivisionTimetableDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DivisionTimetableUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DivisionTimetableUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>[]
+        }
+        upsert: {
+          args: Prisma.DivisionTimetableUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DivisionTimetablePayload>
+        }
+        aggregate: {
+          args: Prisma.DivisionTimetableAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDivisionTimetable>
+        }
+        groupBy: {
+          args: Prisma.DivisionTimetableGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DivisionTimetableGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DivisionTimetableCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DivisionTimetableCountAggregateOutputType> | number
         }
       }
     }
@@ -4944,6 +5169,7 @@ export const DivisionAssignmentScalarFieldEnum = {
   subjectId: 'subjectId',
   teacherId: 'teacherId',
   institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
   createdAt: 'createdAt'
 } as const
 
@@ -4999,13 +5225,55 @@ export const ParentModeEventScalarFieldEnum = {
 export type ParentModeEventScalarFieldEnum = (typeof ParentModeEventScalarFieldEnum)[keyof typeof ParentModeEventScalarFieldEnum]
 
 
+export const AcademicYearScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  label: 'label',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  isCurrent: 'isCurrent',
+  createdAt: 'createdAt'
+} as const
+
+export type AcademicYearScalarFieldEnum = (typeof AcademicYearScalarFieldEnum)[keyof typeof AcademicYearScalarFieldEnum]
+
+
+export const StudentEnrollmentScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  studentId: 'studentId',
+  academicYearId: 'academicYearId',
+  standardId: 'standardId',
+  divisionId: 'divisionId',
+  rollNo: 'rollNo',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type StudentEnrollmentScalarFieldEnum = (typeof StudentEnrollmentScalarFieldEnum)[keyof typeof StudentEnrollmentScalarFieldEnum]
+
+
+export const DivisionTimetableScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  divisionId: 'divisionId',
+  academicYearId: 'academicYearId',
+  timetableUrl: 'timetableUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DivisionTimetableScalarFieldEnum = (typeof DivisionTimetableScalarFieldEnum)[keyof typeof DivisionTimetableScalarFieldEnum]
+
+
 export const PromotionBatchScalarFieldEnum = {
   id: 'id',
   institutionId: 'institutionId',
   fromStandardId: 'fromStandardId',
   fromDivisionId: 'fromDivisionId',
   toDivisionId: 'toDivisionId',
-  academicYear: 'academicYear',
+  academicYearId: 'academicYearId',
   triggeredById: 'triggeredById',
   triggeredByRole: 'triggeredByRole',
   undoneAt: 'undoneAt',
@@ -5079,7 +5347,8 @@ export const AttendanceScalarFieldEnum = {
   status: 'status',
   remark: 'remark',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  academicYearId: 'academicYearId'
 } as const
 
 export type AttendanceScalarFieldEnum = (typeof AttendanceScalarFieldEnum)[keyof typeof AttendanceScalarFieldEnum]
@@ -5190,6 +5459,7 @@ export type CalendarEventScalarFieldEnum = (typeof CalendarEventScalarFieldEnum)
 export const DivisionFeeStructureScalarFieldEnum = {
   id: 'id',
   divisionId: 'divisionId',
+  academicYearId: 'academicYearId',
   institutionId: 'institutionId',
   feeMonths: 'feeMonths',
   bankDetails: 'bankDetails',
@@ -5513,7 +5783,7 @@ export const MarksheetScalarFieldEnum = {
   institutionId: 'institutionId',
   divisionId: 'divisionId',
   createdByTeacherId: 'createdByTeacherId',
-  academicYear: 'academicYear',
+  academicYearId: 'academicYearId',
   status: 'status',
   pdfR2Key: 'pdfR2Key',
   shareToken: 'shareToken',
@@ -5938,6 +6208,20 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'AcademicYearStatus'
+ */
+export type EnumAcademicYearStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AcademicYearStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AcademicYearStatus[]'
+ */
+export type ListEnumAcademicYearStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AcademicYearStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'PromotionOutcome'
  */
 export type EnumPromotionOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromotionOutcome'>
@@ -6281,6 +6565,9 @@ export type GlobalOmitConfig = {
   divisionAssignment?: Prisma.DivisionAssignmentOmit
   student?: Prisma.StudentOmit
   parentModeEvent?: Prisma.ParentModeEventOmit
+  academicYear?: Prisma.AcademicYearOmit
+  studentEnrollment?: Prisma.StudentEnrollmentOmit
+  divisionTimetable?: Prisma.DivisionTimetableOmit
   promotionBatch?: Prisma.PromotionBatchOmit
   studentPromotionOutcome?: Prisma.StudentPromotionOutcomeOmit
   studentRemark?: Prisma.StudentRemarkOmit

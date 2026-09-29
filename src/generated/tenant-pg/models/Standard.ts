@@ -227,6 +227,7 @@ export type StandardWhereInput = {
   divisions?: Prisma.DivisionListRelationFilter
   students?: Prisma.StudentListRelationFilter
   subjects?: Prisma.SubjectListRelationFilter
+  enrollments?: Prisma.StudentEnrollmentListRelationFilter
 }
 
 export type StandardOrderByWithRelationInput = {
@@ -239,6 +240,7 @@ export type StandardOrderByWithRelationInput = {
   divisions?: Prisma.DivisionOrderByRelationAggregateInput
   students?: Prisma.StudentOrderByRelationAggregateInput
   subjects?: Prisma.SubjectOrderByRelationAggregateInput
+  enrollments?: Prisma.StudentEnrollmentOrderByRelationAggregateInput
 }
 
 export type StandardWhereUniqueInput = Prisma.AtLeast<{
@@ -255,6 +257,7 @@ export type StandardWhereUniqueInput = Prisma.AtLeast<{
   divisions?: Prisma.DivisionListRelationFilter
   students?: Prisma.StudentListRelationFilter
   subjects?: Prisma.SubjectListRelationFilter
+  enrollments?: Prisma.StudentEnrollmentListRelationFilter
 }, "id" | "institutionId_name">
 
 export type StandardOrderByWithAggregationInput = {
@@ -293,6 +296,7 @@ export type StandardCreateInput = {
   divisions?: Prisma.DivisionCreateNestedManyWithoutStandardInput
   students?: Prisma.StudentCreateNestedManyWithoutStandardInput
   subjects?: Prisma.SubjectCreateNestedManyWithoutStandardInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutStandardInput
 }
 
 export type StandardUncheckedCreateInput = {
@@ -305,6 +309,7 @@ export type StandardUncheckedCreateInput = {
   divisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutStandardInput
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutStandardInput
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutStandardInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutStandardInput
 }
 
 export type StandardUpdateInput = {
@@ -317,6 +322,7 @@ export type StandardUpdateInput = {
   divisions?: Prisma.DivisionUpdateManyWithoutStandardNestedInput
   students?: Prisma.StudentUpdateManyWithoutStandardNestedInput
   subjects?: Prisma.SubjectUpdateManyWithoutStandardNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutStandardNestedInput
 }
 
 export type StandardUncheckedUpdateInput = {
@@ -329,6 +335,7 @@ export type StandardUncheckedUpdateInput = {
   divisions?: Prisma.DivisionUncheckedUpdateManyWithoutStandardNestedInput
   students?: Prisma.StudentUncheckedUpdateManyWithoutStandardNestedInput
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutStandardNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutStandardNestedInput
 }
 
 export type StandardCreateManyInput = {
@@ -460,6 +467,20 @@ export type StandardUpdateOneWithoutStudentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StandardUpdateToOneWithWhereWithoutStudentsInput, Prisma.StandardUpdateWithoutStudentsInput>, Prisma.StandardUncheckedUpdateWithoutStudentsInput>
 }
 
+export type StandardCreateNestedOneWithoutEnrollmentsInput = {
+  create?: Prisma.XOR<Prisma.StandardCreateWithoutEnrollmentsInput, Prisma.StandardUncheckedCreateWithoutEnrollmentsInput>
+  connectOrCreate?: Prisma.StandardCreateOrConnectWithoutEnrollmentsInput
+  connect?: Prisma.StandardWhereUniqueInput
+}
+
+export type StandardUpdateOneRequiredWithoutEnrollmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.StandardCreateWithoutEnrollmentsInput, Prisma.StandardUncheckedCreateWithoutEnrollmentsInput>
+  connectOrCreate?: Prisma.StandardCreateOrConnectWithoutEnrollmentsInput
+  upsert?: Prisma.StandardUpsertWithoutEnrollmentsInput
+  connect?: Prisma.StandardWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StandardUpdateToOneWithWhereWithoutEnrollmentsInput, Prisma.StandardUpdateWithoutEnrollmentsInput>, Prisma.StandardUncheckedUpdateWithoutEnrollmentsInput>
+}
+
 export type StandardCreateWithoutDivisionsInput = {
   id?: string
   institutionId: string
@@ -469,6 +490,7 @@ export type StandardCreateWithoutDivisionsInput = {
   updatedAt?: Date | string
   students?: Prisma.StudentCreateNestedManyWithoutStandardInput
   subjects?: Prisma.SubjectCreateNestedManyWithoutStandardInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutStandardInput
 }
 
 export type StandardUncheckedCreateWithoutDivisionsInput = {
@@ -480,6 +502,7 @@ export type StandardUncheckedCreateWithoutDivisionsInput = {
   updatedAt?: Date | string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutStandardInput
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutStandardInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutStandardInput
 }
 
 export type StandardCreateOrConnectWithoutDivisionsInput = {
@@ -507,6 +530,7 @@ export type StandardUpdateWithoutDivisionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUpdateManyWithoutStandardNestedInput
   subjects?: Prisma.SubjectUpdateManyWithoutStandardNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutStandardNestedInput
 }
 
 export type StandardUncheckedUpdateWithoutDivisionsInput = {
@@ -518,6 +542,7 @@ export type StandardUncheckedUpdateWithoutDivisionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutStandardNestedInput
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutStandardNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutStandardNestedInput
 }
 
 export type StandardCreateWithoutSubjectsInput = {
@@ -529,6 +554,7 @@ export type StandardCreateWithoutSubjectsInput = {
   updatedAt?: Date | string
   divisions?: Prisma.DivisionCreateNestedManyWithoutStandardInput
   students?: Prisma.StudentCreateNestedManyWithoutStandardInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutStandardInput
 }
 
 export type StandardUncheckedCreateWithoutSubjectsInput = {
@@ -540,6 +566,7 @@ export type StandardUncheckedCreateWithoutSubjectsInput = {
   updatedAt?: Date | string
   divisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutStandardInput
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutStandardInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutStandardInput
 }
 
 export type StandardCreateOrConnectWithoutSubjectsInput = {
@@ -567,6 +594,7 @@ export type StandardUpdateWithoutSubjectsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   divisions?: Prisma.DivisionUpdateManyWithoutStandardNestedInput
   students?: Prisma.StudentUpdateManyWithoutStandardNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutStandardNestedInput
 }
 
 export type StandardUncheckedUpdateWithoutSubjectsInput = {
@@ -578,6 +606,7 @@ export type StandardUncheckedUpdateWithoutSubjectsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   divisions?: Prisma.DivisionUncheckedUpdateManyWithoutStandardNestedInput
   students?: Prisma.StudentUncheckedUpdateManyWithoutStandardNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutStandardNestedInput
 }
 
 export type StandardCreateWithoutStudentsInput = {
@@ -589,6 +618,7 @@ export type StandardCreateWithoutStudentsInput = {
   updatedAt?: Date | string
   divisions?: Prisma.DivisionCreateNestedManyWithoutStandardInput
   subjects?: Prisma.SubjectCreateNestedManyWithoutStandardInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutStandardInput
 }
 
 export type StandardUncheckedCreateWithoutStudentsInput = {
@@ -600,6 +630,7 @@ export type StandardUncheckedCreateWithoutStudentsInput = {
   updatedAt?: Date | string
   divisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutStandardInput
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutStandardInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutStandardInput
 }
 
 export type StandardCreateOrConnectWithoutStudentsInput = {
@@ -627,6 +658,7 @@ export type StandardUpdateWithoutStudentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   divisions?: Prisma.DivisionUpdateManyWithoutStandardNestedInput
   subjects?: Prisma.SubjectUpdateManyWithoutStandardNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutStandardNestedInput
 }
 
 export type StandardUncheckedUpdateWithoutStudentsInput = {
@@ -637,6 +669,71 @@ export type StandardUncheckedUpdateWithoutStudentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   divisions?: Prisma.DivisionUncheckedUpdateManyWithoutStandardNestedInput
+  subjects?: Prisma.SubjectUncheckedUpdateManyWithoutStandardNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutStandardNestedInput
+}
+
+export type StandardCreateWithoutEnrollmentsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  divisions?: Prisma.DivisionCreateNestedManyWithoutStandardInput
+  students?: Prisma.StudentCreateNestedManyWithoutStandardInput
+  subjects?: Prisma.SubjectCreateNestedManyWithoutStandardInput
+}
+
+export type StandardUncheckedCreateWithoutEnrollmentsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  divisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutStandardInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutStandardInput
+  subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutStandardInput
+}
+
+export type StandardCreateOrConnectWithoutEnrollmentsInput = {
+  where: Prisma.StandardWhereUniqueInput
+  create: Prisma.XOR<Prisma.StandardCreateWithoutEnrollmentsInput, Prisma.StandardUncheckedCreateWithoutEnrollmentsInput>
+}
+
+export type StandardUpsertWithoutEnrollmentsInput = {
+  update: Prisma.XOR<Prisma.StandardUpdateWithoutEnrollmentsInput, Prisma.StandardUncheckedUpdateWithoutEnrollmentsInput>
+  create: Prisma.XOR<Prisma.StandardCreateWithoutEnrollmentsInput, Prisma.StandardUncheckedCreateWithoutEnrollmentsInput>
+  where?: Prisma.StandardWhereInput
+}
+
+export type StandardUpdateToOneWithWhereWithoutEnrollmentsInput = {
+  where?: Prisma.StandardWhereInput
+  data: Prisma.XOR<Prisma.StandardUpdateWithoutEnrollmentsInput, Prisma.StandardUncheckedUpdateWithoutEnrollmentsInput>
+}
+
+export type StandardUpdateWithoutEnrollmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  divisions?: Prisma.DivisionUpdateManyWithoutStandardNestedInput
+  students?: Prisma.StudentUpdateManyWithoutStandardNestedInput
+  subjects?: Prisma.SubjectUpdateManyWithoutStandardNestedInput
+}
+
+export type StandardUncheckedUpdateWithoutEnrollmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  divisions?: Prisma.DivisionUncheckedUpdateManyWithoutStandardNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutStandardNestedInput
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutStandardNestedInput
 }
 
@@ -649,12 +746,14 @@ export type StandardCountOutputType = {
   divisions: number
   students: number
   subjects: number
+  enrollments: number
 }
 
 export type StandardCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   divisions?: boolean | StandardCountOutputTypeCountDivisionsArgs
   students?: boolean | StandardCountOutputTypeCountStudentsArgs
   subjects?: boolean | StandardCountOutputTypeCountSubjectsArgs
+  enrollments?: boolean | StandardCountOutputTypeCountEnrollmentsArgs
 }
 
 /**
@@ -688,6 +787,13 @@ export type StandardCountOutputTypeCountSubjectsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.SubjectWhereInput
 }
 
+/**
+ * StandardCountOutputType without action
+ */
+export type StandardCountOutputTypeCountEnrollmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StudentEnrollmentWhereInput
+}
+
 
 export type StandardSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -699,6 +805,7 @@ export type StandardSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   divisions?: boolean | Prisma.Standard$divisionsArgs<ExtArgs>
   students?: boolean | Prisma.Standard$studentsArgs<ExtArgs>
   subjects?: boolean | Prisma.Standard$subjectsArgs<ExtArgs>
+  enrollments?: boolean | Prisma.Standard$enrollmentsArgs<ExtArgs>
   _count?: boolean | Prisma.StandardCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["standard"]>
 
@@ -734,6 +841,7 @@ export type StandardInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   divisions?: boolean | Prisma.Standard$divisionsArgs<ExtArgs>
   students?: boolean | Prisma.Standard$studentsArgs<ExtArgs>
   subjects?: boolean | Prisma.Standard$subjectsArgs<ExtArgs>
+  enrollments?: boolean | Prisma.Standard$enrollmentsArgs<ExtArgs>
   _count?: boolean | Prisma.StandardCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StandardIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -745,6 +853,7 @@ export type $StandardPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     divisions: Prisma.$DivisionPayload<ExtArgs>[]
     students: Prisma.$StudentPayload<ExtArgs>[]
     subjects: Prisma.$SubjectPayload<ExtArgs>[]
+    enrollments: Prisma.$StudentEnrollmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1150,6 +1259,7 @@ export interface Prisma__StandardClient<T, Null = never, ExtArgs extends runtime
   divisions<T extends Prisma.Standard$divisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Standard$divisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   students<T extends Prisma.Standard$studentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Standard$studentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   subjects<T extends Prisma.Standard$subjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Standard$subjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  enrollments<T extends Prisma.Standard$enrollmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Standard$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentEnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1647,6 +1757,30 @@ export type Standard$subjectsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.SubjectScalarFieldEnum | Prisma.SubjectScalarFieldEnum[]
+}
+
+/**
+ * Standard.enrollments
+ */
+export type Standard$enrollmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StudentEnrollment
+   */
+  select?: Prisma.StudentEnrollmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StudentEnrollment
+   */
+  omit?: Prisma.StudentEnrollmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StudentEnrollmentInclude<ExtArgs> | null
+  where?: Prisma.StudentEnrollmentWhereInput
+  orderBy?: Prisma.StudentEnrollmentOrderByWithRelationInput | Prisma.StudentEnrollmentOrderByWithRelationInput[]
+  cursor?: Prisma.StudentEnrollmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StudentEnrollmentScalarFieldEnum | Prisma.StudentEnrollmentScalarFieldEnum[]
 }
 
 /**

@@ -63,6 +63,9 @@ export const ModelName = {
   DivisionAssignment: 'DivisionAssignment',
   Student: 'Student',
   ParentModeEvent: 'ParentModeEvent',
+  AcademicYear: 'AcademicYear',
+  StudentEnrollment: 'StudentEnrollment',
+  DivisionTimetable: 'DivisionTimetable',
   PromotionBatch: 'PromotionBatch',
   StudentPromotionOutcome: 'StudentPromotionOutcome',
   StudentRemark: 'StudentRemark',
@@ -266,6 +269,7 @@ export const DivisionAssignmentScalarFieldEnum = {
   subjectId: 'subjectId',
   teacherId: 'teacherId',
   institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
   createdAt: 'createdAt'
 } as const
 
@@ -321,13 +325,55 @@ export const ParentModeEventScalarFieldEnum = {
 export type ParentModeEventScalarFieldEnum = (typeof ParentModeEventScalarFieldEnum)[keyof typeof ParentModeEventScalarFieldEnum]
 
 
+export const AcademicYearScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  label: 'label',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  isCurrent: 'isCurrent',
+  createdAt: 'createdAt'
+} as const
+
+export type AcademicYearScalarFieldEnum = (typeof AcademicYearScalarFieldEnum)[keyof typeof AcademicYearScalarFieldEnum]
+
+
+export const StudentEnrollmentScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  studentId: 'studentId',
+  academicYearId: 'academicYearId',
+  standardId: 'standardId',
+  divisionId: 'divisionId',
+  rollNo: 'rollNo',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type StudentEnrollmentScalarFieldEnum = (typeof StudentEnrollmentScalarFieldEnum)[keyof typeof StudentEnrollmentScalarFieldEnum]
+
+
+export const DivisionTimetableScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  divisionId: 'divisionId',
+  academicYearId: 'academicYearId',
+  timetableUrl: 'timetableUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DivisionTimetableScalarFieldEnum = (typeof DivisionTimetableScalarFieldEnum)[keyof typeof DivisionTimetableScalarFieldEnum]
+
+
 export const PromotionBatchScalarFieldEnum = {
   id: 'id',
   institutionId: 'institutionId',
   fromStandardId: 'fromStandardId',
   fromDivisionId: 'fromDivisionId',
   toDivisionId: 'toDivisionId',
-  academicYear: 'academicYear',
+  academicYearId: 'academicYearId',
   triggeredById: 'triggeredById',
   triggeredByRole: 'triggeredByRole',
   undoneAt: 'undoneAt',
@@ -401,7 +447,8 @@ export const AttendanceScalarFieldEnum = {
   status: 'status',
   remark: 'remark',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  academicYearId: 'academicYearId'
 } as const
 
 export type AttendanceScalarFieldEnum = (typeof AttendanceScalarFieldEnum)[keyof typeof AttendanceScalarFieldEnum]
@@ -512,6 +559,7 @@ export type CalendarEventScalarFieldEnum = (typeof CalendarEventScalarFieldEnum)
 export const DivisionFeeStructureScalarFieldEnum = {
   id: 'id',
   divisionId: 'divisionId',
+  academicYearId: 'academicYearId',
   institutionId: 'institutionId',
   feeMonths: 'feeMonths',
   bankDetails: 'bankDetails',
@@ -835,7 +883,7 @@ export const MarksheetScalarFieldEnum = {
   institutionId: 'institutionId',
   divisionId: 'divisionId',
   createdByTeacherId: 'createdByTeacherId',
-  academicYear: 'academicYear',
+  academicYearId: 'academicYearId',
   status: 'status',
   pdfR2Key: 'pdfR2Key',
   shareToken: 'shareToken',

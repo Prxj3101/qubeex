@@ -4,9 +4,11 @@ import jwt from "jsonwebtoken";
 const pdfParse = require("pdf-parse");
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("Marksheet PDF download — horizontal pagination for wide sheets", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let marksheetId: string;
   let teacherToken: string;
@@ -30,6 +32,10 @@ describe("Marksheet PDF download — horizontal pagination for wide sheets", () 
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({ data: { institutionId, name: `Class ${suffix}`, order: 1 } });
     const division = await prisma.division.create({ data: { standardId: standard.id, institutionId, name: "A" } });
@@ -39,7 +45,7 @@ describe("Marksheet PDF download — horizontal pagination for wide sheets", () 
       data: { name: "Class Teacher", email: `teacher-pdf-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
     });
     const teacher = await prisma.teacher.create({ data: { teacherId: `TCH-PDF-${suffix}`, userId: teacherUser.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId, subjectId: null, teacherId: teacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId, subjectId: null, teacherId: teacher.id, institutionId } });
     teacherToken = jwt.sign({ userId: teacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     // 10 subjects x 1 exam column each = 10 exam cols + 10 subtotal + 10 subpct
@@ -54,7 +60,7 @@ describe("Marksheet PDF download — horizontal pagination for wide sheets", () 
         institutionId,
         divisionId,
         createdByTeacherId: teacher.id,
-        academicYear: "2026-27",
+        academicYearId,
         status: "PUBLISHED",
         shareToken: `share-pdf-${suffix}`,
       },
@@ -116,6 +122,7 @@ describe("Marksheet PDF download — horizontal pagination for wide sheets", () 
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

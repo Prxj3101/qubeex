@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("GET /admin/campus/divisions/:divisionId/leaderboard", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let studentAId: string;
   let studentBId: string;
@@ -23,6 +25,10 @@ describe("GET /admin/campus/divisions/:divisionId/leaderboard", () => {
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({
       data: { institutionId, name: `Class LB ${suffix}`, order: 1 },
@@ -67,7 +73,7 @@ describe("GET /admin/campus/divisions/:divisionId/leaderboard", () => {
     const marksheet = await prisma.marksheet.create({
       data: {
         institutionId, divisionId, createdByTeacherId: teacher.id,
-        academicYear: "2025-26", status: "PUBLISHED", shareToken: `share-lb-${suffix}`,
+        academicYearId, status: "PUBLISHED", shareToken: `share-lb-${suffix}`,
       },
     });
     // One offline column (no "online" in the name) and one online column, each 50 max
@@ -106,6 +112,7 @@ describe("GET /admin/campus/divisions/:divisionId/leaderboard", () => {
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

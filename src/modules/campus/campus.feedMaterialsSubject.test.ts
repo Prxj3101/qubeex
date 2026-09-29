@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("Campus feed materials — subjectId-based tagging", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let mathsId: string;
   let scienceId: string;
@@ -26,6 +28,10 @@ describe("Campus feed materials — subjectId-based tagging", () => {
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({ data: { institutionId, name: `Class ${suffix}`, order: 1 } });
     const division = await prisma.division.create({ data: { standardId: standard.id, institutionId, name: "A" } });
@@ -40,21 +46,21 @@ describe("Campus feed materials — subjectId-based tagging", () => {
       data: { name: "Class Teacher", email: `ct-mat-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
     });
     const classTeacher = await prisma.teacher.create({ data: { teacherId: `TCH-CT-MAT-${suffix}`, userId: classTeacherUser.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId, subjectId: null, teacherId: classTeacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId, subjectId: null, teacherId: classTeacher.id, institutionId } });
     classTeacherToken = jwt.sign({ userId: classTeacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const mathsTeacherUser = await prisma.user.create({
       data: { name: "Maths Teacher", email: `maths-mat-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
     });
     const mathsTeacher = await prisma.teacher.create({ data: { teacherId: `TCH-MATHS-${suffix}`, userId: mathsTeacherUser.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId, subjectId: mathsId, teacherId: mathsTeacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId, subjectId: mathsId, teacherId: mathsTeacher.id, institutionId } });
     mathsTeacherToken = jwt.sign({ userId: mathsTeacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const scienceTeacherUser = await prisma.user.create({
       data: { name: "Science Teacher", email: `sci-mat-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
     });
     const scienceTeacher = await prisma.teacher.create({ data: { teacherId: `TCH-SCI-${suffix}`, userId: scienceTeacherUser.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId, subjectId: scienceId, teacherId: scienceTeacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId, subjectId: scienceId, teacherId: scienceTeacher.id, institutionId } });
     scienceTeacherToken = jwt.sign({ userId: scienceTeacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     const studentUser = await prisma.user.create({
@@ -81,6 +87,7 @@ describe("Campus feed materials — subjectId-based tagging", () => {
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

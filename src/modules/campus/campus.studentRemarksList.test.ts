@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("GET .../students/:studentId/remarks (list, teacher + admin)", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let otherDivisionId: string;
   let studentId: string;
@@ -25,6 +27,10 @@ describe("GET .../students/:studentId/remarks (list, teacher + admin)", () => {
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({
       data: { institutionId, name: `Class RmList ${suffix}`, order: 1 },
@@ -50,7 +56,7 @@ describe("GET .../students/:studentId/remarks (list, teacher + admin)", () => {
       data: { teacherId: `TCH-RMLIST-${suffix}`, userId: teacherUser.id, institutionId },
     });
     await prisma.divisionAssignment.create({
-      data: { divisionId, subjectId: null, teacherId: teacher.id, institutionId },
+      data: { academicYearId, divisionId, subjectId: null, teacherId: teacher.id, institutionId },
     });
     teacherToken = jwt.sign({ userId: teacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
@@ -87,6 +93,7 @@ describe("GET .../students/:studentId/remarks (list, teacher + admin)", () => {
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

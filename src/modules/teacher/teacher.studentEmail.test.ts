@@ -2,9 +2,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import app from "../../app";
 import { prisma } from "../../utils/prisma";
+import { computeDefaultAcademicYearWindow } from "../../utils/academicYear";
 
 describe("Teacher — updating a student's email", () => {
   let institutionId: string;
+  let academicYearId: string;
   let divisionId: string;
   let teacherToken: string;
   let studentId: string;
@@ -23,6 +25,10 @@ describe("Teacher — updating a student's email", () => {
       },
     });
     institutionId = institution.id;
+    const academicYear = await prisma.academicYear.create({
+      data: { institutionId, ...computeDefaultAcademicYearWindow(), isCurrent: true, status: "ACTIVE" },
+    });
+    academicYearId = academicYear.id;
 
     const standard = await prisma.standard.create({ data: { institutionId, name: `Class ${suffix}`, order: 1 } });
     const division = await prisma.division.create({ data: { standardId: standard.id, institutionId, name: "A" } });
@@ -32,7 +38,7 @@ describe("Teacher — updating a student's email", () => {
       data: { name: "Class Teacher", email: `teacher-email-${suffix}@example.com`, role: "TEACHER", institutionId, isActive: true },
     });
     const teacher = await prisma.teacher.create({ data: { teacherId: `TCH-EMAIL-${suffix}`, userId: teacherUser.id, institutionId } });
-    await prisma.divisionAssignment.create({ data: { divisionId, subjectId: null, teacherId: teacher.id, institutionId } });
+    await prisma.divisionAssignment.create({ data: { academicYearId, divisionId, subjectId: null, teacherId: teacher.id, institutionId } });
     teacherToken = jwt.sign({ userId: teacherUser.id, role: "TEACHER", institutionId }, process.env.JWT_SECRET!);
 
     // Placeholder-style auto-generated email, same shape the create endpoint
@@ -62,6 +68,7 @@ describe("Teacher — updating a student's email", () => {
     await prisma.division.deleteMany({ where: { institutionId } });
     await prisma.standard.deleteMany({ where: { institutionId } });
     await prisma.user.deleteMany({ where: { institutionId } });
+    await prisma.academicYear.deleteMany({ where: { institutionId } });
     await prisma.institution.delete({ where: { id: institutionId } });
     await prisma.$disconnect();
   });

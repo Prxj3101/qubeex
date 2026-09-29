@@ -13,6 +13,7 @@ import { listStudentRemarks } from "../../services/remark.service";
 import { listPTMNotes, acknowledgePTMNote } from "../../services/ptmNote.service";
 import { translateBatch, DynamicTranslateLang } from "../../services/translation.service";
 import { delCache } from "../../utils/cache";
+import { getCurrentAcademicYear as resolveCurrentAcademicYear } from "../../utils/academicYear";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
@@ -388,7 +389,7 @@ router.get("/attendance", ...S, async (req: AuthRequest, res: Response, next: Ne
 // ── GET /student/marksheet?academicYear= ──────────────────────────────────────
 // Returns the logged-in student's own results, but ONLY if the class marksheet
 // has been PUBLISHED. Draft marksheets are never visible to students.
-function getCurrentAcademicYear(): string {
+function defaultYearLabel(): string {
   const now = new Date();
   const month = now.getMonth();
   const year = now.getFullYear();
@@ -404,7 +405,7 @@ function gradeFor(pct: number | null, scale: GradeScaleEntry[]): string {
 router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { userId, institutionId } = req.user!;
-    const academicYear = (req.query.academicYear as string) || getCurrentAcademicYear();
+    const academicYear = (req.query.academicYear as string) || defaultYearLabel();
 
     const student = await academicDb().student.findFirst({
       where: { userId, institutionId },
@@ -423,18 +424,18 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     // not published, fall back to the most recent published marksheet for this
     // division. This handles the common case where results from the just-finished
     // year (e.g. 2025-26) are viewed in June of the new year (2026-27).
-    let marksheet = await academicDb().marksheet.findUnique({
-      where: { divisionId_academicYear: { divisionId: student.division.id, academicYear } },
-      select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
+    let marksheet = await academicDb().marksheet.findFirst({
+      where: { divisionId: student.division.id, institutionId, academicYear: { label: academicYear } },
+      select: { id: true, status: true, gradedSectionTitle: true, academicYear: { select: { label: true } }, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
     });
-    console.log("[marksheet] divisionId:", student.division.id, "academicYear:", academicYear, "found:", marksheet?.academicYear, "status:", marksheet?.status);
+    console.log("[marksheet] divisionId:", student.division.id, "academicYear:", academicYear, "found:", marksheet?.academicYear.label, "status:", marksheet?.status);
     if (!marksheet || marksheet.status !== "PUBLISHED") {
       marksheet = await academicDb().marksheet.findFirst({
         where: { divisionId: student.division.id, institutionId, status: "PUBLISHED" },
-        orderBy: { academicYear: "desc" },
-        select: { id: true, status: true, gradedSectionTitle: true, academicYear: true, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
+        orderBy: { academicYear: { label: "desc" } },
+        select: { id: true, status: true, gradedSectionTitle: true, academicYear: { select: { label: true } }, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
       });
-      console.log("[marksheet] fallback:", marksheet?.academicYear, "status:", marksheet?.status);
+      console.log("[marksheet] fallback:", marksheet?.academicYear.label, "status:", marksheet?.status);
     }
     if (!marksheet) {
       res.status(404).json({ success: false, error: "Results not published yet" });
@@ -630,7 +631,7 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     res.json({
       success: true,
       data: {
-        academicYear: marksheet.academicYear,
+        academicYear: marksheet.academicYear.label,
         gradeScale: effectiveGradeScale,
         gradedSectionTitle: effectiveGradedSectionTitle,
         standardName: student.division.standard?.name ?? "",
@@ -707,7 +708,7 @@ router.get("/overview", ...S, async (req: AuthRequest, res: Response, next: Next
     if (divisionId) {
       const marksheet = await academicDb().marksheet.findFirst({
         where: { divisionId, institutionId, status: "PUBLISHED" },
-        orderBy: { academicYear: "desc" },
+        orderBy: { academicYear: { label: "desc" } },
         select: { id: true, publishedSnapshot: true },
       });
 
@@ -1106,7 +1107,7 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
       // Fetch all published marksheets for scoring/leaderboard only
       academicDb().marksheet.findMany({
         where: { divisionId, institutionId, status: "PUBLISHED" },
-        orderBy: { academicYear: "desc" },
+        orderBy: { academicYear: { label: "desc" } },
         select: { id: true, publishedSnapshot: true },
       }),
     ]);
@@ -1497,6 +1498,10 @@ router.get("/class", ...S, async (req: AuthRequest, res: Response, next: NextFun
 router.get("/fees", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution associated with this account" });
+      return;
+    }
 
     const student = await academicDb().student.findFirst({
       where: { userId, institutionId },
@@ -1507,8 +1512,9 @@ router.get("/fees", ...S, async (req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
-    const structure = await (academicDb().divisionFeeStructure as any).findFirst({
-      where: { divisionId: student.divisionId, institutionId },
+    const currentYear = await resolveCurrentAcademicYear(institutionId);
+    const structure = await academicDb().divisionFeeStructure.findFirst({
+      where: { divisionId: student.divisionId, institutionId, academicYearId: currentYear.id },
     });
 
     const payments = await academicDb().studentFeePayment.findMany({

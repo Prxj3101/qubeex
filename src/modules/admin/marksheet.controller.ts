@@ -5,6 +5,7 @@ import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
+import { getCurrentAcademicYear as resolveCurrentAcademicYear } from "../../utils/academicYear";
 
 // ── GET /api/admin/marksheet ──────────────────────────────────────────────────
 
@@ -28,12 +29,13 @@ export async function adminListMarksheets(
         institutionId,
         ...(divisionId && { divisionId }),
         ...(standardId && { division: { standardId } }),
-        ...(academicYear && { academicYear }),
+        ...(academicYear && { academicYear: { label: academicYear } }),
       },
       include: {
         division: { include: { standard: true } },
         createdBy: { select: { userId: true } },
         _count: { select: { examColumns: true, scores: true } },
+        academicYear: { select: { label: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -45,7 +47,7 @@ export async function adminListMarksheets(
       success: true,
       data: marksheets.map((m) => ({
         id: m.id,
-        academicYear: m.academicYear,
+        academicYear: m.academicYear.label,
         status: m.status,
         shareToken: m.shareToken,
         divisionId: m.divisionId,
@@ -73,10 +75,10 @@ export async function adminGetDivisionMarksheet(
     const { institutionId } = req.user!;
     if (!institutionId) { res.status(400).json({ success: false, error: "No institution" }); return; }
     const divisionId = req.params.divisionId as string;
-    const academicYear = (req.query.academicYear as string) || getCurrentAcademicYear();
+    const academicYear = (req.query.academicYear as string) || defaultYearLabel();
 
-    const marksheet = await academicDb().marksheet.findUnique({
-      where: { divisionId_academicYear: { divisionId, academicYear } },
+    const marksheet = await academicDb().marksheet.findFirst({
+      where: { divisionId, institutionId, academicYear: { label: academicYear } },
       select: { id: true, institutionId: true },
     });
     if (!marksheet || marksheet.institutionId !== institutionId) {
@@ -95,7 +97,7 @@ export async function adminGetDivisionMarksheet(
       academicDb().marksheet.findUnique({
         where: { id: marksheet.id },
         select: {
-          id: true, academicYear: true, status: true, shareToken: true, gradedSectionTitle: true, gradeScale: true,
+          id: true, academicYear: { select: { label: true } }, status: true, shareToken: true, gradedSectionTitle: true, gradeScale: true,
           hasUnpublishedChanges: true, publishedSnapshot: true,
           subjectConfigs: { select: { subjectId: true, passingMarks: true, gradeScale: true } },
         },
@@ -190,7 +192,7 @@ export async function adminGetDivisionMarksheet(
       success: true,
       data: {
         marksheet: {
-          id: ms!.id, academicYear: ms!.academicYear, status: ms!.status,
+          id: ms!.id, academicYear: ms!.academicYear.label, status: ms!.status,
           shareToken: ms!.shareToken, gradedSectionTitle: ms!.gradedSectionTitle,
           hasUnpublishedChanges: ms!.hasUnpublishedChanges,
         },
@@ -261,6 +263,10 @@ export async function assignClassTeacher(
       }
     }
 
+    // Resolved before the transaction: the lazy find-or-create runs on
+    // academicDb(), not on `tx`, so it must not be interleaved with tx writes.
+    const currentYear = await resolveCurrentAcademicYear(institutionId);
+
     await academicDb().$transaction(async (tx) => {
       await tx.division.update({
         where: { id: divisionId },
@@ -268,9 +274,11 @@ export async function assignClassTeacher(
       });
 
       // Keep DivisionAssignment (the class-teacher slot: subjectId = null) in
-      // sync with the denormalized Division.classTeacherId field.
+      // sync with the denormalized Division.classTeacherId field. Scoped to the
+      // current academic year so a post-rollover change creates/edits this
+      // year's row instead of overwriting (or deleting) a prior year's history.
       const existingSlot = await tx.divisionAssignment.findFirst({
-        where: { divisionId, subjectId: null },
+        where: { divisionId, subjectId: null, institutionId, academicYearId: currentYear.id },
       });
 
       if (teacherId === null) {
@@ -279,7 +287,7 @@ export async function assignClassTeacher(
         await tx.divisionAssignment.update({ where: { id: existingSlot.id }, data: { teacherId } });
       } else {
         await tx.divisionAssignment.create({
-          data: { divisionId, institutionId, teacherId, subjectId: null },
+          data: { divisionId, institutionId, teacherId, subjectId: null, academicYearId: currentYear.id },
         });
       }
     });
@@ -315,7 +323,7 @@ export async function adminGetDivisionOnlineMarksheet(
   }
 }
 
-function getCurrentAcademicYear(): string {
+function defaultYearLabel(): string {
   const now = new Date();
   const month = now.getMonth();
   const year = now.getFullYear();

@@ -22,6 +22,7 @@ import { getStudentAttendanceTrendData } from "../../services/studentAttendanceT
 import { getStudentAttendanceDetailData } from "../../services/studentAttendanceDetail.service";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 import { delCache } from "../../utils/cache";
+import { getCurrentAcademicYear } from "../../utils/academicYear";
 
 const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -1376,12 +1377,16 @@ router.post(
         dateNote: z.string().optional(),
       }).parse(req.body);
 
-      await prisma.$transaction(async (tx) => {
+      // Year resolution and the writes below must use the same client —
+      // academicDb() — so a BYOD institution's academicYearId and its
+      // Attendance rows live in the same (tenant) database.
+      const currentYear = await getCurrentAcademicYear(institutionId);
+      await academicDb().$transaction(async (tx) => {
         // Upsert each attendance record
         for (const rec of records) {
           await tx.attendance.upsert({
             where: { divisionId_studentId_date: { divisionId, studentId: rec.studentId, date } },
-            create: { institutionId, divisionId, studentId: rec.studentId, date, status: rec.status, remark: rec.remark || null },
+            create: { institutionId, divisionId, studentId: rec.studentId, date, status: rec.status, remark: rec.remark || null, academicYearId: currentYear.id },
             update: { status: rec.status, remark: rec.remark || null },
           });
         }

@@ -2,6 +2,7 @@ import { academicDb } from "./academicContext";
 import type { AcademicClient } from "./academicContext";
 import type { AcademicYear, StudentEnrollment, StudentStatus } from "../generated/prisma/client";
 import { Prisma } from "../generated/prisma/client";
+import { assertAcademicYearAccess } from "./academicYearAccess";
 
 // Accepts both a full AcademicClient and a Prisma interactive-transaction
 // client (`tx`), which lacks $connect/$disconnect/etc. but shares the same
@@ -104,4 +105,23 @@ export async function upsertCurrentEnrollment(
       status: params.status,
     },
   });
+}
+
+// Resolves the requested academic year for the given institution and auth context.
+// Returns the current year if academicYearIdParam is omitted.
+// If a specific year is requested, validates it belongs to the same institution,
+// checks authorization, and returns it.
+// Throws { status: 404, message: string } if the year is not found or belongs to a different institution.
+// Throws { status: 403, message: string } if access is denied.
+export async function resolveRequestedAcademicYear(
+  academicYearIdParam: string | undefined,
+  institutionId: string,
+  auth: { role: string; userId: string }
+): Promise<AcademicYear> {
+  if (!academicYearIdParam) return getCurrentAcademicYear(institutionId);
+  const db = academicDb();
+  const year = await db.academicYear.findFirst({ where: { id: academicYearIdParam, institutionId } });
+  if (!year) throw { status: 404, message: "Academic year not found" };
+  await assertAcademicYearAccess({ role: auth.role, userId: auth.userId, institutionId, academicYearId: year.id });
+  return year;
 }

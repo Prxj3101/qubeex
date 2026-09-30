@@ -17,6 +17,24 @@ export const errorHandler = (
     return;
   }
 
+  // Academic-year utilities (resolveRequestedAcademicYear, assertAcademicYearAccess)
+  // throw plain `{ status, message }` objects rather than AppError instances —
+  // handle that shape the same way so year-aware routes return the intended
+  // 403/404 instead of falling through to a generic 500.
+  if (
+    err &&
+    typeof err === "object" &&
+    !(err instanceof Error) &&
+    typeof (err as { status?: unknown }).status === "number"
+  ) {
+    const { status, message } = err as { status: number; message?: string };
+    res.status(status).json({
+      success: false,
+      error: message ?? "Request failed",
+    });
+    return;
+  }
+
   if (err instanceof z.ZodError) {
     const fieldErrors = err.issues.map((issue) => ({
       field: issue.path.join("."),

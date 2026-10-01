@@ -4,6 +4,7 @@ import { academicDb } from "../../utils/academicContext";
 import { resolveUsers } from "../../services/userLookup.service";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+import { resolveRequestedAcademicYear } from "../../utils/academicYear";
 
 function requireInstitution(req: AuthRequest) {
   const { institutionId } = req.user!;
@@ -26,10 +27,34 @@ export const getDivisionStudents = async (req: AuthRequest, res: Response, next:
     const divisionId = req.params.divisionId as string;
     await assertDivisionInInstitution(divisionId, institutionId);
 
-    const students = await academicDb().student.findMany({
-      where: { divisionId, institutionId },
-      orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
-    });
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId: req.user!.userId }
+    );
+
+    let students;
+    if (year.isCurrent) {
+      students = await academicDb().student.findMany({
+        where: { divisionId, institutionId },
+        orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+      });
+    } else {
+      const enrollments = await academicDb().studentEnrollment.findMany({
+        where: { divisionId, academicYearId: year.id, institutionId },
+        orderBy: [{ rollNo: "asc" }, { student: { joinedAt: "asc" } }],
+        include: { student: true },
+      });
+      // Historical roster: status/division/standard/rollNo come from that year's
+      // enrollment, not the live Student row (which reflects today's state).
+      students = enrollments.map((e) => ({
+        ...e.student,
+        rollNo: e.rollNo ?? e.student.rollNo,
+        status: e.status,
+        divisionId: e.divisionId,
+        standardId: e.standardId,
+      }));
+    }
 
     // User names live centrally (Student may be in a tenant DB under BYOD).
     const users = await resolveUsers(students.map(s => s.userId), { id: true, name: true, email: true, mustChangePassword: true });

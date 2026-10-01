@@ -127,10 +127,33 @@ describe("assertAcademicYearAccess", () => {
     });
   });
 
+<<<<<<< HEAD
   it("denies access for a role outside ADMIN/SUPER_ADMIN/TEACHER/STUDENT (e.g. SUB_ADMIN)", async () => {
     await runWithAcademicClient(prisma, async () => {
       await expect(
         assertAcademicYearAccess({ role: "SUB_ADMIN", userId: "irrelevant", institutionId: institutionA, academicYearId: yearA })
+=======
+  it("allows a SUB_ADMIN full access to any year of their own institution", async () => {
+    await runWithAcademicClient(prisma, async () => {
+      await expect(
+        assertAcademicYearAccess({ role: "SUB_ADMIN", userId: "irrelevant", institutionId: institutionA, academicYearId: yearA })
+      ).resolves.toBeUndefined();
+    });
+  });
+
+  it("still rejects a SUB_ADMIN for a year belonging to a different institution", async () => {
+    await runWithAcademicClient(prisma, async () => {
+      await expect(
+        assertAcademicYearAccess({ role: "SUB_ADMIN", userId: "irrelevant", institutionId: institutionB, academicYearId: yearA })
+      ).rejects.toMatchObject({ status: 404 });
+    });
+  });
+
+  it("denies access for an unrecognized role (deny-by-default)", async () => {
+    await runWithAcademicClient(prisma, async () => {
+      await expect(
+        assertAcademicYearAccess({ role: "HELPER", userId: "irrelevant", institutionId: institutionA, academicYearId: yearA })
+>>>>>>> academic-year-phase2
       ).rejects.toMatchObject({ status: 403 });
     });
   });

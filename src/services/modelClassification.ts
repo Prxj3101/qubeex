@@ -99,8 +99,11 @@ export const ACADEMIC_MODELS = [
   "StaffSalaryStructure",
   "PayrollRun",
   "Payslip",
+<<<<<<< HEAD
   "StaffAttendance",
   "StaffPunch",
+=======
+>>>>>>> academic-year-phase2
   // Academic-year foundation — per-institution academic-year scoping data.
   "AcademicYear",
   "StudentEnrollment",

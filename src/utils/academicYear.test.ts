@@ -1,6 +1,10 @@
 import { prisma } from "./prisma";
 import { runWithAcademicClient } from "./academicContext";
+<<<<<<< HEAD
 import { getCurrentAcademicYear, getNextAcademicYear, upsertCurrentEnrollment, computeDefaultAcademicYearWindow } from "./academicYear";
+=======
+import { getCurrentAcademicYear, getNextAcademicYear, upsertCurrentEnrollment, computeDefaultAcademicYearWindow, resolveRequestedAcademicYear } from "./academicYear";
+>>>>>>> academic-year-phase2
 
 describe("computeDefaultAcademicYearWindow", () => {
   it("returns the June-July year for a date in August", () => {
@@ -260,3 +264,63 @@ describe("upsertCurrentEnrollment", () => {
     });
   });
 });
+<<<<<<< HEAD
+=======
+
+describe("resolveRequestedAcademicYear", () => {
+  let institutionId: string;
+  let otherInstitutionId: string;
+  let pastYearId: string;
+  const createdInstitutionIds: string[] = [];
+
+  beforeAll(async () => {
+    const suffix = `${Date.now()}-resolve`;
+    const institution = await prisma.institution.create({
+      data: { institutionCode: `TEST-RESOLVE-${suffix}`, name: `Test Resolve ${suffix}`, email: `resolve-${suffix}@example.com`, type: "SCHOOL", status: "ACTIVE" },
+    });
+    institutionId = institution.id;
+    createdInstitutionIds.push(institutionId);
+
+    const other = await prisma.institution.create({
+      data: { institutionCode: `TEST-RESOLVE-OTHER-${suffix}`, name: `Test Resolve Other ${suffix}`, email: `resolve-other-${suffix}@example.com`, type: "SCHOOL", status: "ACTIVE" },
+    });
+    otherInstitutionId = other.id;
+    createdInstitutionIds.push(otherInstitutionId);
+
+    const pastYear = await prisma.academicYear.create({
+      data: { institutionId, label: `2020-21-${suffix}`, startDate: new Date(2020, 5, 1), endDate: new Date(2021, 4, 31), isCurrent: false, status: "CLOSED" },
+    });
+    pastYearId = pastYear.id;
+  });
+
+  afterAll(async () => {
+    for (const iId of createdInstitutionIds) {
+      await prisma.academicYear.deleteMany({ where: { institutionId: iId } });
+      await prisma.institution.delete({ where: { id: iId } }).catch(() => {});
+    }
+    await prisma.$disconnect();
+  });
+
+  it("returns the current year when academicYearIdParam is omitted", async () => {
+    await runWithAcademicClient(prisma, async () => {
+      const year = await resolveRequestedAcademicYear(undefined, institutionId, { role: "ADMIN", userId: "irrelevant" });
+      expect(year.isCurrent).toBe(true);
+    });
+  });
+
+  it("returns the requested past year for an admin of the same institution", async () => {
+    await runWithAcademicClient(prisma, async () => {
+      const year = await resolveRequestedAcademicYear(pastYearId, institutionId, { role: "ADMIN", userId: "irrelevant" });
+      expect(year.id).toBe(pastYearId);
+    });
+  });
+
+  it("rejects a year belonging to a different institution with 404", async () => {
+    await runWithAcademicClient(prisma, async () => {
+      await expect(
+        resolveRequestedAcademicYear(pastYearId, otherInstitutionId, { role: "ADMIN", userId: "irrelevant" })
+      ).rejects.toMatchObject({ status: 404 });
+    });
+  });
+});
+>>>>>>> academic-year-phase2

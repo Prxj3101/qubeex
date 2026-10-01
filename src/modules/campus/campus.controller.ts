@@ -7,7 +7,12 @@ import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 import { assignSubjectColor } from "../../utils/subjectColors";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
+<<<<<<< HEAD
 import { getCurrentAcademicYear } from "../../utils/academicYear";
+=======
+import { getCurrentAcademicYear, resolveRequestedAcademicYear } from "../../utils/academicYear";
+import type { AcademicYear } from "../../generated/prisma/client";
+>>>>>>> academic-year-phase2
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
@@ -57,7 +62,7 @@ function requireInstitution(req: AuthRequest) {
 // last returned, so every endpoint that hands standards back has to return this
 // same fully-nested shape — hence one loader shared by the list and the
 // reorder rather than each building its own.
-async function loadStandards(institutionId: string) {
+async function loadStandards(institutionId: string, year: AcademicYear) {
   const standards = await academicDb().standard.findMany({
     where: { institutionId },
     orderBy: { order: "asc" },
@@ -68,12 +73,15 @@ async function loadStandards(institutionId: string) {
         include: {
           divisionSubjects: { select: { subjectId: true } },
           assignments: {
+            where: { academicYearId: year.id },
             include: {
               teacher: true,
               subject: true,
             },
           },
-          _count: { select: { students: { where: { status: "ACTIVE" } } } },
+          ...(year.isCurrent
+            ? { _count: { select: { students: { where: { status: "ACTIVE" } } } } }
+            : {}),
         },
       },
     },
@@ -85,6 +93,17 @@ async function loadStandards(institutionId: string) {
   );
   const users = await resolveUsers(teacherUserIds, { id: true, name: true });
 
+  let headcounts = new Map<string, number>();
+  if (!year.isCurrent) {
+    const divisionIds = standards.flatMap((s) => s.divisions.map((d) => d.id));
+    const counts = await academicDb().studentEnrollment.groupBy({
+      by: ["divisionId"],
+      where: { institutionId, divisionId: { in: divisionIds }, academicYearId: year.id, status: "ACTIVE" },
+      _count: { _all: true },
+    });
+    headcounts = new Map(counts.map((c) => [c.divisionId, c._count._all]));
+  }
+
   return standards.map((standard) => ({
     ...standard,
     divisions: standard.divisions.map((division) => ({
@@ -93,7 +112,8 @@ async function loadStandards(institutionId: string) {
         const u = users.get(a.teacher.userId);
         return { ...a, teacher: { ...a.teacher, user: u ? { id: u.id, name: u.name } : null } };
       }),
-      studentCount: division._count.students,
+      _count: year.isCurrent ? division._count : { students: headcounts.get(division.id) ?? 0 },
+      studentCount: year.isCurrent ? division._count.students : (headcounts.get(division.id) ?? 0),
     })),
   }));
 }
@@ -101,7 +121,12 @@ async function loadStandards(institutionId: string) {
 export const listStandards = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const institutionId = requireInstitution(req);
-    res.json({ success: true, data: await loadStandards(institutionId) });
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId: req.user!.userId }
+    );
+    res.json({ success: true, data: await loadStandards(institutionId, year) });
   } catch (err) {
     next(err);
   }
@@ -122,7 +147,8 @@ export const reorderStandards = async (req: AuthRequest, res: Response, next: Ne
       orderedIds.map((id, index) => academicDb().standard.update({ where: { id }, data: { order: index } }))
     );
 
-    res.json({ success: true, data: await loadStandards(institutionId) });
+    const currentYear = await getCurrentAcademicYear(institutionId);
+    res.json({ success: true, data: await loadStandards(institutionId, currentYear) });
     logAudit("CLASS_UPDATED", {
       userId: req.user!.userId,
       actorRole: req.user!.role,
@@ -710,6 +736,12 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
     const institutionId = requireInstitution(req);
     const id = req.params.divisionId as string;
 
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId: req.user!.userId }
+    );
+
     const division = await academicDb().division.findFirst({
       where: { id, institutionId },
       include: {
@@ -718,6 +750,7 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
         },
         divisionSubjects: { select: { subjectId: true } },
         assignments: {
+          where: { academicYearId: year.id },
           include: {
             teacher: true,
             subject: true,

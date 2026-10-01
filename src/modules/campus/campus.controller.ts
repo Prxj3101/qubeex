@@ -768,7 +768,21 @@ export const getDivision = async (req: AuthRequest, res: Response, next: NextFun
       },
     }));
 
-    res.json({ success: true, data: { ...division, assignments } });
+    // division.timetableUrl is the live field — only correct for the current
+    // year. DivisionTimetable only started being written once the teacher
+    // upload route began dual-writing it, so a current-year division without
+    // a row yet still falls back to the live field; a historical year with no
+    // row genuinely has no record.
+    let timetableUrl = division.timetableUrl;
+    if (!year.isCurrent) {
+      const historicalTimetable = await academicDb().divisionTimetable.findUnique({
+        where: { divisionId_academicYearId: { divisionId: id, academicYearId: year.id } },
+        select: { timetableUrl: true },
+      });
+      timetableUrl = historicalTimetable?.timetableUrl ?? null;
+    }
+
+    res.json({ success: true, data: { ...division, timetableUrl, assignments } });
   } catch (err) {
     next(err);
   }

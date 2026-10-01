@@ -22,7 +22,7 @@ import { getStudentAttendanceTrendData } from "../../services/studentAttendanceT
 import { getStudentAttendanceDetailData } from "../../services/studentAttendanceDetail.service";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 import { delCache } from "../../utils/cache";
-import { getCurrentAcademicYear, upsertCurrentEnrollment } from "../../utils/academicYear";
+import { getCurrentAcademicYear, upsertCurrentEnrollment, resolveRequestedAcademicYear } from "../../utils/academicYear";
 
 const photoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
@@ -558,10 +558,32 @@ router.get(
         return;
       }
 
-      const students = await academicDb().student.findMany({
-        where: { divisionId, institutionId },
-        orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
-      });
+      const year = await resolveRequestedAcademicYear(
+        req.query.academicYearId as string | undefined,
+        institutionId,
+        { role: req.user!.role, userId: req.user!.userId }
+      );
+
+      let students;
+      if (year.isCurrent) {
+        students = await academicDb().student.findMany({
+          where: { divisionId, institutionId },
+          orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+        });
+      } else {
+        const enrollments = await academicDb().studentEnrollment.findMany({
+          where: { divisionId, academicYearId: year.id, institutionId },
+          orderBy: [{ rollNo: "asc" }, { student: { joinedAt: "asc" } }],
+          include: { student: true },
+        });
+        students = enrollments.map((e) => ({
+          ...e.student,
+          rollNo: e.rollNo ?? e.student.rollNo,
+          status: e.status,
+          divisionId: e.divisionId,
+          standardId: e.standardId,
+        }));
+      }
       const listStudentUserMap = await resolveUsers(students.map((s) => s.userId), {
         id: true,
         name: true,
@@ -1349,10 +1371,15 @@ router.get(
       await assertDivisionAccess(userId, institutionId, divisionId);
 
       const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).parse(req.query.date as string);
+      const year = await resolveRequestedAcademicYear(
+        req.query.academicYearId as string | undefined,
+        institutionId,
+        { role: req.user!.role, userId: req.user!.userId }
+      );
 
       const [records, dayNote] = await Promise.all([
         academicDb().attendance.findMany({
-          where: { divisionId, institutionId, date },
+          where: { divisionId, institutionId, academicYearId: year.id, date },
           select: { studentId: true, status: true, remark: true },
         }),
         academicDb().attendanceDayNote.findUnique({
@@ -1462,9 +1489,14 @@ router.get(
       const month = z.string().regex(/^\d{4}-\d{2}$/).parse(req.query.month as string);
       const dateStart = `${month}-01`;
       const dateEnd = `${month}-31`;
+      const year = await resolveRequestedAcademicYear(
+        req.query.academicYearId as string | undefined,
+        institutionId,
+        { role: req.user!.role, userId: req.user!.userId }
+      );
 
       const records = await academicDb().attendance.findMany({
-        where: { divisionId, institutionId, date: { gte: dateStart, lte: dateEnd } },
+        where: { divisionId, institutionId, academicYearId: year.id, date: { gte: dateStart, lte: dateEnd } },
         select: { studentId: true, date: true, status: true, remark: true },
       });
 
@@ -1488,22 +1520,39 @@ router.get(
       const divisionId = req.params.divisionId as string;
       await assertDivisionAccess(userId, institutionId, divisionId);
 
+      const year = await resolveRequestedAcademicYear(
+        req.query.academicYearId as string | undefined,
+        institutionId,
+        { role: req.user!.role, userId: req.user!.userId }
+      );
+
       const now = new Date();
-      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      // "Current month" only has meaning when the resolved year is the live
+      // one — a historical year has no current month.
+      const currentMonth = year.isCurrent ? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}` : "";
 
       // Academic session runs June–May — the cumulative % must reset at the
-      // start of each session and only ever accumulate within it.
-      const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear() - 1;
-      const sessionStart = `${startYear}-06-01`;
-      const sessionEnd = `${startYear + 1}-05-31`;
+      // start of each session and only ever accumulate within it. Window
+      // comes from the resolved year's own dates, not "today".
+      const toDateStr = (d: Date) => d.toISOString().slice(0, 10);
+      const sessionStart = toDateStr(year.startDate);
+      const sessionEnd = toDateStr(year.endDate);
 
       const [students, allRecords, holidays] = await Promise.all([
-        academicDb().student.findMany({
-          where: { divisionId, institutionId },
-          orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
-        }),
+        year.isCurrent
+          ? academicDb().student.findMany({
+              where: { divisionId, institutionId },
+              orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+            })
+          : academicDb().studentEnrollment
+              .findMany({
+                where: { divisionId, academicYearId: year.id, institutionId },
+                orderBy: [{ rollNo: "asc" }, { student: { joinedAt: "asc" } }],
+                include: { student: true },
+              })
+              .then((rows) => rows.map((e) => ({ ...e.student, rollNo: e.rollNo ?? e.student.rollNo }))),
         academicDb().attendance.findMany({
-          where: { divisionId, institutionId, date: { gte: sessionStart, lte: sessionEnd } },
+          where: { divisionId, institutionId, academicYearId: year.id, date: { gte: sessionStart, lte: sessionEnd } },
           select: { studentId: true, date: true, status: true },
         }),
         academicDb().schoolHoliday.findMany({

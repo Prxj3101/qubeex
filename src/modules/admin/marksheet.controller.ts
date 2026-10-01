@@ -79,12 +79,13 @@ export async function adminGetDivisionMarksheet(
 
     const marksheet = await academicDb().marksheet.findFirst({
       where: { divisionId, institutionId, academicYear: { label: academicYear } },
-      select: { id: true, institutionId: true },
+      select: { id: true, institutionId: true, academicYearId: true, academicYear: { select: { isCurrent: true } } },
     });
     if (!marksheet || marksheet.institutionId !== institutionId) {
       res.status(404).json({ success: false, error: "Marksheet not found" });
       return;
     }
+    const isHistoricalYear = !marksheet.academicYear.isCurrent;
 
     // Read-only report-card VIEWS (admin "View Report Card" for a single
     // student) pass this so live, not-yet-republished score edits stay
@@ -124,10 +125,18 @@ export async function adminGetDivisionMarksheet(
         where: { marksheetId: marksheet.id },
         select: { studentId: true, conduct: true, remarks: true },
       }),
-      academicDb().student.findMany({
-        where: { divisionId, institutionId },
-        orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
-      }),
+      isHistoricalYear
+        ? academicDb()
+            .studentEnrollment.findMany({
+              where: { divisionId, academicYearId: marksheet.academicYearId, institutionId },
+              orderBy: [{ rollNo: "asc" }, { student: { joinedAt: "asc" } }],
+              include: { student: true },
+            })
+            .then((rows) => rows.map((e) => ({ ...e.student, rollNo: e.rollNo ?? e.student.rollNo })))
+        : academicDb().student.findMany({
+            where: { divisionId, institutionId },
+            orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+          }),
     ]);
 
     if (publishedOnly && ms?.status !== "PUBLISHED") {

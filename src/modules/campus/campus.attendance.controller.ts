@@ -102,9 +102,15 @@ export const getDailyAttendance = async (req: AuthRequest, res: Response, next: 
     if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new BadRequestError("date query param required (YYYY-MM-DD)");
     await assertDivisionInInstitution(divisionId, institutionId);
 
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId: req.user!.userId }
+    );
+
     const [records, dayNote] = await Promise.all([
       academicDb().attendance.findMany({
-        where: { divisionId, institutionId, date },
+        where: { divisionId, institutionId, academicYearId: year.id, date },
         select: { studentId: true, status: true, remark: true },
       }),
       academicDb().attendanceDayNote.findUnique({
@@ -128,10 +134,17 @@ export const getMonthlyAttendance = async (req: AuthRequest, res: Response, next
     if (!month || !/^\d{4}-\d{2}$/.test(month)) throw new BadRequestError("month query param required (YYYY-MM)");
     await assertDivisionInInstitution(divisionId, institutionId);
 
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId: req.user!.userId }
+    );
+
     const records = await academicDb().attendance.findMany({
       where: {
         divisionId,
         institutionId,
+        academicYearId: year.id,
         date: { gte: `${month}-01`, lte: `${month}-31` },
       },
       select: { studentId: true, date: true, status: true, remark: true },
@@ -150,21 +163,37 @@ export const getAttendanceSummary = async (req: AuthRequest, res: Response, next
     const divisionId = req.params.divisionId as string;
     await assertDivisionInInstitution(divisionId, institutionId);
 
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId: req.user!.userId }
+    );
+
     // Academic session runs June–May — the cumulative % must reset at the
     // start of each session and only ever accumulate within it, never across
-    // sessions and never using out-of-range historical data.
+    // sessions. Window comes from the resolved year's own dates, not "today",
+    // so a historical selection sums only that year's records.
+    const toDateStr = (d: Date) => d.toISOString().slice(0, 10);
+    const sessionStart = toDateStr(year.startDate);
+    const sessionEnd = toDateStr(year.endDate);
+
     const now = new Date();
-    const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear() - 1;
-    const sessionStart = `${startYear}-06-01`;
-    const sessionEnd = `${startYear + 1}-05-31`;
 
     const [students, allRecords, holidays] = await Promise.all([
-      academicDb().student.findMany({
-        where: { divisionId, institutionId },
-        orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
-      }),
+      year.isCurrent
+        ? academicDb().student.findMany({
+            where: { divisionId, institutionId },
+            orderBy: [{ rollNo: "asc" }, { joinedAt: "asc" }],
+          })
+        : academicDb().studentEnrollment
+            .findMany({
+              where: { divisionId, academicYearId: year.id, institutionId },
+              orderBy: [{ rollNo: "asc" }, { student: { joinedAt: "asc" } }],
+              include: { student: true },
+            })
+            .then((rows) => rows.map((e) => ({ ...e.student, rollNo: e.rollNo ?? e.student.rollNo }))),
       academicDb().attendance.findMany({
-        where: { divisionId, institutionId, date: { gte: sessionStart, lte: sessionEnd } },
+        where: { divisionId, institutionId, academicYearId: year.id, date: { gte: sessionStart, lte: sessionEnd } },
         select: { studentId: true, date: true, status: true },
       }),
       academicDb().schoolHoliday.findMany({
@@ -173,7 +202,10 @@ export const getAttendanceSummary = async (req: AuthRequest, res: Response, next
       }),
     ]);
 
-    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    // "Current month" only has meaning when the resolved year is the live one
+    // and today actually falls in it — a historical year has no current month.
+    const currentMonthKey =
+      year.isCurrent ? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}` : "";
 
     // A date later declared a holiday must not count toward attendance %,
     // even if a record was marked before the holiday was declared — this

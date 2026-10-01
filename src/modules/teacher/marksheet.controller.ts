@@ -437,7 +437,9 @@ async function fetchMarksheetFull(
         select: {
           id: true,
           institutionId: true,
-          academicYear: { select: { label: true } },
+          divisionId: true,
+          academicYearId: true,
+          academicYear: { select: { label: true, isCurrent: true } },
           status: true,
           shareToken: true,
           gradedSectionTitle: true,
@@ -481,6 +483,18 @@ async function fetchMarksheetFull(
     throw { status: 404, message: "Marksheet not found" };
   }
   const marksheet = marksheetMeta;
+
+  // The live Student query above is only correct for the current year —
+  // historical roster comes from that year's StudentEnrollment snapshot.
+  if (!marksheet.academicYear.isCurrent) {
+    const enrollments = await academicDb().studentEnrollment.findMany({
+      where: { divisionId: marksheet.divisionId, academicYearId: marksheet.academicYearId, institutionId },
+      orderBy: [{ rollNo: "asc" }, { student: { joinedAt: "asc" } }],
+      include: { student: true },
+    });
+    students.length = 0;
+    students.push(...enrollments.map((e) => ({ ...e.student, rollNo: e.rollNo ?? e.student.rollNo })));
+  }
 
   if (publishedOnly && marksheet.status !== "PUBLISHED") {
     // Nothing frozen to show yet — caller (report-card view) falls back to

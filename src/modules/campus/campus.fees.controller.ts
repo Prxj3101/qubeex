@@ -3,7 +3,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError, NotFoundError } from "../../utils/errors";
 import { z } from "zod";
-import { getCurrentAcademicYear } from "../../utils/academicYear";
+import { getCurrentAcademicYear, resolveRequestedAcademicYear } from "../../utils/academicYear";
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -129,10 +129,14 @@ export const getFeeStructure = async (req: AuthRequest, res: Response, next: Nex
     const division = await academicDb().division.findFirst({ where: { id: divisionId, institutionId } });
     if (!division) throw new NotFoundError("Division not found");
 
-    const currentYear = await getCurrentAcademicYear(institutionId);
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId: req.user!.userId }
+    );
 
     const structure = await academicDb().divisionFeeStructure.findFirst({
-      where: { divisionId, institutionId, academicYearId: currentYear.id },
+      where: { divisionId, institutionId, academicYearId: year.id },
     });
 
     if (structure) {
@@ -142,9 +146,18 @@ export const getFeeStructure = async (req: AuthRequest, res: Response, next: Nex
       });
     }
 
-    // No structure — try most recently created as template
+    // No structure for this division/year — try most recently created as a
+    // template, but only within the same year (cross-division "copy from a
+    // sibling" shouldn't also leak a different year's defaults). Historical
+    // years with no saved structure at all simply show nothing (no template
+    // fallback) — inventing one retroactively would be misleading.
+    if (!year.isCurrent) {
+      res.json({ success: true, data: null });
+      return;
+    }
+
     const template = await academicDb().divisionFeeStructure.findFirst({
-      where: { institutionId, divisionId: { not: divisionId }, academicYearId: currentYear.id },
+      where: { institutionId, divisionId: { not: divisionId }, academicYearId: year.id },
       orderBy: { createdAt: "desc" },
       include: {
         division: {

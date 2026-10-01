@@ -13,7 +13,7 @@ import { listStudentRemarks } from "../../services/remark.service";
 import { listPTMNotes, acknowledgePTMNote } from "../../services/ptmNote.service";
 import { translateBatch, DynamicTranslateLang } from "../../services/translation.service";
 import { delCache } from "../../utils/cache";
-import { getCurrentAcademicYear as resolveCurrentAcademicYear } from "../../utils/academicYear";
+import { resolveRequestedAcademicYear } from "../../utils/academicYear";
 import { resolveGrade, GradeScaleEntry } from "../../services/gradeScale";
 import { computeOnlineMarksheet } from "../../services/onlineMarksheet.service";
 import { resolveAuthorDisplay, formatDisplayName } from "../../utils/authorDisplay";
@@ -299,6 +299,10 @@ router.post("/photo", authMiddleware(["STUDENT"]), institutionAccessMiddleware, 
 router.get("/attendance", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution" });
+      return;
+    }
 
     const student = await academicDb().student.findFirst({
       where: { userId, institutionId },
@@ -311,18 +315,23 @@ router.get("/attendance", ...S, async (req: AuthRequest, res: Response, next: Ne
     const studentUserMap = await resolveUsers([userId], { id: true, name: true });
     const studentName = studentUserMap.get(userId)?.name ?? "";
 
-    // Determine academic year (June–May)
-    const now = new Date();
-    const curMonth = now.getMonth(); // 0-indexed
-    const curYear = now.getFullYear();
-    const startYear = curMonth >= 5 ? curYear : curYear - 1;
-    const academicYear = `${startYear}-${String(startYear + 1).slice(2)}`;
-    const startDate = `${startYear}-06-01`;
-    const endDate = `${startYear + 1}-05-31`;
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId }
+    );
+
+    // Academic year window comes from the resolved year's own dates, not
+    // "today" — a historical selection sums only that year's records.
+    const startYear = year.startDate.getFullYear();
+    const academicYear = year.label;
+    const toDateStr = (d: Date) => d.toISOString().slice(0, 10);
+    const startDate = toDateStr(year.startDate);
+    const endDate = toDateStr(year.endDate);
 
     const [records, holidays] = await Promise.all([
       academicDb().attendance.findMany({
-        where: { studentId: student.id, institutionId, date: { gte: startDate, lte: endDate } },
+        where: { studentId: student.id, institutionId, academicYearId: year.id, date: { gte: startDate, lte: endDate } },
         select: { date: true, status: true },
       }),
       academicDb().schoolHoliday.findMany({
@@ -420,15 +429,27 @@ router.get("/marksheet", ...S, async (req: AuthRequest, res: Response, next: Nex
     const marksheetUserMap = await resolveUsers([userId], { id: true, name: true });
     const marksheetStudentName = marksheetUserMap.get(userId)?.name ?? "";
 
+    // The requested year's division may differ from the student's current one
+    // (promotion, mid-year move) — resolve from that year's own enrollment
+    // snapshot rather than always using the live division.
+    const requestedYearRow = await academicDb().academicYear.findFirst({ where: { institutionId, label: academicYear } });
+    let targetDivisionId = student.division.id;
+    if (requestedYearRow && !requestedYearRow.isCurrent) {
+      const enrollment = await academicDb().studentEnrollment.findFirst({
+        where: { studentId: student.id, academicYearId: requestedYearRow.id, institutionId },
+        select: { divisionId: true },
+      });
+      if (enrollment) targetDivisionId = enrollment.divisionId;
+    }
+
     // Try the requested (or computed current) academic year first; if not found or
     // not published, fall back to the most recent published marksheet for this
     // division. This handles the common case where results from the just-finished
     // year (e.g. 2025-26) are viewed in June of the new year (2026-27).
     let marksheet = await academicDb().marksheet.findFirst({
-      where: { divisionId: student.division.id, institutionId, academicYear: { label: academicYear } },
+      where: { divisionId: targetDivisionId, institutionId, academicYear: { label: academicYear } },
       select: { id: true, status: true, gradedSectionTitle: true, academicYear: { select: { label: true } }, pdfR2Key: true, gradeScale: true, publishedSnapshot: true },
     });
-    console.log("[marksheet] divisionId:", student.division.id, "academicYear:", academicYear, "found:", marksheet?.academicYear.label, "status:", marksheet?.status);
     if (!marksheet || marksheet.status !== "PUBLISHED") {
       marksheet = await academicDb().marksheet.findFirst({
         where: { divisionId: student.division.id, institutionId, status: "PUBLISHED" },
@@ -1512,11 +1533,31 @@ router.get("/fees", ...S, async (req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
-    const currentYear = await resolveCurrentAcademicYear(institutionId);
+    const year = await resolveRequestedAcademicYear(
+      req.query.academicYearId as string | undefined,
+      institutionId,
+      { role: req.user!.role, userId }
+    );
+
+    // The requested year's division may differ from the student's current
+    // one (promotion, mid-year move) — resolve from that year's own
+    // enrollment snapshot rather than always using the live division.
+    let feeDivisionId = student.divisionId;
+    if (!year.isCurrent) {
+      const enrollment = await academicDb().studentEnrollment.findFirst({
+        where: { studentId: student.id, academicYearId: year.id, institutionId },
+        select: { divisionId: true },
+      });
+      if (enrollment) feeDivisionId = enrollment.divisionId;
+    }
+
     const structure = await academicDb().divisionFeeStructure.findFirst({
-      where: { divisionId: student.divisionId, institutionId, academicYearId: currentYear.id },
+      where: { divisionId: feeDivisionId, institutionId, academicYearId: year.id },
     });
 
+    // StudentFeePayment has no academicYearId of its own — payment status
+    // always reflects live data regardless of which year is selected (same
+    // scope cut as the admin/teacher fee screens).
     const payments = await academicDb().studentFeePayment.findMany({
       where: { institutionId, studentId: student.id },
       select: { feeMonthId: true, status: true, paidDate: true, remark: true, extraFields: true, extraStructureIds: true },

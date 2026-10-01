@@ -77,6 +77,7 @@ describe("GET /admin/campus/divisions/:divisionId/students — permission wideni
     let pastYearId: string;
     let pastYearDivisionId: string;
     let pastOnlyStudentId: string;
+    let liveStudentId: string;
 
     beforeAll(async () => {
       const suffix = `${Date.now()}-yearaware`;
@@ -101,8 +102,19 @@ describe("GET /admin/campus/divisions/:divisionId/students — permission wideni
       });
       pastOnlyStudentId = student.id;
       await prisma.studentEnrollment.create({
-        data: { institutionId, studentId: student.id, academicYearId: pastYearId, standardId: pastStandard.id, divisionId: pastYearDivisionId, status: "ACTIVE" },
+        data: { institutionId, studentId: student.id, academicYearId: pastYearId, standardId: pastStandard.id, divisionId: pastYearDivisionId, status: "GRADUATED" },
       });
+
+      // A student who is LIVE in pastYearDivisionId today (current year), with
+      // no historical enrollment there. Makes the omitted-param regression test
+      // non-vacuous: the current-year branch must actually return this student.
+      const liveUser = await prisma.user.create({
+        data: { name: "Live Student", email: `live-${suffix}@example.com`, role: "STUDENT", institutionId, isActive: true },
+      });
+      const liveStudent = await prisma.student.create({
+        data: { studentId: `STU-LIVE-${suffix}`, userId: liveUser.id, institutionId, standardId: pastStandard.id, divisionId: pastYearDivisionId, status: "ACTIVE" },
+      });
+      liveStudentId = liveStudent.id;
     });
 
     it("returns the historical roster via StudentEnrollment when academicYearId is a past year", async () => {
@@ -113,6 +125,28 @@ describe("GET /admin/campus/divisions/:divisionId/students — permission wideni
       expect(res.status).toBe(200);
       const ids = res.body.data.map((s: { id: string }) => s.id);
       expect(ids).toContain(pastOnlyStudentId);
+      // Live-only student has no enrollment for the past year, so is absent.
+      expect(ids).not.toContain(liveStudentId);
+    });
+
+    it("reports the historical enrollment's status/division/standard, not the live Student row's", async () => {
+      // Live Student row: status ACTIVE (default), divisionId = the first-block division.
+      // Past-year enrollment: status GRADUATED, divisionId = pastYearDivisionId.
+      const live = await prisma.student.findUniqueOrThrow({ where: { id: pastOnlyStudentId } });
+      const enrollment = await prisma.studentEnrollment.findFirstOrThrow({ where: { studentId: pastOnlyStudentId, academicYearId: pastYearId } });
+      expect(live.status).toBe("ACTIVE");
+      expect(live.divisionId).not.toBe(enrollment.divisionId);
+
+      const res = await request(app)
+        .get(`/api/admin/campus/divisions/${pastYearDivisionId}/students`)
+        .query({ academicYearId: pastYearId })
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      const entry = res.body.data.find((s: { id: string }) => s.id === pastOnlyStudentId);
+      expect(entry).toBeDefined();
+      expect(entry.status).toBe("GRADUATED");
+      expect(entry.divisionId).toBe(pastYearDivisionId);
+      expect(entry.standardId).toBe(enrollment.standardId);
     });
 
     it("still returns live Student data when academicYearId is omitted (regression)", async () => {
@@ -123,6 +157,11 @@ describe("GET /admin/campus/divisions/:divisionId/students — permission wideni
       // pastOnlyStudentId's live divisionId is not pastYearDivisionId, so it must NOT appear here.
       const ids = res.body.data.map((s: { id: string }) => s.id);
       expect(ids).not.toContain(pastOnlyStudentId);
+      // The live student currently in this division MUST appear (proves the
+      // current-year branch actually returns live data, not just []).
+      expect(ids).toContain(liveStudentId);
+      const liveEntry = res.body.data.find((s: { id: string }) => s.id === liveStudentId);
+      expect(liveEntry.status).toBe("ACTIVE");
     });
 
     it("rejects a cross-institution academicYearId with 404", async () => {

@@ -28,7 +28,10 @@ export async function assertAcademicYearAccess(params: AcademicYearAccessParams)
   const year = await db.academicYear.findFirst({ where: { id: academicYearId, institutionId } });
   if (!year) throw { status: 404, message: "Academic year not found" };
 
-  if (role === "ADMIN" || role === "SUPER_ADMIN") return;
+  // SUB_ADMIN gets the same year-level access as ADMIN: this function only gates
+  // *which year* may be read, not *which data*. Route-level requirePermission
+  // middleware already restricts which endpoints/data a sub-admin can reach.
+  if (role === "ADMIN" || role === "SUPER_ADMIN" || role === "SUB_ADMIN") return;
 
   if (role === "TEACHER") {
     const teacher = await db.teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
@@ -56,7 +59,7 @@ export async function assertAcademicYearAccess(params: AcademicYearAccessParams)
     return;
   }
 
-  // Deny by default for any role not explicitly handled above (e.g. SUB_ADMIN,
+  // Deny by default for any role not explicitly handled above (e.g.
   // unexpected/empty strings, or any future role added to the enum without a
   // corresponding rule here).
   throw { status: 403, message: "Unsupported role for academic year access" };

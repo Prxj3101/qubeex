@@ -94,7 +94,7 @@ async function loadStandards(institutionId: string, year: AcademicYear) {
     const divisionIds = standards.flatMap((s) => s.divisions.map((d) => d.id));
     const counts = await academicDb().studentEnrollment.groupBy({
       by: ["divisionId"],
-      where: { divisionId: { in: divisionIds }, academicYearId: year.id, status: "ACTIVE" },
+      where: { institutionId, divisionId: { in: divisionIds }, academicYearId: year.id, status: "ACTIVE" },
       _count: { _all: true },
     });
     headcounts = new Map(counts.map((c) => [c.divisionId, c._count._all]));

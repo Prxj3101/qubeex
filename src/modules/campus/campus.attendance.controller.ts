@@ -42,10 +42,18 @@ export const getDivisionStudents = async (req: AuthRequest, res: Response, next:
     } else {
       const enrollments = await academicDb().studentEnrollment.findMany({
         where: { divisionId, academicYearId: year.id, institutionId },
-        orderBy: [{ rollNo: "asc" }],
+        orderBy: [{ rollNo: "asc" }, { student: { joinedAt: "asc" } }],
         include: { student: true },
       });
-      students = enrollments.map((e) => ({ ...e.student, rollNo: e.rollNo ?? e.student.rollNo }));
+      // Historical roster: status/division/standard/rollNo come from that year's
+      // enrollment, not the live Student row (which reflects today's state).
+      students = enrollments.map((e) => ({
+        ...e.student,
+        rollNo: e.rollNo ?? e.student.rollNo,
+        status: e.status,
+        divisionId: e.divisionId,
+        standardId: e.standardId,
+      }));
     }
 
     // User names live centrally (Student may be in a tenant DB under BYOD).

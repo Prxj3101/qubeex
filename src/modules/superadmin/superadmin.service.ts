@@ -984,6 +984,25 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
     // Promotion batches, blackboard folders (self-referential) now safe.
     c.promotionBatch.deleteMany({ where: { institutionId: id } }),
     c.blackboardFolder.deleteMany({ where: { institutionId: id } }),
+    // Payroll — Payslip/StaffAttendance/StaffSalaryStructure reference
+    // Staff/PayrollRun; Staff optionally references User (deleted below in
+    // platformDeletes, which runs after this whole array).
+    c.payslip.deleteMany({ where: { institutionId: id } }),
+    c.staffAttendance.deleteMany({ where: { institutionId: id } }),
+    c.staffSalaryStructure.deleteMany({ where: { institutionId: id } }),
+    c.payrollRun.deleteMany({ where: { institutionId: id } }),
+    c.staff.deleteMany({ where: { institutionId: id } }),
+    c.salaryTemplate.deleteMany({ where: { institutionId: id } }),
+    c.salaryComponent.deleteMany({ where: { institutionId: id } }),
+    c.staffPunch.deleteMany({ where: { institutionId: id } }),
+    c.payrollSettings.deleteMany({ where: { institutionId: id } }),
+    // PTMNote references Student (before Student below); Mindmap references
+    // Teacher (before Teacher below); AdminNote/AdminTask reference User
+    // (deleted below in platformDeletes).
+    c.pTMNote.deleteMany({ where: { institutionId: id } }),
+    c.mindmap.deleteMany({ where: { institutionId: id } }),
+    c.adminNote.deleteMany({ where: { institutionId: id } }),
+    c.adminTask.deleteMany({ where: { institutionId: id } }),
     // Year-scoped snapshot rows reference Student/Standard/Division — must go
     // before the campus structure below.
     c.studentEnrollment.deleteMany({ where: { institutionId: id } }),
@@ -1006,6 +1025,8 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
     prisma.ticketReply.deleteMany({ where: { ticket: { institutionId: id } } }),
     prisma.notificationRecipient.deleteMany({ where: { institutionId: id } }),
     prisma.supportTicket.deleteMany({ where: { institutionId: id } }),
+    // AI token-pool usage events — no cascade on the Institution FK.
+    prisma.aiUsageEvent.deleteMany({ where: { institutionId: id } }),
     prisma.review.deleteMany({ where: { institutionId: id } }),
     prisma.invite.deleteMany({ where: { institutionId: id } }),
     prisma.bill.deleteMany({ where: { institutionId: id } }),
@@ -1019,6 +1040,14 @@ export const deleteInstitution = async (id: string, actorId?: string) => {
       : []),
     // Status events reference users — must go before the users are removed.
     prisma.userStatusEvent.deleteMany({ where: { institutionId: id } }),
+    // PushToken/AiChatMessage key off userId only (no institutionId FK) — no
+    // cascade on their User relation either, so they must go before the users.
+    ...(userIds.length > 0
+      ? [
+          prisma.pushToken.deleteMany({ where: { userId: { in: userIds } } }),
+          prisma.aiChatMessage.deleteMany({ where: { userId: { in: userIds } } }),
+        ]
+      : []),
     // Users last (Teacher/Student/SubAdmin no longer reference them).
     prisma.user.deleteMany({ where: { institutionId: id } }),
     prisma.institution.delete({ where: { id } }),

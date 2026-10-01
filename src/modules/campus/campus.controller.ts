@@ -7,12 +7,8 @@ import { z } from "zod";
 import { logAudit } from "../../services/audit.service";
 import { assignSubjectColor } from "../../utils/subjectColors";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
-<<<<<<< HEAD
-import { getCurrentAcademicYear } from "../../utils/academicYear";
-=======
 import { getCurrentAcademicYear, resolveRequestedAcademicYear } from "../../utils/academicYear";
 import type { AcademicYear } from "../../generated/prisma/client";
->>>>>>> academic-year-phase2
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 

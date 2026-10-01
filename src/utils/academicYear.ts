@@ -2,10 +2,7 @@ import { academicDb } from "./academicContext";
 import type { AcademicClient } from "./academicContext";
 import type { AcademicYear, StudentEnrollment, StudentStatus } from "../generated/prisma/client";
 import { Prisma } from "../generated/prisma/client";
-<<<<<<< HEAD
-=======
 import { assertAcademicYearAccess } from "./academicYearAccess";
->>>>>>> academic-year-phase2
 
 // Accepts both a full AcademicClient and a Prisma interactive-transaction
 // client (`tx`), which lacks $connect/$disconnect/etc. but shares the same
@@ -109,8 +106,6 @@ export async function upsertCurrentEnrollment(
     },
   });
 }
-<<<<<<< HEAD
-=======
 
 // Resolves the requested academic year for the given institution and auth context.
 // Returns the current year if academicYearIdParam is omitted.
@@ -130,4 +125,3 @@ export async function resolveRequestedAcademicYear(
   await assertAcademicYearAccess({ role: auth.role, userId: auth.userId, institutionId, academicYearId: year.id });
   return year;
 }
->>>>>>> academic-year-phase2

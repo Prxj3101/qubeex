@@ -31,14 +31,10 @@ router.get("/academic-years", ...ANY, async (req: AuthRequest, res: Response, ne
 //     batch records where the student was vs. where they are going, relative
 //     to the rollover) are still being finalized, so enrollment history written
 //     around a rollover may need correcting later.
-<<<<<<< HEAD
-//   - Existing teacher assignments are not yet year-filtered on read.
-=======
 //   - Teacher assignments are only partially year-filtered on read: the admin
 //     campus reads getDivision and loadStandards (listStandards) now filter
 //     DivisionAssignment by the selected academic year, but some other
 //     assignment-reading code paths outside that scope may still be unfiltered.
->>>>>>> academic-year-phase2
 // This is documentation only; the route is intentionally left fully functional.
 router.post("/admin/academic-years", ...ADMIN, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

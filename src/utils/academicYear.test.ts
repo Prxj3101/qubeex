@@ -1,10 +1,6 @@
 import { prisma } from "./prisma";
 import { runWithAcademicClient } from "./academicContext";
-<<<<<<< HEAD
-import { getCurrentAcademicYear, getNextAcademicYear, upsertCurrentEnrollment, computeDefaultAcademicYearWindow } from "./academicYear";
-=======
 import { getCurrentAcademicYear, getNextAcademicYear, upsertCurrentEnrollment, computeDefaultAcademicYearWindow, resolveRequestedAcademicYear } from "./academicYear";
->>>>>>> academic-year-phase2
 
 describe("computeDefaultAcademicYearWindow", () => {
   it("returns the June-July year for a date in August", () => {
@@ -264,8 +260,6 @@ describe("upsertCurrentEnrollment", () => {
     });
   });
 });
-<<<<<<< HEAD
-=======
 
 describe("resolveRequestedAcademicYear", () => {
   let institutionId: string;
@@ -323,4 +317,3 @@ describe("resolveRequestedAcademicYear", () => {
     });
   });
 });
->>>>>>> academic-year-phase2

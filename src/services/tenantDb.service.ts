@@ -50,7 +50,9 @@ function buildTenantClient(cfg: InstitutionDbConfig): CachedClient {
     idleTimeoutMillis: 30000,
   });
   const adapter = new PrismaPg(pool);
-  const client = new TenantPrisma({ adapter });
+  // transactionOptions mirrors src/utils/prisma.ts — per-call $transaction({
+  // timeout }) overrides alone are unreliable (prisma/prisma#26980).
+  const client = new TenantPrisma({ adapter, transactionOptions: { timeout: 60_000, maxWait: 10_000 } });
   return { client, pool, createdAt: Date.now() };
 }
 

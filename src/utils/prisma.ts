@@ -16,4 +16,8 @@ const adapter = new PrismaPg(pool);
 export const prisma = new PrismaClient({
   adapter,
   log: process.env.NODE_ENV === "production" ? ["error"] : ["query", "error", "warn"],
+  // Per-call $transaction({ timeout }) overrides are unreliable on their own
+  // (see https://github.com/prisma/prisma/issues/26980 — silently falls back
+  // to the 5s default). Setting it here too is the documented workaround.
+  transactionOptions: { timeout: 60_000, maxWait: 10_000 },
 });

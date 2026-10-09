@@ -11,43 +11,49 @@ datasource db {
 }
 
 model Teacher {
-  id                  String               @id @default(uuid())
-  teacherId           String
-  userId              String               @unique
-  institutionId       String
-  phone               String?
-  avatarUrl           String?
-  dob                 String?
-  gender              String?
-  address             String?
-  city                String?
-  state               String?
-  pincode             String?
-  country             String?              @default("India")
-  qualification       String?
-  experience          String?
-  status              TeacherStatus        @default(ACTIVE)
-  joinedAt            DateTime             @default(now())
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  prefix              String?
-  title               String?              @default("Teacher")
-  aiSoftLimitTokens   Int?
-  blackboardFolders   BlackboardFolder[]
-  blackboardMaterials BlackboardMaterial[]
-  classDivisions      Division[]           @relation("ClassTeacherDivisions")
-  assignments         DivisionAssignment[]
-  createdMarksheets   Marksheet[]          @relation("MarksheetCreator")
-  mindmaps            Mindmap[]
-  questionShareTokens QuestionShareToken[]
-  taskAssignments     TaskAssignment[]
-  taskContainers      TaskContainer[]
-  taskModules         TaskModule[]
-  taskPdfUploads      TaskPdfUpload[]
-  taskQuestions       TaskQuestion[]
-  taskTests           TaskTest[]
-  teacherNotes        TeacherNote[]
-  teacherTasks        TeacherTask[]
+  id                    String                   @id @default(uuid())
+  teacherId             String
+  userId                String                   @unique
+  institutionId         String
+  phone                 String?
+  avatarUrl             String?
+  dob                   String?
+  gender                String?
+  address               String?
+  city                  String?
+  state                 String?
+  pincode               String?
+  country               String?                  @default("India")
+  qualification         String?
+  experience            String?
+  status                TeacherStatus            @default(ACTIVE)
+  joinedAt              DateTime                 @default(now())
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  prefix                String?
+  title                 String?                  @default("Teacher")
+  aiSoftLimitTokens     Int?
+  blackboardFolders     BlackboardFolder[]
+  blackboardMaterials   BlackboardMaterial[]
+  classDivisions        Division[]               @relation("ClassTeacherDivisions")
+  assignments           DivisionAssignment[]
+  createdMarksheets     Marksheet[]              @relation("MarksheetCreator")
+  mindmaps              Mindmap[]
+  questionShareTokens   QuestionShareToken[]
+  taskAssignments       TaskAssignment[]
+  taskContainers        TaskContainer[]
+  taskModules           TaskModule[]
+  taskPdfUploads        TaskPdfUpload[]
+  taskQuestions         TaskQuestion[]
+  taskTests             TaskTest[]
+  teacherNotes          TeacherNote[]
+  teacherTasks          TeacherTask[]
+  timetableAvailability TeacherAvailability[]
+  timetablePrefs        TeacherTimetablePref[]
+  timetableConfigs      TimetableSubjectConfig[]
+  timetableEntries      TimetableEntry[]
+  timetableExceptions   TimetableException[]
+  substitutions         TimetableSubstitution[]  @relation("SubstituteTeacher")
 
   @@unique([teacherId, institutionId])
   @@index([institutionId])
@@ -121,31 +127,35 @@ model Standard {
 }
 
 model Division {
-  id                 String                 @id @default(uuid())
-  standardId         String
-  institutionId      String
-  name               String
-  capacity           Int?
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
-  classTeacherId     String?
-  timetableUrl       String?
-  attendances        Attendance[]
-  attendanceDayNotes AttendanceDayNote[]
-  calendarEvents     CalendarEvent[]
-  campusPosts        CampusFeedPost[]
-  classTeacher       Teacher?               @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
-  standard           Standard               @relation(fields: [standardId], references: [id])
-  assignments        DivisionAssignment[]
-  feeStructures      DivisionFeeStructure[]
-  divisionSubjects   DivisionSubject[]
-  marksheets         Marksheet[]
-  students           Student[]
-  taskAssignments    TaskAssignment[]
-  taskContainers     TaskContainer[]
-  taskTests          TaskTest[]
-  enrollments        StudentEnrollment[]
-  timetables         DivisionTimetable[]
+  id                  String                   @id @default(uuid())
+  standardId          String
+  institutionId       String
+  name                String
+  capacity            Int?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  classTeacherId      String?
+  timetableUrl        String?
+  attendances         Attendance[]
+  attendanceDayNotes  AttendanceDayNote[]
+  calendarEvents      CalendarEvent[]
+  campusPosts         CampusFeedPost[]
+  classTeacher        Teacher?                 @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
+  standard            Standard                 @relation(fields: [standardId], references: [id])
+  assignments         DivisionAssignment[]
+  feeStructures       DivisionFeeStructure[]
+  divisionSubjects    DivisionSubject[]
+  marksheets          Marksheet[]
+  students            Student[]
+  taskAssignments     TaskAssignment[]
+  taskContainers      TaskContainer[]
+  taskTests           TaskTest[]
+  enrollments         StudentEnrollment[]
+  timetables          DivisionTimetable[]
+  schoolTimetables    SchoolTimetable[]
+  timetableConfigs    TimetableSubjectConfig[]
+  timetableEntries    TimetableEntry[]
+  timetableExceptions TimetableException[]
 
   @@unique([standardId, name])
   @@index([institutionId])
@@ -153,26 +163,29 @@ model Division {
 }
 
 model Subject {
-  id               String                   @id @default(uuid())
-  institutionId    String
-  name             String
-  code             String?
-  color            String?
-  order            Int
-  createdAt        DateTime                 @default(now())
-  updatedAt        DateTime                 @updatedAt
-  standardId       String
-  campusFeedPosts  CampusFeedPost[]
-  assignments      DivisionAssignment[]
-  divisionSubjects DivisionSubject[]
-  marksheetColumns MarksheetExamColumn[]
-  marksheetConfigs MarksheetSubjectConfig[]
-  standard         Standard                 @relation(fields: [standardId], references: [id])
-  taskAssignments  TaskAssignment[]
-  taskContainers   TaskContainer[]
-  taskModules      TaskModule[]
-  taskQuestions    TaskQuestion[]
-  taskTests        TaskTest[]
+  id                  String                   @id @default(uuid())
+  institutionId       String
+  name                String
+  code                String?
+  color               String?
+  order               Int
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  standardId          String
+  campusFeedPosts     CampusFeedPost[]
+  assignments         DivisionAssignment[]
+  divisionSubjects    DivisionSubject[]
+  marksheetColumns    MarksheetExamColumn[]
+  marksheetConfigs    MarksheetSubjectConfig[]
+  timetableConfigs    TimetableSubjectConfig[]
+  timetableEntries    TimetableEntry[]
+  timetableExceptions TimetableException[]
+  standard            Standard                 @relation(fields: [standardId], references: [id])
+  taskAssignments     TaskAssignment[]
+  taskContainers      TaskContainer[]
+  taskModules         TaskModule[]
+  taskQuestions       TaskQuestion[]
+  taskTests           TaskTest[]
 
   @@unique([standardId, name])
   @@index([standardId])
@@ -291,13 +304,24 @@ model AcademicYear {
   isCurrent     Boolean            @default(false)
   createdAt     DateTime           @default(now())
 
-  studentEnrollments  StudentEnrollment[]
-  divisionAssignments DivisionAssignment[]
-  attendances         Attendance[]
-  feeStructures       DivisionFeeStructure[]
-  timetables          DivisionTimetable[]
-  marksheets          Marksheet[]
-  promotionBatches    PromotionBatch[]
+  studentEnrollments      StudentEnrollment[]
+  divisionAssignments     DivisionAssignment[]
+  attendances             Attendance[]
+  feeStructures           DivisionFeeStructure[]
+  timetables              DivisionTimetable[]
+  timetableSettings       TimetableSettings[]
+  timeSlots               TimeSlot[]
+  roomUnavailability      RoomUnavailability[]
+  teacherAvailability     TeacherAvailability[]
+  teacherTimetablePrefs   TeacherTimetablePref[]
+  schoolTimetables        SchoolTimetable[]
+  timetableSubjectConfigs TimetableSubjectConfig[]
+  timetableEntries        TimetableEntry[]
+  timetableExceptions     TimetableException[]
+  timetableSubstitutions  TimetableSubstitution[]
+  timetableGenerations    TimetableGeneration[]
+  marksheets              Marksheet[]
+  promotionBatches        PromotionBatch[]
 
   @@unique([institutionId, label])
   @@index([institutionId, isCurrent])
@@ -1099,14 +1123,14 @@ model PayrollSettings {
 
   // Staff attendance -> LOP. When on, a draft run takes each person's LOP days
   // from staff attendance (absent + unpaid leave + half days [+ late rule]).
-  attendanceLop     Boolean @default(false)
-  officeStart       String  @default("08:00") // HH:MM, check-in after start + grace = Late
-  graceMinutes      Int     @default(10)
-  halfDayMinutes    Int     @default(240) // worked less than this (check-in to check-out) = Half day
-  weeklyOffDays     Json? // weekdays off, 0 = Sunday ... 6 = Saturday. Default [0]
-  offSaturdays      Json? // which Saturdays of the month are off, e.g. [2, 4]
-  lateRuleEnabled   Boolean @default(false) // every N lates = half day LOP
-  lateRuleCount     Int     @default(3)
+  attendanceLop   Boolean @default(false)
+  officeStart     String  @default("08:00") // HH:MM, check-in after start + grace = Late
+  graceMinutes    Int     @default(10)
+  halfDayMinutes  Int     @default(240) // worked less than this (check-in to check-out) = Half day
+  weeklyOffDays   Json? // weekdays off, 0 = Sunday ... 6 = Saturday. Default [0]
+  offSaturdays    Json? // which Saturdays of the month are off, e.g. [2, 4]
+  lateRuleEnabled Boolean @default(false) // every N lates = half day LOP
+  lateRuleCount   Int     @default(3)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1181,29 +1205,29 @@ model Staff {
   id            String      @id @default(uuid())
   institutionId String
 
-  name         String
-  email        String? // optional for payroll-only staff (peon/driver without email) - no payslip email then
-  phone        String?
-  designation  String?
-  staffType    String // TEACHER | ADMIN | SUB_ADMIN | HELPER | OTHER
-  status       String    @default("ACTIVE") // ACTIVE | INACTIVE
-  joinedAt     DateTime? // actual SCHOOL joining date, only filled for new joiners. Null = already on staff -> full salary
-  exitDate     DateTime? // last working day, set when someone leaves
-  employeeCode String?
-  pan          String?
-  uan          String? // PF Universal Account Number
-  paymentMode  String    @default("BANK") // BANK | CASH | CHEQUE
-  pfApplicable Boolean   @default(true) // PF is deducted for this person when the school has PF on
-  epsApplicable Boolean  @default(true) // false: no EPS (pension), e.g. age 58+ — full employer 12% goes to EPF
-  esiApplicable Boolean  @default(true) // ESI applies (when the school has ESI on and gross is within the limit)
-  esiNumber    String? // ESIC insurance (IP) number
-  ptApplicable Boolean   @default(true) // Professional Tax applies (turn off for exempt staff)
-  tdsApplicable  Boolean @default(true) // TDS worked out for this person when the school has TDS on
-  taxRegime      String  @default("NEW") // NEW | OLD
+  name           String
+  email          String? // optional for payroll-only staff (peon/driver without email) - no payslip email then
+  phone          String?
+  designation    String?
+  staffType      String // TEACHER | ADMIN | SUB_ADMIN | HELPER | OTHER
+  status         String    @default("ACTIVE") // ACTIVE | INACTIVE
+  joinedAt       DateTime? // actual SCHOOL joining date, only filled for new joiners. Null = already on staff -> full salary
+  exitDate       DateTime? // last working day, set when someone leaves
+  employeeCode   String?
+  pan            String?
+  uan            String? // PF Universal Account Number
+  paymentMode    String    @default("BANK") // BANK | CASH | CHEQUE
+  pfApplicable   Boolean   @default(true) // PF is deducted for this person when the school has PF on
+  epsApplicable  Boolean   @default(true) // false: no EPS (pension), e.g. age 58+ — full employer 12% goes to EPF
+  esiApplicable  Boolean   @default(true) // ESI applies (when the school has ESI on and gross is within the limit)
+  esiNumber      String? // ESIC insurance (IP) number
+  ptApplicable   Boolean   @default(true) // Professional Tax applies (turn off for exempt staff)
+  tdsApplicable  Boolean   @default(true) // TDS worked out for this person when the school has TDS on
+  taxRegime      String    @default("NEW") // NEW | OLD
   taxDeclaration Json? // { sec80C, sec80D, hraExempt, otherDeductions, prevEmployerIncome, prevEmployerTds } in paise
-  bankDetails  String? // AES-GCM encrypted JSON {accountName, accountNumber, ifsc, bankName} (fieldEncryption.service)
-  sortOrder    Int       @default(0) // admin-chosen list order (drag to reorder); new staff go to the end
-  machineId    String? // this person's ID on the school's fingerprint / RFID attendance machine
+  bankDetails    String? // AES-GCM encrypted JSON {accountName, accountNumber, ifsc, bankName} (fieldEncryption.service)
+  sortOrder      Int       @default(0) // admin-chosen list order (drag to reorder); new staff go to the end
+  machineId      String? // this person's ID on the school's fingerprint / RFID attendance machine
 
   userId String? @unique // optional link to an existing Teacher/Admin/Sub-Admin User. Null = payroll-only staff.
 
@@ -1297,11 +1321,11 @@ model Payslip {
   netPay     Int // paise
 
   // Attendance-driven inputs/results for the month.
-  lopDays   Float @default(0) // loss-of-pay days entered for this month (half days allowed)
-  lopSource String? // ATTENDANCE (taken from staff attendance, refreshed while draft) | MANUAL (typed in the grid)
+  lopDays           Float   @default(0) // loss-of-pay days entered for this month (half days allowed)
+  lopSource         String? // ATTENDANCE (taken from staff attendance, refreshed while draft) | MANUAL (typed in the grid)
   attendanceSummary Json? // { absent, halfDay, unpaidLeave, late, unmarked, workingDays } behind the ATTENDANCE LOP
-  paidDays  Float @default(0) // days actually paid after LOP + joining/exit proration
-  basisDays Int   @default(0) // day count one day's salary was based on (per PayrollSettings.dayBasis)
+  paidDays          Float   @default(0) // days actually paid after LOP + joining/exit proration
+  basisDays         Int     @default(0) // day count one day's salary was based on (per PayrollSettings.dayBasis)
 
   // Monthly inputs entered in the LOP / bonus grid (draft only), in paise.
   bonus          Int     @default(0)
@@ -1684,4 +1708,318 @@ model InventoryPurchaseOrder {
   receipts InventoryStockMovement[]
   @@unique([institutionId, number])
   @@index([institutionId, createdAt])
+}
+
+enum TimetableStatus {
+  DRAFT
+  GENERATED
+  UNDER_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum TimeSlotKind {
+  PERIOD
+  BREAK
+  LUNCH
+  ASSEMBLY
+  ACTIVITY
+}
+
+enum SessionKind {
+  THEORY
+  PRACTICAL
+  LAB
+  ACTIVITY
+  PE_SPORTS
+  LIBRARY
+  CLASS_TEACHER
+  ASSEMBLY
+  BREAK
+  LUNCH
+  FREE
+  EXAM
+  CUSTOM
+}
+
+enum AvailabilityKind {
+  UNAVAILABLE
+  PREFERRED
+}
+
+enum TimetableExceptionKind {
+  OVERRIDE
+  CANCEL
+}
+
+model TimetableSettings {
+  id             String       @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  workingDays    Int[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([institutionId, academicYearId])
+}
+
+model TimeSlot {
+  id             String       @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  name           String
+  order          Int
+  startMinute    Int
+  endMinute      Int
+  kind           TimeSlotKind @default(PERIOD)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  entries             TimetableEntry[]
+  teacherAvailability TeacherAvailability[]
+  roomUnavailability  RoomUnavailability[]
+  exceptions          TimetableException[]
+
+  @@unique([institutionId, academicYearId, order])
+  @@index([institutionId, academicYearId])
+}
+
+model TimetableSessionType {
+  id              String      @id @default(uuid())
+  institutionId   String
+  name            String
+  kind            SessionKind
+  requiresTeacher Boolean     @default(true)
+  requiresRoom    Boolean     @default(false)
+  roomType        String?
+  defaultSpan     Int         @default(1)
+  color           String?
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  configs    TimetableSubjectConfig[]
+  entries    TimetableEntry[]
+  exceptions TimetableException[]
+
+  @@unique([institutionId, name])
+  @@index([institutionId])
+}
+
+model Room {
+  id            String      @id @default(uuid())
+  institutionId String
+  name          String
+  type          String      @default("CLASSROOM")
+  capacity      Int?
+  isActive      Boolean     @default(true)
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  unavailability RoomUnavailability[]
+  configs        TimetableSubjectConfig[]
+  entries        TimetableEntry[]
+  exceptions     TimetableException[]
+
+  @@unique([institutionId, name])
+  @@index([institutionId])
+}
+
+model RoomUnavailability {
+  id             String       @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  roomId         String
+  room           Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  dayOfWeek      Int
+  slotId         String
+  slot           TimeSlot     @relation(fields: [slotId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, academicYearId, dayOfWeek, slotId])
+  @@index([institutionId, academicYearId])
+}
+
+model TeacherAvailability {
+  id             String           @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear     @relation(fields: [academicYearId], references: [id])
+  teacherId      String
+  teacher        Teacher          @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  dayOfWeek      Int
+  slotId         String
+  slot           TimeSlot         @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  kind           AvailabilityKind @default(UNAVAILABLE)
+
+  @@unique([teacherId, academicYearId, dayOfWeek, slotId])
+  @@index([institutionId, academicYearId])
+}
+
+model TeacherTimetablePref {
+  id                String       @id @default(uuid())
+  institutionId     String
+  academicYearId    String
+  academicYear      AcademicYear @relation(fields: [academicYearId], references: [id])
+  teacherId         String
+  teacher           Teacher      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  maxPeriodsPerDay  Int?
+  maxConsecutive    Int?
+  maxPeriodsPerWeek Int?
+
+  @@unique([teacherId, academicYearId])
+  @@index([institutionId, academicYearId])
+}
+
+model SchoolTimetable {
+  id             String          @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear    @relation(fields: [academicYearId], references: [id])
+  divisionId     String
+  division       Division        @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  status         TimetableStatus @default(DRAFT)
+  generatedAt    DateTime?
+  publishedAt    DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  entries     TimetableEntry[]
+  generations TimetableGeneration[]
+
+  @@unique([divisionId, academicYearId])
+  @@index([institutionId, academicYearId])
+}
+
+model TimetableSubjectConfig {
+  id             String               @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear         @relation(fields: [academicYearId], references: [id])
+  divisionId     String
+  division       Division             @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  subjectId      String?
+  subject        Subject?             @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  sessionTypeId  String
+  sessionType    TimetableSessionType @relation(fields: [sessionTypeId], references: [id])
+  title          String?
+  periodsPerWeek Int                  @default(1)
+  span           Int                  @default(1)
+  maxPerDay      Int                  @default(1)
+  teacherId      String?
+  teacher        Teacher?             @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  roomId         String?
+  room           Room?                @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  roomType       String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  entries TimetableEntry[]
+
+  @@index([institutionId, academicYearId, divisionId])
+}
+
+model TimetableEntry {
+  id             String                  @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear            @relation(fields: [academicYearId], references: [id])
+  timetableId    String
+  timetable      SchoolTimetable         @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  divisionId     String
+  division       Division                @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  dayOfWeek      Int
+  slotId         String
+  slot           TimeSlot                @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  sessionTypeId  String
+  sessionType    TimetableSessionType    @relation(fields: [sessionTypeId], references: [id])
+  subjectId      String?
+  subject        Subject?                @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  title          String?
+  teacherId      String?
+  teacher        Teacher?                @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  roomId         String?
+  room           Room?                   @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  configId       String?
+  config         TimetableSubjectConfig? @relation(fields: [configId], references: [id], onDelete: SetNull)
+  groupId        String?
+  isLocked       Boolean                 @default(false)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  substitutions TimetableSubstitution[]
+
+  @@unique([timetableId, dayOfWeek, slotId])
+  @@index([institutionId, academicYearId])
+  @@index([academicYearId, divisionId])
+  @@index([academicYearId, teacherId, dayOfWeek])
+  @@index([academicYearId, roomId, dayOfWeek])
+}
+
+model TimetableException {
+  id             String                 @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear           @relation(fields: [academicYearId], references: [id])
+  divisionId     String
+  division       Division               @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  date           DateTime               @db.Date
+  slotId         String
+  slot           TimeSlot               @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  kind           TimetableExceptionKind @default(OVERRIDE)
+  sessionTypeId  String?
+  sessionType    TimetableSessionType?  @relation(fields: [sessionTypeId], references: [id])
+  subjectId      String?
+  subject        Subject?               @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  title          String?
+  teacherId      String?
+  teacher        Teacher?               @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  roomId         String?
+  room           Room?                  @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  reason         String?
+  createdById    String?
+  createdAt      DateTime               @default(now())
+
+  @@unique([divisionId, date, slotId])
+  @@index([institutionId, academicYearId, date])
+}
+
+model TimetableSubstitution {
+  id                  String         @id @default(uuid())
+  institutionId       String
+  academicYearId      String
+  academicYear        AcademicYear   @relation(fields: [academicYearId], references: [id])
+  entryId             String
+  entry               TimetableEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  date                DateTime       @db.Date
+  originalTeacherId   String?
+  substituteTeacherId String
+  substituteTeacher   Teacher        @relation("SubstituteTeacher", fields: [substituteTeacherId], references: [id], onDelete: Cascade)
+  reason              String?
+  createdById         String?
+  createdAt           DateTime       @default(now())
+
+  @@unique([entryId, date])
+  @@index([institutionId, academicYearId, date])
+  @@index([substituteTeacherId, date])
+}
+
+model TimetableGeneration {
+  id             String          @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  academicYear   AcademicYear    @relation(fields: [academicYearId], references: [id])
+  timetableId    String
+  timetable      SchoolTimetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  complete       Boolean
+  placed         Int
+  unplaced       Int
+  problems       Json?
+  createdById    String?
+  createdAt      DateTime        @default(now())
+
+  @@index([timetableId, createdAt])
 }

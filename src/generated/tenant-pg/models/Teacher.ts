@@ -367,6 +367,12 @@ export type TeacherWhereInput = {
   taskTests?: Prisma.TaskTestListRelationFilter
   teacherNotes?: Prisma.TeacherNoteListRelationFilter
   teacherTasks?: Prisma.TeacherTaskListRelationFilter
+  timetableAvailability?: Prisma.TeacherAvailabilityListRelationFilter
+  timetablePrefs?: Prisma.TeacherTimetablePrefListRelationFilter
+  timetableConfigs?: Prisma.TimetableSubjectConfigListRelationFilter
+  timetableEntries?: Prisma.TimetableEntryListRelationFilter
+  timetableExceptions?: Prisma.TimetableExceptionListRelationFilter
+  substitutions?: Prisma.TimetableSubstitutionListRelationFilter
 }
 
 export type TeacherOrderByWithRelationInput = {
@@ -407,6 +413,12 @@ export type TeacherOrderByWithRelationInput = {
   taskTests?: Prisma.TaskTestOrderByRelationAggregateInput
   teacherNotes?: Prisma.TeacherNoteOrderByRelationAggregateInput
   teacherTasks?: Prisma.TeacherTaskOrderByRelationAggregateInput
+  timetableAvailability?: Prisma.TeacherAvailabilityOrderByRelationAggregateInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefOrderByRelationAggregateInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigOrderByRelationAggregateInput
+  timetableEntries?: Prisma.TimetableEntryOrderByRelationAggregateInput
+  timetableExceptions?: Prisma.TimetableExceptionOrderByRelationAggregateInput
+  substitutions?: Prisma.TimetableSubstitutionOrderByRelationAggregateInput
 }
 
 export type TeacherWhereUniqueInput = Prisma.AtLeast<{
@@ -451,6 +463,12 @@ export type TeacherWhereUniqueInput = Prisma.AtLeast<{
   taskTests?: Prisma.TaskTestListRelationFilter
   teacherNotes?: Prisma.TeacherNoteListRelationFilter
   teacherTasks?: Prisma.TeacherTaskListRelationFilter
+  timetableAvailability?: Prisma.TeacherAvailabilityListRelationFilter
+  timetablePrefs?: Prisma.TeacherTimetablePrefListRelationFilter
+  timetableConfigs?: Prisma.TimetableSubjectConfigListRelationFilter
+  timetableEntries?: Prisma.TimetableEntryListRelationFilter
+  timetableExceptions?: Prisma.TimetableExceptionListRelationFilter
+  substitutions?: Prisma.TimetableSubstitutionListRelationFilter
 }, "id" | "userId" | "teacherId_institutionId">
 
 export type TeacherOrderByWithAggregationInput = {
@@ -549,6 +567,12 @@ export type TeacherCreateInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateInput = {
@@ -589,6 +613,12 @@ export type TeacherUncheckedCreateInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUpdateInput = {
@@ -629,6 +659,12 @@ export type TeacherUpdateInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateInput = {
@@ -669,6 +705,12 @@ export type TeacherUncheckedUpdateInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateManyInput = {
@@ -1080,6 +1122,96 @@ export type TeacherUpdateOneRequiredWithoutCreatedMarksheetsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutCreatedMarksheetsInput, Prisma.TeacherUpdateWithoutCreatedMarksheetsInput>, Prisma.TeacherUncheckedUpdateWithoutCreatedMarksheetsInput>
 }
 
+export type TeacherCreateNestedOneWithoutTimetableAvailabilityInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableAvailabilityInput, Prisma.TeacherUncheckedCreateWithoutTimetableAvailabilityInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetableAvailabilityInput
+  connect?: Prisma.TeacherWhereUniqueInput
+}
+
+export type TeacherUpdateOneRequiredWithoutTimetableAvailabilityNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableAvailabilityInput, Prisma.TeacherUncheckedCreateWithoutTimetableAvailabilityInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetableAvailabilityInput
+  upsert?: Prisma.TeacherUpsertWithoutTimetableAvailabilityInput
+  connect?: Prisma.TeacherWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutTimetableAvailabilityInput, Prisma.TeacherUpdateWithoutTimetableAvailabilityInput>, Prisma.TeacherUncheckedUpdateWithoutTimetableAvailabilityInput>
+}
+
+export type TeacherCreateNestedOneWithoutTimetablePrefsInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetablePrefsInput, Prisma.TeacherUncheckedCreateWithoutTimetablePrefsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetablePrefsInput
+  connect?: Prisma.TeacherWhereUniqueInput
+}
+
+export type TeacherUpdateOneRequiredWithoutTimetablePrefsNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetablePrefsInput, Prisma.TeacherUncheckedCreateWithoutTimetablePrefsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetablePrefsInput
+  upsert?: Prisma.TeacherUpsertWithoutTimetablePrefsInput
+  connect?: Prisma.TeacherWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutTimetablePrefsInput, Prisma.TeacherUpdateWithoutTimetablePrefsInput>, Prisma.TeacherUncheckedUpdateWithoutTimetablePrefsInput>
+}
+
+export type TeacherCreateNestedOneWithoutTimetableConfigsInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableConfigsInput, Prisma.TeacherUncheckedCreateWithoutTimetableConfigsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetableConfigsInput
+  connect?: Prisma.TeacherWhereUniqueInput
+}
+
+export type TeacherUpdateOneWithoutTimetableConfigsNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableConfigsInput, Prisma.TeacherUncheckedCreateWithoutTimetableConfigsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetableConfigsInput
+  upsert?: Prisma.TeacherUpsertWithoutTimetableConfigsInput
+  disconnect?: Prisma.TeacherWhereInput | boolean
+  delete?: Prisma.TeacherWhereInput | boolean
+  connect?: Prisma.TeacherWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutTimetableConfigsInput, Prisma.TeacherUpdateWithoutTimetableConfigsInput>, Prisma.TeacherUncheckedUpdateWithoutTimetableConfigsInput>
+}
+
+export type TeacherCreateNestedOneWithoutTimetableEntriesInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableEntriesInput, Prisma.TeacherUncheckedCreateWithoutTimetableEntriesInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetableEntriesInput
+  connect?: Prisma.TeacherWhereUniqueInput
+}
+
+export type TeacherUpdateOneWithoutTimetableEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableEntriesInput, Prisma.TeacherUncheckedCreateWithoutTimetableEntriesInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetableEntriesInput
+  upsert?: Prisma.TeacherUpsertWithoutTimetableEntriesInput
+  disconnect?: Prisma.TeacherWhereInput | boolean
+  delete?: Prisma.TeacherWhereInput | boolean
+  connect?: Prisma.TeacherWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutTimetableEntriesInput, Prisma.TeacherUpdateWithoutTimetableEntriesInput>, Prisma.TeacherUncheckedUpdateWithoutTimetableEntriesInput>
+}
+
+export type TeacherCreateNestedOneWithoutTimetableExceptionsInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableExceptionsInput, Prisma.TeacherUncheckedCreateWithoutTimetableExceptionsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetableExceptionsInput
+  connect?: Prisma.TeacherWhereUniqueInput
+}
+
+export type TeacherUpdateOneWithoutTimetableExceptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableExceptionsInput, Prisma.TeacherUncheckedCreateWithoutTimetableExceptionsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutTimetableExceptionsInput
+  upsert?: Prisma.TeacherUpsertWithoutTimetableExceptionsInput
+  disconnect?: Prisma.TeacherWhereInput | boolean
+  delete?: Prisma.TeacherWhereInput | boolean
+  connect?: Prisma.TeacherWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutTimetableExceptionsInput, Prisma.TeacherUpdateWithoutTimetableExceptionsInput>, Prisma.TeacherUncheckedUpdateWithoutTimetableExceptionsInput>
+}
+
+export type TeacherCreateNestedOneWithoutSubstitutionsInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutSubstitutionsInput, Prisma.TeacherUncheckedCreateWithoutSubstitutionsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutSubstitutionsInput
+  connect?: Prisma.TeacherWhereUniqueInput
+}
+
+export type TeacherUpdateOneRequiredWithoutSubstitutionsNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutSubstitutionsInput, Prisma.TeacherUncheckedCreateWithoutSubstitutionsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutSubstitutionsInput
+  upsert?: Prisma.TeacherUpsertWithoutSubstitutionsInput
+  connect?: Prisma.TeacherWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutSubstitutionsInput, Prisma.TeacherUpdateWithoutSubstitutionsInput>, Prisma.TeacherUncheckedUpdateWithoutSubstitutionsInput>
+}
+
 export type TeacherCreateWithoutTeacherNotesInput = {
   id?: string
   teacherId: string
@@ -1117,6 +1249,12 @@ export type TeacherCreateWithoutTeacherNotesInput = {
   taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutTeacherNotesInput = {
@@ -1156,6 +1294,12 @@ export type TeacherUncheckedCreateWithoutTeacherNotesInput = {
   taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutTeacherNotesInput = {
@@ -1211,6 +1355,12 @@ export type TeacherUpdateWithoutTeacherNotesInput = {
   taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutTeacherNotesInput = {
@@ -1250,6 +1400,12 @@ export type TeacherUncheckedUpdateWithoutTeacherNotesInput = {
   taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutTeacherTasksInput = {
@@ -1289,6 +1445,12 @@ export type TeacherCreateWithoutTeacherTasksInput = {
   taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutTeacherTasksInput = {
@@ -1328,6 +1490,12 @@ export type TeacherUncheckedCreateWithoutTeacherTasksInput = {
   taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutTeacherTasksInput = {
@@ -1383,6 +1551,12 @@ export type TeacherUpdateWithoutTeacherTasksInput = {
   taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutTeacherTasksInput = {
@@ -1422,6 +1596,12 @@ export type TeacherUncheckedUpdateWithoutTeacherTasksInput = {
   taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutClassDivisionsInput = {
@@ -1461,6 +1641,12 @@ export type TeacherCreateWithoutClassDivisionsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutClassDivisionsInput = {
@@ -1500,6 +1686,12 @@ export type TeacherUncheckedCreateWithoutClassDivisionsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutClassDivisionsInput = {
@@ -1555,6 +1747,12 @@ export type TeacherUpdateWithoutClassDivisionsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutClassDivisionsInput = {
@@ -1594,6 +1792,12 @@ export type TeacherUncheckedUpdateWithoutClassDivisionsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutAssignmentsInput = {
@@ -1633,6 +1837,12 @@ export type TeacherCreateWithoutAssignmentsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutAssignmentsInput = {
@@ -1672,6 +1882,12 @@ export type TeacherUncheckedCreateWithoutAssignmentsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutAssignmentsInput = {
@@ -1727,6 +1943,12 @@ export type TeacherUpdateWithoutAssignmentsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutAssignmentsInput = {
@@ -1766,6 +1988,12 @@ export type TeacherUncheckedUpdateWithoutAssignmentsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutBlackboardFoldersInput = {
@@ -1805,6 +2033,12 @@ export type TeacherCreateWithoutBlackboardFoldersInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutBlackboardFoldersInput = {
@@ -1844,6 +2078,12 @@ export type TeacherUncheckedCreateWithoutBlackboardFoldersInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutBlackboardFoldersInput = {
@@ -1899,6 +2139,12 @@ export type TeacherUpdateWithoutBlackboardFoldersInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutBlackboardFoldersInput = {
@@ -1938,6 +2184,12 @@ export type TeacherUncheckedUpdateWithoutBlackboardFoldersInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutBlackboardMaterialsInput = {
@@ -1977,6 +2229,12 @@ export type TeacherCreateWithoutBlackboardMaterialsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutBlackboardMaterialsInput = {
@@ -2016,6 +2274,12 @@ export type TeacherUncheckedCreateWithoutBlackboardMaterialsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutBlackboardMaterialsInput = {
@@ -2071,6 +2335,12 @@ export type TeacherUpdateWithoutBlackboardMaterialsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutBlackboardMaterialsInput = {
@@ -2110,6 +2380,12 @@ export type TeacherUncheckedUpdateWithoutBlackboardMaterialsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutMindmapsInput = {
@@ -2149,6 +2425,12 @@ export type TeacherCreateWithoutMindmapsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutMindmapsInput = {
@@ -2188,6 +2470,12 @@ export type TeacherUncheckedCreateWithoutMindmapsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutMindmapsInput = {
@@ -2243,6 +2531,12 @@ export type TeacherUpdateWithoutMindmapsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutMindmapsInput = {
@@ -2282,6 +2576,12 @@ export type TeacherUncheckedUpdateWithoutMindmapsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutTaskContainersInput = {
@@ -2321,6 +2621,12 @@ export type TeacherCreateWithoutTaskContainersInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutTaskContainersInput = {
@@ -2360,6 +2666,12 @@ export type TeacherUncheckedCreateWithoutTaskContainersInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutTaskContainersInput = {
@@ -2415,6 +2727,12 @@ export type TeacherUpdateWithoutTaskContainersInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutTaskContainersInput = {
@@ -2454,6 +2772,12 @@ export type TeacherUncheckedUpdateWithoutTaskContainersInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutTaskQuestionsInput = {
@@ -2493,6 +2817,12 @@ export type TeacherCreateWithoutTaskQuestionsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutTaskQuestionsInput = {
@@ -2532,6 +2862,12 @@ export type TeacherUncheckedCreateWithoutTaskQuestionsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutTaskQuestionsInput = {
@@ -2587,6 +2923,12 @@ export type TeacherUpdateWithoutTaskQuestionsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutTaskQuestionsInput = {
@@ -2626,6 +2968,12 @@ export type TeacherUncheckedUpdateWithoutTaskQuestionsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutTaskModulesInput = {
@@ -2665,6 +3013,12 @@ export type TeacherCreateWithoutTaskModulesInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutTaskModulesInput = {
@@ -2704,6 +3058,12 @@ export type TeacherUncheckedCreateWithoutTaskModulesInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutTaskModulesInput = {
@@ -2759,6 +3119,12 @@ export type TeacherUpdateWithoutTaskModulesInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutTaskModulesInput = {
@@ -2798,6 +3164,12 @@ export type TeacherUncheckedUpdateWithoutTaskModulesInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutTaskTestsInput = {
@@ -2837,6 +3209,12 @@ export type TeacherCreateWithoutTaskTestsInput = {
   taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutTaskTestsInput = {
@@ -2876,6 +3254,12 @@ export type TeacherUncheckedCreateWithoutTaskTestsInput = {
   taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutTaskTestsInput = {
@@ -2931,6 +3315,12 @@ export type TeacherUpdateWithoutTaskTestsInput = {
   taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutTaskTestsInput = {
@@ -2970,6 +3360,12 @@ export type TeacherUncheckedUpdateWithoutTaskTestsInput = {
   taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutTaskPdfUploadsInput = {
@@ -3009,6 +3405,12 @@ export type TeacherCreateWithoutTaskPdfUploadsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutTaskPdfUploadsInput = {
@@ -3048,6 +3450,12 @@ export type TeacherUncheckedCreateWithoutTaskPdfUploadsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutTaskPdfUploadsInput = {
@@ -3103,6 +3511,12 @@ export type TeacherUpdateWithoutTaskPdfUploadsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutTaskPdfUploadsInput = {
@@ -3142,6 +3556,12 @@ export type TeacherUncheckedUpdateWithoutTaskPdfUploadsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutQuestionShareTokensInput = {
@@ -3181,6 +3601,12 @@ export type TeacherCreateWithoutQuestionShareTokensInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutQuestionShareTokensInput = {
@@ -3220,6 +3646,12 @@ export type TeacherUncheckedCreateWithoutQuestionShareTokensInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutQuestionShareTokensInput = {
@@ -3275,6 +3707,12 @@ export type TeacherUpdateWithoutQuestionShareTokensInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutQuestionShareTokensInput = {
@@ -3314,6 +3752,12 @@ export type TeacherUncheckedUpdateWithoutQuestionShareTokensInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutTaskAssignmentsInput = {
@@ -3353,6 +3797,12 @@ export type TeacherCreateWithoutTaskAssignmentsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutTaskAssignmentsInput = {
@@ -3392,6 +3842,12 @@ export type TeacherUncheckedCreateWithoutTaskAssignmentsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutTaskAssignmentsInput = {
@@ -3447,6 +3903,12 @@ export type TeacherUpdateWithoutTaskAssignmentsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutTaskAssignmentsInput = {
@@ -3486,6 +3948,12 @@ export type TeacherUncheckedUpdateWithoutTaskAssignmentsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherCreateWithoutCreatedMarksheetsInput = {
@@ -3525,6 +3993,12 @@ export type TeacherCreateWithoutCreatedMarksheetsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherUncheckedCreateWithoutCreatedMarksheetsInput = {
@@ -3564,6 +4038,12 @@ export type TeacherUncheckedCreateWithoutCreatedMarksheetsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
   teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
   teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
 }
 
 export type TeacherCreateOrConnectWithoutCreatedMarksheetsInput = {
@@ -3619,6 +4099,12 @@ export type TeacherUpdateWithoutCreatedMarksheetsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
 }
 
 export type TeacherUncheckedUpdateWithoutCreatedMarksheetsInput = {
@@ -3658,6 +4144,1188 @@ export type TeacherUncheckedUpdateWithoutCreatedMarksheetsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
   teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
   teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherCreateWithoutTimetableAvailabilityInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherUncheckedCreateWithoutTimetableAvailabilityInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherCreateOrConnectWithoutTimetableAvailabilityInput = {
+  where: Prisma.TeacherWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableAvailabilityInput, Prisma.TeacherUncheckedCreateWithoutTimetableAvailabilityInput>
+}
+
+export type TeacherUpsertWithoutTimetableAvailabilityInput = {
+  update: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetableAvailabilityInput, Prisma.TeacherUncheckedUpdateWithoutTimetableAvailabilityInput>
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableAvailabilityInput, Prisma.TeacherUncheckedCreateWithoutTimetableAvailabilityInput>
+  where?: Prisma.TeacherWhereInput
+}
+
+export type TeacherUpdateToOneWithWhereWithoutTimetableAvailabilityInput = {
+  where?: Prisma.TeacherWhereInput
+  data: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetableAvailabilityInput, Prisma.TeacherUncheckedUpdateWithoutTimetableAvailabilityInput>
+}
+
+export type TeacherUpdateWithoutTimetableAvailabilityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherUncheckedUpdateWithoutTimetableAvailabilityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherCreateWithoutTimetablePrefsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherUncheckedCreateWithoutTimetablePrefsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherCreateOrConnectWithoutTimetablePrefsInput = {
+  where: Prisma.TeacherWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetablePrefsInput, Prisma.TeacherUncheckedCreateWithoutTimetablePrefsInput>
+}
+
+export type TeacherUpsertWithoutTimetablePrefsInput = {
+  update: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetablePrefsInput, Prisma.TeacherUncheckedUpdateWithoutTimetablePrefsInput>
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetablePrefsInput, Prisma.TeacherUncheckedCreateWithoutTimetablePrefsInput>
+  where?: Prisma.TeacherWhereInput
+}
+
+export type TeacherUpdateToOneWithWhereWithoutTimetablePrefsInput = {
+  where?: Prisma.TeacherWhereInput
+  data: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetablePrefsInput, Prisma.TeacherUncheckedUpdateWithoutTimetablePrefsInput>
+}
+
+export type TeacherUpdateWithoutTimetablePrefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherUncheckedUpdateWithoutTimetablePrefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherCreateWithoutTimetableConfigsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherUncheckedCreateWithoutTimetableConfigsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherCreateOrConnectWithoutTimetableConfigsInput = {
+  where: Prisma.TeacherWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableConfigsInput, Prisma.TeacherUncheckedCreateWithoutTimetableConfigsInput>
+}
+
+export type TeacherUpsertWithoutTimetableConfigsInput = {
+  update: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetableConfigsInput, Prisma.TeacherUncheckedUpdateWithoutTimetableConfigsInput>
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableConfigsInput, Prisma.TeacherUncheckedCreateWithoutTimetableConfigsInput>
+  where?: Prisma.TeacherWhereInput
+}
+
+export type TeacherUpdateToOneWithWhereWithoutTimetableConfigsInput = {
+  where?: Prisma.TeacherWhereInput
+  data: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetableConfigsInput, Prisma.TeacherUncheckedUpdateWithoutTimetableConfigsInput>
+}
+
+export type TeacherUpdateWithoutTimetableConfigsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherUncheckedUpdateWithoutTimetableConfigsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherCreateWithoutTimetableEntriesInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherUncheckedCreateWithoutTimetableEntriesInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherCreateOrConnectWithoutTimetableEntriesInput = {
+  where: Prisma.TeacherWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableEntriesInput, Prisma.TeacherUncheckedCreateWithoutTimetableEntriesInput>
+}
+
+export type TeacherUpsertWithoutTimetableEntriesInput = {
+  update: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetableEntriesInput, Prisma.TeacherUncheckedUpdateWithoutTimetableEntriesInput>
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableEntriesInput, Prisma.TeacherUncheckedCreateWithoutTimetableEntriesInput>
+  where?: Prisma.TeacherWhereInput
+}
+
+export type TeacherUpdateToOneWithWhereWithoutTimetableEntriesInput = {
+  where?: Prisma.TeacherWhereInput
+  data: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetableEntriesInput, Prisma.TeacherUncheckedUpdateWithoutTimetableEntriesInput>
+}
+
+export type TeacherUpdateWithoutTimetableEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherUncheckedUpdateWithoutTimetableEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherCreateWithoutTimetableExceptionsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherUncheckedCreateWithoutTimetableExceptionsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherCreateOrConnectWithoutTimetableExceptionsInput = {
+  where: Prisma.TeacherWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableExceptionsInput, Prisma.TeacherUncheckedCreateWithoutTimetableExceptionsInput>
+}
+
+export type TeacherUpsertWithoutTimetableExceptionsInput = {
+  update: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetableExceptionsInput, Prisma.TeacherUncheckedUpdateWithoutTimetableExceptionsInput>
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutTimetableExceptionsInput, Prisma.TeacherUncheckedCreateWithoutTimetableExceptionsInput>
+  where?: Prisma.TeacherWhereInput
+}
+
+export type TeacherUpdateToOneWithWhereWithoutTimetableExceptionsInput = {
+  where?: Prisma.TeacherWhereInput
+  data: Prisma.XOR<Prisma.TeacherUpdateWithoutTimetableExceptionsInput, Prisma.TeacherUncheckedUpdateWithoutTimetableExceptionsInput>
+}
+
+export type TeacherUpdateWithoutTimetableExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherUncheckedUpdateWithoutTimetableExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherCreateWithoutSubstitutionsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+}
+
+export type TeacherUncheckedCreateWithoutSubstitutionsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+}
+
+export type TeacherCreateOrConnectWithoutSubstitutionsInput = {
+  where: Prisma.TeacherWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutSubstitutionsInput, Prisma.TeacherUncheckedCreateWithoutSubstitutionsInput>
+}
+
+export type TeacherUpsertWithoutSubstitutionsInput = {
+  update: Prisma.XOR<Prisma.TeacherUpdateWithoutSubstitutionsInput, Prisma.TeacherUncheckedUpdateWithoutSubstitutionsInput>
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutSubstitutionsInput, Prisma.TeacherUncheckedCreateWithoutSubstitutionsInput>
+  where?: Prisma.TeacherWhereInput
+}
+
+export type TeacherUpdateToOneWithWhereWithoutSubstitutionsInput = {
+  where?: Prisma.TeacherWhereInput
+  data: Prisma.XOR<Prisma.TeacherUpdateWithoutSubstitutionsInput, Prisma.TeacherUncheckedUpdateWithoutSubstitutionsInput>
+}
+
+export type TeacherUpdateWithoutSubstitutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+}
+
+export type TeacherUncheckedUpdateWithoutSubstitutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
 }
 
 
@@ -3681,6 +5349,12 @@ export type TeacherCountOutputType = {
   taskTests: number
   teacherNotes: number
   teacherTasks: number
+  timetableAvailability: number
+  timetablePrefs: number
+  timetableConfigs: number
+  timetableEntries: number
+  timetableExceptions: number
+  substitutions: number
 }
 
 export type TeacherCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3699,6 +5373,12 @@ export type TeacherCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   taskTests?: boolean | TeacherCountOutputTypeCountTaskTestsArgs
   teacherNotes?: boolean | TeacherCountOutputTypeCountTeacherNotesArgs
   teacherTasks?: boolean | TeacherCountOutputTypeCountTeacherTasksArgs
+  timetableAvailability?: boolean | TeacherCountOutputTypeCountTimetableAvailabilityArgs
+  timetablePrefs?: boolean | TeacherCountOutputTypeCountTimetablePrefsArgs
+  timetableConfigs?: boolean | TeacherCountOutputTypeCountTimetableConfigsArgs
+  timetableEntries?: boolean | TeacherCountOutputTypeCountTimetableEntriesArgs
+  timetableExceptions?: boolean | TeacherCountOutputTypeCountTimetableExceptionsArgs
+  substitutions?: boolean | TeacherCountOutputTypeCountSubstitutionsArgs
 }
 
 /**
@@ -3816,6 +5496,48 @@ export type TeacherCountOutputTypeCountTeacherTasksArgs<ExtArgs extends runtime.
   where?: Prisma.TeacherTaskWhereInput
 }
 
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountTimetableAvailabilityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TeacherAvailabilityWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountTimetablePrefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TeacherTimetablePrefWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountTimetableConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableSubjectConfigWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountTimetableEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableEntryWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountTimetableExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableExceptionWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountSubstitutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableSubstitutionWhereInput
+}
+
 
 export type TeacherSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3855,6 +5577,12 @@ export type TeacherSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   taskTests?: boolean | Prisma.Teacher$taskTestsArgs<ExtArgs>
   teacherNotes?: boolean | Prisma.Teacher$teacherNotesArgs<ExtArgs>
   teacherTasks?: boolean | Prisma.Teacher$teacherTasksArgs<ExtArgs>
+  timetableAvailability?: boolean | Prisma.Teacher$timetableAvailabilityArgs<ExtArgs>
+  timetablePrefs?: boolean | Prisma.Teacher$timetablePrefsArgs<ExtArgs>
+  timetableConfigs?: boolean | Prisma.Teacher$timetableConfigsArgs<ExtArgs>
+  timetableEntries?: boolean | Prisma.Teacher$timetableEntriesArgs<ExtArgs>
+  timetableExceptions?: boolean | Prisma.Teacher$timetableExceptionsArgs<ExtArgs>
+  substitutions?: boolean | Prisma.Teacher$substitutionsArgs<ExtArgs>
   _count?: boolean | Prisma.TeacherCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacher"]>
 
@@ -3950,6 +5678,12 @@ export type TeacherInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   taskTests?: boolean | Prisma.Teacher$taskTestsArgs<ExtArgs>
   teacherNotes?: boolean | Prisma.Teacher$teacherNotesArgs<ExtArgs>
   teacherTasks?: boolean | Prisma.Teacher$teacherTasksArgs<ExtArgs>
+  timetableAvailability?: boolean | Prisma.Teacher$timetableAvailabilityArgs<ExtArgs>
+  timetablePrefs?: boolean | Prisma.Teacher$timetablePrefsArgs<ExtArgs>
+  timetableConfigs?: boolean | Prisma.Teacher$timetableConfigsArgs<ExtArgs>
+  timetableEntries?: boolean | Prisma.Teacher$timetableEntriesArgs<ExtArgs>
+  timetableExceptions?: boolean | Prisma.Teacher$timetableExceptionsArgs<ExtArgs>
+  substitutions?: boolean | Prisma.Teacher$substitutionsArgs<ExtArgs>
   _count?: boolean | Prisma.TeacherCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TeacherIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3973,6 +5707,12 @@ export type $TeacherPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     taskTests: Prisma.$TaskTestPayload<ExtArgs>[]
     teacherNotes: Prisma.$TeacherNotePayload<ExtArgs>[]
     teacherTasks: Prisma.$TeacherTaskPayload<ExtArgs>[]
+    timetableAvailability: Prisma.$TeacherAvailabilityPayload<ExtArgs>[]
+    timetablePrefs: Prisma.$TeacherTimetablePrefPayload<ExtArgs>[]
+    timetableConfigs: Prisma.$TimetableSubjectConfigPayload<ExtArgs>[]
+    timetableEntries: Prisma.$TimetableEntryPayload<ExtArgs>[]
+    timetableExceptions: Prisma.$TimetableExceptionPayload<ExtArgs>[]
+    substitutions: Prisma.$TimetableSubstitutionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4406,6 +6146,12 @@ export interface Prisma__TeacherClient<T, Null = never, ExtArgs extends runtime.
   taskTests<T extends Prisma.Teacher$taskTestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskTestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   teacherNotes<T extends Prisma.Teacher$teacherNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$teacherNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   teacherTasks<T extends Prisma.Teacher$teacherTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$teacherTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableAvailability<T extends Prisma.Teacher$timetableAvailabilityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$timetableAvailabilityArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherAvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetablePrefs<T extends Prisma.Teacher$timetablePrefsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$timetablePrefsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherTimetablePrefPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableConfigs<T extends Prisma.Teacher$timetableConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$timetableConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableSubjectConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableEntries<T extends Prisma.Teacher$timetableEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$timetableEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableExceptions<T extends Prisma.Teacher$timetableExceptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$timetableExceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  substitutions<T extends Prisma.Teacher$substitutionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$substitutionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableSubstitutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5207,6 +6953,150 @@ export type Teacher$teacherTasksArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.TeacherTaskScalarFieldEnum | Prisma.TeacherTaskScalarFieldEnum[]
+}
+
+/**
+ * Teacher.timetableAvailability
+ */
+export type Teacher$timetableAvailabilityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TeacherAvailability
+   */
+  select?: Prisma.TeacherAvailabilitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TeacherAvailability
+   */
+  omit?: Prisma.TeacherAvailabilityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TeacherAvailabilityInclude<ExtArgs> | null
+  where?: Prisma.TeacherAvailabilityWhereInput
+  orderBy?: Prisma.TeacherAvailabilityOrderByWithRelationInput | Prisma.TeacherAvailabilityOrderByWithRelationInput[]
+  cursor?: Prisma.TeacherAvailabilityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TeacherAvailabilityScalarFieldEnum | Prisma.TeacherAvailabilityScalarFieldEnum[]
+}
+
+/**
+ * Teacher.timetablePrefs
+ */
+export type Teacher$timetablePrefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TeacherTimetablePref
+   */
+  select?: Prisma.TeacherTimetablePrefSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TeacherTimetablePref
+   */
+  omit?: Prisma.TeacherTimetablePrefOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TeacherTimetablePrefInclude<ExtArgs> | null
+  where?: Prisma.TeacherTimetablePrefWhereInput
+  orderBy?: Prisma.TeacherTimetablePrefOrderByWithRelationInput | Prisma.TeacherTimetablePrefOrderByWithRelationInput[]
+  cursor?: Prisma.TeacherTimetablePrefWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TeacherTimetablePrefScalarFieldEnum | Prisma.TeacherTimetablePrefScalarFieldEnum[]
+}
+
+/**
+ * Teacher.timetableConfigs
+ */
+export type Teacher$timetableConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableSubjectConfig
+   */
+  select?: Prisma.TimetableSubjectConfigSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableSubjectConfig
+   */
+  omit?: Prisma.TimetableSubjectConfigOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableSubjectConfigInclude<ExtArgs> | null
+  where?: Prisma.TimetableSubjectConfigWhereInput
+  orderBy?: Prisma.TimetableSubjectConfigOrderByWithRelationInput | Prisma.TimetableSubjectConfigOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableSubjectConfigWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableSubjectConfigScalarFieldEnum | Prisma.TimetableSubjectConfigScalarFieldEnum[]
+}
+
+/**
+ * Teacher.timetableEntries
+ */
+export type Teacher$timetableEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableEntry
+   */
+  select?: Prisma.TimetableEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableEntry
+   */
+  omit?: Prisma.TimetableEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableEntryInclude<ExtArgs> | null
+  where?: Prisma.TimetableEntryWhereInput
+  orderBy?: Prisma.TimetableEntryOrderByWithRelationInput | Prisma.TimetableEntryOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableEntryScalarFieldEnum | Prisma.TimetableEntryScalarFieldEnum[]
+}
+
+/**
+ * Teacher.timetableExceptions
+ */
+export type Teacher$timetableExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableException
+   */
+  select?: Prisma.TimetableExceptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableException
+   */
+  omit?: Prisma.TimetableExceptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableExceptionInclude<ExtArgs> | null
+  where?: Prisma.TimetableExceptionWhereInput
+  orderBy?: Prisma.TimetableExceptionOrderByWithRelationInput | Prisma.TimetableExceptionOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableExceptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableExceptionScalarFieldEnum | Prisma.TimetableExceptionScalarFieldEnum[]
+}
+
+/**
+ * Teacher.substitutions
+ */
+export type Teacher$substitutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableSubstitution
+   */
+  select?: Prisma.TimetableSubstitutionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableSubstitution
+   */
+  omit?: Prisma.TimetableSubstitutionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableSubstitutionInclude<ExtArgs> | null
+  where?: Prisma.TimetableSubstitutionWhereInput
+  orderBy?: Prisma.TimetableSubstitutionOrderByWithRelationInput | Prisma.TimetableSubstitutionOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableSubstitutionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableSubstitutionScalarFieldEnum | Prisma.TimetableSubstitutionScalarFieldEnum[]
 }
 
 /**

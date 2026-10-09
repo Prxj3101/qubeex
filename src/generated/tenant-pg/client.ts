@@ -399,3 +399,68 @@ export type InventoryPurchaseRequest = Prisma.InventoryPurchaseRequestModel
  * 
  */
 export type InventoryPurchaseOrder = Prisma.InventoryPurchaseOrderModel
+/**
+ * Model TimetableSettings
+ * 
+ */
+export type TimetableSettings = Prisma.TimetableSettingsModel
+/**
+ * Model TimeSlot
+ * 
+ */
+export type TimeSlot = Prisma.TimeSlotModel
+/**
+ * Model TimetableSessionType
+ * 
+ */
+export type TimetableSessionType = Prisma.TimetableSessionTypeModel
+/**
+ * Model Room
+ * 
+ */
+export type Room = Prisma.RoomModel
+/**
+ * Model RoomUnavailability
+ * 
+ */
+export type RoomUnavailability = Prisma.RoomUnavailabilityModel
+/**
+ * Model TeacherAvailability
+ * 
+ */
+export type TeacherAvailability = Prisma.TeacherAvailabilityModel
+/**
+ * Model TeacherTimetablePref
+ * 
+ */
+export type TeacherTimetablePref = Prisma.TeacherTimetablePrefModel
+/**
+ * Model SchoolTimetable
+ * 
+ */
+export type SchoolTimetable = Prisma.SchoolTimetableModel
+/**
+ * Model TimetableSubjectConfig
+ * 
+ */
+export type TimetableSubjectConfig = Prisma.TimetableSubjectConfigModel
+/**
+ * Model TimetableEntry
+ * 
+ */
+export type TimetableEntry = Prisma.TimetableEntryModel
+/**
+ * Model TimetableException
+ * 
+ */
+export type TimetableException = Prisma.TimetableExceptionModel
+/**
+ * Model TimetableSubstitution
+ * 
+ */
+export type TimetableSubstitution = Prisma.TimetableSubstitutionModel
+/**
+ * Model TimetableGeneration
+ * 
+ */
+export type TimetableGeneration = Prisma.TimetableGenerationModel

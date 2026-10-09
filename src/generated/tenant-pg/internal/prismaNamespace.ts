@@ -468,7 +468,20 @@ export const ModelName = {
   InventoryStockBalance: 'InventoryStockBalance',
   InventoryStockMovement: 'InventoryStockMovement',
   InventoryPurchaseRequest: 'InventoryPurchaseRequest',
-  InventoryPurchaseOrder: 'InventoryPurchaseOrder'
+  InventoryPurchaseOrder: 'InventoryPurchaseOrder',
+  TimetableSettings: 'TimetableSettings',
+  TimeSlot: 'TimeSlot',
+  TimetableSessionType: 'TimetableSessionType',
+  Room: 'Room',
+  RoomUnavailability: 'RoomUnavailability',
+  TeacherAvailability: 'TeacherAvailability',
+  TeacherTimetablePref: 'TeacherTimetablePref',
+  SchoolTimetable: 'SchoolTimetable',
+  TimetableSubjectConfig: 'TimetableSubjectConfig',
+  TimetableEntry: 'TimetableEntry',
+  TimetableException: 'TimetableException',
+  TimetableSubstitution: 'TimetableSubstitution',
+  TimetableGeneration: 'TimetableGeneration'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -484,7 +497,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -5816,6 +5829,968 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TimetableSettings: {
+      payload: Prisma.$TimetableSettingsPayload<ExtArgs>
+      fields: Prisma.TimetableSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.TimetableSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.TimetableSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.TimetableSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>
+        }
+        update: {
+          args: Prisma.TimetableSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableSettings>
+        }
+        groupBy: {
+          args: Prisma.TimetableSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    TimeSlot: {
+      payload: Prisma.$TimeSlotPayload<ExtArgs>
+      fields: Prisma.TimeSlotFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimeSlotFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimeSlotFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>
+        }
+        findFirst: {
+          args: Prisma.TimeSlotFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimeSlotFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>
+        }
+        findMany: {
+          args: Prisma.TimeSlotFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>[]
+        }
+        create: {
+          args: Prisma.TimeSlotCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>
+        }
+        createMany: {
+          args: Prisma.TimeSlotCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimeSlotCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>[]
+        }
+        delete: {
+          args: Prisma.TimeSlotDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>
+        }
+        update: {
+          args: Prisma.TimeSlotUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>
+        }
+        deleteMany: {
+          args: Prisma.TimeSlotDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimeSlotUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimeSlotUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>[]
+        }
+        upsert: {
+          args: Prisma.TimeSlotUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimeSlotPayload>
+        }
+        aggregate: {
+          args: Prisma.TimeSlotAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimeSlot>
+        }
+        groupBy: {
+          args: Prisma.TimeSlotGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimeSlotGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimeSlotCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimeSlotCountAggregateOutputType> | number
+        }
+      }
+    }
+    TimetableSessionType: {
+      payload: Prisma.$TimetableSessionTypePayload<ExtArgs>
+      fields: Prisma.TimetableSessionTypeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableSessionTypeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableSessionTypeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableSessionTypeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableSessionTypeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>
+        }
+        findMany: {
+          args: Prisma.TimetableSessionTypeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>[]
+        }
+        create: {
+          args: Prisma.TimetableSessionTypeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>
+        }
+        createMany: {
+          args: Prisma.TimetableSessionTypeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableSessionTypeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableSessionTypeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>
+        }
+        update: {
+          args: Prisma.TimetableSessionTypeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableSessionTypeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableSessionTypeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableSessionTypeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableSessionTypeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSessionTypePayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableSessionTypeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableSessionType>
+        }
+        groupBy: {
+          args: Prisma.TimetableSessionTypeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableSessionTypeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableSessionTypeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableSessionTypeCountAggregateOutputType> | number
+        }
+      }
+    }
+    Room: {
+      payload: Prisma.$RoomPayload<ExtArgs>
+      fields: Prisma.RoomFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RoomFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RoomFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
+        }
+        findFirst: {
+          args: Prisma.RoomFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RoomFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
+        }
+        findMany: {
+          args: Prisma.RoomFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>[]
+        }
+        create: {
+          args: Prisma.RoomCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
+        }
+        createMany: {
+          args: Prisma.RoomCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RoomCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>[]
+        }
+        delete: {
+          args: Prisma.RoomDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
+        }
+        update: {
+          args: Prisma.RoomUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
+        }
+        deleteMany: {
+          args: Prisma.RoomDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RoomUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RoomUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>[]
+        }
+        upsert: {
+          args: Prisma.RoomUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomPayload>
+        }
+        aggregate: {
+          args: Prisma.RoomAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRoom>
+        }
+        groupBy: {
+          args: Prisma.RoomGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RoomGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RoomCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RoomCountAggregateOutputType> | number
+        }
+      }
+    }
+    RoomUnavailability: {
+      payload: Prisma.$RoomUnavailabilityPayload<ExtArgs>
+      fields: Prisma.RoomUnavailabilityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RoomUnavailabilityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RoomUnavailabilityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>
+        }
+        findFirst: {
+          args: Prisma.RoomUnavailabilityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RoomUnavailabilityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>
+        }
+        findMany: {
+          args: Prisma.RoomUnavailabilityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>[]
+        }
+        create: {
+          args: Prisma.RoomUnavailabilityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>
+        }
+        createMany: {
+          args: Prisma.RoomUnavailabilityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RoomUnavailabilityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>[]
+        }
+        delete: {
+          args: Prisma.RoomUnavailabilityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>
+        }
+        update: {
+          args: Prisma.RoomUnavailabilityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>
+        }
+        deleteMany: {
+          args: Prisma.RoomUnavailabilityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RoomUnavailabilityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RoomUnavailabilityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>[]
+        }
+        upsert: {
+          args: Prisma.RoomUnavailabilityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoomUnavailabilityPayload>
+        }
+        aggregate: {
+          args: Prisma.RoomUnavailabilityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRoomUnavailability>
+        }
+        groupBy: {
+          args: Prisma.RoomUnavailabilityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RoomUnavailabilityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RoomUnavailabilityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RoomUnavailabilityCountAggregateOutputType> | number
+        }
+      }
+    }
+    TeacherAvailability: {
+      payload: Prisma.$TeacherAvailabilityPayload<ExtArgs>
+      fields: Prisma.TeacherAvailabilityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TeacherAvailabilityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TeacherAvailabilityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>
+        }
+        findFirst: {
+          args: Prisma.TeacherAvailabilityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TeacherAvailabilityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>
+        }
+        findMany: {
+          args: Prisma.TeacherAvailabilityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>[]
+        }
+        create: {
+          args: Prisma.TeacherAvailabilityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>
+        }
+        createMany: {
+          args: Prisma.TeacherAvailabilityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TeacherAvailabilityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>[]
+        }
+        delete: {
+          args: Prisma.TeacherAvailabilityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>
+        }
+        update: {
+          args: Prisma.TeacherAvailabilityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>
+        }
+        deleteMany: {
+          args: Prisma.TeacherAvailabilityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TeacherAvailabilityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TeacherAvailabilityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>[]
+        }
+        upsert: {
+          args: Prisma.TeacherAvailabilityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherAvailabilityPayload>
+        }
+        aggregate: {
+          args: Prisma.TeacherAvailabilityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTeacherAvailability>
+        }
+        groupBy: {
+          args: Prisma.TeacherAvailabilityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TeacherAvailabilityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TeacherAvailabilityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TeacherAvailabilityCountAggregateOutputType> | number
+        }
+      }
+    }
+    TeacherTimetablePref: {
+      payload: Prisma.$TeacherTimetablePrefPayload<ExtArgs>
+      fields: Prisma.TeacherTimetablePrefFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TeacherTimetablePrefFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TeacherTimetablePrefFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>
+        }
+        findFirst: {
+          args: Prisma.TeacherTimetablePrefFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TeacherTimetablePrefFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>
+        }
+        findMany: {
+          args: Prisma.TeacherTimetablePrefFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>[]
+        }
+        create: {
+          args: Prisma.TeacherTimetablePrefCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>
+        }
+        createMany: {
+          args: Prisma.TeacherTimetablePrefCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TeacherTimetablePrefCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>[]
+        }
+        delete: {
+          args: Prisma.TeacherTimetablePrefDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>
+        }
+        update: {
+          args: Prisma.TeacherTimetablePrefUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>
+        }
+        deleteMany: {
+          args: Prisma.TeacherTimetablePrefDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TeacherTimetablePrefUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TeacherTimetablePrefUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>[]
+        }
+        upsert: {
+          args: Prisma.TeacherTimetablePrefUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TeacherTimetablePrefPayload>
+        }
+        aggregate: {
+          args: Prisma.TeacherTimetablePrefAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTeacherTimetablePref>
+        }
+        groupBy: {
+          args: Prisma.TeacherTimetablePrefGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TeacherTimetablePrefGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TeacherTimetablePrefCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TeacherTimetablePrefCountAggregateOutputType> | number
+        }
+      }
+    }
+    SchoolTimetable: {
+      payload: Prisma.$SchoolTimetablePayload<ExtArgs>
+      fields: Prisma.SchoolTimetableFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SchoolTimetableFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SchoolTimetableFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>
+        }
+        findFirst: {
+          args: Prisma.SchoolTimetableFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SchoolTimetableFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>
+        }
+        findMany: {
+          args: Prisma.SchoolTimetableFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>[]
+        }
+        create: {
+          args: Prisma.SchoolTimetableCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>
+        }
+        createMany: {
+          args: Prisma.SchoolTimetableCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SchoolTimetableCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>[]
+        }
+        delete: {
+          args: Prisma.SchoolTimetableDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>
+        }
+        update: {
+          args: Prisma.SchoolTimetableUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>
+        }
+        deleteMany: {
+          args: Prisma.SchoolTimetableDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SchoolTimetableUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SchoolTimetableUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>[]
+        }
+        upsert: {
+          args: Prisma.SchoolTimetableUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SchoolTimetablePayload>
+        }
+        aggregate: {
+          args: Prisma.SchoolTimetableAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSchoolTimetable>
+        }
+        groupBy: {
+          args: Prisma.SchoolTimetableGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SchoolTimetableGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SchoolTimetableCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SchoolTimetableCountAggregateOutputType> | number
+        }
+      }
+    }
+    TimetableSubjectConfig: {
+      payload: Prisma.$TimetableSubjectConfigPayload<ExtArgs>
+      fields: Prisma.TimetableSubjectConfigFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableSubjectConfigFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableSubjectConfigFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableSubjectConfigFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableSubjectConfigFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>
+        }
+        findMany: {
+          args: Prisma.TimetableSubjectConfigFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>[]
+        }
+        create: {
+          args: Prisma.TimetableSubjectConfigCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>
+        }
+        createMany: {
+          args: Prisma.TimetableSubjectConfigCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableSubjectConfigCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableSubjectConfigDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>
+        }
+        update: {
+          args: Prisma.TimetableSubjectConfigUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableSubjectConfigDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableSubjectConfigUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableSubjectConfigUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableSubjectConfigUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubjectConfigPayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableSubjectConfigAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableSubjectConfig>
+        }
+        groupBy: {
+          args: Prisma.TimetableSubjectConfigGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableSubjectConfigGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableSubjectConfigCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableSubjectConfigCountAggregateOutputType> | number
+        }
+      }
+    }
+    TimetableEntry: {
+      payload: Prisma.$TimetableEntryPayload<ExtArgs>
+      fields: Prisma.TimetableEntryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableEntryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableEntryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableEntryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableEntryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>
+        }
+        findMany: {
+          args: Prisma.TimetableEntryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>[]
+        }
+        create: {
+          args: Prisma.TimetableEntryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>
+        }
+        createMany: {
+          args: Prisma.TimetableEntryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableEntryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableEntryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>
+        }
+        update: {
+          args: Prisma.TimetableEntryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableEntryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableEntryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableEntryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableEntryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableEntryPayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableEntryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableEntry>
+        }
+        groupBy: {
+          args: Prisma.TimetableEntryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableEntryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableEntryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableEntryCountAggregateOutputType> | number
+        }
+      }
+    }
+    TimetableException: {
+      payload: Prisma.$TimetableExceptionPayload<ExtArgs>
+      fields: Prisma.TimetableExceptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableExceptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableExceptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableExceptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableExceptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>
+        }
+        findMany: {
+          args: Prisma.TimetableExceptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>[]
+        }
+        create: {
+          args: Prisma.TimetableExceptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>
+        }
+        createMany: {
+          args: Prisma.TimetableExceptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableExceptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableExceptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>
+        }
+        update: {
+          args: Prisma.TimetableExceptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableExceptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableExceptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableExceptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableExceptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableExceptionPayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableExceptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableException>
+        }
+        groupBy: {
+          args: Prisma.TimetableExceptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableExceptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableExceptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableExceptionCountAggregateOutputType> | number
+        }
+      }
+    }
+    TimetableSubstitution: {
+      payload: Prisma.$TimetableSubstitutionPayload<ExtArgs>
+      fields: Prisma.TimetableSubstitutionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableSubstitutionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableSubstitutionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableSubstitutionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableSubstitutionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>
+        }
+        findMany: {
+          args: Prisma.TimetableSubstitutionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>[]
+        }
+        create: {
+          args: Prisma.TimetableSubstitutionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>
+        }
+        createMany: {
+          args: Prisma.TimetableSubstitutionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableSubstitutionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableSubstitutionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>
+        }
+        update: {
+          args: Prisma.TimetableSubstitutionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableSubstitutionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableSubstitutionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableSubstitutionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableSubstitutionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableSubstitutionPayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableSubstitutionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableSubstitution>
+        }
+        groupBy: {
+          args: Prisma.TimetableSubstitutionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableSubstitutionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableSubstitutionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableSubstitutionCountAggregateOutputType> | number
+        }
+      }
+    }
+    TimetableGeneration: {
+      payload: Prisma.$TimetableGenerationPayload<ExtArgs>
+      fields: Prisma.TimetableGenerationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableGenerationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableGenerationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableGenerationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableGenerationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>
+        }
+        findMany: {
+          args: Prisma.TimetableGenerationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>[]
+        }
+        create: {
+          args: Prisma.TimetableGenerationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>
+        }
+        createMany: {
+          args: Prisma.TimetableGenerationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableGenerationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableGenerationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>
+        }
+        update: {
+          args: Prisma.TimetableGenerationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableGenerationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableGenerationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableGenerationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableGenerationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableGenerationPayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableGenerationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableGeneration>
+        }
+        groupBy: {
+          args: Prisma.TimetableGenerationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableGenerationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableGenerationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableGenerationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -7099,6 +8074,217 @@ export const InventoryPurchaseOrderScalarFieldEnum = {
 export type InventoryPurchaseOrderScalarFieldEnum = (typeof InventoryPurchaseOrderScalarFieldEnum)[keyof typeof InventoryPurchaseOrderScalarFieldEnum]
 
 
+export const TimetableSettingsScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  workingDays: 'workingDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableSettingsScalarFieldEnum = (typeof TimetableSettingsScalarFieldEnum)[keyof typeof TimetableSettingsScalarFieldEnum]
+
+
+export const TimeSlotScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  name: 'name',
+  order: 'order',
+  startMinute: 'startMinute',
+  endMinute: 'endMinute',
+  kind: 'kind',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimeSlotScalarFieldEnum = (typeof TimeSlotScalarFieldEnum)[keyof typeof TimeSlotScalarFieldEnum]
+
+
+export const TimetableSessionTypeScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  kind: 'kind',
+  requiresTeacher: 'requiresTeacher',
+  requiresRoom: 'requiresRoom',
+  roomType: 'roomType',
+  defaultSpan: 'defaultSpan',
+  color: 'color',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableSessionTypeScalarFieldEnum = (typeof TimetableSessionTypeScalarFieldEnum)[keyof typeof TimetableSessionTypeScalarFieldEnum]
+
+
+export const RoomScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  type: 'type',
+  capacity: 'capacity',
+  isActive: 'isActive',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoomScalarFieldEnum = (typeof RoomScalarFieldEnum)[keyof typeof RoomScalarFieldEnum]
+
+
+export const RoomUnavailabilityScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  roomId: 'roomId',
+  dayOfWeek: 'dayOfWeek',
+  slotId: 'slotId'
+} as const
+
+export type RoomUnavailabilityScalarFieldEnum = (typeof RoomUnavailabilityScalarFieldEnum)[keyof typeof RoomUnavailabilityScalarFieldEnum]
+
+
+export const TeacherAvailabilityScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  teacherId: 'teacherId',
+  dayOfWeek: 'dayOfWeek',
+  slotId: 'slotId',
+  kind: 'kind'
+} as const
+
+export type TeacherAvailabilityScalarFieldEnum = (typeof TeacherAvailabilityScalarFieldEnum)[keyof typeof TeacherAvailabilityScalarFieldEnum]
+
+
+export const TeacherTimetablePrefScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  teacherId: 'teacherId',
+  maxPeriodsPerDay: 'maxPeriodsPerDay',
+  maxConsecutive: 'maxConsecutive',
+  maxPeriodsPerWeek: 'maxPeriodsPerWeek'
+} as const
+
+export type TeacherTimetablePrefScalarFieldEnum = (typeof TeacherTimetablePrefScalarFieldEnum)[keyof typeof TeacherTimetablePrefScalarFieldEnum]
+
+
+export const SchoolTimetableScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  divisionId: 'divisionId',
+  status: 'status',
+  generatedAt: 'generatedAt',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SchoolTimetableScalarFieldEnum = (typeof SchoolTimetableScalarFieldEnum)[keyof typeof SchoolTimetableScalarFieldEnum]
+
+
+export const TimetableSubjectConfigScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  divisionId: 'divisionId',
+  subjectId: 'subjectId',
+  sessionTypeId: 'sessionTypeId',
+  title: 'title',
+  periodsPerWeek: 'periodsPerWeek',
+  span: 'span',
+  maxPerDay: 'maxPerDay',
+  teacherId: 'teacherId',
+  roomId: 'roomId',
+  roomType: 'roomType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableSubjectConfigScalarFieldEnum = (typeof TimetableSubjectConfigScalarFieldEnum)[keyof typeof TimetableSubjectConfigScalarFieldEnum]
+
+
+export const TimetableEntryScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  timetableId: 'timetableId',
+  divisionId: 'divisionId',
+  dayOfWeek: 'dayOfWeek',
+  slotId: 'slotId',
+  sessionTypeId: 'sessionTypeId',
+  subjectId: 'subjectId',
+  title: 'title',
+  teacherId: 'teacherId',
+  roomId: 'roomId',
+  configId: 'configId',
+  groupId: 'groupId',
+  isLocked: 'isLocked',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableEntryScalarFieldEnum = (typeof TimetableEntryScalarFieldEnum)[keyof typeof TimetableEntryScalarFieldEnum]
+
+
+export const TimetableExceptionScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  divisionId: 'divisionId',
+  date: 'date',
+  slotId: 'slotId',
+  kind: 'kind',
+  sessionTypeId: 'sessionTypeId',
+  subjectId: 'subjectId',
+  title: 'title',
+  teacherId: 'teacherId',
+  roomId: 'roomId',
+  reason: 'reason',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TimetableExceptionScalarFieldEnum = (typeof TimetableExceptionScalarFieldEnum)[keyof typeof TimetableExceptionScalarFieldEnum]
+
+
+export const TimetableSubstitutionScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  entryId: 'entryId',
+  date: 'date',
+  originalTeacherId: 'originalTeacherId',
+  substituteTeacherId: 'substituteTeacherId',
+  reason: 'reason',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TimetableSubstitutionScalarFieldEnum = (typeof TimetableSubstitutionScalarFieldEnum)[keyof typeof TimetableSubstitutionScalarFieldEnum]
+
+
+export const TimetableGenerationScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  timetableId: 'timetableId',
+  complete: 'complete',
+  placed: 'placed',
+  unplaced: 'unplaced',
+  problems: 'problems',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TimetableGenerationScalarFieldEnum = (typeof TimetableGenerationScalarFieldEnum)[keyof typeof TimetableGenerationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -7467,6 +8653,76 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
+
+/**
+ * Reference to a field of type 'TimeSlotKind'
+ */
+export type EnumTimeSlotKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimeSlotKind'>
+    
+
+
+/**
+ * Reference to a field of type 'TimeSlotKind[]'
+ */
+export type ListEnumTimeSlotKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimeSlotKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SessionKind'
+ */
+export type EnumSessionKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionKind'>
+    
+
+
+/**
+ * Reference to a field of type 'SessionKind[]'
+ */
+export type ListEnumSessionKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AvailabilityKind'
+ */
+export type EnumAvailabilityKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AvailabilityKind'>
+    
+
+
+/**
+ * Reference to a field of type 'AvailabilityKind[]'
+ */
+export type ListEnumAvailabilityKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AvailabilityKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TimetableStatus'
+ */
+export type EnumTimetableStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimetableStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'TimetableStatus[]'
+ */
+export type ListEnumTimetableStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimetableStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TimetableExceptionKind'
+ */
+export type EnumTimetableExceptionKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimetableExceptionKind'>
+    
+
+
+/**
+ * Reference to a field of type 'TimetableExceptionKind[]'
+ */
+export type ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimetableExceptionKind[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -7690,6 +8946,19 @@ export type GlobalOmitConfig = {
   inventoryStockMovement?: Prisma.InventoryStockMovementOmit
   inventoryPurchaseRequest?: Prisma.InventoryPurchaseRequestOmit
   inventoryPurchaseOrder?: Prisma.InventoryPurchaseOrderOmit
+  timetableSettings?: Prisma.TimetableSettingsOmit
+  timeSlot?: Prisma.TimeSlotOmit
+  timetableSessionType?: Prisma.TimetableSessionTypeOmit
+  room?: Prisma.RoomOmit
+  roomUnavailability?: Prisma.RoomUnavailabilityOmit
+  teacherAvailability?: Prisma.TeacherAvailabilityOmit
+  teacherTimetablePref?: Prisma.TeacherTimetablePrefOmit
+  schoolTimetable?: Prisma.SchoolTimetableOmit
+  timetableSubjectConfig?: Prisma.TimetableSubjectConfigOmit
+  timetableEntry?: Prisma.TimetableEntryOmit
+  timetableException?: Prisma.TimetableExceptionOmit
+  timetableSubstitution?: Prisma.TimetableSubstitutionOmit
+  timetableGeneration?: Prisma.TimetableGenerationOmit
 }
 
 /* Types for Logging */

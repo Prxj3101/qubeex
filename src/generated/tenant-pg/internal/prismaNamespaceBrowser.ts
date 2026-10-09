@@ -122,7 +122,20 @@ export const ModelName = {
   InventoryStockBalance: 'InventoryStockBalance',
   InventoryStockMovement: 'InventoryStockMovement',
   InventoryPurchaseRequest: 'InventoryPurchaseRequest',
-  InventoryPurchaseOrder: 'InventoryPurchaseOrder'
+  InventoryPurchaseOrder: 'InventoryPurchaseOrder',
+  TimetableSettings: 'TimetableSettings',
+  TimeSlot: 'TimeSlot',
+  TimetableSessionType: 'TimetableSessionType',
+  Room: 'Room',
+  RoomUnavailability: 'RoomUnavailability',
+  TeacherAvailability: 'TeacherAvailability',
+  TeacherTimetablePref: 'TeacherTimetablePref',
+  SchoolTimetable: 'SchoolTimetable',
+  TimetableSubjectConfig: 'TimetableSubjectConfig',
+  TimetableEntry: 'TimetableEntry',
+  TimetableException: 'TimetableException',
+  TimetableSubstitution: 'TimetableSubstitution',
+  TimetableGeneration: 'TimetableGeneration'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1383,6 +1396,217 @@ export const InventoryPurchaseOrderScalarFieldEnum = {
 } as const
 
 export type InventoryPurchaseOrderScalarFieldEnum = (typeof InventoryPurchaseOrderScalarFieldEnum)[keyof typeof InventoryPurchaseOrderScalarFieldEnum]
+
+
+export const TimetableSettingsScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  workingDays: 'workingDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableSettingsScalarFieldEnum = (typeof TimetableSettingsScalarFieldEnum)[keyof typeof TimetableSettingsScalarFieldEnum]
+
+
+export const TimeSlotScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  name: 'name',
+  order: 'order',
+  startMinute: 'startMinute',
+  endMinute: 'endMinute',
+  kind: 'kind',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimeSlotScalarFieldEnum = (typeof TimeSlotScalarFieldEnum)[keyof typeof TimeSlotScalarFieldEnum]
+
+
+export const TimetableSessionTypeScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  kind: 'kind',
+  requiresTeacher: 'requiresTeacher',
+  requiresRoom: 'requiresRoom',
+  roomType: 'roomType',
+  defaultSpan: 'defaultSpan',
+  color: 'color',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableSessionTypeScalarFieldEnum = (typeof TimetableSessionTypeScalarFieldEnum)[keyof typeof TimetableSessionTypeScalarFieldEnum]
+
+
+export const RoomScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  type: 'type',
+  capacity: 'capacity',
+  isActive: 'isActive',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoomScalarFieldEnum = (typeof RoomScalarFieldEnum)[keyof typeof RoomScalarFieldEnum]
+
+
+export const RoomUnavailabilityScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  roomId: 'roomId',
+  dayOfWeek: 'dayOfWeek',
+  slotId: 'slotId'
+} as const
+
+export type RoomUnavailabilityScalarFieldEnum = (typeof RoomUnavailabilityScalarFieldEnum)[keyof typeof RoomUnavailabilityScalarFieldEnum]
+
+
+export const TeacherAvailabilityScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  teacherId: 'teacherId',
+  dayOfWeek: 'dayOfWeek',
+  slotId: 'slotId',
+  kind: 'kind'
+} as const
+
+export type TeacherAvailabilityScalarFieldEnum = (typeof TeacherAvailabilityScalarFieldEnum)[keyof typeof TeacherAvailabilityScalarFieldEnum]
+
+
+export const TeacherTimetablePrefScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  teacherId: 'teacherId',
+  maxPeriodsPerDay: 'maxPeriodsPerDay',
+  maxConsecutive: 'maxConsecutive',
+  maxPeriodsPerWeek: 'maxPeriodsPerWeek'
+} as const
+
+export type TeacherTimetablePrefScalarFieldEnum = (typeof TeacherTimetablePrefScalarFieldEnum)[keyof typeof TeacherTimetablePrefScalarFieldEnum]
+
+
+export const SchoolTimetableScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  divisionId: 'divisionId',
+  status: 'status',
+  generatedAt: 'generatedAt',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SchoolTimetableScalarFieldEnum = (typeof SchoolTimetableScalarFieldEnum)[keyof typeof SchoolTimetableScalarFieldEnum]
+
+
+export const TimetableSubjectConfigScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  divisionId: 'divisionId',
+  subjectId: 'subjectId',
+  sessionTypeId: 'sessionTypeId',
+  title: 'title',
+  periodsPerWeek: 'periodsPerWeek',
+  span: 'span',
+  maxPerDay: 'maxPerDay',
+  teacherId: 'teacherId',
+  roomId: 'roomId',
+  roomType: 'roomType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableSubjectConfigScalarFieldEnum = (typeof TimetableSubjectConfigScalarFieldEnum)[keyof typeof TimetableSubjectConfigScalarFieldEnum]
+
+
+export const TimetableEntryScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  timetableId: 'timetableId',
+  divisionId: 'divisionId',
+  dayOfWeek: 'dayOfWeek',
+  slotId: 'slotId',
+  sessionTypeId: 'sessionTypeId',
+  subjectId: 'subjectId',
+  title: 'title',
+  teacherId: 'teacherId',
+  roomId: 'roomId',
+  configId: 'configId',
+  groupId: 'groupId',
+  isLocked: 'isLocked',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableEntryScalarFieldEnum = (typeof TimetableEntryScalarFieldEnum)[keyof typeof TimetableEntryScalarFieldEnum]
+
+
+export const TimetableExceptionScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  divisionId: 'divisionId',
+  date: 'date',
+  slotId: 'slotId',
+  kind: 'kind',
+  sessionTypeId: 'sessionTypeId',
+  subjectId: 'subjectId',
+  title: 'title',
+  teacherId: 'teacherId',
+  roomId: 'roomId',
+  reason: 'reason',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TimetableExceptionScalarFieldEnum = (typeof TimetableExceptionScalarFieldEnum)[keyof typeof TimetableExceptionScalarFieldEnum]
+
+
+export const TimetableSubstitutionScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  entryId: 'entryId',
+  date: 'date',
+  originalTeacherId: 'originalTeacherId',
+  substituteTeacherId: 'substituteTeacherId',
+  reason: 'reason',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TimetableSubstitutionScalarFieldEnum = (typeof TimetableSubstitutionScalarFieldEnum)[keyof typeof TimetableSubstitutionScalarFieldEnum]
+
+
+export const TimetableGenerationScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  timetableId: 'timetableId',
+  complete: 'complete',
+  placed: 'placed',
+  unplaced: 'unplaced',
+  problems: 'problems',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TimetableGenerationScalarFieldEnum = (typeof TimetableGenerationScalarFieldEnum)[keyof typeof TimetableGenerationScalarFieldEnum]
 
 
 export const SortOrder = {

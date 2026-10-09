@@ -264,6 +264,10 @@ export type DivisionWhereInput = {
   taskTests?: Prisma.TaskTestListRelationFilter
   enrollments?: Prisma.StudentEnrollmentListRelationFilter
   timetables?: Prisma.DivisionTimetableListRelationFilter
+  schoolTimetables?: Prisma.SchoolTimetableListRelationFilter
+  timetableConfigs?: Prisma.TimetableSubjectConfigListRelationFilter
+  timetableEntries?: Prisma.TimetableEntryListRelationFilter
+  timetableExceptions?: Prisma.TimetableExceptionListRelationFilter
 }
 
 export type DivisionOrderByWithRelationInput = {
@@ -292,6 +296,10 @@ export type DivisionOrderByWithRelationInput = {
   taskTests?: Prisma.TaskTestOrderByRelationAggregateInput
   enrollments?: Prisma.StudentEnrollmentOrderByRelationAggregateInput
   timetables?: Prisma.DivisionTimetableOrderByRelationAggregateInput
+  schoolTimetables?: Prisma.SchoolTimetableOrderByRelationAggregateInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigOrderByRelationAggregateInput
+  timetableEntries?: Prisma.TimetableEntryOrderByRelationAggregateInput
+  timetableExceptions?: Prisma.TimetableExceptionOrderByRelationAggregateInput
 }
 
 export type DivisionWhereUniqueInput = Prisma.AtLeast<{
@@ -324,6 +332,10 @@ export type DivisionWhereUniqueInput = Prisma.AtLeast<{
   taskTests?: Prisma.TaskTestListRelationFilter
   enrollments?: Prisma.StudentEnrollmentListRelationFilter
   timetables?: Prisma.DivisionTimetableListRelationFilter
+  schoolTimetables?: Prisma.SchoolTimetableListRelationFilter
+  timetableConfigs?: Prisma.TimetableSubjectConfigListRelationFilter
+  timetableEntries?: Prisma.TimetableEntryListRelationFilter
+  timetableExceptions?: Prisma.TimetableExceptionListRelationFilter
 }, "id" | "standardId_name">
 
 export type DivisionOrderByWithAggregationInput = {
@@ -382,6 +394,10 @@ export type DivisionCreateInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateInput = {
@@ -408,6 +424,10 @@ export type DivisionUncheckedCreateInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUpdateInput = {
@@ -434,6 +454,10 @@ export type DivisionUpdateInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateInput = {
@@ -460,6 +484,10 @@ export type DivisionUncheckedUpdateInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateManyInput = {
@@ -851,6 +879,62 @@ export type DivisionUpdateOneRequiredWithoutMarksheetsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DivisionUpdateToOneWithWhereWithoutMarksheetsInput, Prisma.DivisionUpdateWithoutMarksheetsInput>, Prisma.DivisionUncheckedUpdateWithoutMarksheetsInput>
 }
 
+export type DivisionCreateNestedOneWithoutSchoolTimetablesInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutSchoolTimetablesInput, Prisma.DivisionUncheckedCreateWithoutSchoolTimetablesInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutSchoolTimetablesInput
+  connect?: Prisma.DivisionWhereUniqueInput
+}
+
+export type DivisionUpdateOneRequiredWithoutSchoolTimetablesNestedInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutSchoolTimetablesInput, Prisma.DivisionUncheckedCreateWithoutSchoolTimetablesInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutSchoolTimetablesInput
+  upsert?: Prisma.DivisionUpsertWithoutSchoolTimetablesInput
+  connect?: Prisma.DivisionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DivisionUpdateToOneWithWhereWithoutSchoolTimetablesInput, Prisma.DivisionUpdateWithoutSchoolTimetablesInput>, Prisma.DivisionUncheckedUpdateWithoutSchoolTimetablesInput>
+}
+
+export type DivisionCreateNestedOneWithoutTimetableConfigsInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableConfigsInput, Prisma.DivisionUncheckedCreateWithoutTimetableConfigsInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutTimetableConfigsInput
+  connect?: Prisma.DivisionWhereUniqueInput
+}
+
+export type DivisionUpdateOneRequiredWithoutTimetableConfigsNestedInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableConfigsInput, Prisma.DivisionUncheckedCreateWithoutTimetableConfigsInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutTimetableConfigsInput
+  upsert?: Prisma.DivisionUpsertWithoutTimetableConfigsInput
+  connect?: Prisma.DivisionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DivisionUpdateToOneWithWhereWithoutTimetableConfigsInput, Prisma.DivisionUpdateWithoutTimetableConfigsInput>, Prisma.DivisionUncheckedUpdateWithoutTimetableConfigsInput>
+}
+
+export type DivisionCreateNestedOneWithoutTimetableEntriesInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableEntriesInput, Prisma.DivisionUncheckedCreateWithoutTimetableEntriesInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutTimetableEntriesInput
+  connect?: Prisma.DivisionWhereUniqueInput
+}
+
+export type DivisionUpdateOneRequiredWithoutTimetableEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableEntriesInput, Prisma.DivisionUncheckedCreateWithoutTimetableEntriesInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutTimetableEntriesInput
+  upsert?: Prisma.DivisionUpsertWithoutTimetableEntriesInput
+  connect?: Prisma.DivisionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DivisionUpdateToOneWithWhereWithoutTimetableEntriesInput, Prisma.DivisionUpdateWithoutTimetableEntriesInput>, Prisma.DivisionUncheckedUpdateWithoutTimetableEntriesInput>
+}
+
+export type DivisionCreateNestedOneWithoutTimetableExceptionsInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableExceptionsInput, Prisma.DivisionUncheckedCreateWithoutTimetableExceptionsInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutTimetableExceptionsInput
+  connect?: Prisma.DivisionWhereUniqueInput
+}
+
+export type DivisionUpdateOneRequiredWithoutTimetableExceptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableExceptionsInput, Prisma.DivisionUncheckedCreateWithoutTimetableExceptionsInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutTimetableExceptionsInput
+  upsert?: Prisma.DivisionUpsertWithoutTimetableExceptionsInput
+  connect?: Prisma.DivisionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DivisionUpdateToOneWithWhereWithoutTimetableExceptionsInput, Prisma.DivisionUpdateWithoutTimetableExceptionsInput>, Prisma.DivisionUncheckedUpdateWithoutTimetableExceptionsInput>
+}
+
 export type DivisionCreateWithoutClassTeacherInput = {
   id?: string
   institutionId: string
@@ -874,6 +958,10 @@ export type DivisionCreateWithoutClassTeacherInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutClassTeacherInput = {
@@ -899,6 +987,10 @@ export type DivisionUncheckedCreateWithoutClassTeacherInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutClassTeacherInput = {
@@ -965,6 +1057,10 @@ export type DivisionCreateWithoutStandardInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutStandardInput = {
@@ -990,6 +1086,10 @@ export type DivisionUncheckedCreateWithoutStandardInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutStandardInput = {
@@ -1041,6 +1141,10 @@ export type DivisionCreateWithoutDivisionSubjectsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutDivisionSubjectsInput = {
@@ -1066,6 +1170,10 @@ export type DivisionUncheckedCreateWithoutDivisionSubjectsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutDivisionSubjectsInput = {
@@ -1107,6 +1215,10 @@ export type DivisionUpdateWithoutDivisionSubjectsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutDivisionSubjectsInput = {
@@ -1132,6 +1244,10 @@ export type DivisionUncheckedUpdateWithoutDivisionSubjectsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutAssignmentsInput = {
@@ -1157,6 +1273,10 @@ export type DivisionCreateWithoutAssignmentsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutAssignmentsInput = {
@@ -1182,6 +1302,10 @@ export type DivisionUncheckedCreateWithoutAssignmentsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutAssignmentsInput = {
@@ -1223,6 +1347,10 @@ export type DivisionUpdateWithoutAssignmentsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutAssignmentsInput = {
@@ -1248,6 +1376,10 @@ export type DivisionUncheckedUpdateWithoutAssignmentsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutStudentsInput = {
@@ -1273,6 +1405,10 @@ export type DivisionCreateWithoutStudentsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutStudentsInput = {
@@ -1298,6 +1434,10 @@ export type DivisionUncheckedCreateWithoutStudentsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutStudentsInput = {
@@ -1339,6 +1479,10 @@ export type DivisionUpdateWithoutStudentsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutStudentsInput = {
@@ -1364,6 +1508,10 @@ export type DivisionUncheckedUpdateWithoutStudentsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutEnrollmentsInput = {
@@ -1389,6 +1537,10 @@ export type DivisionCreateWithoutEnrollmentsInput = {
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutDivisionInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutEnrollmentsInput = {
@@ -1414,6 +1566,10 @@ export type DivisionUncheckedCreateWithoutEnrollmentsInput = {
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutDivisionInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutEnrollmentsInput = {
@@ -1455,6 +1611,10 @@ export type DivisionUpdateWithoutEnrollmentsInput = {
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutDivisionNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutEnrollmentsInput = {
@@ -1480,6 +1640,10 @@ export type DivisionUncheckedUpdateWithoutEnrollmentsInput = {
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutDivisionNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutTimetablesInput = {
@@ -1505,6 +1669,10 @@ export type DivisionCreateWithoutTimetablesInput = {
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutDivisionInput
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutTimetablesInput = {
@@ -1530,6 +1698,10 @@ export type DivisionUncheckedCreateWithoutTimetablesInput = {
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutDivisionInput
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutTimetablesInput = {
@@ -1571,6 +1743,10 @@ export type DivisionUpdateWithoutTimetablesInput = {
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutDivisionNestedInput
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutTimetablesInput = {
@@ -1596,6 +1772,10 @@ export type DivisionUncheckedUpdateWithoutTimetablesInput = {
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutDivisionNestedInput
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutAttendancesInput = {
@@ -1621,6 +1801,10 @@ export type DivisionCreateWithoutAttendancesInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutAttendancesInput = {
@@ -1646,6 +1830,10 @@ export type DivisionUncheckedCreateWithoutAttendancesInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutAttendancesInput = {
@@ -1687,6 +1875,10 @@ export type DivisionUpdateWithoutAttendancesInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutAttendancesInput = {
@@ -1712,6 +1904,10 @@ export type DivisionUncheckedUpdateWithoutAttendancesInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutAttendanceDayNotesInput = {
@@ -1737,6 +1933,10 @@ export type DivisionCreateWithoutAttendanceDayNotesInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutAttendanceDayNotesInput = {
@@ -1762,6 +1962,10 @@ export type DivisionUncheckedCreateWithoutAttendanceDayNotesInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutAttendanceDayNotesInput = {
@@ -1803,6 +2007,10 @@ export type DivisionUpdateWithoutAttendanceDayNotesInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutAttendanceDayNotesInput = {
@@ -1828,6 +2036,10 @@ export type DivisionUncheckedUpdateWithoutAttendanceDayNotesInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutCampusPostsInput = {
@@ -1853,6 +2065,10 @@ export type DivisionCreateWithoutCampusPostsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutCampusPostsInput = {
@@ -1878,6 +2094,10 @@ export type DivisionUncheckedCreateWithoutCampusPostsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutCampusPostsInput = {
@@ -1919,6 +2139,10 @@ export type DivisionUpdateWithoutCampusPostsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutCampusPostsInput = {
@@ -1944,6 +2168,10 @@ export type DivisionUncheckedUpdateWithoutCampusPostsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutCalendarEventsInput = {
@@ -1969,6 +2197,10 @@ export type DivisionCreateWithoutCalendarEventsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutCalendarEventsInput = {
@@ -1994,6 +2226,10 @@ export type DivisionUncheckedCreateWithoutCalendarEventsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutCalendarEventsInput = {
@@ -2035,6 +2271,10 @@ export type DivisionUpdateWithoutCalendarEventsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutCalendarEventsInput = {
@@ -2060,6 +2300,10 @@ export type DivisionUncheckedUpdateWithoutCalendarEventsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutFeeStructuresInput = {
@@ -2085,6 +2329,10 @@ export type DivisionCreateWithoutFeeStructuresInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutFeeStructuresInput = {
@@ -2110,6 +2358,10 @@ export type DivisionUncheckedCreateWithoutFeeStructuresInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutFeeStructuresInput = {
@@ -2151,6 +2403,10 @@ export type DivisionUpdateWithoutFeeStructuresInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutFeeStructuresInput = {
@@ -2176,6 +2432,10 @@ export type DivisionUncheckedUpdateWithoutFeeStructuresInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutTaskContainersInput = {
@@ -2201,6 +2461,10 @@ export type DivisionCreateWithoutTaskContainersInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutTaskContainersInput = {
@@ -2226,6 +2490,10 @@ export type DivisionUncheckedCreateWithoutTaskContainersInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutTaskContainersInput = {
@@ -2267,6 +2535,10 @@ export type DivisionUpdateWithoutTaskContainersInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutTaskContainersInput = {
@@ -2292,6 +2564,10 @@ export type DivisionUncheckedUpdateWithoutTaskContainersInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutTaskTestsInput = {
@@ -2317,6 +2593,10 @@ export type DivisionCreateWithoutTaskTestsInput = {
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutTaskTestsInput = {
@@ -2342,6 +2622,10 @@ export type DivisionUncheckedCreateWithoutTaskTestsInput = {
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutTaskTestsInput = {
@@ -2383,6 +2667,10 @@ export type DivisionUpdateWithoutTaskTestsInput = {
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutTaskTestsInput = {
@@ -2408,6 +2696,10 @@ export type DivisionUncheckedUpdateWithoutTaskTestsInput = {
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutTaskAssignmentsInput = {
@@ -2433,6 +2725,10 @@ export type DivisionCreateWithoutTaskAssignmentsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutTaskAssignmentsInput = {
@@ -2458,6 +2754,10 @@ export type DivisionUncheckedCreateWithoutTaskAssignmentsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutTaskAssignmentsInput = {
@@ -2499,6 +2799,10 @@ export type DivisionUpdateWithoutTaskAssignmentsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutTaskAssignmentsInput = {
@@ -2524,6 +2828,10 @@ export type DivisionUncheckedUpdateWithoutTaskAssignmentsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateWithoutMarksheetsInput = {
@@ -2549,6 +2857,10 @@ export type DivisionCreateWithoutMarksheetsInput = {
   taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionUncheckedCreateWithoutMarksheetsInput = {
@@ -2574,6 +2886,10 @@ export type DivisionUncheckedCreateWithoutMarksheetsInput = {
   taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
   enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
 }
 
 export type DivisionCreateOrConnectWithoutMarksheetsInput = {
@@ -2615,6 +2931,10 @@ export type DivisionUpdateWithoutMarksheetsInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutMarksheetsInput = {
@@ -2640,6 +2960,538 @@ export type DivisionUncheckedUpdateWithoutMarksheetsInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionCreateWithoutSchoolTimetablesInput = {
+  id?: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
+  classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
+  standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionUncheckedCreateWithoutSchoolTimetablesInput = {
+  id?: string
+  standardId: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  classTeacherId?: string | null
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionCreateOrConnectWithoutSchoolTimetablesInput = {
+  where: Prisma.DivisionWhereUniqueInput
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutSchoolTimetablesInput, Prisma.DivisionUncheckedCreateWithoutSchoolTimetablesInput>
+}
+
+export type DivisionUpsertWithoutSchoolTimetablesInput = {
+  update: Prisma.XOR<Prisma.DivisionUpdateWithoutSchoolTimetablesInput, Prisma.DivisionUncheckedUpdateWithoutSchoolTimetablesInput>
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutSchoolTimetablesInput, Prisma.DivisionUncheckedCreateWithoutSchoolTimetablesInput>
+  where?: Prisma.DivisionWhereInput
+}
+
+export type DivisionUpdateToOneWithWhereWithoutSchoolTimetablesInput = {
+  where?: Prisma.DivisionWhereInput
+  data: Prisma.XOR<Prisma.DivisionUpdateWithoutSchoolTimetablesInput, Prisma.DivisionUncheckedUpdateWithoutSchoolTimetablesInput>
+}
+
+export type DivisionUpdateWithoutSchoolTimetablesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
+  classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionUncheckedUpdateWithoutSchoolTimetablesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionCreateWithoutTimetableConfigsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
+  classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
+  standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionUncheckedCreateWithoutTimetableConfigsInput = {
+  id?: string
+  standardId: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  classTeacherId?: string | null
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionCreateOrConnectWithoutTimetableConfigsInput = {
+  where: Prisma.DivisionWhereUniqueInput
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableConfigsInput, Prisma.DivisionUncheckedCreateWithoutTimetableConfigsInput>
+}
+
+export type DivisionUpsertWithoutTimetableConfigsInput = {
+  update: Prisma.XOR<Prisma.DivisionUpdateWithoutTimetableConfigsInput, Prisma.DivisionUncheckedUpdateWithoutTimetableConfigsInput>
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableConfigsInput, Prisma.DivisionUncheckedCreateWithoutTimetableConfigsInput>
+  where?: Prisma.DivisionWhereInput
+}
+
+export type DivisionUpdateToOneWithWhereWithoutTimetableConfigsInput = {
+  where?: Prisma.DivisionWhereInput
+  data: Prisma.XOR<Prisma.DivisionUpdateWithoutTimetableConfigsInput, Prisma.DivisionUncheckedUpdateWithoutTimetableConfigsInput>
+}
+
+export type DivisionUpdateWithoutTimetableConfigsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
+  classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionUncheckedUpdateWithoutTimetableConfigsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionCreateWithoutTimetableEntriesInput = {
+  id?: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
+  classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
+  standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionUncheckedCreateWithoutTimetableEntriesInput = {
+  id?: string
+  standardId: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  classTeacherId?: string | null
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionCreateOrConnectWithoutTimetableEntriesInput = {
+  where: Prisma.DivisionWhereUniqueInput
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableEntriesInput, Prisma.DivisionUncheckedCreateWithoutTimetableEntriesInput>
+}
+
+export type DivisionUpsertWithoutTimetableEntriesInput = {
+  update: Prisma.XOR<Prisma.DivisionUpdateWithoutTimetableEntriesInput, Prisma.DivisionUncheckedUpdateWithoutTimetableEntriesInput>
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableEntriesInput, Prisma.DivisionUncheckedCreateWithoutTimetableEntriesInput>
+  where?: Prisma.DivisionWhereInput
+}
+
+export type DivisionUpdateToOneWithWhereWithoutTimetableEntriesInput = {
+  where?: Prisma.DivisionWhereInput
+  data: Prisma.XOR<Prisma.DivisionUpdateWithoutTimetableEntriesInput, Prisma.DivisionUncheckedUpdateWithoutTimetableEntriesInput>
+}
+
+export type DivisionUpdateWithoutTimetableEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
+  classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionUncheckedUpdateWithoutTimetableEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionCreateWithoutTimetableExceptionsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
+  classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
+  standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionUncheckedCreateWithoutTimetableExceptionsInput = {
+  id?: string
+  standardId: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  classTeacherId?: string | null
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionCreateOrConnectWithoutTimetableExceptionsInput = {
+  where: Prisma.DivisionWhereUniqueInput
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableExceptionsInput, Prisma.DivisionUncheckedCreateWithoutTimetableExceptionsInput>
+}
+
+export type DivisionUpsertWithoutTimetableExceptionsInput = {
+  update: Prisma.XOR<Prisma.DivisionUpdateWithoutTimetableExceptionsInput, Prisma.DivisionUncheckedUpdateWithoutTimetableExceptionsInput>
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutTimetableExceptionsInput, Prisma.DivisionUncheckedCreateWithoutTimetableExceptionsInput>
+  where?: Prisma.DivisionWhereInput
+}
+
+export type DivisionUpdateToOneWithWhereWithoutTimetableExceptionsInput = {
+  where?: Prisma.DivisionWhereInput
+  data: Prisma.XOR<Prisma.DivisionUpdateWithoutTimetableExceptionsInput, Prisma.DivisionUncheckedUpdateWithoutTimetableExceptionsInput>
+}
+
+export type DivisionUpdateWithoutTimetableExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
+  classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionUncheckedUpdateWithoutTimetableExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateManyClassTeacherInput = {
@@ -2676,6 +3528,10 @@ export type DivisionUpdateWithoutClassTeacherInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutClassTeacherInput = {
@@ -2701,6 +3557,10 @@ export type DivisionUncheckedUpdateWithoutClassTeacherInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateManyWithoutClassTeacherInput = {
@@ -2748,6 +3608,10 @@ export type DivisionUpdateWithoutStandardInput = {
   taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateWithoutStandardInput = {
@@ -2773,6 +3637,10 @@ export type DivisionUncheckedUpdateWithoutStandardInput = {
   taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
   enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionUncheckedUpdateManyWithoutStandardInput = {
@@ -2806,6 +3674,10 @@ export type DivisionCountOutputType = {
   taskTests: number
   enrollments: number
   timetables: number
+  schoolTimetables: number
+  timetableConfigs: number
+  timetableEntries: number
+  timetableExceptions: number
 }
 
 export type DivisionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2823,6 +3695,10 @@ export type DivisionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   taskTests?: boolean | DivisionCountOutputTypeCountTaskTestsArgs
   enrollments?: boolean | DivisionCountOutputTypeCountEnrollmentsArgs
   timetables?: boolean | DivisionCountOutputTypeCountTimetablesArgs
+  schoolTimetables?: boolean | DivisionCountOutputTypeCountSchoolTimetablesArgs
+  timetableConfigs?: boolean | DivisionCountOutputTypeCountTimetableConfigsArgs
+  timetableEntries?: boolean | DivisionCountOutputTypeCountTimetableEntriesArgs
+  timetableExceptions?: boolean | DivisionCountOutputTypeCountTimetableExceptionsArgs
 }
 
 /**
@@ -2933,6 +3809,34 @@ export type DivisionCountOutputTypeCountTimetablesArgs<ExtArgs extends runtime.T
   where?: Prisma.DivisionTimetableWhereInput
 }
 
+/**
+ * DivisionCountOutputType without action
+ */
+export type DivisionCountOutputTypeCountSchoolTimetablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SchoolTimetableWhereInput
+}
+
+/**
+ * DivisionCountOutputType without action
+ */
+export type DivisionCountOutputTypeCountTimetableConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableSubjectConfigWhereInput
+}
+
+/**
+ * DivisionCountOutputType without action
+ */
+export type DivisionCountOutputTypeCountTimetableEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableEntryWhereInput
+}
+
+/**
+ * DivisionCountOutputType without action
+ */
+export type DivisionCountOutputTypeCountTimetableExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableExceptionWhereInput
+}
+
 
 export type DivisionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2960,6 +3864,10 @@ export type DivisionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   taskTests?: boolean | Prisma.Division$taskTestsArgs<ExtArgs>
   enrollments?: boolean | Prisma.Division$enrollmentsArgs<ExtArgs>
   timetables?: boolean | Prisma.Division$timetablesArgs<ExtArgs>
+  schoolTimetables?: boolean | Prisma.Division$schoolTimetablesArgs<ExtArgs>
+  timetableConfigs?: boolean | Prisma.Division$timetableConfigsArgs<ExtArgs>
+  timetableEntries?: boolean | Prisma.Division$timetableEntriesArgs<ExtArgs>
+  timetableExceptions?: boolean | Prisma.Division$timetableExceptionsArgs<ExtArgs>
   _count?: boolean | Prisma.DivisionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["division"]>
 
@@ -3021,6 +3929,10 @@ export type DivisionInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   taskTests?: boolean | Prisma.Division$taskTestsArgs<ExtArgs>
   enrollments?: boolean | Prisma.Division$enrollmentsArgs<ExtArgs>
   timetables?: boolean | Prisma.Division$timetablesArgs<ExtArgs>
+  schoolTimetables?: boolean | Prisma.Division$schoolTimetablesArgs<ExtArgs>
+  timetableConfigs?: boolean | Prisma.Division$timetableConfigsArgs<ExtArgs>
+  timetableEntries?: boolean | Prisma.Division$timetableEntriesArgs<ExtArgs>
+  timetableExceptions?: boolean | Prisma.Division$timetableExceptionsArgs<ExtArgs>
   _count?: boolean | Prisma.DivisionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DivisionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3051,6 +3963,10 @@ export type $DivisionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     taskTests: Prisma.$TaskTestPayload<ExtArgs>[]
     enrollments: Prisma.$StudentEnrollmentPayload<ExtArgs>[]
     timetables: Prisma.$DivisionTimetablePayload<ExtArgs>[]
+    schoolTimetables: Prisma.$SchoolTimetablePayload<ExtArgs>[]
+    timetableConfigs: Prisma.$TimetableSubjectConfigPayload<ExtArgs>[]
+    timetableEntries: Prisma.$TimetableEntryPayload<ExtArgs>[]
+    timetableExceptions: Prisma.$TimetableExceptionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3472,6 +4388,10 @@ export interface Prisma__DivisionClient<T, Null = never, ExtArgs extends runtime
   taskTests<T extends Prisma.Division$taskTestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$taskTestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   enrollments<T extends Prisma.Division$enrollmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentEnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timetables<T extends Prisma.Division$timetablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$timetablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionTimetablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  schoolTimetables<T extends Prisma.Division$schoolTimetablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$schoolTimetablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SchoolTimetablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableConfigs<T extends Prisma.Division$timetableConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$timetableConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableSubjectConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableEntries<T extends Prisma.Division$timetableEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$timetableEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableExceptions<T extends Prisma.Division$timetableExceptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$timetableExceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4263,6 +5183,102 @@ export type Division$timetablesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.DivisionTimetableScalarFieldEnum | Prisma.DivisionTimetableScalarFieldEnum[]
+}
+
+/**
+ * Division.schoolTimetables
+ */
+export type Division$schoolTimetablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SchoolTimetable
+   */
+  select?: Prisma.SchoolTimetableSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SchoolTimetable
+   */
+  omit?: Prisma.SchoolTimetableOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SchoolTimetableInclude<ExtArgs> | null
+  where?: Prisma.SchoolTimetableWhereInput
+  orderBy?: Prisma.SchoolTimetableOrderByWithRelationInput | Prisma.SchoolTimetableOrderByWithRelationInput[]
+  cursor?: Prisma.SchoolTimetableWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SchoolTimetableScalarFieldEnum | Prisma.SchoolTimetableScalarFieldEnum[]
+}
+
+/**
+ * Division.timetableConfigs
+ */
+export type Division$timetableConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableSubjectConfig
+   */
+  select?: Prisma.TimetableSubjectConfigSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableSubjectConfig
+   */
+  omit?: Prisma.TimetableSubjectConfigOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableSubjectConfigInclude<ExtArgs> | null
+  where?: Prisma.TimetableSubjectConfigWhereInput
+  orderBy?: Prisma.TimetableSubjectConfigOrderByWithRelationInput | Prisma.TimetableSubjectConfigOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableSubjectConfigWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableSubjectConfigScalarFieldEnum | Prisma.TimetableSubjectConfigScalarFieldEnum[]
+}
+
+/**
+ * Division.timetableEntries
+ */
+export type Division$timetableEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableEntry
+   */
+  select?: Prisma.TimetableEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableEntry
+   */
+  omit?: Prisma.TimetableEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableEntryInclude<ExtArgs> | null
+  where?: Prisma.TimetableEntryWhereInput
+  orderBy?: Prisma.TimetableEntryOrderByWithRelationInput | Prisma.TimetableEntryOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableEntryScalarFieldEnum | Prisma.TimetableEntryScalarFieldEnum[]
+}
+
+/**
+ * Division.timetableExceptions
+ */
+export type Division$timetableExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableException
+   */
+  select?: Prisma.TimetableExceptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableException
+   */
+  omit?: Prisma.TimetableExceptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableExceptionInclude<ExtArgs> | null
+  where?: Prisma.TimetableExceptionWhereInput
+  orderBy?: Prisma.TimetableExceptionOrderByWithRelationInput | Prisma.TimetableExceptionOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableExceptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableExceptionScalarFieldEnum | Prisma.TimetableExceptionScalarFieldEnum[]
 }
 
 /**

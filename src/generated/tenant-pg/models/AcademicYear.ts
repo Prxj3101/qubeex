@@ -211,6 +211,17 @@ export type AcademicYearWhereInput = {
   attendances?: Prisma.AttendanceListRelationFilter
   feeStructures?: Prisma.DivisionFeeStructureListRelationFilter
   timetables?: Prisma.DivisionTimetableListRelationFilter
+  timetableSettings?: Prisma.TimetableSettingsListRelationFilter
+  timeSlots?: Prisma.TimeSlotListRelationFilter
+  roomUnavailability?: Prisma.RoomUnavailabilityListRelationFilter
+  teacherAvailability?: Prisma.TeacherAvailabilityListRelationFilter
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefListRelationFilter
+  schoolTimetables?: Prisma.SchoolTimetableListRelationFilter
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigListRelationFilter
+  timetableEntries?: Prisma.TimetableEntryListRelationFilter
+  timetableExceptions?: Prisma.TimetableExceptionListRelationFilter
+  timetableSubstitutions?: Prisma.TimetableSubstitutionListRelationFilter
+  timetableGenerations?: Prisma.TimetableGenerationListRelationFilter
   marksheets?: Prisma.MarksheetListRelationFilter
   promotionBatches?: Prisma.PromotionBatchListRelationFilter
 }
@@ -229,6 +240,17 @@ export type AcademicYearOrderByWithRelationInput = {
   attendances?: Prisma.AttendanceOrderByRelationAggregateInput
   feeStructures?: Prisma.DivisionFeeStructureOrderByRelationAggregateInput
   timetables?: Prisma.DivisionTimetableOrderByRelationAggregateInput
+  timetableSettings?: Prisma.TimetableSettingsOrderByRelationAggregateInput
+  timeSlots?: Prisma.TimeSlotOrderByRelationAggregateInput
+  roomUnavailability?: Prisma.RoomUnavailabilityOrderByRelationAggregateInput
+  teacherAvailability?: Prisma.TeacherAvailabilityOrderByRelationAggregateInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefOrderByRelationAggregateInput
+  schoolTimetables?: Prisma.SchoolTimetableOrderByRelationAggregateInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigOrderByRelationAggregateInput
+  timetableEntries?: Prisma.TimetableEntryOrderByRelationAggregateInput
+  timetableExceptions?: Prisma.TimetableExceptionOrderByRelationAggregateInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionOrderByRelationAggregateInput
+  timetableGenerations?: Prisma.TimetableGenerationOrderByRelationAggregateInput
   marksheets?: Prisma.MarksheetOrderByRelationAggregateInput
   promotionBatches?: Prisma.PromotionBatchOrderByRelationAggregateInput
 }
@@ -251,6 +273,17 @@ export type AcademicYearWhereUniqueInput = Prisma.AtLeast<{
   attendances?: Prisma.AttendanceListRelationFilter
   feeStructures?: Prisma.DivisionFeeStructureListRelationFilter
   timetables?: Prisma.DivisionTimetableListRelationFilter
+  timetableSettings?: Prisma.TimetableSettingsListRelationFilter
+  timeSlots?: Prisma.TimeSlotListRelationFilter
+  roomUnavailability?: Prisma.RoomUnavailabilityListRelationFilter
+  teacherAvailability?: Prisma.TeacherAvailabilityListRelationFilter
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefListRelationFilter
+  schoolTimetables?: Prisma.SchoolTimetableListRelationFilter
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigListRelationFilter
+  timetableEntries?: Prisma.TimetableEntryListRelationFilter
+  timetableExceptions?: Prisma.TimetableExceptionListRelationFilter
+  timetableSubstitutions?: Prisma.TimetableSubstitutionListRelationFilter
+  timetableGenerations?: Prisma.TimetableGenerationListRelationFilter
   marksheets?: Prisma.MarksheetListRelationFilter
   promotionBatches?: Prisma.PromotionBatchListRelationFilter
 }, "id" | "institutionId_label">
@@ -297,6 +330,17 @@ export type AcademicYearCreateInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
@@ -315,6 +359,17 @@ export type AcademicYearUncheckedCreateInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
@@ -333,6 +388,17 @@ export type AcademicYearUpdateInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
@@ -351,6 +417,17 @@ export type AcademicYearUncheckedUpdateInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
@@ -533,6 +610,160 @@ export type AcademicYearUpdateOneRequiredWithoutMarksheetsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutMarksheetsInput, Prisma.AcademicYearUpdateWithoutMarksheetsInput>, Prisma.AcademicYearUncheckedUpdateWithoutMarksheetsInput>
 }
 
+export type AcademicYearCreateNestedOneWithoutTimetableSettingsInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSettingsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSettingsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableSettingsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTimetableSettingsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSettingsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSettingsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableSettingsInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTimetableSettingsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTimetableSettingsInput, Prisma.AcademicYearUpdateWithoutTimetableSettingsInput>, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSettingsInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutTimeSlotsInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimeSlotsInput, Prisma.AcademicYearUncheckedCreateWithoutTimeSlotsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimeSlotsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTimeSlotsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimeSlotsInput, Prisma.AcademicYearUncheckedCreateWithoutTimeSlotsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimeSlotsInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTimeSlotsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTimeSlotsInput, Prisma.AcademicYearUpdateWithoutTimeSlotsInput>, Prisma.AcademicYearUncheckedUpdateWithoutTimeSlotsInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutRoomUnavailabilityInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutRoomUnavailabilityInput, Prisma.AcademicYearUncheckedCreateWithoutRoomUnavailabilityInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutRoomUnavailabilityInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutRoomUnavailabilityNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutRoomUnavailabilityInput, Prisma.AcademicYearUncheckedCreateWithoutRoomUnavailabilityInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutRoomUnavailabilityInput
+  upsert?: Prisma.AcademicYearUpsertWithoutRoomUnavailabilityInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutRoomUnavailabilityInput, Prisma.AcademicYearUpdateWithoutRoomUnavailabilityInput>, Prisma.AcademicYearUncheckedUpdateWithoutRoomUnavailabilityInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutTeacherAvailabilityInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTeacherAvailabilityInput, Prisma.AcademicYearUncheckedCreateWithoutTeacherAvailabilityInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTeacherAvailabilityInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTeacherAvailabilityNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTeacherAvailabilityInput, Prisma.AcademicYearUncheckedCreateWithoutTeacherAvailabilityInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTeacherAvailabilityInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTeacherAvailabilityInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTeacherAvailabilityInput, Prisma.AcademicYearUpdateWithoutTeacherAvailabilityInput>, Prisma.AcademicYearUncheckedUpdateWithoutTeacherAvailabilityInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutTeacherTimetablePrefsInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTeacherTimetablePrefsInput, Prisma.AcademicYearUncheckedCreateWithoutTeacherTimetablePrefsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTeacherTimetablePrefsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTeacherTimetablePrefsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTeacherTimetablePrefsInput, Prisma.AcademicYearUncheckedCreateWithoutTeacherTimetablePrefsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTeacherTimetablePrefsInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTeacherTimetablePrefsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTeacherTimetablePrefsInput, Prisma.AcademicYearUpdateWithoutTeacherTimetablePrefsInput>, Prisma.AcademicYearUncheckedUpdateWithoutTeacherTimetablePrefsInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutSchoolTimetablesInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutSchoolTimetablesInput, Prisma.AcademicYearUncheckedCreateWithoutSchoolTimetablesInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutSchoolTimetablesInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutSchoolTimetablesNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutSchoolTimetablesInput, Prisma.AcademicYearUncheckedCreateWithoutSchoolTimetablesInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutSchoolTimetablesInput
+  upsert?: Prisma.AcademicYearUpsertWithoutSchoolTimetablesInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutSchoolTimetablesInput, Prisma.AcademicYearUpdateWithoutSchoolTimetablesInput>, Prisma.AcademicYearUncheckedUpdateWithoutSchoolTimetablesInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutTimetableSubjectConfigsInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSubjectConfigsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSubjectConfigsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableSubjectConfigsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTimetableSubjectConfigsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSubjectConfigsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSubjectConfigsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableSubjectConfigsInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTimetableSubjectConfigsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTimetableSubjectConfigsInput, Prisma.AcademicYearUpdateWithoutTimetableSubjectConfigsInput>, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSubjectConfigsInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutTimetableEntriesInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableEntriesInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableEntriesInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableEntriesInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTimetableEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableEntriesInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableEntriesInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableEntriesInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTimetableEntriesInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTimetableEntriesInput, Prisma.AcademicYearUpdateWithoutTimetableEntriesInput>, Prisma.AcademicYearUncheckedUpdateWithoutTimetableEntriesInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutTimetableExceptionsInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableExceptionsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableExceptionsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableExceptionsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTimetableExceptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableExceptionsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableExceptionsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableExceptionsInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTimetableExceptionsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTimetableExceptionsInput, Prisma.AcademicYearUpdateWithoutTimetableExceptionsInput>, Prisma.AcademicYearUncheckedUpdateWithoutTimetableExceptionsInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutTimetableSubstitutionsInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSubstitutionsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSubstitutionsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableSubstitutionsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTimetableSubstitutionsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSubstitutionsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSubstitutionsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableSubstitutionsInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTimetableSubstitutionsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTimetableSubstitutionsInput, Prisma.AcademicYearUpdateWithoutTimetableSubstitutionsInput>, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSubstitutionsInput>
+}
+
+export type AcademicYearCreateNestedOneWithoutTimetableGenerationsInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableGenerationsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableGenerationsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableGenerationsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+}
+
+export type AcademicYearUpdateOneRequiredWithoutTimetableGenerationsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableGenerationsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableGenerationsInput>
+  connectOrCreate?: Prisma.AcademicYearCreateOrConnectWithoutTimetableGenerationsInput
+  upsert?: Prisma.AcademicYearUpsertWithoutTimetableGenerationsInput
+  connect?: Prisma.AcademicYearWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicYearUpdateToOneWithWhereWithoutTimetableGenerationsInput, Prisma.AcademicYearUpdateWithoutTimetableGenerationsInput>, Prisma.AcademicYearUncheckedUpdateWithoutTimetableGenerationsInput>
+}
+
 export type AcademicYearCreateWithoutDivisionAssignmentsInput = {
   id?: string
   institutionId: string
@@ -546,6 +777,17 @@ export type AcademicYearCreateWithoutDivisionAssignmentsInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
@@ -563,6 +805,17 @@ export type AcademicYearUncheckedCreateWithoutDivisionAssignmentsInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
@@ -596,6 +849,17 @@ export type AcademicYearUpdateWithoutDivisionAssignmentsInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
@@ -613,6 +877,17 @@ export type AcademicYearUncheckedUpdateWithoutDivisionAssignmentsInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
@@ -630,6 +905,17 @@ export type AcademicYearCreateWithoutStudentEnrollmentsInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
@@ -647,6 +933,17 @@ export type AcademicYearUncheckedCreateWithoutStudentEnrollmentsInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
@@ -680,6 +977,17 @@ export type AcademicYearUpdateWithoutStudentEnrollmentsInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
@@ -697,6 +1005,17 @@ export type AcademicYearUncheckedUpdateWithoutStudentEnrollmentsInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
@@ -714,6 +1033,17 @@ export type AcademicYearCreateWithoutTimetablesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
@@ -731,6 +1061,17 @@ export type AcademicYearUncheckedCreateWithoutTimetablesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
@@ -764,6 +1105,17 @@ export type AcademicYearUpdateWithoutTimetablesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
@@ -781,6 +1133,17 @@ export type AcademicYearUncheckedUpdateWithoutTimetablesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
@@ -799,6 +1162,17 @@ export type AcademicYearCreateWithoutPromotionBatchesInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
 }
 
@@ -816,6 +1190,17 @@ export type AcademicYearUncheckedCreateWithoutPromotionBatchesInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
@@ -849,6 +1234,17 @@ export type AcademicYearUpdateWithoutPromotionBatchesInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
 }
 
@@ -866,6 +1262,17 @@ export type AcademicYearUncheckedUpdateWithoutPromotionBatchesInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
@@ -882,6 +1289,17 @@ export type AcademicYearCreateWithoutAttendancesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
@@ -899,6 +1317,17 @@ export type AcademicYearUncheckedCreateWithoutAttendancesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
@@ -932,6 +1361,17 @@ export type AcademicYearUpdateWithoutAttendancesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
@@ -949,6 +1389,17 @@ export type AcademicYearUncheckedUpdateWithoutAttendancesInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
@@ -966,6 +1417,17 @@ export type AcademicYearCreateWithoutFeeStructuresInput = {
   divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
@@ -983,6 +1445,17 @@ export type AcademicYearUncheckedCreateWithoutFeeStructuresInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
   marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
@@ -1016,6 +1489,17 @@ export type AcademicYearUpdateWithoutFeeStructuresInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
@@ -1033,6 +1517,17 @@ export type AcademicYearUncheckedUpdateWithoutFeeStructuresInput = {
   divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
   marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
@@ -1051,6 +1546,17 @@ export type AcademicYearCreateWithoutMarksheetsInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
 }
 
@@ -1068,6 +1574,17 @@ export type AcademicYearUncheckedCreateWithoutMarksheetsInput = {
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
   timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
   promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
 }
 
@@ -1101,6 +1618,17 @@ export type AcademicYearUpdateWithoutMarksheetsInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
 }
 
@@ -1118,6 +1646,1425 @@ export type AcademicYearUncheckedUpdateWithoutMarksheetsInput = {
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
   timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTimetableSettingsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTimetableSettingsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTimetableSettingsInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSettingsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSettingsInput>
+}
+
+export type AcademicYearUpsertWithoutTimetableSettingsInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableSettingsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSettingsInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSettingsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSettingsInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTimetableSettingsInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableSettingsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSettingsInput>
+}
+
+export type AcademicYearUpdateWithoutTimetableSettingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTimetableSettingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTimeSlotsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTimeSlotsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTimeSlotsInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimeSlotsInput, Prisma.AcademicYearUncheckedCreateWithoutTimeSlotsInput>
+}
+
+export type AcademicYearUpsertWithoutTimeSlotsInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimeSlotsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimeSlotsInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimeSlotsInput, Prisma.AcademicYearUncheckedCreateWithoutTimeSlotsInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTimeSlotsInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimeSlotsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimeSlotsInput>
+}
+
+export type AcademicYearUpdateWithoutTimeSlotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTimeSlotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutRoomUnavailabilityInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutRoomUnavailabilityInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutRoomUnavailabilityInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutRoomUnavailabilityInput, Prisma.AcademicYearUncheckedCreateWithoutRoomUnavailabilityInput>
+}
+
+export type AcademicYearUpsertWithoutRoomUnavailabilityInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutRoomUnavailabilityInput, Prisma.AcademicYearUncheckedUpdateWithoutRoomUnavailabilityInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutRoomUnavailabilityInput, Prisma.AcademicYearUncheckedCreateWithoutRoomUnavailabilityInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutRoomUnavailabilityInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutRoomUnavailabilityInput, Prisma.AcademicYearUncheckedUpdateWithoutRoomUnavailabilityInput>
+}
+
+export type AcademicYearUpdateWithoutRoomUnavailabilityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutRoomUnavailabilityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTeacherAvailabilityInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTeacherAvailabilityInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTeacherAvailabilityInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTeacherAvailabilityInput, Prisma.AcademicYearUncheckedCreateWithoutTeacherAvailabilityInput>
+}
+
+export type AcademicYearUpsertWithoutTeacherAvailabilityInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTeacherAvailabilityInput, Prisma.AcademicYearUncheckedUpdateWithoutTeacherAvailabilityInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTeacherAvailabilityInput, Prisma.AcademicYearUncheckedCreateWithoutTeacherAvailabilityInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTeacherAvailabilityInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTeacherAvailabilityInput, Prisma.AcademicYearUncheckedUpdateWithoutTeacherAvailabilityInput>
+}
+
+export type AcademicYearUpdateWithoutTeacherAvailabilityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTeacherAvailabilityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTeacherTimetablePrefsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTeacherTimetablePrefsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTeacherTimetablePrefsInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTeacherTimetablePrefsInput, Prisma.AcademicYearUncheckedCreateWithoutTeacherTimetablePrefsInput>
+}
+
+export type AcademicYearUpsertWithoutTeacherTimetablePrefsInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTeacherTimetablePrefsInput, Prisma.AcademicYearUncheckedUpdateWithoutTeacherTimetablePrefsInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTeacherTimetablePrefsInput, Prisma.AcademicYearUncheckedCreateWithoutTeacherTimetablePrefsInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTeacherTimetablePrefsInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTeacherTimetablePrefsInput, Prisma.AcademicYearUncheckedUpdateWithoutTeacherTimetablePrefsInput>
+}
+
+export type AcademicYearUpdateWithoutTeacherTimetablePrefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTeacherTimetablePrefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutSchoolTimetablesInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutSchoolTimetablesInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutSchoolTimetablesInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutSchoolTimetablesInput, Prisma.AcademicYearUncheckedCreateWithoutSchoolTimetablesInput>
+}
+
+export type AcademicYearUpsertWithoutSchoolTimetablesInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutSchoolTimetablesInput, Prisma.AcademicYearUncheckedUpdateWithoutSchoolTimetablesInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutSchoolTimetablesInput, Prisma.AcademicYearUncheckedCreateWithoutSchoolTimetablesInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutSchoolTimetablesInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutSchoolTimetablesInput, Prisma.AcademicYearUncheckedUpdateWithoutSchoolTimetablesInput>
+}
+
+export type AcademicYearUpdateWithoutSchoolTimetablesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutSchoolTimetablesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTimetableSubjectConfigsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTimetableSubjectConfigsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTimetableSubjectConfigsInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSubjectConfigsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSubjectConfigsInput>
+}
+
+export type AcademicYearUpsertWithoutTimetableSubjectConfigsInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableSubjectConfigsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSubjectConfigsInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSubjectConfigsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSubjectConfigsInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTimetableSubjectConfigsInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableSubjectConfigsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSubjectConfigsInput>
+}
+
+export type AcademicYearUpdateWithoutTimetableSubjectConfigsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTimetableSubjectConfigsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTimetableEntriesInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTimetableEntriesInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTimetableEntriesInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableEntriesInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableEntriesInput>
+}
+
+export type AcademicYearUpsertWithoutTimetableEntriesInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableEntriesInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableEntriesInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableEntriesInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableEntriesInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTimetableEntriesInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableEntriesInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableEntriesInput>
+}
+
+export type AcademicYearUpdateWithoutTimetableEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTimetableEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTimetableExceptionsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTimetableExceptionsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTimetableExceptionsInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableExceptionsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableExceptionsInput>
+}
+
+export type AcademicYearUpsertWithoutTimetableExceptionsInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableExceptionsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableExceptionsInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableExceptionsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableExceptionsInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTimetableExceptionsInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableExceptionsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableExceptionsInput>
+}
+
+export type AcademicYearUpdateWithoutTimetableExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTimetableExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTimetableSubstitutionsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTimetableSubstitutionsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTimetableSubstitutionsInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSubstitutionsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSubstitutionsInput>
+}
+
+export type AcademicYearUpsertWithoutTimetableSubstitutionsInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableSubstitutionsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSubstitutionsInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableSubstitutionsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableSubstitutionsInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTimetableSubstitutionsInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableSubstitutionsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableSubstitutionsInput>
+}
+
+export type AcademicYearUpdateWithoutTimetableSubstitutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTimetableSubstitutionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableGenerations?: Prisma.TimetableGenerationUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearCreateWithoutTimetableGenerationsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearUncheckedCreateWithoutTimetableGenerationsInput = {
+  id?: string
+  institutionId: string
+  label: string
+  startDate: Date | string
+  endDate: Date | string
+  status?: $Enums.AcademicYearStatus
+  isCurrent?: boolean
+  createdAt?: Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutAcademicYearInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutAcademicYearInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedCreateNestedManyWithoutAcademicYearInput
+  timeSlots?: Prisma.TimeSlotUncheckedCreateNestedManyWithoutAcademicYearInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutAcademicYearInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutAcademicYearInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutAcademicYearInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutAcademicYearInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutAcademicYearInput
+  promotionBatches?: Prisma.PromotionBatchUncheckedCreateNestedManyWithoutAcademicYearInput
+}
+
+export type AcademicYearCreateOrConnectWithoutTimetableGenerationsInput = {
+  where: Prisma.AcademicYearWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableGenerationsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableGenerationsInput>
+}
+
+export type AcademicYearUpsertWithoutTimetableGenerationsInput = {
+  update: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableGenerationsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableGenerationsInput>
+  create: Prisma.XOR<Prisma.AcademicYearCreateWithoutTimetableGenerationsInput, Prisma.AcademicYearUncheckedCreateWithoutTimetableGenerationsInput>
+  where?: Prisma.AcademicYearWhereInput
+}
+
+export type AcademicYearUpdateToOneWithWhereWithoutTimetableGenerationsInput = {
+  where?: Prisma.AcademicYearWhereInput
+  data: Prisma.XOR<Prisma.AcademicYearUpdateWithoutTimetableGenerationsInput, Prisma.AcademicYearUncheckedUpdateWithoutTimetableGenerationsInput>
+}
+
+export type AcademicYearUpdateWithoutTimetableGenerationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutAcademicYearNestedInput
+  promotionBatches?: Prisma.PromotionBatchUpdateManyWithoutAcademicYearNestedInput
+}
+
+export type AcademicYearUncheckedUpdateWithoutTimetableGenerationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumAcademicYearStatusFieldUpdateOperationsInput | $Enums.AcademicYearStatus
+  isCurrent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  studentEnrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  divisionAssignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutAcademicYearNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutAcademicYearNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSettings?: Prisma.TimetableSettingsUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timeSlots?: Prisma.TimeSlotUncheckedUpdateManyWithoutAcademicYearNestedInput
+  roomUnavailability?: Prisma.RoomUnavailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutAcademicYearNestedInput
+  teacherTimetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutAcademicYearNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubjectConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  timetableSubstitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutAcademicYearNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutAcademicYearNestedInput
   promotionBatches?: Prisma.PromotionBatchUncheckedUpdateManyWithoutAcademicYearNestedInput
 }
 
@@ -1132,6 +3079,17 @@ export type AcademicYearCountOutputType = {
   attendances: number
   feeStructures: number
   timetables: number
+  timetableSettings: number
+  timeSlots: number
+  roomUnavailability: number
+  teacherAvailability: number
+  teacherTimetablePrefs: number
+  schoolTimetables: number
+  timetableSubjectConfigs: number
+  timetableEntries: number
+  timetableExceptions: number
+  timetableSubstitutions: number
+  timetableGenerations: number
   marksheets: number
   promotionBatches: number
 }
@@ -1142,6 +3100,17 @@ export type AcademicYearCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   attendances?: boolean | AcademicYearCountOutputTypeCountAttendancesArgs
   feeStructures?: boolean | AcademicYearCountOutputTypeCountFeeStructuresArgs
   timetables?: boolean | AcademicYearCountOutputTypeCountTimetablesArgs
+  timetableSettings?: boolean | AcademicYearCountOutputTypeCountTimetableSettingsArgs
+  timeSlots?: boolean | AcademicYearCountOutputTypeCountTimeSlotsArgs
+  roomUnavailability?: boolean | AcademicYearCountOutputTypeCountRoomUnavailabilityArgs
+  teacherAvailability?: boolean | AcademicYearCountOutputTypeCountTeacherAvailabilityArgs
+  teacherTimetablePrefs?: boolean | AcademicYearCountOutputTypeCountTeacherTimetablePrefsArgs
+  schoolTimetables?: boolean | AcademicYearCountOutputTypeCountSchoolTimetablesArgs
+  timetableSubjectConfigs?: boolean | AcademicYearCountOutputTypeCountTimetableSubjectConfigsArgs
+  timetableEntries?: boolean | AcademicYearCountOutputTypeCountTimetableEntriesArgs
+  timetableExceptions?: boolean | AcademicYearCountOutputTypeCountTimetableExceptionsArgs
+  timetableSubstitutions?: boolean | AcademicYearCountOutputTypeCountTimetableSubstitutionsArgs
+  timetableGenerations?: boolean | AcademicYearCountOutputTypeCountTimetableGenerationsArgs
   marksheets?: boolean | AcademicYearCountOutputTypeCountMarksheetsArgs
   promotionBatches?: boolean | AcademicYearCountOutputTypeCountPromotionBatchesArgs
 }
@@ -1194,6 +3163,83 @@ export type AcademicYearCountOutputTypeCountTimetablesArgs<ExtArgs extends runti
 /**
  * AcademicYearCountOutputType without action
  */
+export type AcademicYearCountOutputTypeCountTimetableSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableSettingsWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountTimeSlotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimeSlotWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountRoomUnavailabilityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RoomUnavailabilityWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountTeacherAvailabilityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TeacherAvailabilityWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountTeacherTimetablePrefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TeacherTimetablePrefWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountSchoolTimetablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SchoolTimetableWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountTimetableSubjectConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableSubjectConfigWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountTimetableEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableEntryWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountTimetableExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableExceptionWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountTimetableSubstitutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableSubstitutionWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
+export type AcademicYearCountOutputTypeCountTimetableGenerationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableGenerationWhereInput
+}
+
+/**
+ * AcademicYearCountOutputType without action
+ */
 export type AcademicYearCountOutputTypeCountMarksheetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MarksheetWhereInput
 }
@@ -1220,6 +3266,17 @@ export type AcademicYearSelect<ExtArgs extends runtime.Types.Extensions.Internal
   attendances?: boolean | Prisma.AcademicYear$attendancesArgs<ExtArgs>
   feeStructures?: boolean | Prisma.AcademicYear$feeStructuresArgs<ExtArgs>
   timetables?: boolean | Prisma.AcademicYear$timetablesArgs<ExtArgs>
+  timetableSettings?: boolean | Prisma.AcademicYear$timetableSettingsArgs<ExtArgs>
+  timeSlots?: boolean | Prisma.AcademicYear$timeSlotsArgs<ExtArgs>
+  roomUnavailability?: boolean | Prisma.AcademicYear$roomUnavailabilityArgs<ExtArgs>
+  teacherAvailability?: boolean | Prisma.AcademicYear$teacherAvailabilityArgs<ExtArgs>
+  teacherTimetablePrefs?: boolean | Prisma.AcademicYear$teacherTimetablePrefsArgs<ExtArgs>
+  schoolTimetables?: boolean | Prisma.AcademicYear$schoolTimetablesArgs<ExtArgs>
+  timetableSubjectConfigs?: boolean | Prisma.AcademicYear$timetableSubjectConfigsArgs<ExtArgs>
+  timetableEntries?: boolean | Prisma.AcademicYear$timetableEntriesArgs<ExtArgs>
+  timetableExceptions?: boolean | Prisma.AcademicYear$timetableExceptionsArgs<ExtArgs>
+  timetableSubstitutions?: boolean | Prisma.AcademicYear$timetableSubstitutionsArgs<ExtArgs>
+  timetableGenerations?: boolean | Prisma.AcademicYear$timetableGenerationsArgs<ExtArgs>
   marksheets?: boolean | Prisma.AcademicYear$marksheetsArgs<ExtArgs>
   promotionBatches?: boolean | Prisma.AcademicYear$promotionBatchesArgs<ExtArgs>
   _count?: boolean | Prisma.AcademicYearCountOutputTypeDefaultArgs<ExtArgs>
@@ -1265,6 +3322,17 @@ export type AcademicYearInclude<ExtArgs extends runtime.Types.Extensions.Interna
   attendances?: boolean | Prisma.AcademicYear$attendancesArgs<ExtArgs>
   feeStructures?: boolean | Prisma.AcademicYear$feeStructuresArgs<ExtArgs>
   timetables?: boolean | Prisma.AcademicYear$timetablesArgs<ExtArgs>
+  timetableSettings?: boolean | Prisma.AcademicYear$timetableSettingsArgs<ExtArgs>
+  timeSlots?: boolean | Prisma.AcademicYear$timeSlotsArgs<ExtArgs>
+  roomUnavailability?: boolean | Prisma.AcademicYear$roomUnavailabilityArgs<ExtArgs>
+  teacherAvailability?: boolean | Prisma.AcademicYear$teacherAvailabilityArgs<ExtArgs>
+  teacherTimetablePrefs?: boolean | Prisma.AcademicYear$teacherTimetablePrefsArgs<ExtArgs>
+  schoolTimetables?: boolean | Prisma.AcademicYear$schoolTimetablesArgs<ExtArgs>
+  timetableSubjectConfigs?: boolean | Prisma.AcademicYear$timetableSubjectConfigsArgs<ExtArgs>
+  timetableEntries?: boolean | Prisma.AcademicYear$timetableEntriesArgs<ExtArgs>
+  timetableExceptions?: boolean | Prisma.AcademicYear$timetableExceptionsArgs<ExtArgs>
+  timetableSubstitutions?: boolean | Prisma.AcademicYear$timetableSubstitutionsArgs<ExtArgs>
+  timetableGenerations?: boolean | Prisma.AcademicYear$timetableGenerationsArgs<ExtArgs>
   marksheets?: boolean | Prisma.AcademicYear$marksheetsArgs<ExtArgs>
   promotionBatches?: boolean | Prisma.AcademicYear$promotionBatchesArgs<ExtArgs>
   _count?: boolean | Prisma.AcademicYearCountOutputTypeDefaultArgs<ExtArgs>
@@ -1280,6 +3348,17 @@ export type $AcademicYearPayload<ExtArgs extends runtime.Types.Extensions.Intern
     attendances: Prisma.$AttendancePayload<ExtArgs>[]
     feeStructures: Prisma.$DivisionFeeStructurePayload<ExtArgs>[]
     timetables: Prisma.$DivisionTimetablePayload<ExtArgs>[]
+    timetableSettings: Prisma.$TimetableSettingsPayload<ExtArgs>[]
+    timeSlots: Prisma.$TimeSlotPayload<ExtArgs>[]
+    roomUnavailability: Prisma.$RoomUnavailabilityPayload<ExtArgs>[]
+    teacherAvailability: Prisma.$TeacherAvailabilityPayload<ExtArgs>[]
+    teacherTimetablePrefs: Prisma.$TeacherTimetablePrefPayload<ExtArgs>[]
+    schoolTimetables: Prisma.$SchoolTimetablePayload<ExtArgs>[]
+    timetableSubjectConfigs: Prisma.$TimetableSubjectConfigPayload<ExtArgs>[]
+    timetableEntries: Prisma.$TimetableEntryPayload<ExtArgs>[]
+    timetableExceptions: Prisma.$TimetableExceptionPayload<ExtArgs>[]
+    timetableSubstitutions: Prisma.$TimetableSubstitutionPayload<ExtArgs>[]
+    timetableGenerations: Prisma.$TimetableGenerationPayload<ExtArgs>[]
     marksheets: Prisma.$MarksheetPayload<ExtArgs>[]
     promotionBatches: Prisma.$PromotionBatchPayload<ExtArgs>[]
   }
@@ -1691,6 +3770,17 @@ export interface Prisma__AcademicYearClient<T, Null = never, ExtArgs extends run
   attendances<T extends Prisma.AcademicYear$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   feeStructures<T extends Prisma.AcademicYear$feeStructuresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$feeStructuresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionFeeStructurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timetables<T extends Prisma.AcademicYear$timetablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$timetablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionTimetablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableSettings<T extends Prisma.AcademicYear$timetableSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$timetableSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timeSlots<T extends Prisma.AcademicYear$timeSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$timeSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimeSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  roomUnavailability<T extends Prisma.AcademicYear$roomUnavailabilityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$roomUnavailabilityArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomUnavailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  teacherAvailability<T extends Prisma.AcademicYear$teacherAvailabilityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$teacherAvailabilityArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherAvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  teacherTimetablePrefs<T extends Prisma.AcademicYear$teacherTimetablePrefsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$teacherTimetablePrefsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherTimetablePrefPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  schoolTimetables<T extends Prisma.AcademicYear$schoolTimetablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$schoolTimetablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SchoolTimetablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableSubjectConfigs<T extends Prisma.AcademicYear$timetableSubjectConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$timetableSubjectConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableSubjectConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableEntries<T extends Prisma.AcademicYear$timetableEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$timetableEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableExceptions<T extends Prisma.AcademicYear$timetableExceptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$timetableExceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableSubstitutions<T extends Prisma.AcademicYear$timetableSubstitutionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$timetableSubstitutionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableSubstitutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableGenerations<T extends Prisma.AcademicYear$timetableGenerationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$timetableGenerationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableGenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marksheets<T extends Prisma.AcademicYear$marksheetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$marksheetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   promotionBatches<T extends Prisma.AcademicYear$promotionBatchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYear$promotionBatchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionBatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2240,6 +4330,270 @@ export type AcademicYear$timetablesArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.DivisionTimetableScalarFieldEnum | Prisma.DivisionTimetableScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.timetableSettings
+ */
+export type AcademicYear$timetableSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableSettings
+   */
+  select?: Prisma.TimetableSettingsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableSettings
+   */
+  omit?: Prisma.TimetableSettingsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableSettingsInclude<ExtArgs> | null
+  where?: Prisma.TimetableSettingsWhereInput
+  orderBy?: Prisma.TimetableSettingsOrderByWithRelationInput | Prisma.TimetableSettingsOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableSettingsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableSettingsScalarFieldEnum | Prisma.TimetableSettingsScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.timeSlots
+ */
+export type AcademicYear$timeSlotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimeSlot
+   */
+  select?: Prisma.TimeSlotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimeSlot
+   */
+  omit?: Prisma.TimeSlotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimeSlotInclude<ExtArgs> | null
+  where?: Prisma.TimeSlotWhereInput
+  orderBy?: Prisma.TimeSlotOrderByWithRelationInput | Prisma.TimeSlotOrderByWithRelationInput[]
+  cursor?: Prisma.TimeSlotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimeSlotScalarFieldEnum | Prisma.TimeSlotScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.roomUnavailability
+ */
+export type AcademicYear$roomUnavailabilityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RoomUnavailability
+   */
+  select?: Prisma.RoomUnavailabilitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RoomUnavailability
+   */
+  omit?: Prisma.RoomUnavailabilityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RoomUnavailabilityInclude<ExtArgs> | null
+  where?: Prisma.RoomUnavailabilityWhereInput
+  orderBy?: Prisma.RoomUnavailabilityOrderByWithRelationInput | Prisma.RoomUnavailabilityOrderByWithRelationInput[]
+  cursor?: Prisma.RoomUnavailabilityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RoomUnavailabilityScalarFieldEnum | Prisma.RoomUnavailabilityScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.teacherAvailability
+ */
+export type AcademicYear$teacherAvailabilityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TeacherAvailability
+   */
+  select?: Prisma.TeacherAvailabilitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TeacherAvailability
+   */
+  omit?: Prisma.TeacherAvailabilityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TeacherAvailabilityInclude<ExtArgs> | null
+  where?: Prisma.TeacherAvailabilityWhereInput
+  orderBy?: Prisma.TeacherAvailabilityOrderByWithRelationInput | Prisma.TeacherAvailabilityOrderByWithRelationInput[]
+  cursor?: Prisma.TeacherAvailabilityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TeacherAvailabilityScalarFieldEnum | Prisma.TeacherAvailabilityScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.teacherTimetablePrefs
+ */
+export type AcademicYear$teacherTimetablePrefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TeacherTimetablePref
+   */
+  select?: Prisma.TeacherTimetablePrefSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TeacherTimetablePref
+   */
+  omit?: Prisma.TeacherTimetablePrefOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TeacherTimetablePrefInclude<ExtArgs> | null
+  where?: Prisma.TeacherTimetablePrefWhereInput
+  orderBy?: Prisma.TeacherTimetablePrefOrderByWithRelationInput | Prisma.TeacherTimetablePrefOrderByWithRelationInput[]
+  cursor?: Prisma.TeacherTimetablePrefWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TeacherTimetablePrefScalarFieldEnum | Prisma.TeacherTimetablePrefScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.schoolTimetables
+ */
+export type AcademicYear$schoolTimetablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SchoolTimetable
+   */
+  select?: Prisma.SchoolTimetableSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SchoolTimetable
+   */
+  omit?: Prisma.SchoolTimetableOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SchoolTimetableInclude<ExtArgs> | null
+  where?: Prisma.SchoolTimetableWhereInput
+  orderBy?: Prisma.SchoolTimetableOrderByWithRelationInput | Prisma.SchoolTimetableOrderByWithRelationInput[]
+  cursor?: Prisma.SchoolTimetableWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SchoolTimetableScalarFieldEnum | Prisma.SchoolTimetableScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.timetableSubjectConfigs
+ */
+export type AcademicYear$timetableSubjectConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableSubjectConfig
+   */
+  select?: Prisma.TimetableSubjectConfigSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableSubjectConfig
+   */
+  omit?: Prisma.TimetableSubjectConfigOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableSubjectConfigInclude<ExtArgs> | null
+  where?: Prisma.TimetableSubjectConfigWhereInput
+  orderBy?: Prisma.TimetableSubjectConfigOrderByWithRelationInput | Prisma.TimetableSubjectConfigOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableSubjectConfigWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableSubjectConfigScalarFieldEnum | Prisma.TimetableSubjectConfigScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.timetableEntries
+ */
+export type AcademicYear$timetableEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableEntry
+   */
+  select?: Prisma.TimetableEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableEntry
+   */
+  omit?: Prisma.TimetableEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableEntryInclude<ExtArgs> | null
+  where?: Prisma.TimetableEntryWhereInput
+  orderBy?: Prisma.TimetableEntryOrderByWithRelationInput | Prisma.TimetableEntryOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableEntryScalarFieldEnum | Prisma.TimetableEntryScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.timetableExceptions
+ */
+export type AcademicYear$timetableExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableException
+   */
+  select?: Prisma.TimetableExceptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableException
+   */
+  omit?: Prisma.TimetableExceptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableExceptionInclude<ExtArgs> | null
+  where?: Prisma.TimetableExceptionWhereInput
+  orderBy?: Prisma.TimetableExceptionOrderByWithRelationInput | Prisma.TimetableExceptionOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableExceptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableExceptionScalarFieldEnum | Prisma.TimetableExceptionScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.timetableSubstitutions
+ */
+export type AcademicYear$timetableSubstitutionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableSubstitution
+   */
+  select?: Prisma.TimetableSubstitutionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableSubstitution
+   */
+  omit?: Prisma.TimetableSubstitutionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableSubstitutionInclude<ExtArgs> | null
+  where?: Prisma.TimetableSubstitutionWhereInput
+  orderBy?: Prisma.TimetableSubstitutionOrderByWithRelationInput | Prisma.TimetableSubstitutionOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableSubstitutionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableSubstitutionScalarFieldEnum | Prisma.TimetableSubstitutionScalarFieldEnum[]
+}
+
+/**
+ * AcademicYear.timetableGenerations
+ */
+export type AcademicYear$timetableGenerationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableGeneration
+   */
+  select?: Prisma.TimetableGenerationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableGeneration
+   */
+  omit?: Prisma.TimetableGenerationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableGenerationInclude<ExtArgs> | null
+  where?: Prisma.TimetableGenerationWhereInput
+  orderBy?: Prisma.TimetableGenerationOrderByWithRelationInput | Prisma.TimetableGenerationOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableGenerationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableGenerationScalarFieldEnum | Prisma.TimetableGenerationScalarFieldEnum[]
 }
 
 /**

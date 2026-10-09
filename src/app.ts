@@ -10,6 +10,7 @@ import teacherStaffroomRoutes from "./modules/staffroom/staffroom.teacher.routes
 import campusRoutes from "./modules/campus/campus.routes";
 import teacherCampusRoutes from "./modules/campus/campus.teacher.routes";
 import promotionTeacherRoutes from "./modules/promotion/promotion.teacher.routes";
+import timetableRoutes, { teacherTimetableRouter, studentTimetableRouter } from "./modules/timetable/timetable.routes";
 import academicYearRoutes from "./modules/academicYear/academicYear.routes";
 import teacherRoutes from "./modules/teacher/teacher.routes";
 import studentRoutes from "./modules/student/student.routes";
@@ -83,7 +84,10 @@ app.use("/api/admin/inventory", inventoryRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/staffroom", staffroomRoutes);
 app.use("/api/admin/campus", campusRoutes);
+app.use("/api/admin/timetable", timetableRoutes);
 app.use("/api/teacher/campus", teacherCampusRoutes);
+app.use("/api/teacher/timetable", teacherTimetableRouter);
+app.use("/api/student/timetable", studentTimetableRouter);
 app.use("/api/teacher/staffroom", teacherStaffroomRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);

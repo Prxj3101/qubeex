@@ -684,6 +684,91 @@ export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
 }
 
+export type EnumTimeSlotKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimeSlotKind | Prisma.EnumTimeSlotKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TimeSlotKind[] | Prisma.ListEnumTimeSlotKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimeSlotKind[] | Prisma.ListEnumTimeSlotKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimeSlotKindFilter<$PrismaModel> | $Enums.TimeSlotKind
+}
+
+export type EnumTimeSlotKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimeSlotKind | Prisma.EnumTimeSlotKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TimeSlotKind[] | Prisma.ListEnumTimeSlotKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimeSlotKind[] | Prisma.ListEnumTimeSlotKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimeSlotKindWithAggregatesFilter<$PrismaModel> | $Enums.TimeSlotKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTimeSlotKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTimeSlotKindFilter<$PrismaModel>
+}
+
+export type EnumSessionKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionKind | Prisma.EnumSessionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionKind[] | Prisma.ListEnumSessionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionKind[] | Prisma.ListEnumSessionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionKindFilter<$PrismaModel> | $Enums.SessionKind
+}
+
+export type EnumSessionKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionKind | Prisma.EnumSessionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionKind[] | Prisma.ListEnumSessionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionKind[] | Prisma.ListEnumSessionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionKindWithAggregatesFilter<$PrismaModel> | $Enums.SessionKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSessionKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSessionKindFilter<$PrismaModel>
+}
+
+export type EnumAvailabilityKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.AvailabilityKind | Prisma.EnumAvailabilityKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AvailabilityKind[] | Prisma.ListEnumAvailabilityKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AvailabilityKind[] | Prisma.ListEnumAvailabilityKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAvailabilityKindFilter<$PrismaModel> | $Enums.AvailabilityKind
+}
+
+export type EnumAvailabilityKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AvailabilityKind | Prisma.EnumAvailabilityKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AvailabilityKind[] | Prisma.ListEnumAvailabilityKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AvailabilityKind[] | Prisma.ListEnumAvailabilityKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAvailabilityKindWithAggregatesFilter<$PrismaModel> | $Enums.AvailabilityKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAvailabilityKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAvailabilityKindFilter<$PrismaModel>
+}
+
+export type EnumTimetableStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimetableStatus | Prisma.EnumTimetableStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TimetableStatus[] | Prisma.ListEnumTimetableStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimetableStatus[] | Prisma.ListEnumTimetableStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimetableStatusFilter<$PrismaModel> | $Enums.TimetableStatus
+}
+
+export type EnumTimetableStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimetableStatus | Prisma.EnumTimetableStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TimetableStatus[] | Prisma.ListEnumTimetableStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimetableStatus[] | Prisma.ListEnumTimetableStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimetableStatusWithAggregatesFilter<$PrismaModel> | $Enums.TimetableStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTimetableStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTimetableStatusFilter<$PrismaModel>
+}
+
+export type EnumTimetableExceptionKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimetableExceptionKind | Prisma.EnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TimetableExceptionKind[] | Prisma.ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimetableExceptionKind[] | Prisma.ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimetableExceptionKindFilter<$PrismaModel> | $Enums.TimetableExceptionKind
+}
+
+export type EnumTimetableExceptionKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimetableExceptionKind | Prisma.EnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TimetableExceptionKind[] | Prisma.ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimetableExceptionKind[] | Prisma.ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimetableExceptionKindWithAggregatesFilter<$PrismaModel> | $Enums.TimetableExceptionKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTimetableExceptionKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTimetableExceptionKindFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1289,6 +1374,91 @@ export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumTimeSlotKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimeSlotKind | Prisma.EnumTimeSlotKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TimeSlotKind[] | Prisma.ListEnumTimeSlotKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimeSlotKind[] | Prisma.ListEnumTimeSlotKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimeSlotKindFilter<$PrismaModel> | $Enums.TimeSlotKind
+}
+
+export type NestedEnumTimeSlotKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimeSlotKind | Prisma.EnumTimeSlotKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TimeSlotKind[] | Prisma.ListEnumTimeSlotKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimeSlotKind[] | Prisma.ListEnumTimeSlotKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimeSlotKindWithAggregatesFilter<$PrismaModel> | $Enums.TimeSlotKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTimeSlotKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTimeSlotKindFilter<$PrismaModel>
+}
+
+export type NestedEnumSessionKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionKind | Prisma.EnumSessionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionKind[] | Prisma.ListEnumSessionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionKind[] | Prisma.ListEnumSessionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionKindFilter<$PrismaModel> | $Enums.SessionKind
+}
+
+export type NestedEnumSessionKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionKind | Prisma.EnumSessionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionKind[] | Prisma.ListEnumSessionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionKind[] | Prisma.ListEnumSessionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionKindWithAggregatesFilter<$PrismaModel> | $Enums.SessionKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSessionKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSessionKindFilter<$PrismaModel>
+}
+
+export type NestedEnumAvailabilityKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.AvailabilityKind | Prisma.EnumAvailabilityKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AvailabilityKind[] | Prisma.ListEnumAvailabilityKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AvailabilityKind[] | Prisma.ListEnumAvailabilityKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAvailabilityKindFilter<$PrismaModel> | $Enums.AvailabilityKind
+}
+
+export type NestedEnumAvailabilityKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AvailabilityKind | Prisma.EnumAvailabilityKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AvailabilityKind[] | Prisma.ListEnumAvailabilityKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AvailabilityKind[] | Prisma.ListEnumAvailabilityKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAvailabilityKindWithAggregatesFilter<$PrismaModel> | $Enums.AvailabilityKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAvailabilityKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAvailabilityKindFilter<$PrismaModel>
+}
+
+export type NestedEnumTimetableStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimetableStatus | Prisma.EnumTimetableStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TimetableStatus[] | Prisma.ListEnumTimetableStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimetableStatus[] | Prisma.ListEnumTimetableStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimetableStatusFilter<$PrismaModel> | $Enums.TimetableStatus
+}
+
+export type NestedEnumTimetableStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimetableStatus | Prisma.EnumTimetableStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TimetableStatus[] | Prisma.ListEnumTimetableStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimetableStatus[] | Prisma.ListEnumTimetableStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimetableStatusWithAggregatesFilter<$PrismaModel> | $Enums.TimetableStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTimetableStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTimetableStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumTimetableExceptionKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimetableExceptionKind | Prisma.EnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TimetableExceptionKind[] | Prisma.ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimetableExceptionKind[] | Prisma.ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimetableExceptionKindFilter<$PrismaModel> | $Enums.TimetableExceptionKind
+}
+
+export type NestedEnumTimetableExceptionKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TimetableExceptionKind | Prisma.EnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TimetableExceptionKind[] | Prisma.ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TimetableExceptionKind[] | Prisma.ListEnumTimetableExceptionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTimetableExceptionKindWithAggregatesFilter<$PrismaModel> | $Enums.TimetableExceptionKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTimetableExceptionKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTimetableExceptionKindFilter<$PrismaModel>
 }
 
 

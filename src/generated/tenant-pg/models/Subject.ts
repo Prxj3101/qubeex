@@ -253,6 +253,9 @@ export type SubjectWhereInput = {
   divisionSubjects?: Prisma.DivisionSubjectListRelationFilter
   marksheetColumns?: Prisma.MarksheetExamColumnListRelationFilter
   marksheetConfigs?: Prisma.MarksheetSubjectConfigListRelationFilter
+  timetableConfigs?: Prisma.TimetableSubjectConfigListRelationFilter
+  timetableEntries?: Prisma.TimetableEntryListRelationFilter
+  timetableExceptions?: Prisma.TimetableExceptionListRelationFilter
   standard?: Prisma.XOR<Prisma.StandardScalarRelationFilter, Prisma.StandardWhereInput>
   taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   taskContainers?: Prisma.TaskContainerListRelationFilter
@@ -276,6 +279,9 @@ export type SubjectOrderByWithRelationInput = {
   divisionSubjects?: Prisma.DivisionSubjectOrderByRelationAggregateInput
   marksheetColumns?: Prisma.MarksheetExamColumnOrderByRelationAggregateInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigOrderByRelationAggregateInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigOrderByRelationAggregateInput
+  timetableEntries?: Prisma.TimetableEntryOrderByRelationAggregateInput
+  timetableExceptions?: Prisma.TimetableExceptionOrderByRelationAggregateInput
   standard?: Prisma.StandardOrderByWithRelationInput
   taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
   taskContainers?: Prisma.TaskContainerOrderByRelationAggregateInput
@@ -303,6 +309,9 @@ export type SubjectWhereUniqueInput = Prisma.AtLeast<{
   divisionSubjects?: Prisma.DivisionSubjectListRelationFilter
   marksheetColumns?: Prisma.MarksheetExamColumnListRelationFilter
   marksheetConfigs?: Prisma.MarksheetSubjectConfigListRelationFilter
+  timetableConfigs?: Prisma.TimetableSubjectConfigListRelationFilter
+  timetableEntries?: Prisma.TimetableEntryListRelationFilter
+  timetableExceptions?: Prisma.TimetableExceptionListRelationFilter
   standard?: Prisma.XOR<Prisma.StandardScalarRelationFilter, Prisma.StandardWhereInput>
   taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   taskContainers?: Prisma.TaskContainerListRelationFilter
@@ -357,6 +366,9 @@ export type SubjectCreateInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -380,6 +392,9 @@ export type SubjectUncheckedCreateInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -401,6 +416,9 @@ export type SubjectUpdateInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -424,6 +442,9 @@ export type SubjectUncheckedUpdateInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -721,6 +742,54 @@ export type SubjectUpdateOneRequiredWithoutMarksheetColumnsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SubjectUpdateToOneWithWhereWithoutMarksheetColumnsInput, Prisma.SubjectUpdateWithoutMarksheetColumnsInput>, Prisma.SubjectUncheckedUpdateWithoutMarksheetColumnsInput>
 }
 
+export type SubjectCreateNestedOneWithoutTimetableConfigsInput = {
+  create?: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableConfigsInput, Prisma.SubjectUncheckedCreateWithoutTimetableConfigsInput>
+  connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutTimetableConfigsInput
+  connect?: Prisma.SubjectWhereUniqueInput
+}
+
+export type SubjectUpdateOneWithoutTimetableConfigsNestedInput = {
+  create?: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableConfigsInput, Prisma.SubjectUncheckedCreateWithoutTimetableConfigsInput>
+  connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutTimetableConfigsInput
+  upsert?: Prisma.SubjectUpsertWithoutTimetableConfigsInput
+  disconnect?: Prisma.SubjectWhereInput | boolean
+  delete?: Prisma.SubjectWhereInput | boolean
+  connect?: Prisma.SubjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SubjectUpdateToOneWithWhereWithoutTimetableConfigsInput, Prisma.SubjectUpdateWithoutTimetableConfigsInput>, Prisma.SubjectUncheckedUpdateWithoutTimetableConfigsInput>
+}
+
+export type SubjectCreateNestedOneWithoutTimetableEntriesInput = {
+  create?: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableEntriesInput, Prisma.SubjectUncheckedCreateWithoutTimetableEntriesInput>
+  connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutTimetableEntriesInput
+  connect?: Prisma.SubjectWhereUniqueInput
+}
+
+export type SubjectUpdateOneWithoutTimetableEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableEntriesInput, Prisma.SubjectUncheckedCreateWithoutTimetableEntriesInput>
+  connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutTimetableEntriesInput
+  upsert?: Prisma.SubjectUpsertWithoutTimetableEntriesInput
+  disconnect?: Prisma.SubjectWhereInput | boolean
+  delete?: Prisma.SubjectWhereInput | boolean
+  connect?: Prisma.SubjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SubjectUpdateToOneWithWhereWithoutTimetableEntriesInput, Prisma.SubjectUpdateWithoutTimetableEntriesInput>, Prisma.SubjectUncheckedUpdateWithoutTimetableEntriesInput>
+}
+
+export type SubjectCreateNestedOneWithoutTimetableExceptionsInput = {
+  create?: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableExceptionsInput, Prisma.SubjectUncheckedCreateWithoutTimetableExceptionsInput>
+  connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutTimetableExceptionsInput
+  connect?: Prisma.SubjectWhereUniqueInput
+}
+
+export type SubjectUpdateOneWithoutTimetableExceptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableExceptionsInput, Prisma.SubjectUncheckedCreateWithoutTimetableExceptionsInput>
+  connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutTimetableExceptionsInput
+  upsert?: Prisma.SubjectUpsertWithoutTimetableExceptionsInput
+  disconnect?: Prisma.SubjectWhereInput | boolean
+  delete?: Prisma.SubjectWhereInput | boolean
+  connect?: Prisma.SubjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SubjectUpdateToOneWithWhereWithoutTimetableExceptionsInput, Prisma.SubjectUpdateWithoutTimetableExceptionsInput>, Prisma.SubjectUncheckedUpdateWithoutTimetableExceptionsInput>
+}
+
 export type SubjectCreateWithoutStandardInput = {
   id?: string
   institutionId: string
@@ -735,6 +804,9 @@ export type SubjectCreateWithoutStandardInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
@@ -756,6 +828,9 @@ export type SubjectUncheckedCreateWithoutStandardInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -817,6 +892,9 @@ export type SubjectCreateWithoutDivisionSubjectsInput = {
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -839,6 +917,9 @@ export type SubjectUncheckedCreateWithoutDivisionSubjectsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -875,6 +956,9 @@ export type SubjectUpdateWithoutDivisionSubjectsInput = {
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -897,6 +981,9 @@ export type SubjectUncheckedUpdateWithoutDivisionSubjectsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -917,6 +1004,9 @@ export type SubjectCreateWithoutAssignmentsInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -939,6 +1029,9 @@ export type SubjectUncheckedCreateWithoutAssignmentsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -975,6 +1068,9 @@ export type SubjectUpdateWithoutAssignmentsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -997,6 +1093,9 @@ export type SubjectUncheckedUpdateWithoutAssignmentsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1017,6 +1116,9 @@ export type SubjectCreateWithoutCampusFeedPostsInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -1039,6 +1141,9 @@ export type SubjectUncheckedCreateWithoutCampusFeedPostsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -1075,6 +1180,9 @@ export type SubjectUpdateWithoutCampusFeedPostsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -1097,6 +1205,9 @@ export type SubjectUncheckedUpdateWithoutCampusFeedPostsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1118,6 +1229,9 @@ export type SubjectCreateWithoutTaskContainersInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
@@ -1140,6 +1254,9 @@ export type SubjectUncheckedCreateWithoutTaskContainersInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
   taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
@@ -1176,6 +1293,9 @@ export type SubjectUpdateWithoutTaskContainersInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
@@ -1198,6 +1318,9 @@ export type SubjectUncheckedUpdateWithoutTaskContainersInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
   taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1218,6 +1341,9 @@ export type SubjectCreateWithoutTaskQuestionsInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -1240,6 +1366,9 @@ export type SubjectUncheckedCreateWithoutTaskQuestionsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -1276,6 +1405,9 @@ export type SubjectUpdateWithoutTaskQuestionsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -1298,6 +1430,9 @@ export type SubjectUncheckedUpdateWithoutTaskQuestionsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1318,6 +1453,9 @@ export type SubjectCreateWithoutTaskModulesInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -1340,6 +1478,9 @@ export type SubjectUncheckedCreateWithoutTaskModulesInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
@@ -1376,6 +1517,9 @@ export type SubjectUpdateWithoutTaskModulesInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -1398,6 +1542,9 @@ export type SubjectUncheckedUpdateWithoutTaskModulesInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1418,6 +1565,9 @@ export type SubjectCreateWithoutTaskTestsInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -1440,6 +1590,9 @@ export type SubjectUncheckedCreateWithoutTaskTestsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -1476,6 +1629,9 @@ export type SubjectUpdateWithoutTaskTestsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -1498,6 +1654,9 @@ export type SubjectUncheckedUpdateWithoutTaskTestsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1518,6 +1677,9 @@ export type SubjectCreateWithoutTaskAssignmentsInput = {
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
@@ -1540,6 +1702,9 @@ export type SubjectUncheckedCreateWithoutTaskAssignmentsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
   taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
@@ -1576,6 +1741,9 @@ export type SubjectUpdateWithoutTaskAssignmentsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
@@ -1598,6 +1766,9 @@ export type SubjectUncheckedUpdateWithoutTaskAssignmentsInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
   taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1617,6 +1788,9 @@ export type SubjectCreateWithoutMarksheetConfigsInput = {
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -1639,6 +1813,9 @@ export type SubjectUncheckedCreateWithoutMarksheetConfigsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -1675,6 +1852,9 @@ export type SubjectUpdateWithoutMarksheetConfigsInput = {
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -1697,6 +1877,9 @@ export type SubjectUncheckedUpdateWithoutMarksheetConfigsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1717,6 +1900,9 @@ export type SubjectCreateWithoutMarksheetColumnsInput = {
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
   standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
@@ -1739,6 +1925,9 @@ export type SubjectUncheckedCreateWithoutMarksheetColumnsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
@@ -1775,6 +1964,9 @@ export type SubjectUpdateWithoutMarksheetColumnsInput = {
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
@@ -1797,6 +1989,345 @@ export type SubjectUncheckedUpdateWithoutMarksheetColumnsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
+}
+
+export type SubjectCreateWithoutTimetableConfigsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  code?: string | null
+  color?: string | null
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
+  divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
+}
+
+export type SubjectUncheckedCreateWithoutTimetableConfigsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  code?: string | null
+  color?: string | null
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
+}
+
+export type SubjectCreateOrConnectWithoutTimetableConfigsInput = {
+  where: Prisma.SubjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableConfigsInput, Prisma.SubjectUncheckedCreateWithoutTimetableConfigsInput>
+}
+
+export type SubjectUpsertWithoutTimetableConfigsInput = {
+  update: Prisma.XOR<Prisma.SubjectUpdateWithoutTimetableConfigsInput, Prisma.SubjectUncheckedUpdateWithoutTimetableConfigsInput>
+  create: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableConfigsInput, Prisma.SubjectUncheckedCreateWithoutTimetableConfigsInput>
+  where?: Prisma.SubjectWhereInput
+}
+
+export type SubjectUpdateToOneWithWhereWithoutTimetableConfigsInput = {
+  where?: Prisma.SubjectWhereInput
+  data: Prisma.XOR<Prisma.SubjectUpdateWithoutTimetableConfigsInput, Prisma.SubjectUncheckedUpdateWithoutTimetableConfigsInput>
+}
+
+export type SubjectUpdateWithoutTimetableConfigsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
+}
+
+export type SubjectUncheckedUpdateWithoutTimetableConfigsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
+}
+
+export type SubjectCreateWithoutTimetableEntriesInput = {
+  id?: string
+  institutionId: string
+  name: string
+  code?: string | null
+  color?: string | null
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
+  divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
+}
+
+export type SubjectUncheckedCreateWithoutTimetableEntriesInput = {
+  id?: string
+  institutionId: string
+  name: string
+  code?: string | null
+  color?: string | null
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
+}
+
+export type SubjectCreateOrConnectWithoutTimetableEntriesInput = {
+  where: Prisma.SubjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableEntriesInput, Prisma.SubjectUncheckedCreateWithoutTimetableEntriesInput>
+}
+
+export type SubjectUpsertWithoutTimetableEntriesInput = {
+  update: Prisma.XOR<Prisma.SubjectUpdateWithoutTimetableEntriesInput, Prisma.SubjectUncheckedUpdateWithoutTimetableEntriesInput>
+  create: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableEntriesInput, Prisma.SubjectUncheckedCreateWithoutTimetableEntriesInput>
+  where?: Prisma.SubjectWhereInput
+}
+
+export type SubjectUpdateToOneWithWhereWithoutTimetableEntriesInput = {
+  where?: Prisma.SubjectWhereInput
+  data: Prisma.XOR<Prisma.SubjectUpdateWithoutTimetableEntriesInput, Prisma.SubjectUncheckedUpdateWithoutTimetableEntriesInput>
+}
+
+export type SubjectUpdateWithoutTimetableEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
+}
+
+export type SubjectUncheckedUpdateWithoutTimetableEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutSubjectNestedInput
+}
+
+export type SubjectCreateWithoutTimetableExceptionsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  code?: string | null
+  color?: string | null
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutSubjectRefInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutSubjectInput
+  divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutSubjectInput
+  standard: Prisma.StandardCreateNestedOneWithoutSubjectsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutSubjectInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutSubjectInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutSubjectInput
+}
+
+export type SubjectUncheckedCreateWithoutTimetableExceptionsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  code?: string | null
+  color?: string | null
+  order: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  standardId: string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutSubjectRefInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutSubjectInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedCreateNestedManyWithoutSubjectInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutSubjectInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutSubjectInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutSubjectInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutSubjectInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutSubjectInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutSubjectInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutSubjectInput
+}
+
+export type SubjectCreateOrConnectWithoutTimetableExceptionsInput = {
+  where: Prisma.SubjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableExceptionsInput, Prisma.SubjectUncheckedCreateWithoutTimetableExceptionsInput>
+}
+
+export type SubjectUpsertWithoutTimetableExceptionsInput = {
+  update: Prisma.XOR<Prisma.SubjectUpdateWithoutTimetableExceptionsInput, Prisma.SubjectUncheckedUpdateWithoutTimetableExceptionsInput>
+  create: Prisma.XOR<Prisma.SubjectCreateWithoutTimetableExceptionsInput, Prisma.SubjectUncheckedCreateWithoutTimetableExceptionsInput>
+  where?: Prisma.SubjectWhereInput
+}
+
+export type SubjectUpdateToOneWithWhereWithoutTimetableExceptionsInput = {
+  where?: Prisma.SubjectWhereInput
+  data: Prisma.XOR<Prisma.SubjectUpdateWithoutTimetableExceptionsInput, Prisma.SubjectUncheckedUpdateWithoutTimetableExceptionsInput>
+}
+
+export type SubjectUpdateWithoutTimetableExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  campusFeedPosts?: Prisma.CampusFeedPostUpdateManyWithoutSubjectRefNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutSubjectNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutSubjectsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutSubjectNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutSubjectNestedInput
+}
+
+export type SubjectUncheckedUpdateWithoutTimetableExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  campusFeedPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutSubjectRefNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
+  marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1829,6 +2360,9 @@ export type SubjectUpdateWithoutStandardInput = {
   divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutSubjectNestedInput
@@ -1850,6 +2384,9 @@ export type SubjectUncheckedUpdateWithoutStandardInput = {
   divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetColumns?: Prisma.MarksheetExamColumnUncheckedUpdateManyWithoutSubjectNestedInput
   marksheetConfigs?: Prisma.MarksheetSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutSubjectNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutSubjectNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutSubjectNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutSubjectNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutSubjectNestedInput
@@ -1879,6 +2416,9 @@ export type SubjectCountOutputType = {
   divisionSubjects: number
   marksheetColumns: number
   marksheetConfigs: number
+  timetableConfigs: number
+  timetableEntries: number
+  timetableExceptions: number
   taskAssignments: number
   taskContainers: number
   taskModules: number
@@ -1892,6 +2432,9 @@ export type SubjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   divisionSubjects?: boolean | SubjectCountOutputTypeCountDivisionSubjectsArgs
   marksheetColumns?: boolean | SubjectCountOutputTypeCountMarksheetColumnsArgs
   marksheetConfigs?: boolean | SubjectCountOutputTypeCountMarksheetConfigsArgs
+  timetableConfigs?: boolean | SubjectCountOutputTypeCountTimetableConfigsArgs
+  timetableEntries?: boolean | SubjectCountOutputTypeCountTimetableEntriesArgs
+  timetableExceptions?: boolean | SubjectCountOutputTypeCountTimetableExceptionsArgs
   taskAssignments?: boolean | SubjectCountOutputTypeCountTaskAssignmentsArgs
   taskContainers?: boolean | SubjectCountOutputTypeCountTaskContainersArgs
   taskModules?: boolean | SubjectCountOutputTypeCountTaskModulesArgs
@@ -1947,6 +2490,27 @@ export type SubjectCountOutputTypeCountMarksheetConfigsArgs<ExtArgs extends runt
 /**
  * SubjectCountOutputType without action
  */
+export type SubjectCountOutputTypeCountTimetableConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableSubjectConfigWhereInput
+}
+
+/**
+ * SubjectCountOutputType without action
+ */
+export type SubjectCountOutputTypeCountTimetableEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableEntryWhereInput
+}
+
+/**
+ * SubjectCountOutputType without action
+ */
+export type SubjectCountOutputTypeCountTimetableExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimetableExceptionWhereInput
+}
+
+/**
+ * SubjectCountOutputType without action
+ */
 export type SubjectCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TaskAssignmentWhereInput
 }
@@ -1995,6 +2559,9 @@ export type SubjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   divisionSubjects?: boolean | Prisma.Subject$divisionSubjectsArgs<ExtArgs>
   marksheetColumns?: boolean | Prisma.Subject$marksheetColumnsArgs<ExtArgs>
   marksheetConfigs?: boolean | Prisma.Subject$marksheetConfigsArgs<ExtArgs>
+  timetableConfigs?: boolean | Prisma.Subject$timetableConfigsArgs<ExtArgs>
+  timetableEntries?: boolean | Prisma.Subject$timetableEntriesArgs<ExtArgs>
+  timetableExceptions?: boolean | Prisma.Subject$timetableExceptionsArgs<ExtArgs>
   standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
   taskAssignments?: boolean | Prisma.Subject$taskAssignmentsArgs<ExtArgs>
   taskContainers?: boolean | Prisma.Subject$taskContainersArgs<ExtArgs>
@@ -2049,6 +2616,9 @@ export type SubjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   divisionSubjects?: boolean | Prisma.Subject$divisionSubjectsArgs<ExtArgs>
   marksheetColumns?: boolean | Prisma.Subject$marksheetColumnsArgs<ExtArgs>
   marksheetConfigs?: boolean | Prisma.Subject$marksheetConfigsArgs<ExtArgs>
+  timetableConfigs?: boolean | Prisma.Subject$timetableConfigsArgs<ExtArgs>
+  timetableEntries?: boolean | Prisma.Subject$timetableEntriesArgs<ExtArgs>
+  timetableExceptions?: boolean | Prisma.Subject$timetableExceptionsArgs<ExtArgs>
   standard?: boolean | Prisma.StandardDefaultArgs<ExtArgs>
   taskAssignments?: boolean | Prisma.Subject$taskAssignmentsArgs<ExtArgs>
   taskContainers?: boolean | Prisma.Subject$taskContainersArgs<ExtArgs>
@@ -2072,6 +2642,9 @@ export type $SubjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     divisionSubjects: Prisma.$DivisionSubjectPayload<ExtArgs>[]
     marksheetColumns: Prisma.$MarksheetExamColumnPayload<ExtArgs>[]
     marksheetConfigs: Prisma.$MarksheetSubjectConfigPayload<ExtArgs>[]
+    timetableConfigs: Prisma.$TimetableSubjectConfigPayload<ExtArgs>[]
+    timetableEntries: Prisma.$TimetableEntryPayload<ExtArgs>[]
+    timetableExceptions: Prisma.$TimetableExceptionPayload<ExtArgs>[]
     standard: Prisma.$StandardPayload<ExtArgs>
     taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
     taskContainers: Prisma.$TaskContainerPayload<ExtArgs>[]
@@ -2488,6 +3061,9 @@ export interface Prisma__SubjectClient<T, Null = never, ExtArgs extends runtime.
   divisionSubjects<T extends Prisma.Subject$divisionSubjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$divisionSubjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DivisionSubjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marksheetColumns<T extends Prisma.Subject$marksheetColumnsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$marksheetColumnsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetExamColumnPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marksheetConfigs<T extends Prisma.Subject$marksheetConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$marksheetConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetSubjectConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableConfigs<T extends Prisma.Subject$timetableConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$timetableConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableSubjectConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableEntries<T extends Prisma.Subject$timetableEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$timetableEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timetableExceptions<T extends Prisma.Subject$timetableExceptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$timetableExceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   standard<T extends Prisma.StandardDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StandardDefaultArgs<ExtArgs>>): Prisma.Prisma__StandardClient<runtime.Types.Result.GetResult<Prisma.$StandardPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   taskAssignments<T extends Prisma.Subject$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskContainers<T extends Prisma.Subject$taskContainersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$taskContainersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskContainerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3050,6 +3626,78 @@ export type Subject$marksheetConfigsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.MarksheetSubjectConfigScalarFieldEnum | Prisma.MarksheetSubjectConfigScalarFieldEnum[]
+}
+
+/**
+ * Subject.timetableConfigs
+ */
+export type Subject$timetableConfigsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableSubjectConfig
+   */
+  select?: Prisma.TimetableSubjectConfigSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableSubjectConfig
+   */
+  omit?: Prisma.TimetableSubjectConfigOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableSubjectConfigInclude<ExtArgs> | null
+  where?: Prisma.TimetableSubjectConfigWhereInput
+  orderBy?: Prisma.TimetableSubjectConfigOrderByWithRelationInput | Prisma.TimetableSubjectConfigOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableSubjectConfigWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableSubjectConfigScalarFieldEnum | Prisma.TimetableSubjectConfigScalarFieldEnum[]
+}
+
+/**
+ * Subject.timetableEntries
+ */
+export type Subject$timetableEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableEntry
+   */
+  select?: Prisma.TimetableEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableEntry
+   */
+  omit?: Prisma.TimetableEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableEntryInclude<ExtArgs> | null
+  where?: Prisma.TimetableEntryWhereInput
+  orderBy?: Prisma.TimetableEntryOrderByWithRelationInput | Prisma.TimetableEntryOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableEntryScalarFieldEnum | Prisma.TimetableEntryScalarFieldEnum[]
+}
+
+/**
+ * Subject.timetableExceptions
+ */
+export type Subject$timetableExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimetableException
+   */
+  select?: Prisma.TimetableExceptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimetableException
+   */
+  omit?: Prisma.TimetableExceptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimetableExceptionInclude<ExtArgs> | null
+  where?: Prisma.TimetableExceptionWhereInput
+  orderBy?: Prisma.TimetableExceptionOrderByWithRelationInput | Prisma.TimetableExceptionOrderByWithRelationInput[]
+  cursor?: Prisma.TimetableExceptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimetableExceptionScalarFieldEnum | Prisma.TimetableExceptionScalarFieldEnum[]
 }
 
 /**

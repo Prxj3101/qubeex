@@ -258,3 +258,60 @@ export const InventoryItemType = {
 } as const
 
 export type InventoryItemType = (typeof InventoryItemType)[keyof typeof InventoryItemType]
+
+
+export const TimetableStatus = {
+  DRAFT: 'DRAFT',
+  GENERATED: 'GENERATED',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type TimetableStatus = (typeof TimetableStatus)[keyof typeof TimetableStatus]
+
+
+export const TimeSlotKind = {
+  PERIOD: 'PERIOD',
+  BREAK: 'BREAK',
+  LUNCH: 'LUNCH',
+  ASSEMBLY: 'ASSEMBLY',
+  ACTIVITY: 'ACTIVITY'
+} as const
+
+export type TimeSlotKind = (typeof TimeSlotKind)[keyof typeof TimeSlotKind]
+
+
+export const SessionKind = {
+  THEORY: 'THEORY',
+  PRACTICAL: 'PRACTICAL',
+  LAB: 'LAB',
+  ACTIVITY: 'ACTIVITY',
+  PE_SPORTS: 'PE_SPORTS',
+  LIBRARY: 'LIBRARY',
+  CLASS_TEACHER: 'CLASS_TEACHER',
+  ASSEMBLY: 'ASSEMBLY',
+  BREAK: 'BREAK',
+  LUNCH: 'LUNCH',
+  FREE: 'FREE',
+  EXAM: 'EXAM',
+  CUSTOM: 'CUSTOM'
+} as const
+
+export type SessionKind = (typeof SessionKind)[keyof typeof SessionKind]
+
+
+export const AvailabilityKind = {
+  UNAVAILABLE: 'UNAVAILABLE',
+  PREFERRED: 'PREFERRED'
+} as const
+
+export type AvailabilityKind = (typeof AvailabilityKind)[keyof typeof AvailabilityKind]
+
+
+export const TimetableExceptionKind = {
+  OVERRIDE: 'OVERRIDE',
+  CANCEL: 'CANCEL'
+} as const
+
+export type TimetableExceptionKind = (typeof TimetableExceptionKind)[keyof typeof TimetableExceptionKind]

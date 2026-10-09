@@ -113,7 +113,16 @@ export const ModelName = {
   Staff: 'Staff',
   StaffSalaryStructure: 'StaffSalaryStructure',
   PayrollRun: 'PayrollRun',
-  Payslip: 'Payslip'
+  Payslip: 'Payslip',
+  InventoryCategory: 'InventoryCategory',
+  InventoryUnit: 'InventoryUnit',
+  InventoryLocation: 'InventoryLocation',
+  InventorySupplier: 'InventorySupplier',
+  InventoryItem: 'InventoryItem',
+  InventoryStockBalance: 'InventoryStockBalance',
+  InventoryStockMovement: 'InventoryStockMovement',
+  InventoryPurchaseRequest: 'InventoryPurchaseRequest',
+  InventoryPurchaseOrder: 'InventoryPurchaseOrder'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1204,6 +1213,176 @@ export const PayslipScalarFieldEnum = {
 } as const
 
 export type PayslipScalarFieldEnum = (typeof PayslipScalarFieldEnum)[keyof typeof PayslipScalarFieldEnum]
+
+
+export const InventoryCategoryScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  nameKey: 'nameKey',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventoryCategoryScalarFieldEnum = (typeof InventoryCategoryScalarFieldEnum)[keyof typeof InventoryCategoryScalarFieldEnum]
+
+
+export const InventoryUnitScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  nameKey: 'nameKey',
+  abbreviation: 'abbreviation',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventoryUnitScalarFieldEnum = (typeof InventoryUnitScalarFieldEnum)[keyof typeof InventoryUnitScalarFieldEnum]
+
+
+export const InventoryLocationScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  nameKey: 'nameKey',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventoryLocationScalarFieldEnum = (typeof InventoryLocationScalarFieldEnum)[keyof typeof InventoryLocationScalarFieldEnum]
+
+
+export const InventorySupplierScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  nameKey: 'nameKey',
+  contactPerson: 'contactPerson',
+  phone: 'phone',
+  email: 'email',
+  address: 'address',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventorySupplierScalarFieldEnum = (typeof InventorySupplierScalarFieldEnum)[keyof typeof InventorySupplierScalarFieldEnum]
+
+
+export const InventoryItemScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  categoryId: 'categoryId',
+  unitId: 'unitId',
+  lowStockLevel: 'lowStockLevel',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventoryItemScalarFieldEnum = (typeof InventoryItemScalarFieldEnum)[keyof typeof InventoryItemScalarFieldEnum]
+
+
+export const InventoryStockBalanceScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  itemId: 'itemId',
+  locationId: 'locationId',
+  quantity: 'quantity',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventoryStockBalanceScalarFieldEnum = (typeof InventoryStockBalanceScalarFieldEnum)[keyof typeof InventoryStockBalanceScalarFieldEnum]
+
+
+export const InventoryStockMovementScalarFieldEnum = {
+  purchaseOrderId: 'purchaseOrderId',
+  purchaseOrderLine: 'purchaseOrderLine',
+  adjustmentType: 'adjustmentType',
+  deliveredQuantity: 'deliveredQuantity',
+  rejectedQuantity: 'rejectedQuantity',
+  damageReason: 'damageReason',
+  transferId: 'transferId',
+  transferLocationId: 'transferLocationId',
+  transferLocationName: 'transferLocationName',
+  issuedToType: 'issuedToType',
+  issuedToName: 'issuedToName',
+  issuedToLabel: 'issuedToLabel',
+  dueOn: 'dueOn',
+  returnExpected: 'returnExpected',
+  issueId: 'issueId',
+  attachments: 'attachments',
+  id: 'id',
+  institutionId: 'institutionId',
+  itemId: 'itemId',
+  locationId: 'locationId',
+  kind: 'kind',
+  quantity: 'quantity',
+  previousQuantity: 'previousQuantity',
+  correctedQuantity: 'correctedQuantity',
+  recordedOn: 'recordedOn',
+  notes: 'notes',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  supplierId: 'supplierId',
+  supplierName: 'supplierName',
+  billNumber: 'billNumber',
+  billDate: 'billDate',
+  totalCost: 'totalCost',
+  requestId: 'requestId'
+} as const
+
+export type InventoryStockMovementScalarFieldEnum = (typeof InventoryStockMovementScalarFieldEnum)[keyof typeof InventoryStockMovementScalarFieldEnum]
+
+
+export const InventoryPurchaseRequestScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  requestId: 'requestId',
+  source: 'source',
+  requestedById: 'requestedById',
+  requestedByName: 'requestedByName',
+  department: 'department',
+  reason: 'reason',
+  requiredOn: 'requiredOn',
+  lines: 'lines',
+  status: 'status',
+  revision: 'revision',
+  createdById: 'createdById',
+  events: 'events',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventoryPurchaseRequestScalarFieldEnum = (typeof InventoryPurchaseRequestScalarFieldEnum)[keyof typeof InventoryPurchaseRequestScalarFieldEnum]
+
+
+export const InventoryPurchaseOrderScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  purchaseRequestId: 'purchaseRequestId',
+  number: 'number',
+  supplierId: 'supplierId',
+  supplierSnapshot: 'supplierSnapshot',
+  locationId: 'locationId',
+  locationName: 'locationName',
+  expectedOn: 'expectedOn',
+  instructions: 'instructions',
+  lines: 'lines',
+  total: 'total',
+  status: 'status',
+  revision: 'revision',
+  createdById: 'createdById',
+  events: 'events',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventoryPurchaseOrderScalarFieldEnum = (typeof InventoryPurchaseOrderScalarFieldEnum)[keyof typeof InventoryPurchaseOrderScalarFieldEnum]
 
 
 export const SortOrder = {

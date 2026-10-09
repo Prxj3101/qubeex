@@ -332,3 +332,48 @@ export type PayrollRun = Prisma.PayrollRunModel
  * 
  */
 export type Payslip = Prisma.PayslipModel
+/**
+ * Model InventoryCategory
+ * 
+ */
+export type InventoryCategory = Prisma.InventoryCategoryModel
+/**
+ * Model InventoryUnit
+ * 
+ */
+export type InventoryUnit = Prisma.InventoryUnitModel
+/**
+ * Model InventoryLocation
+ * 
+ */
+export type InventoryLocation = Prisma.InventoryLocationModel
+/**
+ * Model InventorySupplier
+ * 
+ */
+export type InventorySupplier = Prisma.InventorySupplierModel
+/**
+ * Model InventoryItem
+ * 
+ */
+export type InventoryItem = Prisma.InventoryItemModel
+/**
+ * Model InventoryStockBalance
+ * 
+ */
+export type InventoryStockBalance = Prisma.InventoryStockBalanceModel
+/**
+ * Model InventoryStockMovement
+ * 
+ */
+export type InventoryStockMovement = Prisma.InventoryStockMovementModel
+/**
+ * Model InventoryPurchaseRequest
+ * 
+ */
+export type InventoryPurchaseRequest = Prisma.InventoryPurchaseRequestModel
+/**
+ * Model InventoryPurchaseOrder
+ * 
+ */
+export type InventoryPurchaseOrder = Prisma.InventoryPurchaseOrderModel

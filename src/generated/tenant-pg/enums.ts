@@ -249,3 +249,12 @@ export const TaskAssignmentStatus = {
 } as const
 
 export type TaskAssignmentStatus = (typeof TaskAssignmentStatus)[keyof typeof TaskAssignmentStatus]
+
+
+export const InventoryItemType = {
+  CONSUMABLE: 'CONSUMABLE',
+  RETURNABLE: 'RETURNABLE',
+  FIXED_ASSET: 'FIXED_ASSET'
+} as const
+
+export type InventoryItemType = (typeof InventoryItemType)[keyof typeof InventoryItemType]

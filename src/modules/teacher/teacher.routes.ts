@@ -110,6 +110,7 @@ import {
   aiChat,
   aiQuiz,
   aiMindmap,
+  aiMagic,
   listMindmaps,
   getMindmap,
   deleteMindmap,
@@ -241,10 +242,12 @@ router.get("/me", ...T, async (req: AuthRequest, res: Response, next: NextFuncti
   try {
     const { userId, institutionId } = req.user!;
 
+    const meYear = await getCurrentAcademicYear(institutionId!);
     const teacher = await academicDb().teacher.findFirst({
       where: { userId, institutionId },
       include: {
         assignments: {
+          where: { academicYearId: meYear.id },
           include: {
             division: { include: { standard: true } },
             subject: { select: { id: true, name: true, color: true } },
@@ -388,14 +391,18 @@ router.get("/classes", ...T, async (req: AuthRequest, res: Response, next: NextF
       return;
     }
 
+    // Only the current year's assignments: past years' rows are history and
+    // would otherwise list the same division once per year.
+    const listYear = await getCurrentAcademicYear(institutionId);
     const assignments = await academicDb().divisionAssignment.findMany({
-      where: { teacherId: teacher.id, institutionId },
+      where: { teacherId: teacher.id, institutionId, academicYearId: listYear.id },
       include: {
         division: {
           include: {
             standard: true,
             _count: { select: { students: { where: { status: "ACTIVE" } } } },
             assignments: {
+              where: { academicYearId: listYear.id },
               include: {
                 teacher: true,
                 subject: true,
@@ -481,6 +488,7 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
       return;
     }
 
+    const detailYear = await getCurrentAcademicYear(institutionId);
     const division = await academicDb().division.findFirst({
       where: { id: divisionId, institutionId },
       include: {
@@ -489,6 +497,7 @@ router.get("/classes/:divisionId", ...T, async (req: AuthRequest, res: Response,
         },
         divisionSubjects: { select: { subjectId: true } },
         assignments: {
+          where: { academicYearId: detailYear.id },
           include: {
             teacher: true,
             subject: true,
@@ -1176,6 +1185,7 @@ router.post("/blackboard/ai/scan", ...T, aiScan);
 router.post("/blackboard/ai/chat", ...T, aiChat);
 router.post("/blackboard/ai/quiz", ...T, aiQuiz);
 router.post("/blackboard/ai/mindmap", ...T, aiMindmap);
+router.post("/blackboard/ai/magic", ...T, aiMagic);
 router.get("/blackboard/mindmaps", ...T, listMindmaps);
 router.get("/blackboard/mindmaps/:id", ...T, getMindmap);
 router.delete("/blackboard/mindmaps/:id", ...T, deleteMindmap);

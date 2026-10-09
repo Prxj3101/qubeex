@@ -1489,3 +1489,199 @@ enum TaskAssignmentStatus {
   ACTIVE
   COMPLETED
 }
+
+model InventoryCategory {
+  id            String   @id @default(uuid())
+  institutionId String
+  name          String
+  nameKey       String
+  description   String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([institutionId, nameKey])
+  items InventoryItem[]
+}
+
+model InventoryUnit {
+  id            String   @id @default(uuid())
+  institutionId String
+  name          String
+  nameKey       String
+  abbreviation  String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([institutionId, nameKey])
+  items InventoryItem[]
+}
+
+model InventoryLocation {
+  purchaseOrders InventoryPurchaseOrder[]
+  transferMovements InventoryStockMovement[] @relation("InventoryTransferLocation")
+  id            String   @id @default(uuid())
+  institutionId String
+  name          String
+  nameKey       String
+  description   String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([institutionId, nameKey])
+  balances InventoryStockBalance[]
+  movements InventoryStockMovement[]
+}
+
+model InventorySupplier {
+  purchaseOrders InventoryPurchaseOrder[]
+  id            String   @id @default(uuid())
+  institutionId String
+  name          String
+  nameKey       String
+  contactPerson String @default("")
+  phone String @default("")
+  email String @default("")
+  address String @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([institutionId, nameKey])
+  receipts InventoryStockMovement[]
+}
+
+enum InventoryItemType {
+  CONSUMABLE
+  RETURNABLE
+  FIXED_ASSET
+}
+
+model InventoryItem {
+  id String @id @default(uuid())
+  institutionId String
+  code String
+  name String
+  description String @default("")
+  type InventoryItemType
+  categoryId String
+  unitId String
+  lowStockLevel Decimal @default(0) @db.Decimal(14, 3)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  category InventoryCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  unit InventoryUnit @relation(fields: [unitId], references: [id], onDelete: Restrict)
+  balances InventoryStockBalance[]
+  movements InventoryStockMovement[]
+  @@unique([institutionId, code])
+  @@index([institutionId, name])
+}
+
+model InventoryStockBalance {
+  id String @id @default(uuid())
+  institutionId String
+  itemId String
+  locationId String
+  quantity Decimal @db.Decimal(14, 3)
+  updatedAt DateTime @updatedAt
+  item InventoryItem @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  location InventoryLocation @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  @@unique([itemId, locationId])
+  @@index([institutionId])
+}
+
+model InventoryStockMovement {
+  purchaseOrderId String?
+  purchaseOrderLine Int?
+  purchaseOrder InventoryPurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: Restrict)
+  @@index([purchaseOrderId])
+  adjustmentType String?
+  deliveredQuantity Decimal? @db.Decimal(14, 3)
+  rejectedQuantity Decimal @default(0) @db.Decimal(14, 3)
+  damageReason String @default("")
+  transferId String?
+  transferLocationId String?
+  transferLocationName String @default("")
+  transferLocation InventoryLocation? @relation("InventoryTransferLocation", fields: [transferLocationId], references: [id], onDelete: Restrict)
+  @@unique([transferId, kind])
+  issuedToType String?
+  issuedToName String @default("")
+  issuedToLabel String @default("")
+  dueOn DateTime? @db.Date
+  returnExpected Boolean @default(false)
+  issueId String?
+  issue InventoryStockMovement? @relation("InventoryReturns", fields: [issueId], references: [id], onDelete: Restrict)
+  returns InventoryStockMovement[] @relation("InventoryReturns")
+  @@index([issueId])
+  attachments Json @default("[]")
+  id String @id @default(uuid())
+  institutionId String
+  itemId String
+  locationId String
+  kind String
+  quantity Decimal @db.Decimal(14, 3)
+  previousQuantity Decimal? @db.Decimal(14, 3)
+  correctedQuantity Decimal? @db.Decimal(14, 3)
+  recordedOn DateTime @db.Date
+  notes String @default("")
+  createdById String
+  createdAt DateTime @default(now())
+  item InventoryItem @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  location InventoryLocation @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  @@index([institutionId, itemId, createdAt])
+  supplierId String?
+  supplierName String @default("")
+  billNumber String @default("")
+  billDate DateTime? @db.Date
+  totalCost Decimal? @db.Decimal(14, 2)
+  requestId String?
+  supplier InventorySupplier? @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  @@unique([institutionId, requestId])
+}
+
+model InventoryPurchaseRequest {
+  purchaseOrder InventoryPurchaseOrder?
+  id String @id @default(uuid())
+  institutionId String
+  requestId String
+  source String @default("MANUAL")
+  requestedById String?
+  requestedByName String
+  department String @default("")
+  reason String
+  requiredOn DateTime @db.Date
+  lines Json
+  status String @default("PENDING")
+  revision Int @default(1)
+  createdById String
+  events Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([institutionId, requestId])
+  @@index([institutionId, createdAt])
+}
+
+model InventoryPurchaseOrder {
+  id String @id @default(uuid())
+  institutionId String
+  purchaseRequestId String @unique
+  purchaseRequest InventoryPurchaseRequest @relation(fields: [purchaseRequestId], references: [id], onDelete: Restrict)
+  number String
+  supplierId String
+  supplier InventorySupplier @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  supplierSnapshot Json
+  locationId String
+  location InventoryLocation @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  locationName String
+  expectedOn DateTime @db.Date
+  instructions String @default("")
+  lines Json
+  total Decimal @db.Decimal(14, 2)
+  status String @default("PENDING")
+  revision Int @default(1)
+  createdById String
+  events Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  receipts InventoryStockMovement[]
+  @@unique([institutionId, number])
+  @@index([institutionId, createdAt])
+}

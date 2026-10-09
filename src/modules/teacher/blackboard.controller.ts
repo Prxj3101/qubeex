@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { z } from "zod";
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
@@ -3394,3 +3395,437 @@ export const searchImages = async (req: AuthRequest, res: Response, next: NextFu
   } catch (err) { next(err); }
 };
 
+
+// ── Magic Chalk ────────────────────────────────────────────────────────────────
+// The teacher writes a word ("apple"), draws a shape (an apple), writes a sum
+// ("1 + 1") or a formula ("H2O") on the board and double-clicks it. The web
+// crops just those strokes and sends the picture here; a vision model reads it
+// and we turn it into the real thing: a picture, the answer, or the meaning.
+// Maths answers are computed here (mathjs), never trusted from the model.
+// Groq retired llama-4-scout (Jul 2026); qwen3.8-27b is its current vision model.
+// MAGIC_VISION_MODEL in .env overrides, so a future rename doesn't need a code change.
+const MAGIC_VISION_MODEL = process.env.MAGIC_VISION_MODEL || (process.env.OPENAI_API_KEY ? "gpt-4.1-mini" : "qwen/qwen3.8-27b");
+
+const magicSchema = z.object({
+  // PNG/JPEG data URL of the cropped strokes (white background), or...
+  image: z.string().startsWith("data:image/").max(600_000).optional(),
+  // ...a label the teacher picked from "did you mean" (no AI call, no tokens).
+  label: z.string().trim().min(1).max(60).optional(),
+  // Topic of the open page, if known - helps read ambiguous scribbles.
+  topic: z.string().trim().max(120).optional(),
+  // Language the teacher teaches in: the name and the fun fact come back in it.
+  lang: z.enum(["en", "hi", "mr"]).optional(),
+}).refine((d) => d.image || d.label, { message: "image or label is required" });
+
+type MagicKind = "object" | "math" | "science" | "graph" | "reaction" | "unknown";
+interface MagicRead {
+  kind: MagicKind;
+  label: string;          // simple English noun, e.g. "apple"
+  display: string;        // what is written / drawn, e.g. "Apple", "1 + 1"
+  expression?: string;    // maths only, e.g. "1+1"
+  emoji?: string;
+  fact?: string;          // one short, kid-friendly line
+  wikiTitle?: string;
+  confidence: number;     // 0..1
+  alternatives: string[];
+  formula?: string;       // science only, e.g. "H2O"
+  molecule?: MagicMolecule;
+  localLabel?: string;    // the name in the teacher's language (Hindi / Marathi), when asked for
+  reaction?: { reactants: string[]; products: string[]; inferred?: boolean }; // reaction only: formulas, no coefficients
+}
+
+// A flat 2D structural drawing of a small molecule, drawn on the board in chalk by the web.
+type MagicAtom = { el: string; x: number; y: number };
+type MagicMolecule = { atoms: MagicAtom[]; bonds: [number, number, number][] };
+
+// Common classroom molecules drawn from a fixed, correct layout - never left to the model.
+const MAGIC_MOLECULES: Record<string, MagicMolecule> = {
+  H2O: { atoms: [{ el: "O", x: 0, y: 0 }, { el: "H", x: -0.8, y: 0.6 }, { el: "H", x: 0.8, y: 0.6 }], bonds: [[0, 1, 1], [0, 2, 1]] },
+  CO2: { atoms: [{ el: "O", x: -1.2, y: 0 }, { el: "C", x: 0, y: 0 }, { el: "O", x: 1.2, y: 0 }], bonds: [[0, 1, 2], [1, 2, 2]] },
+  O2: { atoms: [{ el: "O", x: -0.6, y: 0 }, { el: "O", x: 0.6, y: 0 }], bonds: [[0, 1, 2]] },
+  H2: { atoms: [{ el: "H", x: -0.5, y: 0 }, { el: "H", x: 0.5, y: 0 }], bonds: [[0, 1, 1]] },
+  N2: { atoms: [{ el: "N", x: -0.6, y: 0 }, { el: "N", x: 0.6, y: 0 }], bonds: [[0, 1, 3]] },
+  CH4: { atoms: [{ el: "C", x: 0, y: 0 }, { el: "H", x: 0, y: -1 }, { el: "H", x: 1, y: 0 }, { el: "H", x: 0, y: 1 }, { el: "H", x: -1, y: 0 }], bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1]] },
+  NH3: { atoms: [{ el: "N", x: 0, y: 0 }, { el: "H", x: -0.9, y: 0.6 }, { el: "H", x: 0.9, y: 0.6 }, { el: "H", x: 0, y: -1 }], bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1]] },
+  HCL: { atoms: [{ el: "H", x: -0.6, y: 0 }, { el: "Cl", x: 0.6, y: 0 }], bonds: [[0, 1, 1]] },
+  CO: { atoms: [{ el: "C", x: -0.6, y: 0 }, { el: "O", x: 0.6, y: 0 }], bonds: [[0, 1, 3]] },
+  O3: { atoms: [{ el: "O", x: -1, y: 0.5 }, { el: "O", x: 0, y: 0 }, { el: "O", x: 1, y: 0.5 }], bonds: [[0, 1, 2], [1, 2, 1]] },
+  C2H6: { atoms: [{ el: "C", x: -0.6, y: 0 }, { el: "C", x: 0.6, y: 0 }, { el: "H", x: -0.6, y: -1 }, { el: "H", x: -0.6, y: 1 }, { el: "H", x: -1.6, y: 0 }, { el: "H", x: 0.6, y: -1 }, { el: "H", x: 0.6, y: 1 }, { el: "H", x: 1.6, y: 0 }], bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1], [1, 5, 1], [1, 6, 1], [1, 7, 1]] },
+  C2H4: { atoms: [{ el: "C", x: -0.6, y: 0 }, { el: "C", x: 0.6, y: 0 }, { el: "H", x: -1.3, y: -0.8 }, { el: "H", x: -1.3, y: 0.8 }, { el: "H", x: 1.3, y: -0.8 }, { el: "H", x: 1.3, y: 0.8 }], bonds: [[0, 1, 2], [0, 2, 1], [0, 3, 1], [1, 4, 1], [1, 5, 1]] },
+};
+const normFormula = (f: string) => f.replace(/[\s₀-₉]/g, (c) => (c >= "₀" && c <= "₉" ? String(c.charCodeAt(0) - 0x2080) : "")).toUpperCase();
+
+function cleanMolecule(m: unknown): MagicMolecule | undefined {
+  const mm = m as { atoms?: unknown; bonds?: unknown } | null;
+  if (!mm || !Array.isArray(mm.atoms) || !Array.isArray(mm.bonds)) return undefined;
+  if (mm.atoms.length < 1 || mm.atoms.length > 24) return undefined;
+  const atoms: MagicAtom[] = [];
+  for (const a of mm.atoms as { el?: unknown; x?: unknown; y?: unknown }[]) {
+    const el = String(a?.el ?? "");
+    const x = Number(a?.x), y = Number(a?.y);
+    if (!/^[A-Z][a-z]?$/.test(el) || !Number.isFinite(x) || !Number.isFinite(y)) return undefined;
+    atoms.push({ el, x, y });
+  }
+  const bonds: [number, number, number][] = [];
+  for (const b of mm.bonds as unknown[]) {
+    if (!Array.isArray(b) || b.length < 2) return undefined;
+    const [i, j, o] = [Number(b[0]), Number(b[1]), Number(b[2] ?? 1)];
+    if (![i, j].every((n) => Number.isInteger(n) && n >= 0 && n < atoms.length) || i === j) return undefined;
+    bonds.push([i, j, Math.max(1, Math.min(3, Math.round(o) || 1))]);
+  }
+  return { atoms, bonds };
+}
+
+const MAGIC_LANG_NAME: Record<string, string> = { hi: "Hindi", mr: "Marathi" };
+function magicLangRule(lang?: string): string {
+  const name = lang ? MAGIC_LANG_NAME[lang] : undefined;
+  return name
+    ? `\nThe teacher teaches in ${name}. Also add \"localLabel\": the name of the thing in ${name} (Devanagari script), and write \"fact\" in ${name} (Devanagari). Keep label, wikiTitle, expression and alternatives in English.`
+    : "";
+}
+
+const MAGIC_PROMPT =
+  "You are looking at a crop of a teacher's handwriting or doodle on a classroom blackboard (children from nursery to class 12). " +
+  "Work out what it is and reply with ONLY a JSON object, no prose:\n" +
+  '{"kind":"object|math|science|unknown","label":"","display":"","expression":"","emoji":"","fact":"","wikiTitle":"","confidence":0,"alternatives":[]}\n' +
+  "Rules:\n" +
+  "- A single written LETTER or DIGIT on its own (an \"O\", a \"b\", a \"7\") is that letter or number, not a picture of something that looks like it -> kind \"object\", label = \"letter O\" / \"number 7\", display = it as written, wikiTitle = \"O\" (the letter's article, e.g. \"B\", \"7\"), fact = a simple line about the letter or number.\n" +
+  "- A written word or a drawing of a thing/animal/place/shape -> kind \"object\". label = the thing as a simple singular English noun (\"apple\", \"lion\", \"triangle\"), even if the word is written in Hindi or another language.\n" +
+  "- An arithmetic or algebra sum to work out (\"1+1\", \"12 x 3\", \"2^5\", \"(4+6)/2\", \"25% of 80\") -> kind \"math\". expression = the sum in plain ASCII maths (* for multiply, / for divide, ^ for power), with no '=' and no answer. display = it as written.\n" +
+  "- A chemical REACTION written with an arrow or equals sign between formulas (\"H2 + O2 -> H2O\", \"Mg + O2 = MgO\", \"2H2 + O2 -> 2H2O\", \"NaOH + HCl -> NaCl + H2O\") -> kind \"reaction\". reaction = {\"reactants\":[\"H2\",\"O2\"],\"products\":[\"H2O\"]} - plain formulas WITHOUT the coefficients, ASCII digits (H2O, never subscripts), element symbols like Na, Cl, Fe. If only the left side is written and it is a standard textbook reaction, also give its products and add \"inferred\":true. display = as written, label = \"reaction\".\n" +
+  "- An equation or function of x to plot as a graph (\"y = x^2 - 4\", \"y=2x+1\", \"f(x)=x^3\", \"sin x\") -> kind \"graph\". expression = only the right-hand side in plain ASCII maths using x (\"x^2-4\", \"2*x+1\", \"sin(x)\"), display = as written, label = \"graph\". Only if it has the letter x; a sum with plain numbers is \"math\".\n" +
+  "- A chemical formula, symbol, unit or science term (\"H2O\", \"CO2\", \"Fe\", \"photosynthesis\") -> kind \"science\". label = its plain meaning (\"water\").\n" +
+  "- For a chemical formula of a small molecule (up to 20 atoms) also add \"formula\":\"H2O\" and \"molecule\":{\"atoms\":[{\"el\":\"O\",\"x\":0,\"y\":0},{\"el\":\"H\",\"x\":-0.8,\"y\":0.6}],\"bonds\":[[0,1,1]]} - a flat 2D structural formula with every atom (including H), bond lengths about 1, bonds as [atomIndex, atomIndex, order 1-3]. Omit molecule for ionic salts, single elements and anything bigger.\n" +
+  "- fact = one true, simple sentence a child would enjoy, max 16 words. emoji = one matching emoji.\n" +
+  "- wikiTitle = the best English Wikipedia article title for the label (\"Apple\", \"Lion\", \"Water\").\n" +
+  "- confidence = how sure you are (0 to 1). alternatives = up to 3 other things it could be (simple nouns), most likely first.\n" +
+  "- If it is unreadable, empty, or anything not suitable for a classroom -> kind \"unknown\" with empty fields.";
+
+function parseMagicJson(text: string): MagicRead | null {
+  const m = text.replace(/<think>[\s\S]*?<\/think>/gi, "").match(/\{[\s\S]*\}/);
+  if (!m) return null;
+  try {
+    const j = JSON.parse(m[0]) as Partial<MagicRead>;
+    const kind: MagicKind = (["object", "math", "science", "graph", "reaction", "unknown"] as const).includes(j.kind as MagicKind) ? (j.kind as MagicKind) : "unknown";
+    return {
+      kind,
+      label: String(j.label ?? "").trim().slice(0, 60),
+      display: String(j.display ?? "").trim().slice(0, 80),
+      expression: j.expression ? String(j.expression).slice(0, 80) : undefined,
+      emoji: j.emoji ? String(j.emoji).slice(0, 8) : undefined,
+      fact: j.fact ? String(j.fact).slice(0, 160) : undefined,
+      wikiTitle: j.wikiTitle ? String(j.wikiTitle).slice(0, 80) : undefined,
+      confidence: Math.max(0, Math.min(1, Number(j.confidence) || 0)),
+      alternatives: Array.isArray(j.alternatives) ? j.alternatives.map((a) => String(a).trim()).filter(Boolean).slice(0, 3) : [],
+      formula: (j as { formula?: unknown }).formula ? String((j as { formula?: unknown }).formula).slice(0, 30) : undefined,
+      molecule: cleanMolecule((j as { molecule?: unknown }).molecule),
+      reaction: cleanReaction((j as { reaction?: unknown }).reaction),
+      localLabel: (j as { localLabel?: unknown }).localLabel ? String((j as { localLabel?: unknown }).localLabel).trim().slice(0, 60) : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Only plain arithmetic reaches mathjs - letters (other than "of"/"x" handled here) are refused. */
+function solveMagicMath(expr: string): string | null {
+  let e = expr.toLowerCase().replace(/×|x/g, "*").replace(/÷/g, "/").replace(/−/g, "-").replace(/\s+/g, "").replace(/=+$/, "");
+  e = e.replace(/(\d+(?:\.\d+)?)%of/g, "($1/100)*").replace(/√\(?(\d+(?:\.\d+)?)\)?/g, "sqrt($1)");
+  if (!/^(?:[0-9+\-*/().^%]|sqrt)+$/.test(e) || e.length > 60) return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { evaluate, format } = require("mathjs") as typeof import("mathjs");
+    const v = evaluate(e);
+    if (typeof v !== "number" || !Number.isFinite(v)) return null;
+    return format(v, { precision: 10 });
+  } catch {
+    return null;
+  }
+}
+
+// ── Chemical equations ─────────────────────────────────────────────────────────
+const ELEMENTS = new Set("H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu".split(" "));
+
+/** "Ca(OH)2" -> { Ca: 1, O: 2, H: 2 }. Null if it is not a plain formula. */
+function parseFormula(f: string): Record<string, number> | null {
+  if (!/^[A-Za-z0-9()]+$/.test(f) || f.length > 24) return null;
+  let i = 0;
+  const readNum = () => { let n = ""; while (i < f.length && /\d/.test(f[i])) n += f[i++]; return n ? parseInt(n, 10) : 1; };
+  const group = (): Record<string, number> | null => {
+    const out: Record<string, number> = {};
+    while (i < f.length && f[i] !== ")") {
+      if (f[i] === "(") {
+        i++;
+        const inner = group();
+        if (!inner || f[i] !== ")") return null;
+        i++;
+        const mult = readNum();
+        for (const [el, c] of Object.entries(inner)) out[el] = (out[el] ?? 0) + c * mult;
+      } else if (/[A-Z]/.test(f[i])) {
+        let el = f[i++];
+        if (i < f.length && /[a-z]/.test(f[i])) el += f[i++];
+        if (!ELEMENTS.has(el)) return null;
+        out[el] = (out[el] ?? 0) + readNum();
+      } else return null;
+    }
+    return out;
+  };
+  const r = group();
+  return r && i === f.length && Object.keys(r).length > 0 ? r : null;
+}
+
+function cleanReaction(x: unknown): MagicRead["reaction"] | undefined {
+  if (!x || typeof x !== "object") return undefined;
+  const o = x as { reactants?: unknown; products?: unknown; inferred?: unknown };
+  const clean = (a: unknown) => (Array.isArray(a) ? a.map((v) => String(v).replace(/[\s₀-₉]/g, (c) => (c >= "₀" && c <= "₉" ? String(c.charCodeAt(0) - 0x2080) : "")).replace(/^\d+(?=[A-Z(])/, "")) : []);
+  const reactants = clean(o.reactants), products = clean(o.products);
+  if (!reactants.length || !products.length || reactants.length > 4 || products.length > 4) return undefined;
+  if (![...reactants, ...products].every((f) => parseFormula(f))) return undefined;
+  return { reactants, products, inferred: o.inferred === true ? true : undefined };
+}
+
+const gcd = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcd(b, a % b));
+const lcm = (a: number, b: number) => Math.abs(a * b) / gcd(a, b);
+
+/** Smallest whole-number coefficients that balance the equation, or null if there is not exactly one way. */
+function balanceEquation(reactants: string[], products: string[]): number[] | null {
+  const species = [...reactants, ...products];
+  const parsed = species.map((f) => parseFormula(f));
+  if (parsed.some((p) => !p)) return null;
+  const els = [...new Set(parsed.flatMap((p) => Object.keys(p!)))];
+  const n = species.length;
+  // Rows = elements, columns = species (products negative). Gauss-Jordan with exact fractions [num, den].
+  type Fr = [number, number];
+  const norm = ([a, b]: Fr): Fr => { const g = gcd(a, b) || 1; return b < 0 ? [-a / g, -b / g] : [a / g, b / g]; };
+  const sub = (x: Fr, y: Fr): Fr => norm([x[0] * y[1] - y[0] * x[1], x[1] * y[1]]);
+  const mul = (x: Fr, y: Fr): Fr => norm([x[0] * y[0], x[1] * y[1]]);
+  const div = (x: Fr, y: Fr): Fr => norm([x[0] * y[1], x[1] * y[0]]);
+  const M: Fr[][] = els.map((el) => species.map((_, c) => [(c < reactants.length ? 1 : -1) * (parsed[c]![el] ?? 0), 1] as Fr));
+  const pivots: number[] = [];
+  let row = 0;
+  for (let col = 0; col < n && row < M.length; col++) {
+    const pr = M.findIndex((r, i) => i >= row && r[col][0] !== 0);
+    if (pr < 0) continue;
+    [M[row], M[pr]] = [M[pr], M[row]];
+    const pv = M[row][col];
+    M[row] = M[row].map((v) => div(v, pv));
+    for (let i = 0; i < M.length; i++) {
+      if (i === row || M[i][col][0] === 0) continue;
+      const f = M[i][col];
+      M[i] = M[i].map((v, c) => sub(v, mul(f, M[row][c])));
+    }
+    pivots.push(col);
+    row++;
+  }
+  const free = Array.from({ length: n }, (_, c) => c).filter((c) => !pivots.includes(c));
+  if (free.length !== 1) return null;
+  const x: Fr[] = Array.from({ length: n }, () => [0, 1] as Fr);
+  x[free[0]] = [1, 1];
+  pivots.forEach((pc, r) => { x[pc] = norm([-M[r][free[0]][0], M[r][free[0]][1]]); });
+  const L = x.reduce((a, v) => lcm(a, v[1]), 1);
+  const ints = x.map((v) => (v[0] * L) / v[1]);
+  const G = ints.reduce((a, v) => gcd(a, v), 0) || 1;
+  const out = ints.map((v) => v / G);
+  return out.every((v) => Number.isInteger(v) && v > 0 && v <= 99) ? out : null;
+}
+
+// Topics we draw as a ready-made animated chalk diagram instead of fetching a photo.
+// Matched on the AI's English label, so "water cycle", "Water Cycle" and "diagram of the water cycle" all land.
+const MAGIC_DIAGRAMS: Record<string, string[]> = {
+  "water-cycle": ["water cycle", "hydrological cycle", "rain cycle"],
+  "solar-system": ["solar system", "planets", "planet", "sun and planets"],
+  photosynthesis: ["photosynthesis"],
+  "butterfly-life-cycle": ["butterfly life cycle", "life cycle of a butterfly", "life cycle of butterfly", "metamorphosis"],
+  "food-chain": ["food chain", "food web"],
+  heart: ["heart", "human heart", "blood circulation", "circulatory system"],
+};
+function magicDiagramFor(label: string): string | null {
+  const l = label.toLowerCase().replace(/\b(diagram|picture|drawing|of|the|a)\b/g, " ").replace(/\s+/g, " ").trim();
+  for (const [id, names] of Object.entries(MAGIC_DIAGRAMS)) {
+    if (names.some((n) => l === n)) return id;
+  }
+  return null;
+}
+
+export interface MagicGraph {
+  expr: string;
+  points: ([number, number] | null)[]; // null = the function isn't defined there (gap in the curve)
+  xmin: number; xmax: number; ymin: number; ymax: number;
+  roots: number[];
+  yInt: number | null;
+}
+
+/** Plot f(x) over a school-friendly window. Only a whitelist of maths tokens ever reaches mathjs. */
+function buildMagicGraph(expression: string): MagicGraph | null {
+  let e = expression.toLowerCase().replace(/^\s*(?:y|f\(x\))\s*=\s*/, "").replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-").replace(/\s+/g, "");
+  if (!e || e.length > 70) return null;
+  if (!/^(?:[0-9x+\-*/().^]|sin|cos|tan|sqrt|abs|log|ln|exp|pi|e)+$/.test(e) || !/x/.test(e.replace(/exp/g, ""))) return null;
+  e = e.replace(/ln/g, "@").replace(/log/g, "log10").replace(/@/g, "log");
+  let f: (x: number) => number;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { compile } = require("mathjs") as typeof import("mathjs");
+    const code = compile(e);
+    f = (x: number) => { const v = code.evaluate({ x }); return typeof v === "number" ? v : NaN; };
+  } catch {
+    return null;
+  }
+  const trig = /sin|cos|tan/.test(e);
+  const xmin = trig ? -2 * Math.PI : -5, xmax = trig ? 2 * Math.PI : 5; // a classroom-style window
+  const N = 200;
+  const points: ([number, number] | null)[] = [];
+  const ys: number[] = [];
+  for (let i = 0; i <= N; i++) {
+    const x = xmin + ((xmax - xmin) * i) / N;
+    let y = NaN;
+    try { y = f(x); } catch { /* undefined here */ }
+    if (Number.isFinite(y) && Math.abs(y) < 1e6) { points.push([x, y]); ys.push(y); } else points.push(null);
+  }
+  if (ys.length < 10) return null;
+  const sorted = [...ys].sort((a, b) => a - b);
+  let lo = Math.min(sorted[Math.floor(sorted.length * 0.03)], 0), hi = Math.max(sorted[Math.ceil(sorted.length * 0.97) - 1], 0);
+  if (hi - lo < 2) { lo -= 1; hi += 1; }
+  const pad = (hi - lo) * 0.1;
+  const roots: number[] = [];
+  for (let i = 1; i < points.length && roots.length < 4; i++) {
+    const a = points[i - 1], b = points[i];
+    if (!a || !b || a[1] === 0 || Math.sign(a[1]) === Math.sign(b[1])) continue;
+    let l = a[0], r = b[0];
+    for (let k = 0; k < 40; k++) {
+      const m = (l + r) / 2;
+      if (Math.sign(f(m)) === Math.sign(f(l))) l = m; else r = m;
+    }
+    const x = (l + r) / 2;
+    if (Math.abs(f(x)) < 1e-3) roots.push(Math.round(x * 100) / 100 + 0); // + 0 turns -0 into 0
+  }
+  let yInt: number | null = null;
+  try { const v = f(0); if (Number.isFinite(v)) yInt = Math.round(v * 100) / 100; } catch { /* not defined at 0 */ }
+  return {
+    expr: expression.replace(/^\s*(?:y|f\(x\))\s*=\s*/i, ""),
+    points: points.map((p) => (p ? [Math.round(p[0] * 1000) / 1000, Math.round(p[1] * 1000) / 1000] : null)),
+    xmin, xmax, ymin: lo - pad, ymax: hi + pad, roots, yInt,
+  };
+}
+
+async function magicPicture(label: string, wikiTitle?: string): Promise<{ url: string; caption: string } | null> {
+  const illustrationsOnly = SENSITIVE_EXPLICIT_PATTERN.test(label) || SENSITIVE_BIOLOGICAL_PATTERN.test(label) || SENSITIVE_CLINICAL_PATTERN.test(label);
+  for (const title of [wikiTitle, label].filter((t): t is string => !!t)) {
+    const hit = await fetchWikipediaSummary(title, illustrationsOnly);
+    if (hit) return hit;
+  }
+  const images = await fetchWikimediaImages(label, 1, [label], illustrationsOnly).catch(() => []);
+  return images[0] ?? null;
+}
+
+export const aiMagic = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { institutionId, userId } = requireTeacher(req);
+    const data = magicSchema.parse(req.body);
+
+    let read: MagicRead;
+    if (data.label) {
+      // Teacher picked a "did you mean" option - just fetch that picture.
+      read = { kind: "object", label: data.label, display: data.label, confidence: 1, alternatives: [], wikiTitle: data.label };
+    } else {
+      if (!openai) {
+        res.json({ success: true, data: { kind: "object", label: "apple", display: "apple", emoji: "🍎", fact: "Apples float in water because they are a quarter air!", confidence: 1, alternatives: [], picture: null, mock: true } });
+        return;
+      }
+      const teacherId = await getTeacherId(userId, institutionId);
+      await checkTokenPool(institutionId, teacherId);
+      let completion;
+      try {
+        completion = await openai.chat.completions.create({
+          model: MAGIC_VISION_MODEL,
+          messages: [
+            { role: "system", content: MAGIC_PROMPT + magicLangRule(data.lang) + (data.topic ? `\nThe lesson open on the board is about: ${data.topic}.` : "") },
+            { role: "user", content: [
+              { type: "text", text: "What is this?" },
+              { type: "image_url", image_url: AI_PROVIDER === "openai" ? { url: data.image!, detail: "low" } : { url: data.image! } },
+            ] },
+          ],
+          // Room for a thinking model's reasoning before the JSON.
+          max_tokens: AI_PROVIDER === "openai" ? (data.lang && data.lang !== "en" ? 420 : 260) : 900,
+          temperature: 0.2,
+          response_format: { type: "json_object" },
+        });
+      } catch (err) {
+        console.error(`[magic-chalk] vision call failed (${MAGIC_VISION_MODEL}):`, err instanceof Error ? err.message : err);
+        await recordAiUsage({
+          institutionId, teacherId, userId, userRole: "TEACHER",
+          feature: "BLACKBOARD_MAGIC" as AiFeature, provider: AI_PROVIDER, model: MAGIC_VISION_MODEL,
+          requestType: "vision", status: "FAILED", error: err instanceof Error ? err.message : String(err),
+        });
+        // Provider quota hit (e.g. Groq free tier's daily token cap) - say so plainly instead of a 500.
+        const e = err as { status?: number; headers?: { get?: (k: string) => string | null } };
+        if (e?.status === 429) {
+          const wait = Number(e.headers?.get?.("retry-after") ?? 0);
+          const mins = wait > 0 ? Math.max(1, Math.ceil(wait / 60)) : 0;
+          throw new TooManyRequestsError(`Magic Chalk has hit today's AI limit. Please try again${mins ? ` in about ${mins} min` : " a little later"}.`);
+        }
+        throw err;
+      }
+      await recordAiUsage({
+        institutionId, teacherId, userId, userRole: "TEACHER",
+        feature: "BLACKBOARD_MAGIC" as AiFeature, provider: AI_PROVIDER, model: MAGIC_VISION_MODEL,
+        requestType: "vision", status: "SUCCESS",
+        inputTokens: completion.usage?.prompt_tokens, outputTokens: completion.usage?.completion_tokens,
+        totalTokens: completion.usage?.total_tokens,
+      });
+      read = parseMagicJson(completion.choices[0].message.content ?? "") ?? { kind: "unknown", label: "", display: "", confidence: 0, alternatives: [] };
+    }
+
+    if (read.kind === "math") {
+      const answer = read.expression ? solveMagicMath(read.expression) : null;
+      res.json({ success: true, data: { ...read, answer, kind: answer === null ? "unknown" : "math" } });
+      return;
+    }
+    if (read.kind === "reaction") {
+      const rx = read.reaction;
+      if (!rx) { res.json({ success: true, data: { ...read, kind: "unknown" } }); return; }
+      const coeffs = balanceEquation(rx.reactants, rx.products);
+      const all = [...rx.reactants, ...rx.products];
+      const mols: Record<string, MagicMolecule> = {};
+      for (const f of all) { const m = MAGIC_MOLECULES[normFormula(f)]; if (m) mols[f] = m; }
+      // Atom census of both sides (with the coefficients, if we found them) for the "atoms are conserved" check.
+      const count = (list: string[], offset: number) => {
+        const t: Record<string, number> = {};
+        list.forEach((f, i) => { for (const [el, c] of Object.entries(parseFormula(f) ?? {})) t[el] = (t[el] ?? 0) + c * (coeffs ? coeffs[offset + i] : 1); });
+        return t;
+      };
+      const left = count(rx.reactants, 0), right = count(rx.products, rx.reactants.length);
+      const atoms = [...new Set([...Object.keys(left), ...Object.keys(right)])].map((el) => ({ el, left: left[el] ?? 0, right: right[el] ?? 0 }));
+      res.json({ success: true, data: {
+        ...read, label: read.label || "reaction",
+        reaction: { ...rx, coeffs: coeffs ?? all.map(() => 1), balanced: !!coeffs, atoms, molecules: mols },
+      } });
+      return;
+    }
+    if (read.kind === "graph") {
+      const graph = read.expression ? buildMagicGraph(read.expression) : null;
+      res.json({ success: true, data: graph ? { ...read, label: read.label || "graph", graph } : { ...read, kind: "unknown" } });
+      return;
+    }
+    if (read.kind === "unknown" || !read.label) {
+      res.json({ success: true, data: { ...read, kind: "unknown" } });
+      return;
+    }
+    if (read.kind === "science") {
+      // Known molecules use a fixed layout; others the model's drawing (validated) - either way
+      // the web draws it in chalk instead of Wikipedia's diagram full of measurements.
+      const known = MAGIC_MOLECULES[normFormula(read.formula || read.display || "")];
+      const molecule = known ?? read.molecule;
+      if (molecule) {
+        res.json({ success: true, data: { ...read, molecule, picture: null } });
+        return;
+      }
+    }
+    const diagram = magicDiagramFor(read.label) ?? magicDiagramFor(read.wikiTitle ?? "");
+    if (diagram) {
+      res.json({ success: true, data: { ...read, molecule: undefined, picture: null, diagram } });
+      return;
+    }
+    const picture = await magicPicture(read.label, read.wikiTitle);
+    res.json({ success: true, data: { ...read, molecule: undefined, picture } });
+  } catch (err) { next(err); }
+};

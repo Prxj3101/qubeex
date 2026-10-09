@@ -1,0 +1,5 @@
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "issuedToType" TEXT, ADD COLUMN "issuedToName" TEXT NOT NULL DEFAULT '', ADD COLUMN "dueOn" DATE, ADD COLUMN "returnExpected" BOOLEAN NOT NULL DEFAULT false, ADD COLUMN "issueId" TEXT;
+CREATE INDEX "InventoryStockMovement_issueId_idx" ON "InventoryStockMovement"("issueId");
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_issueId_fkey" FOREIGN KEY ("issueId") REFERENCES "InventoryStockMovement"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_issue_details_check" CHECK ("kind" <> 'ISSUE' OR ("requestId" IS NOT NULL AND "issuedToType" IS NOT NULL AND "issuedToType" IN ('TEACHER', 'CLASSROOM', 'DEPARTMENT') AND length(trim("issuedToName")) > 0 AND ("dueOn" IS NULL OR ("returnExpected" AND "dueOn" >= "recordedOn"))));
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_return_details_check" CHECK (("kind" = 'RETURN' AND "issueId" IS NOT NULL AND "requestId" IS NOT NULL) OR ("kind" <> 'RETURN' AND "issueId" IS NULL));

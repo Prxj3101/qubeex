@@ -1,0 +1,4 @@
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "supplierId" TEXT, ADD COLUMN "supplierName" TEXT NOT NULL DEFAULT '', ADD COLUMN "billNumber" TEXT NOT NULL DEFAULT '', ADD COLUMN "billDate" DATE, ADD COLUMN "totalCost" DECIMAL(14,2), ADD COLUMN "requestId" TEXT;
+CREATE UNIQUE INDEX "InventoryStockMovement_institutionId_requestId_key" ON "InventoryStockMovement"("institutionId", "requestId");
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "InventorySupplier"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_receipt_check" CHECK ("kind" <> 'RECEIPT' OR ("supplierId" IS NOT NULL AND "requestId" IS NOT NULL AND ("totalCost" IS NULL OR "totalCost" >= 0)));

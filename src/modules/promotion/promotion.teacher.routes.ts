@@ -3,6 +3,7 @@ import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
 import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
 import { academicDb } from "../../utils/academicContext";
+import { getCurrentAcademicYear } from "../../utils/academicYear";
 import { submitOutcomesSchema } from "./promotion.schema";
 import { getPromotionPreview, applyPromotionOutcomes, undoPromotionBatch, listPromotionBatches } from "./promotion.service";
 
@@ -83,8 +84,9 @@ router.get("/batches", ...T, async (req: AuthRequest, res: Response, next: NextF
     const teacher = await academicDb().teacher.findFirst({ where: { userId, institutionId }, select: { id: true } });
     if (!teacher) { res.status(404).json({ success: false, error: "Teacher profile not found" }); return; }
 
+    const currentYear = await getCurrentAcademicYear(institutionId);
     const ownedDivisions = await academicDb().divisionAssignment.findMany({
-      where: { teacherId: teacher.id, institutionId, subjectId: null },
+      where: { teacherId: teacher.id, institutionId, subjectId: null, academicYearId: currentYear.id },
       select: { divisionId: true },
     });
     const ownedDivisionIds = ownedDivisions.map((d) => d.divisionId);

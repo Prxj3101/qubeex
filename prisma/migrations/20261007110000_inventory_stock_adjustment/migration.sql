@@ -1,0 +1,1 @@
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_adjustment_values_check" CHECK ("kind" <> 'ADJUSTMENT' OR ("requestId" IS NOT NULL AND "previousQuantity" IS NOT NULL AND "correctedQuantity" IS NOT NULL AND "previousQuantity" >= 0 AND "correctedQuantity" >= 0 AND "quantity" = abs("correctedQuantity" - "previousQuantity") AND length(trim("notes")) > 0));

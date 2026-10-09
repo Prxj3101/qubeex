@@ -1,0 +1,2 @@
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "previousQuantity" DECIMAL(14,3), ADD COLUMN "correctedQuantity" DECIMAL(14,3);
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_correction_values_check" CHECK ("kind" <> 'OPENING_CORRECTION' OR ("previousQuantity" IS NOT NULL AND "previousQuantity" >= 0 AND "correctedQuantity" IS NOT NULL AND "correctedQuantity" >= 0 AND "quantity" = ABS("correctedQuantity" - "previousQuantity")));

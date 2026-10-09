@@ -1335,3 +1335,178 @@ ALTER TABLE "MarksheetRemark" ADD CONSTRAINT "MarksheetRemark_marksheetId_fkey" 
 -- AddForeignKey
 ALTER TABLE "MarksheetRemark" ADD CONSTRAINT "MarksheetRemark_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+
+CREATE TABLE "InventoryCategory" (
+    "id" TEXT NOT NULL,
+    "institutionId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "nameKey" TEXT NOT NULL,
+    "description" TEXT NOT NULL DEFAULT '',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    CONSTRAINT "InventoryCategory_pkey" PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "InventoryCategory_institutionId_nameKey_key" ON "InventoryCategory"("institutionId", "nameKey");
+
+CREATE TABLE "InventoryUnit" (
+    "id" TEXT NOT NULL,
+    "institutionId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "nameKey" TEXT NOT NULL,
+    "abbreviation" TEXT NOT NULL DEFAULT '',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    CONSTRAINT "InventoryUnit_pkey" PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "InventoryUnit_institutionId_nameKey_key" ON "InventoryUnit"("institutionId", "nameKey");
+
+CREATE TABLE "InventoryLocation" (
+    "id" TEXT NOT NULL,
+    "institutionId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "nameKey" TEXT NOT NULL,
+    "description" TEXT NOT NULL DEFAULT '',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    CONSTRAINT "InventoryLocation_pkey" PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "InventoryLocation_institutionId_nameKey_key" ON "InventoryLocation"("institutionId", "nameKey");
+
+CREATE TABLE "InventorySupplier" (
+    "id" TEXT NOT NULL,
+    "institutionId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "nameKey" TEXT NOT NULL,
+    "contactPerson" TEXT NOT NULL DEFAULT '',
+    "phone" TEXT NOT NULL DEFAULT '',
+    "email" TEXT NOT NULL DEFAULT '',
+    "address" TEXT NOT NULL DEFAULT '',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    CONSTRAINT "InventorySupplier_pkey" PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "InventorySupplier_institutionId_nameKey_key" ON "InventorySupplier"("institutionId", "nameKey");
+
+CREATE TYPE "InventoryItemType" AS ENUM ('CONSUMABLE', 'RETURNABLE', 'FIXED_ASSET');
+CREATE TABLE "InventoryItem" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "institutionId" TEXT NOT NULL,
+  "code" TEXT NOT NULL,
+  "name" TEXT NOT NULL,
+  "description" TEXT NOT NULL DEFAULT '',
+  "type" "InventoryItemType" NOT NULL,
+  "categoryId" TEXT NOT NULL,
+  "unitId" TEXT NOT NULL,
+  "lowStockLevel" DECIMAL(14,3) NOT NULL DEFAULT 0 CHECK ("lowStockLevel" >= 0),
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL
+);
+CREATE TABLE "InventoryStockBalance" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "institutionId" TEXT NOT NULL,
+  "itemId" TEXT NOT NULL,
+  "locationId" TEXT NOT NULL,
+  "quantity" DECIMAL(14,3) NOT NULL CHECK ("quantity" >= 0),
+  "updatedAt" TIMESTAMP(3) NOT NULL
+);
+CREATE TABLE "InventoryStockMovement" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "institutionId" TEXT NOT NULL,
+  "itemId" TEXT NOT NULL,
+  "locationId" TEXT NOT NULL,
+  "kind" TEXT NOT NULL,
+  "quantity" DECIMAL(14,3) NOT NULL CHECK ("quantity" > 0),
+  "recordedOn" DATE NOT NULL,
+  "notes" TEXT NOT NULL DEFAULT '',
+  "createdById" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX "InventoryItem_institutionId_code_key" ON "InventoryItem"("institutionId", "code");
+CREATE INDEX "InventoryItem_institutionId_name_idx" ON "InventoryItem"("institutionId", "name");
+CREATE UNIQUE INDEX "InventoryStockBalance_itemId_locationId_key" ON "InventoryStockBalance"("itemId", "locationId");
+CREATE INDEX "InventoryStockBalance_institutionId_idx" ON "InventoryStockBalance"("institutionId");
+CREATE INDEX "InventoryStockMovement_institutionId_itemId_createdAt_idx" ON "InventoryStockMovement"("institutionId", "itemId", "createdAt");
+ALTER TABLE "InventoryItem" ADD CONSTRAINT "InventoryItem_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "InventoryCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryItem" ADD CONSTRAINT "InventoryItem_unitId_fkey" FOREIGN KEY ("unitId") REFERENCES "InventoryUnit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockBalance" ADD CONSTRAINT "InventoryStockBalance_itemId_fkey" FOREIGN KEY ("itemId") REFERENCES "InventoryItem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockBalance" ADD CONSTRAINT "InventoryStockBalance_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "InventoryLocation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_itemId_fkey" FOREIGN KEY ("itemId") REFERENCES "InventoryItem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "InventoryLocation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "previousQuantity" DECIMAL(14,3), ADD COLUMN "correctedQuantity" DECIMAL(14,3);
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_correction_values_check" CHECK ("kind" <> 'OPENING_CORRECTION' OR ("previousQuantity" IS NOT NULL AND "previousQuantity" >= 0 AND "correctedQuantity" IS NOT NULL AND "correctedQuantity" >= 0 AND "quantity" = ABS("correctedQuantity" - "previousQuantity")));
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "supplierId" TEXT, ADD COLUMN "supplierName" TEXT NOT NULL DEFAULT '', ADD COLUMN "billNumber" TEXT NOT NULL DEFAULT '', ADD COLUMN "billDate" DATE, ADD COLUMN "totalCost" DECIMAL(14,2), ADD COLUMN "requestId" TEXT;
+CREATE UNIQUE INDEX "InventoryStockMovement_institutionId_requestId_key" ON "InventoryStockMovement"("institutionId", "requestId");
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "InventorySupplier"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_receipt_check" CHECK ("kind" <> 'RECEIPT' OR ("supplierId" IS NOT NULL AND "requestId" IS NOT NULL AND ("totalCost" IS NULL OR "totalCost" >= 0)));
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "attachments" JSONB NOT NULL DEFAULT '[]';
+
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "issuedToType" TEXT, ADD COLUMN "issuedToName" TEXT NOT NULL DEFAULT '', ADD COLUMN "dueOn" DATE, ADD COLUMN "returnExpected" BOOLEAN NOT NULL DEFAULT false, ADD COLUMN "issueId" TEXT;
+CREATE INDEX "InventoryStockMovement_issueId_idx" ON "InventoryStockMovement"("issueId");
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_issueId_fkey" FOREIGN KEY ("issueId") REFERENCES "InventoryStockMovement"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_issue_details_check" CHECK ("kind" <> 'ISSUE' OR ("requestId" IS NOT NULL AND "issuedToType" IS NOT NULL AND "issuedToType" IN ('TEACHER', 'CLASSROOM', 'DEPARTMENT') AND length(trim("issuedToName")) > 0 AND ("dueOn" IS NULL OR ("returnExpected" AND "dueOn" >= "recordedOn"))));
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_return_details_check" CHECK (("kind" = 'RETURN' AND "issueId" IS NOT NULL AND "requestId" IS NOT NULL) OR ("kind" <> 'RETURN' AND "issueId" IS NULL));
+
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "issuedToLabel" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "InventoryStockMovement" DROP CONSTRAINT "InventoryStockMovement_issue_details_check";
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_issue_details_check" CHECK ("kind" <> 'ISSUE' OR ("requestId" IS NOT NULL AND "issuedToType" IS NOT NULL AND "issuedToType" IN ('PRINCIPAL', 'VICE_PRINCIPAL', 'HEAD_MASTER', 'HEAD_MISTRESS', 'DIRECTOR', 'ADMINISTRATOR', 'COORDINATOR', 'DEAN', 'RECTOR', 'SUPERINTENDENT', 'CHAIRMAN', 'SECRETARY', 'TRUSTEE', 'TEACHER', 'STUDENT', 'LIBRARIAN', 'ACCOUNTANT', 'CLERK', 'RECEPTIONIST', 'LAB_ASSISTANT', 'SPORTS_COACH', 'IT_STAFF', 'PEON', 'DRIVER', 'SECURITY_GUARD', 'HOUSEKEEPING', 'CLASSROOM', 'DEPARTMENT', 'CUSTOM') AND length(trim("issuedToName")) > 0 AND (("issuedToType" = 'CUSTOM' AND length(trim("issuedToLabel")) > 0) OR ("issuedToType" <> 'CUSTOM' AND "issuedToLabel" = '')) AND ("dueOn" IS NULL OR ("returnExpected" AND "dueOn" >= "recordedOn"))));
+
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "transferId" TEXT, ADD COLUMN "transferLocationId" TEXT, ADD COLUMN "transferLocationName" TEXT NOT NULL DEFAULT '';
+CREATE UNIQUE INDEX "InventoryStockMovement_transferId_kind_key" ON "InventoryStockMovement"("transferId", "kind");
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_transferLocationId_fkey" FOREIGN KEY ("transferLocationId") REFERENCES "InventoryLocation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_transfer_details_check" CHECK (("kind" IN ('TRANSFER_OUT', 'TRANSFER_IN') AND "transferId" IS NOT NULL AND "transferLocationId" IS NOT NULL AND "transferLocationId" <> "locationId" AND length(trim("transferLocationName")) > 0 AND (("kind" = 'TRANSFER_OUT' AND "requestId" IS NOT NULL) OR ("kind" = 'TRANSFER_IN' AND "requestId" IS NULL))) OR ("kind" NOT IN ('TRANSFER_OUT', 'TRANSFER_IN') AND "transferId" IS NULL AND "transferLocationId" IS NULL));
+
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_adjustment_values_check" CHECK ("kind" <> 'ADJUSTMENT' OR ("requestId" IS NOT NULL AND "previousQuantity" IS NOT NULL AND "correctedQuantity" IS NOT NULL AND "previousQuantity" >= 0 AND "correctedQuantity" >= 0 AND "quantity" = abs("correctedQuantity" - "previousQuantity") AND length(trim("notes")) > 0));
+
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "deliveredQuantity" DECIMAL(14,3), ADD COLUMN "rejectedQuantity" DECIMAL(14,3) NOT NULL DEFAULT 0, ADD COLUMN "damageReason" TEXT NOT NULL DEFAULT '';
+UPDATE "InventoryStockMovement" SET "deliveredQuantity" = "quantity" WHERE "kind" = 'RECEIPT';
+ALTER TABLE "InventoryStockMovement" DROP CONSTRAINT "InventoryStockMovement_quantity_check";
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_quantity_check" CHECK ("quantity" > 0 OR ("kind" = 'RECEIPT' AND "quantity" = 0));
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_receipt_acceptance_check" CHECK ("kind" <> 'RECEIPT' OR ("deliveredQuantity" IS NOT NULL AND "deliveredQuantity" > 0 AND "rejectedQuantity" >= 0 AND "rejectedQuantity" <= "deliveredQuantity" AND "quantity" = "deliveredQuantity" - "rejectedQuantity" AND (("rejectedQuantity" = 0 AND "damageReason" = '') OR ("rejectedQuantity" > 0 AND length(trim("damageReason")) > 0))));
+
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_supplier_return_check" CHECK ("kind" <> 'SUPPLIER_RETURN' OR ("supplierId" IS NOT NULL AND length(trim("supplierName")) > 0 AND "requestId" IS NOT NULL AND length(trim("notes")) > 0));
+
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "adjustmentType" TEXT;
+UPDATE "InventoryStockMovement" SET "adjustmentType" = 'COUNT_CORRECTION' WHERE "kind" = 'ADJUSTMENT';
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_adjustment_type_check" CHECK ("kind" <> 'ADJUSTMENT' OR ("adjustmentType" IS NOT NULL AND "adjustmentType" IN ('COUNT_CORRECTION', 'DAMAGED', 'LOST') AND ("adjustmentType" = 'COUNT_CORRECTION' OR "correctedQuantity" < "previousQuantity")));
+
+ALTER TABLE "InventoryStockMovement" DROP CONSTRAINT "InventoryStockMovement_return_details_check";
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_return_details_check" CHECK (("kind" IN ('RETURN','ISSUE_DAMAGED','ISSUE_LOST') AND "issueId" IS NOT NULL AND "requestId" IS NOT NULL) OR ("kind" NOT IN ('RETURN','ISSUE_DAMAGED','ISSUE_LOST') AND "issueId" IS NULL));
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_issue_resolution_reason_check" CHECK ("kind" NOT IN ('ISSUE_DAMAGED','ISSUE_LOST') OR length(trim("notes")) > 0);
+
+CREATE TABLE "InventoryPurchaseRequest" (
+ "id" TEXT NOT NULL PRIMARY KEY, "institutionId" TEXT NOT NULL,
+ "requestId" TEXT NOT NULL, "source" TEXT NOT NULL DEFAULT 'MANUAL',
+ "requestedById" TEXT, "requestedByName" TEXT NOT NULL, "department" TEXT NOT NULL DEFAULT '',
+ "reason" TEXT NOT NULL, "requiredOn" DATE NOT NULL, "lines" JSONB NOT NULL,
+ "status" TEXT NOT NULL DEFAULT 'PENDING', "revision" INTEGER NOT NULL DEFAULT 1,
+ "createdById" TEXT NOT NULL, "events" JSONB NOT NULL,
+ "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL,
+ CONSTRAINT "InventoryPurchaseRequest_status_check" CHECK ("status" IN ('PENDING','APPROVED','REJECTED','CHANGES_REQUESTED')),
+ CONSTRAINT "InventoryPurchaseRequest_source_check" CHECK ("source" IN ('MANUAL','TEACHER')),
+ CONSTRAINT "InventoryPurchaseRequest_details_check" CHECK (length(trim("requestedByName")) > 0 AND length(trim("reason")) > 0 AND "revision" > 0 AND jsonb_typeof("lines") = 'array' AND jsonb_array_length("lines") BETWEEN 1 AND 20)
+);
+CREATE UNIQUE INDEX "InventoryPurchaseRequest_institutionId_requestId_key" ON "InventoryPurchaseRequest"("institutionId", "requestId");
+CREATE INDEX "InventoryPurchaseRequest_institutionId_createdAt_idx" ON "InventoryPurchaseRequest"("institutionId", "createdAt");
+
+CREATE TABLE "InventoryPurchaseOrder" (
+ "id" TEXT PRIMARY KEY, "institutionId" TEXT NOT NULL, "purchaseRequestId" TEXT NOT NULL,
+ "number" TEXT NOT NULL, "supplierId" TEXT NOT NULL, "supplierSnapshot" JSONB NOT NULL,
+ "locationId" TEXT NOT NULL, "locationName" TEXT NOT NULL, "expectedOn" DATE NOT NULL,
+ "instructions" TEXT NOT NULL DEFAULT '', "lines" JSONB NOT NULL, "total" DECIMAL(14,2) NOT NULL,
+ "status" TEXT NOT NULL DEFAULT 'PENDING', "revision" INTEGER NOT NULL DEFAULT 1,
+ "createdById" TEXT NOT NULL, "events" JSONB NOT NULL,
+ "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL,
+ CONSTRAINT "InventoryPurchaseOrder_purchaseRequestId_fkey" FOREIGN KEY ("purchaseRequestId") REFERENCES "InventoryPurchaseRequest"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+ CONSTRAINT "InventoryPurchaseOrder_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "InventorySupplier"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+ CONSTRAINT "InventoryPurchaseOrder_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "InventoryLocation"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+ CONSTRAINT "InventoryPurchaseOrder_status_check" CHECK ("status" IN ('PENDING','APPROVED','REJECTED','PARTIALLY_RECEIVED','COMPLETED','CLOSED')),
+ CONSTRAINT "InventoryPurchaseOrder_total_check" CHECK ("total" >= 0 AND "total" <= 1000000000 AND "revision" > 0 AND jsonb_typeof("lines") = 'array' AND jsonb_array_length("lines") BETWEEN 1 AND 20)
+);
+CREATE UNIQUE INDEX "InventoryPurchaseOrder_purchaseRequestId_key" ON "InventoryPurchaseOrder"("purchaseRequestId");
+CREATE UNIQUE INDEX "InventoryPurchaseOrder_institutionId_number_key" ON "InventoryPurchaseOrder"("institutionId", "number");
+CREATE INDEX "InventoryPurchaseOrder_institutionId_createdAt_idx" ON "InventoryPurchaseOrder"("institutionId", "createdAt");
+ALTER TABLE "InventoryStockMovement" ADD COLUMN "purchaseOrderId" TEXT, ADD COLUMN "purchaseOrderLine" INTEGER;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_purchaseOrderId_fkey" FOREIGN KEY ("purchaseOrderId") REFERENCES "InventoryPurchaseOrder"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_purchaseOrder_check" CHECK (("purchaseOrderId" IS NULL AND "purchaseOrderLine" IS NULL) OR ("purchaseOrderId" IS NOT NULL AND "purchaseOrderLine" >= 0 AND "purchaseOrderLine" IS NOT NULL AND "kind" = 'RECEIPT'));
+CREATE INDEX "InventoryStockMovement_purchaseOrderId_idx" ON "InventoryStockMovement"("purchaseOrderId");

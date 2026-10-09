@@ -1,3 +1,4 @@
+import inventoryRoutes from "./modules/inventory/inventory.routes";
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -59,6 +60,9 @@ app.post(
 app.use("/api/admin/payroll/attendance/import", express.json({ limit: "5mb" }));
 app.use("/api/admin/payroll/attendance/day", express.json({ limit: "512kb" }));
 
+// Magic Chalk sends a small cropped picture of the strokes.
+app.use("/api/teacher/blackboard/ai/magic", express.json({ limit: "800kb" }));
+
 app.use(express.json({ limit: "10kb" }));
 
 app.use(generalLimiter);
@@ -75,6 +79,7 @@ app.use((req, res, next) => {
 
 app.use("/api/superadmin", superadminRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/admin/inventory", inventoryRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/staffroom", staffroomRoutes);
 app.use("/api/admin/campus", campusRoutes);

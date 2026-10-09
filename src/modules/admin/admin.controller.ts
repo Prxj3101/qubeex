@@ -2,7 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
-import { upsertCurrentEnrollment } from "../../utils/academicYear";
+import { upsertCurrentEnrollment, getCurrentAcademicYear } from "../../utils/academicYear";
 import { resolveUsers, USER_SELECT_NO_PASSWORD } from "../../services/userLookup.service";
 import { checkInstitutionAccess } from "../../utils/authorization";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
@@ -80,6 +80,7 @@ const updateAiSoftLimitSchema = z.object({
 });
 
 const VALID_PERMISSIONS = [
+  "INVENTORY",
   "STAFF_TEACHERS",
   "STAFF_STAFFROOM",
   "STAFF_SUBADMINS",
@@ -379,8 +380,9 @@ export const uploadMyInstitutionLogo = async (
 // to match the frontend's generic level1(Standard)/level2(Division)/level3(Subject)
 // TeacherAssignment type. subjectId === null means a class-teacher assignment.
 async function getTeacherAssignmentsMap(institutionId: string, teacherIds: string[]) {
+  const currentYear = await getCurrentAcademicYear(institutionId);
   const rows = await academicDb().divisionAssignment.findMany({
-    where: { institutionId, teacherId: { in: teacherIds } },
+    where: { institutionId, teacherId: { in: teacherIds }, academicYearId: currentYear.id },
     include: {
       division: { include: { standard: true } },
       subject: true,
@@ -833,6 +835,7 @@ export const getInstitutionStructure = async (
       select: { type: true },
     });
 
+    const stdYear = await getCurrentAcademicYear(user.institutionId);
     const standards = await academicDb().standard.findMany({
       where: { institutionId: user.institutionId },
       orderBy: { order: "asc" },
@@ -842,6 +845,7 @@ export const getInstitutionStructure = async (
           orderBy: { name: "asc" },
           include: {
             assignments: {
+              where: { academicYearId: stdYear.id },
               include: {
                 subject: true,
               },

@@ -1,0 +1,1 @@
+ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_supplier_return_check" CHECK ("kind" <> 'SUPPLIER_RETURN' OR ("supplierId" IS NOT NULL AND length(trim("supplierName")) > 0 AND "requestId" IS NOT NULL AND length(trim("notes")) > 0));

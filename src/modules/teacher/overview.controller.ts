@@ -3,6 +3,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
+import { getCurrentAcademicYear } from "../../utils/academicYear";
 import { resolveUsers } from "../../services/userLookup.service";
 import { redis } from "../../utils/redis";
 import {
@@ -45,9 +46,10 @@ export async function getOverview(req: AuthRequest, res: Response, next: NextFun
     const institutionName = institutionRow?.name ?? "";
     const institutionLogoUrl = institutionRow?.logoUrl ?? null;
 
+    const overviewYear = await getCurrentAcademicYear(institutionId);
     const [assignmentRows, testsConducted, classTeacherDivision, auditLogRows] = await Promise.all([
       academicDb().divisionAssignment.findMany({
-        where: { teacherId: teacher.id, institutionId },
+        where: { teacherId: teacher.id, institutionId, academicYearId: overviewYear.id },
         select: { divisionId: true, subjectId: true },
       }),
       academicDb().taskTest.count({

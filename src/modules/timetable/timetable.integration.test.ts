@@ -310,6 +310,23 @@ d("Timetable Studio (integration)", () => {
     });
   });
 
+  it("a current-year student without an enrollment row still sees their class timetable", async () => {
+    await inCtx(async () => {
+      const p = s.prisma;
+      // Legacy-style student: has a live division but no StudentEnrollment for the current year.
+      const u = await p.user.create({ data: { name: "Legacy", email: `legacy${Date.now()}@x.test`, role: "STUDENT", institutionId: ids.inst, isActive: true } });
+      await p.student.create({ data: { studentId: `legacy-${Date.now()}`, userId: u.id, institutionId: ids.inst, standardId: ids.std, divisionId: ids.divA } });
+      const week = await s.views.studentWeek(ids.inst, year, u.id, undefined);
+      expect(week.published).toBe(true);
+      expect(week.division).toBe("10-A");
+      // …but a past year still requires that year's own enrollment.
+      await expect(s.views.studentWeek(ids.inst, oldYear, u.id, undefined)).rejects.toMatchObject({ status: 403 });
+      // And they are included when the class is notified.
+      const { divisionStudentUserIds } = await import("./timetable.notify");
+      expect(await divisionStudentUserIds(ids.inst, ids.divA, year.id)).toContain(u.id);
+    });
+  });
+
   it("keeps academic years separate and makes closed years read-only", async () => {
     await inCtx(async () => {
       const old = await s.studio.getDivisionStudio(ids.inst, oldYear, ids.divA);

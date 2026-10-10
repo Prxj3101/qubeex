@@ -197,17 +197,22 @@ export async function teacherWeek(institutionId: string, year: AcademicYear, use
  */
 export async function studentWeek(institutionId: string, year: AcademicYear, userId: string, dateStr?: string) {
   const db = academicDb();
-  const student = await db.student.findFirst({ where: { userId, institutionId }, select: { id: true } });
+  const student = await db.student.findFirst({ where: { userId, institutionId }, select: { id: true, divisionId: true } });
   if (!student) throw httpError(404, "Student profile not found");
   const enrollment = await db.studentEnrollment.findFirst({
     where: { studentId: student.id, academicYearId: year.id, institutionId },
     select: { divisionId: true },
   });
-  if (!enrollment) throw httpError(403, "No enrollment found for this academic year");
+  // Same rule as the rest of the student app: for the CURRENT year the student's live division is the
+  // truth (older students may have no enrollment row yet); other years need that year's enrollment.
+  const divisionId = enrollment?.divisionId ?? (year.isCurrent ? student.divisionId : null);
+  if (!divisionId) {
+    throw httpError(403, year.isCurrent ? "You are not assigned to a class yet" : "No enrollment found for this academic year");
+  }
   const ctx = await loadYearContext(institutionId, year);
   const weekStart = anchor(dateStr);
-  const built = await buildWeek(institutionId, year, ctx, weekStart, { divisionIds: [enrollment.divisionId] });
-  return { ...shape(year, ctx, weekStart, built), division: ctx.labels.division(enrollment.divisionId) };
+  const built = await buildWeek(institutionId, year, ctx, weekStart, { divisionIds: [divisionId] });
+  return { ...shape(year, ctx, weekStart, built), division: ctx.labels.division(divisionId) };
 }
 
 /**

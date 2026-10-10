@@ -20,19 +20,30 @@ export function audit(actor: Actor, action: string, details: string, metadata?: 
   });
 }
 
-/** userIds of the division's students for the given academic year (via enrollment, not the live division). */
+/**
+ * userIds of the division's students for the given academic year: that year's enrollments, plus (for the
+ * current year) students whose live division is this one — older students may have no enrollment row.
+ */
 export async function divisionStudentUserIds(institutionId: string, divisionId: string, academicYearId: string): Promise<string[]> {
   const db = academicDb();
-  const enrollments = await db.studentEnrollment.findMany({
-    where: { institutionId, divisionId, academicYearId, status: "ACTIVE" },
-    select: { studentId: true },
-  });
-  if (!enrollments.length) return [];
+  const [enrollments, year] = await Promise.all([
+    db.studentEnrollment.findMany({
+      where: { institutionId, divisionId, academicYearId, status: "ACTIVE" },
+      select: { studentId: true },
+    }),
+    db.academicYear.findFirst({ where: { id: academicYearId, institutionId }, select: { isCurrent: true } }),
+  ]);
   const students = await db.student.findMany({
-    where: { id: { in: enrollments.map((e) => e.studentId) }, institutionId },
+    where: {
+      institutionId,
+      OR: [
+        ...(enrollments.length ? [{ id: { in: enrollments.map((e) => e.studentId) } }] : []),
+        ...(year?.isCurrent ? [{ divisionId, status: "ACTIVE" as const }] : []),
+      ],
+    },
     select: { userId: true },
   });
-  return students.map((s) => s.userId);
+  return [...new Set(students.map((s) => s.userId))];
 }
 
 export async function teacherUserIds(institutionId: string, teacherIds: string[]): Promise<string[]> {

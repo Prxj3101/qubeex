@@ -11,7 +11,7 @@ import { OrderLine, assertTotal, priceLine, receiptProgress } from "./purchase-o
 
 const router = Router(), uuid = z.string().uuid();
 const money = z.string().trim().regex(/^\d{1,10}(\.\d{1,2})?$/, "Enter an amount with up to 2 decimal places").refine(value => Number(value) <= 1000000000, "Price is too large");
-const fields = z.object({ supplierId: uuid, locationId: uuid, expectedOn: z.iso.date(), instructions: z.string().trim().max(1000).default(""), lines: z.array(z.object({ itemId: uuid, unitPrice: money, taxPercent: money.refine(value => Number(value) <= 100, "Tax must be between 0 and 100") }).strict()).min(1).max(20) }).strict();
+const fields = z.object({ supplierId: uuid, locationId: uuid, expectedOn: z.iso.date(), instructions: z.string().trim().max(1000).default(""), lines: z.array(z.object({ itemId: uuid, quantity: z.number().int().min(1).max(1000000000).optional(), unitPrice: money, taxPercent: money.refine(value => Number(value) <= 100, "Tax must be between 0 and 100") }).strict()).min(1).max(20) }).strict();
 const createSchema = fields.extend({ purchaseRequestId: uuid });
 const editSchema = fields.extend({ revision: z.number().int().positive() });
 const reviewSchema = z.object({ revision: z.number().int().positive(), decision: z.enum(["APPROVED", "REJECTED"]), reason: z.string().trim().max(1000).default("") }).strict();
@@ -35,7 +35,7 @@ async function build(tx: Prisma.TransactionClient, institutionId: string, input:
     if (!item) throw new BadRequestError("Select inventory items from your school for all order lines");
     const requestedUnit = requested.unit.trim().toLowerCase();
     if (![item.unit.name, item.unit.abbreviation].filter(Boolean).some(unit => unit.toLowerCase() === requestedUnit)) throw new BadRequestError(`Unit for ${requested.name} must match the inventory item (${item.unit.abbreviation || item.unit.name})`);
-    return { itemId: item.id, requestedName: requested.name, name: item.name, code: item.code, unit: item.unit.abbreviation || item.unit.name, quantity: requested.quantity, unitPrice: new Prisma.Decimal(line.unitPrice).toFixed(2), taxPercent: new Prisma.Decimal(line.taxPercent).toFixed(2), ...priceLine(requested.quantity, line.unitPrice, line.taxPercent), cancelledQuantity: 0 };
+    return { itemId: item.id, requestedName: requested.name, name: item.name, code: item.code, unit: item.unit.abbreviation || item.unit.name, requestedQuantity: requested.quantity, quantity: line.quantity ?? requested.quantity, unitPrice: new Prisma.Decimal(line.unitPrice).toFixed(2), taxPercent: new Prisma.Decimal(line.taxPercent).toFixed(2), ...priceLine(line.quantity ?? requested.quantity, line.unitPrice, line.taxPercent), cancelledQuantity: 0 };
   });
   return { supplierId: supplier.id, supplierSnapshot: { name: supplier.name, contactPerson: supplier.contactPerson, phone: supplier.phone, email: supplier.email, address: supplier.address }, locationId: location.id, locationName: location.name, expectedOn: new Date(input.expectedOn + "T00:00:00Z"), instructions: input.instructions, lines, total: assertTotal(lines) };
 }
@@ -53,6 +53,7 @@ router.post("/purchase-orders", async (req: AuthRequest, res: Response, next: Ne
       await tx.$queryRaw`SELECT "id" FROM "InventoryPurchaseRequest" WHERE "id" = ${input.purchaseRequestId} AND "institutionId" = ${institutionId} FOR UPDATE`;
       const request = await tx.inventoryPurchaseRequest.findFirst({ where: { id: input.purchaseRequestId, institutionId } });
       if (!request) throw new NotFoundError("Purchase request not found");
+      if (request.source === "TEACHER") throw new BadRequestError("Create a purchase request from Stock & Assets Requests first");
       if (request.status !== "APPROVED") throw new ConflictError("Only approved requests can become purchase orders");
       const existing = await tx.inventoryPurchaseOrder.findFirst({ where: { purchaseRequestId: request.id, institutionId } });
       if (existing) throw new ConflictError(`Order ${existing.number} already exists for this request. Open Orders to view or edit it.`);

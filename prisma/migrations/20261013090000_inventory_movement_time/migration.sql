@@ -1,0 +1,1 @@
+ALTER TABLE "InventoryStockMovement" ADD COLUMN IF NOT EXISTS "occurredAt" TIMESTAMPTZ(3);

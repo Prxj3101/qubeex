@@ -71,6 +71,7 @@ export type InventoryStockMovementMinAggregateOutputType = {
   previousQuantity: runtime.Decimal | null
   correctedQuantity: runtime.Decimal | null
   recordedOn: Date | null
+  occurredAt: Date | null
   notes: string | null
   createdById: string | null
   createdAt: Date | null
@@ -107,6 +108,7 @@ export type InventoryStockMovementMaxAggregateOutputType = {
   previousQuantity: runtime.Decimal | null
   correctedQuantity: runtime.Decimal | null
   recordedOn: Date | null
+  occurredAt: Date | null
   notes: string | null
   createdById: string | null
   createdAt: Date | null
@@ -135,6 +137,7 @@ export type InventoryStockMovementCountAggregateOutputType = {
   returnExpected: number
   issueId: number
   attachments: number
+  corrections: number
   id: number
   institutionId: number
   itemId: number
@@ -144,6 +147,7 @@ export type InventoryStockMovementCountAggregateOutputType = {
   previousQuantity: number
   correctedQuantity: number
   recordedOn: number
+  occurredAt: number
   notes: number
   createdById: number
   createdAt: number
@@ -202,6 +206,7 @@ export type InventoryStockMovementMinAggregateInputType = {
   previousQuantity?: true
   correctedQuantity?: true
   recordedOn?: true
+  occurredAt?: true
   notes?: true
   createdById?: true
   createdAt?: true
@@ -238,6 +243,7 @@ export type InventoryStockMovementMaxAggregateInputType = {
   previousQuantity?: true
   correctedQuantity?: true
   recordedOn?: true
+  occurredAt?: true
   notes?: true
   createdById?: true
   createdAt?: true
@@ -266,6 +272,7 @@ export type InventoryStockMovementCountAggregateInputType = {
   returnExpected?: true
   issueId?: true
   attachments?: true
+  corrections?: true
   id?: true
   institutionId?: true
   itemId?: true
@@ -275,6 +282,7 @@ export type InventoryStockMovementCountAggregateInputType = {
   previousQuantity?: true
   correctedQuantity?: true
   recordedOn?: true
+  occurredAt?: true
   notes?: true
   createdById?: true
   createdAt?: true
@@ -390,6 +398,7 @@ export type InventoryStockMovementGroupByOutputType = {
   returnExpected: boolean
   issueId: string | null
   attachments: runtime.JsonValue
+  corrections: runtime.JsonValue
   id: string
   institutionId: string
   itemId: string
@@ -399,6 +408,7 @@ export type InventoryStockMovementGroupByOutputType = {
   previousQuantity: runtime.Decimal | null
   correctedQuantity: runtime.Decimal | null
   recordedOn: Date
+  occurredAt: Date | null
   notes: string
   createdById: string
   createdAt: Date
@@ -450,6 +460,7 @@ export type InventoryStockMovementWhereInput = {
   returnExpected?: Prisma.BoolFilter<"InventoryStockMovement"> | boolean
   issueId?: Prisma.StringNullableFilter<"InventoryStockMovement"> | string | null
   attachments?: Prisma.JsonFilter<"InventoryStockMovement">
+  corrections?: Prisma.JsonFilter<"InventoryStockMovement">
   id?: Prisma.StringFilter<"InventoryStockMovement"> | string
   institutionId?: Prisma.StringFilter<"InventoryStockMovement"> | string
   itemId?: Prisma.StringFilter<"InventoryStockMovement"> | string
@@ -459,6 +470,7 @@ export type InventoryStockMovementWhereInput = {
   previousQuantity?: Prisma.DecimalNullableFilter<"InventoryStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.DecimalNullableFilter<"InventoryStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFilter<"InventoryStockMovement"> | Date | string
+  occurredAt?: Prisma.DateTimeNullableFilter<"InventoryStockMovement"> | Date | string | null
   notes?: Prisma.StringFilter<"InventoryStockMovement"> | string
   createdById?: Prisma.StringFilter<"InventoryStockMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryStockMovement"> | Date | string
@@ -494,6 +506,7 @@ export type InventoryStockMovementOrderByWithRelationInput = {
   returnExpected?: Prisma.SortOrder
   issueId?: Prisma.SortOrderInput | Prisma.SortOrder
   attachments?: Prisma.SortOrder
+  corrections?: Prisma.SortOrder
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   itemId?: Prisma.SortOrder
@@ -503,6 +516,7 @@ export type InventoryStockMovementOrderByWithRelationInput = {
   previousQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
   correctedQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedOn?: Prisma.SortOrder
+  occurredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -544,6 +558,7 @@ export type InventoryStockMovementWhereUniqueInput = Prisma.AtLeast<{
   returnExpected?: Prisma.BoolFilter<"InventoryStockMovement"> | boolean
   issueId?: Prisma.StringNullableFilter<"InventoryStockMovement"> | string | null
   attachments?: Prisma.JsonFilter<"InventoryStockMovement">
+  corrections?: Prisma.JsonFilter<"InventoryStockMovement">
   institutionId?: Prisma.StringFilter<"InventoryStockMovement"> | string
   itemId?: Prisma.StringFilter<"InventoryStockMovement"> | string
   locationId?: Prisma.StringFilter<"InventoryStockMovement"> | string
@@ -552,6 +567,7 @@ export type InventoryStockMovementWhereUniqueInput = Prisma.AtLeast<{
   previousQuantity?: Prisma.DecimalNullableFilter<"InventoryStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.DecimalNullableFilter<"InventoryStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFilter<"InventoryStockMovement"> | Date | string
+  occurredAt?: Prisma.DateTimeNullableFilter<"InventoryStockMovement"> | Date | string | null
   notes?: Prisma.StringFilter<"InventoryStockMovement"> | string
   createdById?: Prisma.StringFilter<"InventoryStockMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryStockMovement"> | Date | string
@@ -587,6 +603,7 @@ export type InventoryStockMovementOrderByWithAggregationInput = {
   returnExpected?: Prisma.SortOrder
   issueId?: Prisma.SortOrderInput | Prisma.SortOrder
   attachments?: Prisma.SortOrder
+  corrections?: Prisma.SortOrder
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   itemId?: Prisma.SortOrder
@@ -596,6 +613,7 @@ export type InventoryStockMovementOrderByWithAggregationInput = {
   previousQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
   correctedQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedOn?: Prisma.SortOrder
+  occurredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -632,6 +650,7 @@ export type InventoryStockMovementScalarWhereWithAggregatesInput = {
   returnExpected?: Prisma.BoolWithAggregatesFilter<"InventoryStockMovement"> | boolean
   issueId?: Prisma.StringNullableWithAggregatesFilter<"InventoryStockMovement"> | string | null
   attachments?: Prisma.JsonWithAggregatesFilter<"InventoryStockMovement">
+  corrections?: Prisma.JsonWithAggregatesFilter<"InventoryStockMovement">
   id?: Prisma.StringWithAggregatesFilter<"InventoryStockMovement"> | string
   institutionId?: Prisma.StringWithAggregatesFilter<"InventoryStockMovement"> | string
   itemId?: Prisma.StringWithAggregatesFilter<"InventoryStockMovement"> | string
@@ -641,6 +660,7 @@ export type InventoryStockMovementScalarWhereWithAggregatesInput = {
   previousQuantity?: Prisma.DecimalNullableWithAggregatesFilter<"InventoryStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.DecimalNullableWithAggregatesFilter<"InventoryStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeWithAggregatesFilter<"InventoryStockMovement"> | Date | string
+  occurredAt?: Prisma.DateTimeNullableWithAggregatesFilter<"InventoryStockMovement"> | Date | string | null
   notes?: Prisma.StringWithAggregatesFilter<"InventoryStockMovement"> | string
   createdById?: Prisma.StringWithAggregatesFilter<"InventoryStockMovement"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryStockMovement"> | Date | string
@@ -666,6 +686,7 @@ export type InventoryStockMovementCreateInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   kind: string
@@ -673,6 +694,7 @@ export type InventoryStockMovementCreateInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -707,6 +729,7 @@ export type InventoryStockMovementUncheckedCreateInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -716,6 +739,7 @@ export type InventoryStockMovementUncheckedCreateInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -742,6 +766,7 @@ export type InventoryStockMovementUpdateInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -749,6 +774,7 @@ export type InventoryStockMovementUpdateInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -783,6 +809,7 @@ export type InventoryStockMovementUncheckedUpdateInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -792,6 +819,7 @@ export type InventoryStockMovementUncheckedUpdateInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -821,6 +849,7 @@ export type InventoryStockMovementCreateManyInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -830,6 +859,7 @@ export type InventoryStockMovementCreateManyInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -855,6 +885,7 @@ export type InventoryStockMovementUpdateManyMutationInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -862,6 +893,7 @@ export type InventoryStockMovementUpdateManyMutationInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -889,6 +921,7 @@ export type InventoryStockMovementUncheckedUpdateManyInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -898,6 +931,7 @@ export type InventoryStockMovementUncheckedUpdateManyInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -951,6 +985,7 @@ export type InventoryStockMovementCountOrderByAggregateInput = {
   returnExpected?: Prisma.SortOrder
   issueId?: Prisma.SortOrder
   attachments?: Prisma.SortOrder
+  corrections?: Prisma.SortOrder
   id?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   itemId?: Prisma.SortOrder
@@ -960,6 +995,7 @@ export type InventoryStockMovementCountOrderByAggregateInput = {
   previousQuantity?: Prisma.SortOrder
   correctedQuantity?: Prisma.SortOrder
   recordedOn?: Prisma.SortOrder
+  occurredAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1006,6 +1042,7 @@ export type InventoryStockMovementMaxOrderByAggregateInput = {
   previousQuantity?: Prisma.SortOrder
   correctedQuantity?: Prisma.SortOrder
   recordedOn?: Prisma.SortOrder
+  occurredAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1042,6 +1079,7 @@ export type InventoryStockMovementMinOrderByAggregateInput = {
   previousQuantity?: Prisma.SortOrder
   correctedQuantity?: Prisma.SortOrder
   recordedOn?: Prisma.SortOrder
+  occurredAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1353,6 +1391,7 @@ export type InventoryStockMovementCreateWithoutTransferLocationInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   kind: string
@@ -1360,6 +1399,7 @@ export type InventoryStockMovementCreateWithoutTransferLocationInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1392,6 +1432,7 @@ export type InventoryStockMovementUncheckedCreateWithoutTransferLocationInput = 
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -1401,6 +1442,7 @@ export type InventoryStockMovementUncheckedCreateWithoutTransferLocationInput = 
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1437,6 +1479,7 @@ export type InventoryStockMovementCreateWithoutLocationInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   kind: string
@@ -1444,6 +1487,7 @@ export type InventoryStockMovementCreateWithoutLocationInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1477,6 +1521,7 @@ export type InventoryStockMovementUncheckedCreateWithoutLocationInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -1485,6 +1530,7 @@ export type InventoryStockMovementUncheckedCreateWithoutLocationInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1543,6 +1589,7 @@ export type InventoryStockMovementScalarWhereInput = {
   returnExpected?: Prisma.BoolFilter<"InventoryStockMovement"> | boolean
   issueId?: Prisma.StringNullableFilter<"InventoryStockMovement"> | string | null
   attachments?: Prisma.JsonFilter<"InventoryStockMovement">
+  corrections?: Prisma.JsonFilter<"InventoryStockMovement">
   id?: Prisma.StringFilter<"InventoryStockMovement"> | string
   institutionId?: Prisma.StringFilter<"InventoryStockMovement"> | string
   itemId?: Prisma.StringFilter<"InventoryStockMovement"> | string
@@ -1552,6 +1599,7 @@ export type InventoryStockMovementScalarWhereInput = {
   previousQuantity?: Prisma.DecimalNullableFilter<"InventoryStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.DecimalNullableFilter<"InventoryStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFilter<"InventoryStockMovement"> | Date | string
+  occurredAt?: Prisma.DateTimeNullableFilter<"InventoryStockMovement"> | Date | string | null
   notes?: Prisma.StringFilter<"InventoryStockMovement"> | string
   createdById?: Prisma.StringFilter<"InventoryStockMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryStockMovement"> | Date | string
@@ -1593,6 +1641,7 @@ export type InventoryStockMovementCreateWithoutSupplierInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   kind: string
@@ -1600,6 +1649,7 @@ export type InventoryStockMovementCreateWithoutSupplierInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1633,6 +1683,7 @@ export type InventoryStockMovementUncheckedCreateWithoutSupplierInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -1642,6 +1693,7 @@ export type InventoryStockMovementUncheckedCreateWithoutSupplierInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1693,6 +1745,7 @@ export type InventoryStockMovementCreateWithoutItemInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   kind: string
@@ -1700,6 +1753,7 @@ export type InventoryStockMovementCreateWithoutItemInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1733,6 +1787,7 @@ export type InventoryStockMovementUncheckedCreateWithoutItemInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   locationId: string
@@ -1741,6 +1796,7 @@ export type InventoryStockMovementUncheckedCreateWithoutItemInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1793,6 +1849,7 @@ export type InventoryStockMovementCreateWithoutReturnsInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   kind: string
@@ -1800,6 +1857,7 @@ export type InventoryStockMovementCreateWithoutReturnsInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1833,6 +1891,7 @@ export type InventoryStockMovementUncheckedCreateWithoutReturnsInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -1842,6 +1901,7 @@ export type InventoryStockMovementUncheckedCreateWithoutReturnsInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1872,6 +1932,7 @@ export type InventoryStockMovementCreateWithoutIssueInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   kind: string
@@ -1879,6 +1940,7 @@ export type InventoryStockMovementCreateWithoutIssueInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1911,6 +1973,7 @@ export type InventoryStockMovementUncheckedCreateWithoutIssueInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -1920,6 +1983,7 @@ export type InventoryStockMovementUncheckedCreateWithoutIssueInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -1967,6 +2031,7 @@ export type InventoryStockMovementUpdateWithoutReturnsInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1974,6 +2039,7 @@ export type InventoryStockMovementUpdateWithoutReturnsInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2007,6 +2073,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutReturnsInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2016,6 +2083,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutReturnsInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2057,6 +2125,7 @@ export type InventoryStockMovementCreateWithoutPurchaseOrderInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   kind: string
@@ -2064,6 +2133,7 @@ export type InventoryStockMovementCreateWithoutPurchaseOrderInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -2096,6 +2166,7 @@ export type InventoryStockMovementUncheckedCreateWithoutPurchaseOrderInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -2105,6 +2176,7 @@ export type InventoryStockMovementUncheckedCreateWithoutPurchaseOrderInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -2159,6 +2231,7 @@ export type InventoryStockMovementCreateManyTransferLocationInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -2168,6 +2241,7 @@ export type InventoryStockMovementCreateManyTransferLocationInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -2196,6 +2270,7 @@ export type InventoryStockMovementCreateManyLocationInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -2204,6 +2279,7 @@ export type InventoryStockMovementCreateManyLocationInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -2229,6 +2305,7 @@ export type InventoryStockMovementUpdateWithoutTransferLocationInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2236,6 +2313,7 @@ export type InventoryStockMovementUpdateWithoutTransferLocationInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2268,6 +2346,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutTransferLocationInput = 
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2277,6 +2356,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutTransferLocationInput = 
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2305,6 +2385,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutTransferLocationInpu
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2314,6 +2395,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutTransferLocationInpu
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2339,6 +2421,7 @@ export type InventoryStockMovementUpdateWithoutLocationInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2346,6 +2429,7 @@ export type InventoryStockMovementUpdateWithoutLocationInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2379,6 +2463,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutLocationInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2387,6 +2472,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutLocationInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2416,6 +2502,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutLocationInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2424,6 +2511,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutLocationInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2452,6 +2540,7 @@ export type InventoryStockMovementCreateManySupplierInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -2461,6 +2550,7 @@ export type InventoryStockMovementCreateManySupplierInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -2485,6 +2575,7 @@ export type InventoryStockMovementUpdateWithoutSupplierInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2492,6 +2583,7 @@ export type InventoryStockMovementUpdateWithoutSupplierInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2525,6 +2617,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutSupplierInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2534,6 +2627,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutSupplierInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2562,6 +2656,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutSupplierInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2571,6 +2666,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutSupplierInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2598,6 +2694,7 @@ export type InventoryStockMovementCreateManyItemInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   locationId: string
@@ -2606,6 +2703,7 @@ export type InventoryStockMovementCreateManyItemInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -2631,6 +2729,7 @@ export type InventoryStockMovementUpdateWithoutItemInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2638,6 +2737,7 @@ export type InventoryStockMovementUpdateWithoutItemInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2671,6 +2771,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutItemInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   locationId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2679,6 +2780,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutItemInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2708,6 +2810,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutItemInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   locationId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2716,6 +2819,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutItemInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2743,6 +2847,7 @@ export type InventoryStockMovementCreateManyIssueInput = {
   dueOn?: Date | string | null
   returnExpected?: boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -2752,6 +2857,7 @@ export type InventoryStockMovementCreateManyIssueInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -2777,6 +2883,7 @@ export type InventoryStockMovementUpdateWithoutIssueInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2784,6 +2891,7 @@ export type InventoryStockMovementUpdateWithoutIssueInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2816,6 +2924,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutIssueInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2825,6 +2934,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutIssueInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2853,6 +2963,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutIssueInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2862,6 +2973,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutIssueInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2889,6 +3001,7 @@ export type InventoryStockMovementCreateManyPurchaseOrderInput = {
   returnExpected?: boolean
   issueId?: string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: string
   institutionId: string
   itemId: string
@@ -2898,6 +3011,7 @@ export type InventoryStockMovementCreateManyPurchaseOrderInput = {
   previousQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn: Date | string
+  occurredAt?: Date | string | null
   notes?: string
   createdById: string
   createdAt?: Date | string
@@ -2923,6 +3037,7 @@ export type InventoryStockMovementUpdateWithoutPurchaseOrderInput = {
   dueOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2930,6 +3045,7 @@ export type InventoryStockMovementUpdateWithoutPurchaseOrderInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2962,6 +3078,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutPurchaseOrderInput = {
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2971,6 +3088,7 @@ export type InventoryStockMovementUncheckedUpdateWithoutPurchaseOrderInput = {
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2999,6 +3117,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutPurchaseOrderInput =
   returnExpected?: Prisma.BoolFieldUpdateOperationsInput | boolean
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  corrections?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   itemId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3008,6 +3127,7 @@ export type InventoryStockMovementUncheckedUpdateManyWithoutPurchaseOrderInput =
   previousQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   correctedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   recordedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  occurredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3067,6 +3187,7 @@ export type InventoryStockMovementSelect<ExtArgs extends runtime.Types.Extension
   returnExpected?: boolean
   issueId?: boolean
   attachments?: boolean
+  corrections?: boolean
   id?: boolean
   institutionId?: boolean
   itemId?: boolean
@@ -3076,6 +3197,7 @@ export type InventoryStockMovementSelect<ExtArgs extends runtime.Types.Extension
   previousQuantity?: boolean
   correctedQuantity?: boolean
   recordedOn?: boolean
+  occurredAt?: boolean
   notes?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -3112,6 +3234,7 @@ export type InventoryStockMovementSelectCreateManyAndReturn<ExtArgs extends runt
   returnExpected?: boolean
   issueId?: boolean
   attachments?: boolean
+  corrections?: boolean
   id?: boolean
   institutionId?: boolean
   itemId?: boolean
@@ -3121,6 +3244,7 @@ export type InventoryStockMovementSelectCreateManyAndReturn<ExtArgs extends runt
   previousQuantity?: boolean
   correctedQuantity?: boolean
   recordedOn?: boolean
+  occurredAt?: boolean
   notes?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -3155,6 +3279,7 @@ export type InventoryStockMovementSelectUpdateManyAndReturn<ExtArgs extends runt
   returnExpected?: boolean
   issueId?: boolean
   attachments?: boolean
+  corrections?: boolean
   id?: boolean
   institutionId?: boolean
   itemId?: boolean
@@ -3164,6 +3289,7 @@ export type InventoryStockMovementSelectUpdateManyAndReturn<ExtArgs extends runt
   previousQuantity?: boolean
   correctedQuantity?: boolean
   recordedOn?: boolean
+  occurredAt?: boolean
   notes?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -3198,6 +3324,7 @@ export type InventoryStockMovementSelectScalar = {
   returnExpected?: boolean
   issueId?: boolean
   attachments?: boolean
+  corrections?: boolean
   id?: boolean
   institutionId?: boolean
   itemId?: boolean
@@ -3207,6 +3334,7 @@ export type InventoryStockMovementSelectScalar = {
   previousQuantity?: boolean
   correctedQuantity?: boolean
   recordedOn?: boolean
+  occurredAt?: boolean
   notes?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -3218,7 +3346,7 @@ export type InventoryStockMovementSelectScalar = {
   requestId?: boolean
 }
 
-export type InventoryStockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"purchaseOrderId" | "purchaseOrderLine" | "adjustmentType" | "deliveredQuantity" | "rejectedQuantity" | "damageReason" | "transferId" | "transferLocationId" | "transferLocationName" | "issuedToType" | "issuedToName" | "issuedToLabel" | "dueOn" | "returnExpected" | "issueId" | "attachments" | "id" | "institutionId" | "itemId" | "locationId" | "kind" | "quantity" | "previousQuantity" | "correctedQuantity" | "recordedOn" | "notes" | "createdById" | "createdAt" | "supplierId" | "supplierName" | "billNumber" | "billDate" | "totalCost" | "requestId", ExtArgs["result"]["inventoryStockMovement"]>
+export type InventoryStockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"purchaseOrderId" | "purchaseOrderLine" | "adjustmentType" | "deliveredQuantity" | "rejectedQuantity" | "damageReason" | "transferId" | "transferLocationId" | "transferLocationName" | "issuedToType" | "issuedToName" | "issuedToLabel" | "dueOn" | "returnExpected" | "issueId" | "attachments" | "corrections" | "id" | "institutionId" | "itemId" | "locationId" | "kind" | "quantity" | "previousQuantity" | "correctedQuantity" | "recordedOn" | "occurredAt" | "notes" | "createdById" | "createdAt" | "supplierId" | "supplierName" | "billNumber" | "billDate" | "totalCost" | "requestId", ExtArgs["result"]["inventoryStockMovement"]>
 export type InventoryStockMovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   purchaseOrder?: boolean | Prisma.InventoryStockMovement$purchaseOrderArgs<ExtArgs>
   transferLocation?: boolean | Prisma.InventoryStockMovement$transferLocationArgs<ExtArgs>
@@ -3274,6 +3402,7 @@ export type $InventoryStockMovementPayload<ExtArgs extends runtime.Types.Extensi
     returnExpected: boolean
     issueId: string | null
     attachments: runtime.JsonValue
+    corrections: runtime.JsonValue
     id: string
     institutionId: string
     itemId: string
@@ -3283,6 +3412,7 @@ export type $InventoryStockMovementPayload<ExtArgs extends runtime.Types.Extensi
     previousQuantity: runtime.Decimal | null
     correctedQuantity: runtime.Decimal | null
     recordedOn: Date
+    occurredAt: Date | null
     notes: string
     createdById: string
     createdAt: Date
@@ -3738,6 +3868,7 @@ export interface InventoryStockMovementFieldRefs {
   readonly returnExpected: Prisma.FieldRef<"InventoryStockMovement", 'Boolean'>
   readonly issueId: Prisma.FieldRef<"InventoryStockMovement", 'String'>
   readonly attachments: Prisma.FieldRef<"InventoryStockMovement", 'Json'>
+  readonly corrections: Prisma.FieldRef<"InventoryStockMovement", 'Json'>
   readonly id: Prisma.FieldRef<"InventoryStockMovement", 'String'>
   readonly institutionId: Prisma.FieldRef<"InventoryStockMovement", 'String'>
   readonly itemId: Prisma.FieldRef<"InventoryStockMovement", 'String'>
@@ -3747,6 +3878,7 @@ export interface InventoryStockMovementFieldRefs {
   readonly previousQuantity: Prisma.FieldRef<"InventoryStockMovement", 'Decimal'>
   readonly correctedQuantity: Prisma.FieldRef<"InventoryStockMovement", 'Decimal'>
   readonly recordedOn: Prisma.FieldRef<"InventoryStockMovement", 'DateTime'>
+  readonly occurredAt: Prisma.FieldRef<"InventoryStockMovement", 'DateTime'>
   readonly notes: Prisma.FieldRef<"InventoryStockMovement", 'String'>
   readonly createdById: Prisma.FieldRef<"InventoryStockMovement", 'String'>
   readonly createdAt: Prisma.FieldRef<"InventoryStockMovement", 'DateTime'>

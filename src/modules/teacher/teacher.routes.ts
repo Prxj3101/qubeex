@@ -1,3 +1,4 @@
+import teacherInventoryRequests from "../inventory/item-requests.routes";
 import { Router, Response, NextFunction } from "express";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
@@ -202,6 +203,9 @@ import { registerDevicePushToken, unregisterDevicePushToken } from "../admin/pus
 const router = Router();
 
 const T = [authMiddleware(["TEACHER"]), institutionAccessMiddleware, academicRoutingMiddleware];
+
+// Same inventory request workflow, with teacher-only authentication and ownership.
+router.use("/inventory", ...T, teacherInventoryRequests);
 
 // ── Account settings (profile / password / login activity) ────────────────────
 router.get("/profile", ...T, getProfile);

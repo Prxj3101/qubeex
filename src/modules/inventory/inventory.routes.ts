@@ -1,7 +1,14 @@
+import ledgerCorrectionsRouter from "./ledger-corrections.routes";
+import ledgerRouter from "./ledger.routes";
+import itemRequestsRouter from "./item-requests.routes";
+import setupOrderRouter from "./setup-order.routes";
+import { withSetupOrder } from "./setup-order";
 import purchaseOrdersRouter from "./purchase-orders.routes";
 import purchaseRequestsRouter from "./purchase-requests.routes";
 import issueResolutionRouter from "./issue-resolution.routes";
 import inventoryAlertsRouter from "./inventory-alerts.routes";
+import inventoryInsightsRouter from "./inventory-insights.routes";
+import { ensureDefaultSetup } from "./inventory-defaults";
 import supplierReturnRouter from "./supplier-return.routes";
 import reportsRouter from "./reports.routes";
 import adjustmentStockRouter from "./adjustment-stock.routes";
@@ -40,14 +47,15 @@ const handleError = (err: unknown, next: NextFunction) => {
 
 router.get("/categories", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const data = await academicDb().inventoryCategory.findMany({ where: { institutionId: institution(req) }, orderBy: { name: "asc" }, select: { id: true, name: true, description: true } });
-    res.json({ success: true, data });
+    await ensureDefaultSetup("categories", institution(req));
+    const data = await academicDb().inventoryCategory.findMany({ where: { institutionId: institution(req) }, orderBy: { name: "asc" }, select: { id: true, name: true, description: true, isDefault: true } });
+    res.json({ success: true, ...await withSetupOrder("categories", institution(req), data) });
   } catch (err) { handleError(err, next); }
 });
 router.post("/categories", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const input = schema.parse(req.body);
-    const data = await academicDb().inventoryCategory.create({ data: { ...input, nameKey: input.name.toLowerCase(), institutionId: institution(req) }, select: { id: true, name: true, description: true } });
+    const data = await academicDb().inventoryCategory.create({ data: { ...input, nameKey: input.name.toLowerCase(), institutionId: institution(req) }, select: { id: true, name: true, description: true, isDefault: true } });
     res.status(201).json({ success: true, data });
   } catch (err) { handleError(err, next); }
 });
@@ -57,13 +65,15 @@ router.patch("/categories/:id", async (req: AuthRequest, res: Response, next: Ne
     const input = schema.parse(req.body);
     const result = await academicDb().inventoryCategory.updateMany({ where: { id, institutionId: institution(req) }, data: { ...input, nameKey: input.name.toLowerCase() } });
     if (!result.count) throw new NotFoundError("Category not found");
-    res.json({ success: true, data: { id, ...input } });
+    const data = await academicDb().inventoryCategory.findFirst({ where: { id, institutionId: institution(req) }, select: { id: true, name: true, description: true, isDefault: true } });
+    res.json({ success: true, data });
   } catch (err) { handleError(err, next); }
 });
 router.delete("/categories/:id", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = idSchema.parse(req.params.id);
-    const result = await academicDb().inventoryCategory.deleteMany({ where: { id, institutionId: institution(req) } });
+    if (await academicDb().inventoryCategory.count({ where: { id, institutionId: institution(req), isDefault: true } })) throw new ConflictError("Built-in categories cannot be deleted. You can rename them instead.");
+    const result = await academicDb().inventoryCategory.deleteMany({ where: { id, institutionId: institution(req), isDefault: false } });
     if (!result.count) throw new NotFoundError("Category not found");
     res.json({ success: true });
   } catch (err) { handleError(err, next); }
@@ -78,7 +88,12 @@ router.use(adjustmentStockRouter);
 router.use(reportsRouter);
 router.use(supplierReturnRouter);
 router.use(inventoryAlertsRouter);
+router.use(inventoryInsightsRouter);
 router.use(issueResolutionRouter);
+router.use(itemRequestsRouter);
+router.use(ledgerRouter);
+router.use(ledgerCorrectionsRouter);
 router.use(purchaseRequestsRouter);
 router.use(purchaseOrdersRouter);
+router.use(setupOrderRouter);
 export default router;

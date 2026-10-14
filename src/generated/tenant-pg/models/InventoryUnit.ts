@@ -29,6 +29,7 @@ export type InventoryUnitMinAggregateOutputType = {
   institutionId: string | null
   name: string | null
   nameKey: string | null
+  isDefault: boolean | null
   abbreviation: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -39,6 +40,7 @@ export type InventoryUnitMaxAggregateOutputType = {
   institutionId: string | null
   name: string | null
   nameKey: string | null
+  isDefault: boolean | null
   abbreviation: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +51,7 @@ export type InventoryUnitCountAggregateOutputType = {
   institutionId: number
   name: number
   nameKey: number
+  isDefault: number
   abbreviation: number
   createdAt: number
   updatedAt: number
@@ -61,6 +64,7 @@ export type InventoryUnitMinAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   abbreviation?: true
   createdAt?: true
   updatedAt?: true
@@ -71,6 +75,7 @@ export type InventoryUnitMaxAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   abbreviation?: true
   createdAt?: true
   updatedAt?: true
@@ -81,6 +86,7 @@ export type InventoryUnitCountAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   abbreviation?: true
   createdAt?: true
   updatedAt?: true
@@ -164,6 +170,7 @@ export type InventoryUnitGroupByOutputType = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault: boolean
   abbreviation: string
   createdAt: Date
   updatedAt: Date
@@ -195,6 +202,7 @@ export type InventoryUnitWhereInput = {
   institutionId?: Prisma.StringFilter<"InventoryUnit"> | string
   name?: Prisma.StringFilter<"InventoryUnit"> | string
   nameKey?: Prisma.StringFilter<"InventoryUnit"> | string
+  isDefault?: Prisma.BoolFilter<"InventoryUnit"> | boolean
   abbreviation?: Prisma.StringFilter<"InventoryUnit"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryUnit"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryUnit"> | Date | string
@@ -206,6 +214,7 @@ export type InventoryUnitOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   abbreviation?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -221,6 +230,7 @@ export type InventoryUnitWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"InventoryUnit"> | string
   name?: Prisma.StringFilter<"InventoryUnit"> | string
   nameKey?: Prisma.StringFilter<"InventoryUnit"> | string
+  isDefault?: Prisma.BoolFilter<"InventoryUnit"> | boolean
   abbreviation?: Prisma.StringFilter<"InventoryUnit"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryUnit"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryUnit"> | Date | string
@@ -232,6 +242,7 @@ export type InventoryUnitOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   abbreviation?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -248,6 +259,7 @@ export type InventoryUnitScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"InventoryUnit"> | string
   name?: Prisma.StringWithAggregatesFilter<"InventoryUnit"> | string
   nameKey?: Prisma.StringWithAggregatesFilter<"InventoryUnit"> | string
+  isDefault?: Prisma.BoolWithAggregatesFilter<"InventoryUnit"> | boolean
   abbreviation?: Prisma.StringWithAggregatesFilter<"InventoryUnit"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryUnit"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryUnit"> | Date | string
@@ -258,6 +270,7 @@ export type InventoryUnitCreateInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   abbreviation?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -269,6 +282,7 @@ export type InventoryUnitUncheckedCreateInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   abbreviation?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -280,6 +294,7 @@ export type InventoryUnitUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   abbreviation?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -291,6 +306,7 @@ export type InventoryUnitUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   abbreviation?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -302,6 +318,7 @@ export type InventoryUnitCreateManyInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   abbreviation?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -312,6 +329,7 @@ export type InventoryUnitUpdateManyMutationInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   abbreviation?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -322,6 +340,7 @@ export type InventoryUnitUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   abbreviation?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -337,6 +356,7 @@ export type InventoryUnitCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   abbreviation?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -347,6 +367,7 @@ export type InventoryUnitMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   abbreviation?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -357,6 +378,7 @@ export type InventoryUnitMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   abbreviation?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -386,6 +408,7 @@ export type InventoryUnitCreateWithoutItemsInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   abbreviation?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -396,6 +419,7 @@ export type InventoryUnitUncheckedCreateWithoutItemsInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   abbreviation?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -422,6 +446,7 @@ export type InventoryUnitUpdateWithoutItemsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   abbreviation?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -432,6 +457,7 @@ export type InventoryUnitUncheckedUpdateWithoutItemsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   abbreviation?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -473,6 +499,7 @@ export type InventoryUnitSelect<ExtArgs extends runtime.Types.Extensions.Interna
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   abbreviation?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -485,6 +512,7 @@ export type InventoryUnitSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   abbreviation?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -495,6 +523,7 @@ export type InventoryUnitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   abbreviation?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -505,12 +534,13 @@ export type InventoryUnitSelectScalar = {
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   abbreviation?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type InventoryUnitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "nameKey" | "abbreviation" | "createdAt" | "updatedAt", ExtArgs["result"]["inventoryUnit"]>
+export type InventoryUnitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "nameKey" | "isDefault" | "abbreviation" | "createdAt" | "updatedAt", ExtArgs["result"]["inventoryUnit"]>
 export type InventoryUnitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.InventoryUnit$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.InventoryUnitCountOutputTypeDefaultArgs<ExtArgs>
@@ -528,6 +558,7 @@ export type $InventoryUnitPayload<ExtArgs extends runtime.Types.Extensions.Inter
     institutionId: string
     name: string
     nameKey: string
+    isDefault: boolean
     abbreviation: string
     createdAt: Date
     updatedAt: Date
@@ -959,6 +990,7 @@ export interface InventoryUnitFieldRefs {
   readonly institutionId: Prisma.FieldRef<"InventoryUnit", 'String'>
   readonly name: Prisma.FieldRef<"InventoryUnit", 'String'>
   readonly nameKey: Prisma.FieldRef<"InventoryUnit", 'String'>
+  readonly isDefault: Prisma.FieldRef<"InventoryUnit", 'Boolean'>
   readonly abbreviation: Prisma.FieldRef<"InventoryUnit", 'String'>
   readonly createdAt: Prisma.FieldRef<"InventoryUnit", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"InventoryUnit", 'DateTime'>

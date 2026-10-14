@@ -135,7 +135,8 @@ export const ModelName = {
   TimetableEntry: 'TimetableEntry',
   TimetableException: 'TimetableException',
   TimetableSubstitution: 'TimetableSubstitution',
-  TimetableGeneration: 'TimetableGeneration'
+  TimetableGeneration: 'TimetableGeneration',
+  InventorySetupOrder: 'InventorySetupOrder'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1233,6 +1234,7 @@ export const InventoryCategoryScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   nameKey: 'nameKey',
+  isDefault: 'isDefault',
   description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1246,6 +1248,7 @@ export const InventoryUnitScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   nameKey: 'nameKey',
+  isDefault: 'isDefault',
   abbreviation: 'abbreviation',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1259,6 +1262,7 @@ export const InventoryLocationScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   nameKey: 'nameKey',
+  isDefault: 'isDefault',
   description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1329,6 +1333,7 @@ export const InventoryStockMovementScalarFieldEnum = {
   returnExpected: 'returnExpected',
   issueId: 'issueId',
   attachments: 'attachments',
+  corrections: 'corrections',
   id: 'id',
   institutionId: 'institutionId',
   itemId: 'itemId',
@@ -1338,6 +1343,7 @@ export const InventoryStockMovementScalarFieldEnum = {
   previousQuantity: 'previousQuantity',
   correctedQuantity: 'correctedQuantity',
   recordedOn: 'recordedOn',
+  occurredAt: 'occurredAt',
   notes: 'notes',
   createdById: 'createdById',
   createdAt: 'createdAt',
@@ -1607,6 +1613,17 @@ export const TimetableGenerationScalarFieldEnum = {
 } as const
 
 export type TimetableGenerationScalarFieldEnum = (typeof TimetableGenerationScalarFieldEnum)[keyof typeof TimetableGenerationScalarFieldEnum]
+
+
+export const InventorySetupOrderScalarFieldEnum = {
+  institutionId: 'institutionId',
+  kind: 'kind',
+  ids: 'ids',
+  revision: 'revision',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventorySetupOrderScalarFieldEnum = (typeof InventorySetupOrderScalarFieldEnum)[keyof typeof InventorySetupOrderScalarFieldEnum]
 
 
 export const SortOrder = {

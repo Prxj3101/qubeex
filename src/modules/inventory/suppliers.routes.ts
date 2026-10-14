@@ -1,3 +1,4 @@
+import { withSetupOrder } from "./setup-order";
 import { Router, Response, NextFunction } from "express";
 import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
@@ -28,7 +29,7 @@ const select = { id: true, name: true, contactPerson: true, phone: true, email: 
 router.get("/suppliers", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const data = await academicDb().inventorySupplier.findMany({ where: { institutionId: institution(req) }, orderBy: { name: "asc" }, select });
-    res.json({ success: true, data });
+    res.json({ success: true, ...await withSetupOrder("suppliers", institution(req), data) });
   } catch (err) { handleError(err, next); }
 });
 router.post("/suppliers", async (req: AuthRequest, res: Response, next: NextFunction) => {

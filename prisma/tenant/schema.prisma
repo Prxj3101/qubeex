@@ -1519,6 +1519,7 @@ model InventoryCategory {
   institutionId String
   name          String
   nameKey       String
+  isDefault     Boolean  @default(false)
   description   String   @default("")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -1532,6 +1533,7 @@ model InventoryUnit {
   institutionId String
   name          String
   nameKey       String
+  isDefault     Boolean  @default(false)
   abbreviation  String   @default("")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -1547,6 +1549,7 @@ model InventoryLocation {
   institutionId String
   name          String
   nameKey       String
+  isDefault     Boolean  @default(false)
   description   String   @default("")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -1636,6 +1639,7 @@ model InventoryStockMovement {
   returns InventoryStockMovement[] @relation("InventoryReturns")
   @@index([issueId])
   attachments Json @default("[]")
+  corrections Json @default("[]")
   id String @id @default(uuid())
   institutionId String
   itemId String
@@ -1645,6 +1649,7 @@ model InventoryStockMovement {
   previousQuantity Decimal? @db.Decimal(14, 3)
   correctedQuantity Decimal? @db.Decimal(14, 3)
   recordedOn DateTime @db.Date
+  occurredAt DateTime? @db.Timestamptz(3)
   notes String @default("")
   createdById String
   createdAt DateTime @default(now())
@@ -2022,4 +2027,13 @@ model TimetableGeneration {
   createdAt      DateTime        @default(now())
 
   @@index([timetableId, createdAt])
+}
+
+model InventorySetupOrder {
+  institutionId String
+  kind String
+  ids Json
+  revision Int @default(1)
+  updatedAt DateTime @updatedAt
+  @@id([institutionId, kind])
 }

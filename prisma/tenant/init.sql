@@ -1341,6 +1341,7 @@ CREATE TABLE "InventoryCategory" (
     "institutionId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "nameKey" TEXT NOT NULL,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
     "description" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -1353,6 +1354,7 @@ CREATE TABLE "InventoryUnit" (
     "institutionId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "nameKey" TEXT NOT NULL,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
     "abbreviation" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -1365,6 +1367,7 @@ CREATE TABLE "InventoryLocation" (
     "institutionId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "nameKey" TEXT NOT NULL,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
     "description" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -1510,3 +1513,19 @@ ALTER TABLE "InventoryStockMovement" ADD COLUMN "purchaseOrderId" TEXT, ADD COLU
 ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_purchaseOrderId_fkey" FOREIGN KEY ("purchaseOrderId") REFERENCES "InventoryPurchaseOrder"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 ALTER TABLE "InventoryStockMovement" ADD CONSTRAINT "InventoryStockMovement_purchaseOrder_check" CHECK (("purchaseOrderId" IS NULL AND "purchaseOrderLine" IS NULL) OR ("purchaseOrderId" IS NOT NULL AND "purchaseOrderLine" >= 0 AND "purchaseOrderLine" IS NOT NULL AND "kind" = 'RECEIPT'));
 CREATE INDEX "InventoryStockMovement_purchaseOrderId_idx" ON "InventoryStockMovement"("purchaseOrderId");
+
+CREATE TABLE "InventorySetupOrder" (
+ "institutionId" TEXT NOT NULL, "kind" TEXT NOT NULL, "ids" JSONB NOT NULL,
+ "revision" INTEGER NOT NULL DEFAULT 1, "updatedAt" TIMESTAMP(3) NOT NULL,
+ CONSTRAINT "InventorySetupOrder_pkey" PRIMARY KEY ("institutionId", "kind"),
+ CONSTRAINT "InventorySetupOrder_kind_check" CHECK ("kind" IN ('categories','units','locations','suppliers')),
+ CONSTRAINT "InventorySetupOrder_details_check" CHECK (jsonb_typeof("ids") = 'array' AND "revision" > 0)
+);
+
+-- Ledger time, correction audit and fulfilment states
+ALTER TABLE "InventoryStockMovement" ADD COLUMN IF NOT EXISTS "occurredAt" TIMESTAMPTZ(3);
+ALTER TABLE "InventoryStockMovement" ADD COLUMN IF NOT EXISTS "corrections" JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE "InventoryPurchaseRequest" DROP CONSTRAINT IF EXISTS "InventoryPurchaseRequest_status_check";
+ALTER TABLE "InventoryPurchaseRequest" ADD CONSTRAINT "InventoryPurchaseRequest_status_check" CHECK ("status" IN ('PENDING','APPROVED','REJECTED','CHANGES_REQUESTED','PARTIALLY_ISSUED','ISSUED'));
+ALTER TABLE "InventoryPurchaseRequest" DROP CONSTRAINT IF EXISTS "InventoryPurchaseRequest_source_check";
+ALTER TABLE "InventoryPurchaseRequest" ADD CONSTRAINT "InventoryPurchaseRequest_source_check" CHECK ("source" IN ('MANUAL','TEACHER','ITEM_REQUEST_PURCHASE'));

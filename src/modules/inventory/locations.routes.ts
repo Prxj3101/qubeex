@@ -1,8 +1,10 @@
+import { withSetupOrder } from "./setup-order";
 import { Router, Response, NextFunction } from "express";
 import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/errors";
+import { ensureDefaultSetup } from "./inventory-defaults";
 
 const router = Router();
 const schema = z.object({
@@ -20,12 +22,13 @@ const handleError = (err: unknown, next: NextFunction) => {
   if (code === "P2003") return next(new ConflictError("This location is in use and cannot be deleted"));
   next(err);
 };
-const select = { id: true, name: true, description: true };
+const select = { id: true, name: true, description: true, isDefault: true };
 
 router.get("/locations", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    await ensureDefaultSetup("locations", institution(req));
     const data = await academicDb().inventoryLocation.findMany({ where: { institutionId: institution(req) }, orderBy: { name: "asc" }, select });
-    res.json({ success: true, data });
+    res.json({ success: true, ...await withSetupOrder("locations", institution(req), data) });
   } catch (err) { handleError(err, next); }
 });
 router.post("/locations", async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -41,13 +44,15 @@ router.patch("/locations/:id", async (req: AuthRequest, res: Response, next: Nex
     const input = schema.parse(req.body);
     const result = await academicDb().inventoryLocation.updateMany({ where: { id, institutionId: institution(req) }, data: { ...input, nameKey: input.name.toLowerCase() } });
     if (!result.count) throw new NotFoundError("Location not found");
-    res.json({ success: true, data: { id, ...input } });
+    const data = await academicDb().inventoryLocation.findFirst({ where: { id, institutionId: institution(req) }, select });
+    res.json({ success: true, data });
   } catch (err) { handleError(err, next); }
 });
 router.delete("/locations/:id", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = idSchema.parse(req.params.id);
-    const result = await academicDb().inventoryLocation.deleteMany({ where: { id, institutionId: institution(req) } });
+    if (await academicDb().inventoryLocation.count({ where: { id, institutionId: institution(req), isDefault: true } })) throw new ConflictError("Built-in locations cannot be deleted. You can rename them instead.");
+    const result = await academicDb().inventoryLocation.deleteMany({ where: { id, institutionId: institution(req), isDefault: false } });
     if (!result.count) throw new NotFoundError("Location not found");
     res.json({ success: true });
   } catch (err) { handleError(err, next); }

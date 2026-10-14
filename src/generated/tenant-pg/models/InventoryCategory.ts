@@ -29,6 +29,7 @@ export type InventoryCategoryMinAggregateOutputType = {
   institutionId: string | null
   name: string | null
   nameKey: string | null
+  isDefault: boolean | null
   description: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -39,6 +40,7 @@ export type InventoryCategoryMaxAggregateOutputType = {
   institutionId: string | null
   name: string | null
   nameKey: string | null
+  isDefault: boolean | null
   description: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +51,7 @@ export type InventoryCategoryCountAggregateOutputType = {
   institutionId: number
   name: number
   nameKey: number
+  isDefault: number
   description: number
   createdAt: number
   updatedAt: number
@@ -61,6 +64,7 @@ export type InventoryCategoryMinAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   description?: true
   createdAt?: true
   updatedAt?: true
@@ -71,6 +75,7 @@ export type InventoryCategoryMaxAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   description?: true
   createdAt?: true
   updatedAt?: true
@@ -81,6 +86,7 @@ export type InventoryCategoryCountAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   description?: true
   createdAt?: true
   updatedAt?: true
@@ -164,6 +170,7 @@ export type InventoryCategoryGroupByOutputType = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault: boolean
   description: string
   createdAt: Date
   updatedAt: Date
@@ -195,6 +202,7 @@ export type InventoryCategoryWhereInput = {
   institutionId?: Prisma.StringFilter<"InventoryCategory"> | string
   name?: Prisma.StringFilter<"InventoryCategory"> | string
   nameKey?: Prisma.StringFilter<"InventoryCategory"> | string
+  isDefault?: Prisma.BoolFilter<"InventoryCategory"> | boolean
   description?: Prisma.StringFilter<"InventoryCategory"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryCategory"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryCategory"> | Date | string
@@ -206,6 +214,7 @@ export type InventoryCategoryOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -221,6 +230,7 @@ export type InventoryCategoryWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"InventoryCategory"> | string
   name?: Prisma.StringFilter<"InventoryCategory"> | string
   nameKey?: Prisma.StringFilter<"InventoryCategory"> | string
+  isDefault?: Prisma.BoolFilter<"InventoryCategory"> | boolean
   description?: Prisma.StringFilter<"InventoryCategory"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryCategory"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryCategory"> | Date | string
@@ -232,6 +242,7 @@ export type InventoryCategoryOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -248,6 +259,7 @@ export type InventoryCategoryScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"InventoryCategory"> | string
   name?: Prisma.StringWithAggregatesFilter<"InventoryCategory"> | string
   nameKey?: Prisma.StringWithAggregatesFilter<"InventoryCategory"> | string
+  isDefault?: Prisma.BoolWithAggregatesFilter<"InventoryCategory"> | boolean
   description?: Prisma.StringWithAggregatesFilter<"InventoryCategory"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryCategory"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryCategory"> | Date | string
@@ -258,6 +270,7 @@ export type InventoryCategoryCreateInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -269,6 +282,7 @@ export type InventoryCategoryUncheckedCreateInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -280,6 +294,7 @@ export type InventoryCategoryUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -291,6 +306,7 @@ export type InventoryCategoryUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -302,6 +318,7 @@ export type InventoryCategoryCreateManyInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -312,6 +329,7 @@ export type InventoryCategoryUpdateManyMutationInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -322,6 +340,7 @@ export type InventoryCategoryUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -337,6 +356,7 @@ export type InventoryCategoryCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -347,6 +367,7 @@ export type InventoryCategoryMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -357,6 +378,7 @@ export type InventoryCategoryMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -386,6 +408,7 @@ export type InventoryCategoryCreateWithoutItemsInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -396,6 +419,7 @@ export type InventoryCategoryUncheckedCreateWithoutItemsInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -422,6 +446,7 @@ export type InventoryCategoryUpdateWithoutItemsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -432,6 +457,7 @@ export type InventoryCategoryUncheckedUpdateWithoutItemsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -473,6 +499,7 @@ export type InventoryCategorySelect<ExtArgs extends runtime.Types.Extensions.Int
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -485,6 +512,7 @@ export type InventoryCategorySelectCreateManyAndReturn<ExtArgs extends runtime.T
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -495,6 +523,7 @@ export type InventoryCategorySelectUpdateManyAndReturn<ExtArgs extends runtime.T
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -505,12 +534,13 @@ export type InventoryCategorySelectScalar = {
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type InventoryCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "nameKey" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["inventoryCategory"]>
+export type InventoryCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "nameKey" | "isDefault" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["inventoryCategory"]>
 export type InventoryCategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.InventoryCategory$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.InventoryCategoryCountOutputTypeDefaultArgs<ExtArgs>
@@ -528,6 +558,7 @@ export type $InventoryCategoryPayload<ExtArgs extends runtime.Types.Extensions.I
     institutionId: string
     name: string
     nameKey: string
+    isDefault: boolean
     description: string
     createdAt: Date
     updatedAt: Date
@@ -959,6 +990,7 @@ export interface InventoryCategoryFieldRefs {
   readonly institutionId: Prisma.FieldRef<"InventoryCategory", 'String'>
   readonly name: Prisma.FieldRef<"InventoryCategory", 'String'>
   readonly nameKey: Prisma.FieldRef<"InventoryCategory", 'String'>
+  readonly isDefault: Prisma.FieldRef<"InventoryCategory", 'Boolean'>
   readonly description: Prisma.FieldRef<"InventoryCategory", 'String'>
   readonly createdAt: Prisma.FieldRef<"InventoryCategory", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"InventoryCategory", 'DateTime'>

@@ -464,3 +464,8 @@ export type TimetableSubstitution = Prisma.TimetableSubstitutionModel
  * 
  */
 export type TimetableGeneration = Prisma.TimetableGenerationModel
+/**
+ * Model InventorySetupOrder
+ * 
+ */
+export type InventorySetupOrder = Prisma.InventorySetupOrderModel

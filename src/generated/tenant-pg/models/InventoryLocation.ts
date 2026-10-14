@@ -29,6 +29,7 @@ export type InventoryLocationMinAggregateOutputType = {
   institutionId: string | null
   name: string | null
   nameKey: string | null
+  isDefault: boolean | null
   description: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -39,6 +40,7 @@ export type InventoryLocationMaxAggregateOutputType = {
   institutionId: string | null
   name: string | null
   nameKey: string | null
+  isDefault: boolean | null
   description: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +51,7 @@ export type InventoryLocationCountAggregateOutputType = {
   institutionId: number
   name: number
   nameKey: number
+  isDefault: number
   description: number
   createdAt: number
   updatedAt: number
@@ -61,6 +64,7 @@ export type InventoryLocationMinAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   description?: true
   createdAt?: true
   updatedAt?: true
@@ -71,6 +75,7 @@ export type InventoryLocationMaxAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   description?: true
   createdAt?: true
   updatedAt?: true
@@ -81,6 +86,7 @@ export type InventoryLocationCountAggregateInputType = {
   institutionId?: true
   name?: true
   nameKey?: true
+  isDefault?: true
   description?: true
   createdAt?: true
   updatedAt?: true
@@ -164,6 +170,7 @@ export type InventoryLocationGroupByOutputType = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault: boolean
   description: string
   createdAt: Date
   updatedAt: Date
@@ -195,6 +202,7 @@ export type InventoryLocationWhereInput = {
   institutionId?: Prisma.StringFilter<"InventoryLocation"> | string
   name?: Prisma.StringFilter<"InventoryLocation"> | string
   nameKey?: Prisma.StringFilter<"InventoryLocation"> | string
+  isDefault?: Prisma.BoolFilter<"InventoryLocation"> | boolean
   description?: Prisma.StringFilter<"InventoryLocation"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryLocation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryLocation"> | Date | string
@@ -209,6 +217,7 @@ export type InventoryLocationOrderByWithRelationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -227,6 +236,7 @@ export type InventoryLocationWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"InventoryLocation"> | string
   name?: Prisma.StringFilter<"InventoryLocation"> | string
   nameKey?: Prisma.StringFilter<"InventoryLocation"> | string
+  isDefault?: Prisma.BoolFilter<"InventoryLocation"> | boolean
   description?: Prisma.StringFilter<"InventoryLocation"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryLocation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryLocation"> | Date | string
@@ -241,6 +251,7 @@ export type InventoryLocationOrderByWithAggregationInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -257,6 +268,7 @@ export type InventoryLocationScalarWhereWithAggregatesInput = {
   institutionId?: Prisma.StringWithAggregatesFilter<"InventoryLocation"> | string
   name?: Prisma.StringWithAggregatesFilter<"InventoryLocation"> | string
   nameKey?: Prisma.StringWithAggregatesFilter<"InventoryLocation"> | string
+  isDefault?: Prisma.BoolWithAggregatesFilter<"InventoryLocation"> | boolean
   description?: Prisma.StringWithAggregatesFilter<"InventoryLocation"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryLocation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryLocation"> | Date | string
@@ -267,6 +279,7 @@ export type InventoryLocationCreateInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -281,6 +294,7 @@ export type InventoryLocationUncheckedCreateInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -295,6 +309,7 @@ export type InventoryLocationUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -309,6 +324,7 @@ export type InventoryLocationUncheckedUpdateInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -323,6 +339,7 @@ export type InventoryLocationCreateManyInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -333,6 +350,7 @@ export type InventoryLocationUpdateManyMutationInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -343,6 +361,7 @@ export type InventoryLocationUncheckedUpdateManyInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -358,6 +377,7 @@ export type InventoryLocationCountOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -368,6 +388,7 @@ export type InventoryLocationMaxOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -378,6 +399,7 @@ export type InventoryLocationMinOrderByAggregateInput = {
   institutionId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   nameKey?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -456,6 +478,7 @@ export type InventoryLocationCreateWithoutBalancesInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -469,6 +492,7 @@ export type InventoryLocationUncheckedCreateWithoutBalancesInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -498,6 +522,7 @@ export type InventoryLocationUpdateWithoutBalancesInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -511,6 +536,7 @@ export type InventoryLocationUncheckedUpdateWithoutBalancesInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -524,6 +550,7 @@ export type InventoryLocationCreateWithoutTransferMovementsInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -537,6 +564,7 @@ export type InventoryLocationUncheckedCreateWithoutTransferMovementsInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -555,6 +583,7 @@ export type InventoryLocationCreateWithoutMovementsInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -568,6 +597,7 @@ export type InventoryLocationUncheckedCreateWithoutMovementsInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -597,6 +627,7 @@ export type InventoryLocationUpdateWithoutTransferMovementsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -610,6 +641,7 @@ export type InventoryLocationUncheckedUpdateWithoutTransferMovementsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -634,6 +666,7 @@ export type InventoryLocationUpdateWithoutMovementsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -647,6 +680,7 @@ export type InventoryLocationUncheckedUpdateWithoutMovementsInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -660,6 +694,7 @@ export type InventoryLocationCreateWithoutPurchaseOrdersInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -673,6 +708,7 @@ export type InventoryLocationUncheckedCreateWithoutPurchaseOrdersInput = {
   institutionId: string
   name: string
   nameKey: string
+  isDefault?: boolean
   description?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -702,6 +738,7 @@ export type InventoryLocationUpdateWithoutPurchaseOrdersInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -715,6 +752,7 @@ export type InventoryLocationUncheckedUpdateWithoutPurchaseOrdersInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -786,6 +824,7 @@ export type InventoryLocationSelect<ExtArgs extends runtime.Types.Extensions.Int
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -801,6 +840,7 @@ export type InventoryLocationSelectCreateManyAndReturn<ExtArgs extends runtime.T
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -811,6 +851,7 @@ export type InventoryLocationSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -821,12 +862,13 @@ export type InventoryLocationSelectScalar = {
   institutionId?: boolean
   name?: boolean
   nameKey?: boolean
+  isDefault?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type InventoryLocationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "nameKey" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["inventoryLocation"]>
+export type InventoryLocationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "nameKey" | "isDefault" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["inventoryLocation"]>
 export type InventoryLocationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   purchaseOrders?: boolean | Prisma.InventoryLocation$purchaseOrdersArgs<ExtArgs>
   transferMovements?: boolean | Prisma.InventoryLocation$transferMovementsArgs<ExtArgs>
@@ -850,6 +892,7 @@ export type $InventoryLocationPayload<ExtArgs extends runtime.Types.Extensions.I
     institutionId: string
     name: string
     nameKey: string
+    isDefault: boolean
     description: string
     createdAt: Date
     updatedAt: Date
@@ -1284,6 +1327,7 @@ export interface InventoryLocationFieldRefs {
   readonly institutionId: Prisma.FieldRef<"InventoryLocation", 'String'>
   readonly name: Prisma.FieldRef<"InventoryLocation", 'String'>
   readonly nameKey: Prisma.FieldRef<"InventoryLocation", 'String'>
+  readonly isDefault: Prisma.FieldRef<"InventoryLocation", 'Boolean'>
   readonly description: Prisma.FieldRef<"InventoryLocation", 'String'>
   readonly createdAt: Prisma.FieldRef<"InventoryLocation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"InventoryLocation", 'DateTime'>

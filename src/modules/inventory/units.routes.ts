@@ -1,8 +1,10 @@
+import { withSetupOrder } from "./setup-order";
 import { Router, Response, NextFunction } from "express";
 import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/errors";
+import { ensureDefaultSetup } from "./inventory-defaults";
 
 const router = Router();
 const schema = z.object({
@@ -20,12 +22,13 @@ const handleError = (err: unknown, next: NextFunction) => {
   if (code === "P2003") return next(new ConflictError("This unit is in use and cannot be deleted"));
   next(err);
 };
-const select = { id: true, name: true, abbreviation: true };
+const select = { id: true, name: true, abbreviation: true, isDefault: true };
 
 router.get("/units", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    await ensureDefaultSetup("units", institution(req));
     const data = await academicDb().inventoryUnit.findMany({ where: { institutionId: institution(req) }, orderBy: { name: "asc" }, select });
-    res.json({ success: true, data });
+    res.json({ success: true, ...await withSetupOrder("units", institution(req), data) });
   } catch (err) { handleError(err, next); }
 });
 router.post("/units", async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -41,13 +44,15 @@ router.patch("/units/:id", async (req: AuthRequest, res: Response, next: NextFun
     const input = schema.parse(req.body);
     const result = await academicDb().inventoryUnit.updateMany({ where: { id, institutionId: institution(req) }, data: { ...input, nameKey: input.name.toLowerCase() } });
     if (!result.count) throw new NotFoundError("Unit not found");
-    res.json({ success: true, data: { id, ...input } });
+    const data = await academicDb().inventoryUnit.findFirst({ where: { id, institutionId: institution(req) }, select });
+    res.json({ success: true, data });
   } catch (err) { handleError(err, next); }
 });
 router.delete("/units/:id", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = idSchema.parse(req.params.id);
-    const result = await academicDb().inventoryUnit.deleteMany({ where: { id, institutionId: institution(req) } });
+    if (await academicDb().inventoryUnit.count({ where: { id, institutionId: institution(req), isDefault: true } })) throw new ConflictError("Built-in units cannot be deleted. You can rename them instead.");
+    const result = await academicDb().inventoryUnit.deleteMany({ where: { id, institutionId: institution(req), isDefault: false } });
     if (!result.count) throw new NotFoundError("Unit not found");
     res.json({ success: true });
   } catch (err) { handleError(err, next); }

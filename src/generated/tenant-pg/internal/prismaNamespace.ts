@@ -481,7 +481,8 @@ export const ModelName = {
   TimetableEntry: 'TimetableEntry',
   TimetableException: 'TimetableException',
   TimetableSubstitution: 'TimetableSubstitution',
-  TimetableGeneration: 'TimetableGeneration'
+  TimetableGeneration: 'TimetableGeneration',
+  InventorySetupOrder: 'InventorySetupOrder'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -497,7 +498,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "inventorySetupOrder"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -6791,6 +6792,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InventorySetupOrder: {
+      payload: Prisma.$InventorySetupOrderPayload<ExtArgs>
+      fields: Prisma.InventorySetupOrderFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InventorySetupOrderFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InventorySetupOrderFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>
+        }
+        findFirst: {
+          args: Prisma.InventorySetupOrderFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InventorySetupOrderFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>
+        }
+        findMany: {
+          args: Prisma.InventorySetupOrderFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>[]
+        }
+        create: {
+          args: Prisma.InventorySetupOrderCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>
+        }
+        createMany: {
+          args: Prisma.InventorySetupOrderCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InventorySetupOrderCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>[]
+        }
+        delete: {
+          args: Prisma.InventorySetupOrderDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>
+        }
+        update: {
+          args: Prisma.InventorySetupOrderUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>
+        }
+        deleteMany: {
+          args: Prisma.InventorySetupOrderDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InventorySetupOrderUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InventorySetupOrderUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>[]
+        }
+        upsert: {
+          args: Prisma.InventorySetupOrderUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventorySetupOrderPayload>
+        }
+        aggregate: {
+          args: Prisma.InventorySetupOrderAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInventorySetupOrder>
+        }
+        groupBy: {
+          args: Prisma.InventorySetupOrderGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InventorySetupOrderGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InventorySetupOrderCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InventorySetupOrderCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -7909,6 +7984,7 @@ export const InventoryCategoryScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   nameKey: 'nameKey',
+  isDefault: 'isDefault',
   description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -7922,6 +7998,7 @@ export const InventoryUnitScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   nameKey: 'nameKey',
+  isDefault: 'isDefault',
   abbreviation: 'abbreviation',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -7935,6 +8012,7 @@ export const InventoryLocationScalarFieldEnum = {
   institutionId: 'institutionId',
   name: 'name',
   nameKey: 'nameKey',
+  isDefault: 'isDefault',
   description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -8005,6 +8083,7 @@ export const InventoryStockMovementScalarFieldEnum = {
   returnExpected: 'returnExpected',
   issueId: 'issueId',
   attachments: 'attachments',
+  corrections: 'corrections',
   id: 'id',
   institutionId: 'institutionId',
   itemId: 'itemId',
@@ -8014,6 +8093,7 @@ export const InventoryStockMovementScalarFieldEnum = {
   previousQuantity: 'previousQuantity',
   correctedQuantity: 'correctedQuantity',
   recordedOn: 'recordedOn',
+  occurredAt: 'occurredAt',
   notes: 'notes',
   createdById: 'createdById',
   createdAt: 'createdAt',
@@ -8283,6 +8363,17 @@ export const TimetableGenerationScalarFieldEnum = {
 } as const
 
 export type TimetableGenerationScalarFieldEnum = (typeof TimetableGenerationScalarFieldEnum)[keyof typeof TimetableGenerationScalarFieldEnum]
+
+
+export const InventorySetupOrderScalarFieldEnum = {
+  institutionId: 'institutionId',
+  kind: 'kind',
+  ids: 'ids',
+  revision: 'revision',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventorySetupOrderScalarFieldEnum = (typeof InventorySetupOrderScalarFieldEnum)[keyof typeof InventorySetupOrderScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -8959,6 +9050,7 @@ export type GlobalOmitConfig = {
   timetableException?: Prisma.TimetableExceptionOmit
   timetableSubstitution?: Prisma.TimetableSubstitutionOmit
   timetableGeneration?: Prisma.TimetableGenerationOmit
+  inventorySetupOrder?: Prisma.InventorySetupOrderOmit
 }
 
 /* Types for Logging */

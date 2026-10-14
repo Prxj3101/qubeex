@@ -11,7 +11,7 @@ jest.mock("../../middlewares/academicRouting.middleware", () => ({ academicRouti
 jest.mock("../../middlewares/requirePermission.middleware", () => ({ requirePermission: () => (req: any, res: any, next: any) => req.user.role === "SUB_ADMIN" ? res.sendStatus(403) : next() }));
 jest.mock("../../services/audit.service", () => ({ logAudit: jest.fn() }));
 jest.mock("../../utils/academicContext", () => ({ academicDb: () => ({ inventoryCategory: mockCategory }) }));
-const mockCategory = { findMany: jest.fn(), create: jest.fn(), updateMany: jest.fn(), deleteMany: jest.fn() };
+const mockCategory = { findMany: jest.fn(), create: jest.fn(), updateMany: jest.fn(), deleteMany: jest.fn(), count: jest.fn().mockResolvedValue(0), createMany: jest.fn(), findFirst: jest.fn() };
 import router from "./inventory.routes";
 const app = express();
 app.use(express.json()); app.use("/inventory", router); app.use(errorHandler);
@@ -45,7 +45,12 @@ test("updates cannot target another school", async () => {
 test("deletes are scoped and reject missing categories", async () => {
   mockCategory.deleteMany.mockResolvedValue({ count: 0 });
   expect((await request(app).delete(`/inventory/categories/${id}`)).status).toBe(404);
-  expect(mockCategory.deleteMany.mock.calls[0][0].where).toEqual({ id, institutionId: "school-a" });
+  expect(mockCategory.deleteMany.mock.calls[0][0].where).toEqual({ id, institutionId: "school-a", isDefault: false });
+});
+test("built-in categories cannot be deleted", async () => {
+  mockCategory.count.mockResolvedValueOnce(1);
+  expect((await request(app).delete(`/inventory/categories/${id}`)).status).toBe(409);
+  expect(mockCategory.deleteMany).not.toHaveBeenCalled();
 });
 test("teachers and unpermitted subadmins cannot read categories", async () => {
   for (const role of ["TEACHER", "SUB_ADMIN"]) expect((await request(app).get("/inventory/categories").set("x-role", role)).status).toBe(403);

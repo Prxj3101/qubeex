@@ -215,4 +215,110 @@ describe("generateTimetable", () => {
       expect(new Set(cells).size).toBe(cells.length);
     }
   });
+
+});
+
+describe("generateTimetable — making room by moving other unpublished sections", () => {
+  const prac = (id: string, divisionId: string, teacherId: string, over: Partial<EngineConfig> = {}): EngineConfig =>
+    cfg({ id, divisionId, sessionTypeId: "prac", periodsPerWeek: 2, span: 2, maxPerDay: 2, teacherId, roomType: "LAB", ...over });
+  const labEntries = (divisionId: string, teacherId: string, configId: string, day: number, a: string, b: string, group: string, locked = false): EngineEntry[] =>
+    [a, b].map((slotId) => entry({ id: `${group}-${slotId}`, divisionId, dayOfWeek: day, slotId, sessionTypeId: "prac", teacherId, roomId: "lab1", configId, groupId: group, isLocked: locked }));
+  const unavailable = (teacher: string, cells: [number, string][]) => new Set(cells.map(([d, sl]) => resKey(teacher, d, sl)));
+  const allSlots = ["p1", "p2", "p3", "p4"];
+  const onlyLab = [rooms[0]]; // one lab → labs are the contested resource
+
+  // 10A's teacher t3 can only teach Mon P1-P2, which 10B's lab session currently occupies.
+  const scenario = (over: Partial<GeneratorInput> = {}) =>
+    base({
+      workingDays: [1, 2],
+      rooms: onlyLab,
+      configs: [prac("a", "10A", "t3")],
+      teacherUnavailable: unavailable("t3", [[1, "p3"], [1, "p4"], ...allSlots.map((x): [number, string] => [2, x])]),
+      otherEntries: labEntries("10B", "t4", "b", 1, "p1", "p2", "gB"),
+      movable: { divisionIds: new Set(["10B"]), configs: [prac("b", "10B", "t4")] },
+      ...over,
+    });
+
+  /** The final state of everything — ours plus the moved sessions — must have no clashes at all. */
+  const finalConflicts = (r: ReturnType<typeof generateTimetable>, others: EngineEntry[], unavail: Set<string>) => {
+    const moved = new Map(r.moves.flatMap((m) => m.entryIds.map((id, i) => [id, { m, i }] as const)));
+    const all: EngineEntry[] = others.map((e) => {
+      const mv = moved.get(e.id);
+      return mv ? { ...e, dayOfWeek: mv.m.toDay, slotId: mv.m.toSlotIds[mv.i], roomId: mv.m.toRoomId } : e;
+    });
+    for (const p of r.placements) {
+      p.slotIds.forEach((sid, i) => all.push(entry({ id: `new-${p.configId}-${i}`, divisionId: "10A", dayOfWeek: p.dayOfWeek, slotId: sid, sessionTypeId: "prac", teacherId: p.teacherId, roomId: p.roomId, configId: p.configId, groupId: `g-${p.configId}` })));
+    }
+    return detectConflicts(conflictInput(all, { rooms: new Map(onlyLab.map((x) => [x.id, x])), teacherUnavailable: unavail, workingDays: [1, 2] })).filter((c) => c.severity === "ERROR");
+  };
+
+  it("without permission to move other sections the period stays unplaced", () => {
+    const r = generateTimetable(scenario({ movable: undefined }));
+    expect(r.complete).toBe(false);
+    expect(r.unplaced).toBe(2);
+    expect(r.moves).toEqual([]);
+  });
+
+  it("moves the other section's session out of the way and fills the hole", () => {
+    const input = scenario();
+    const r = generateTimetable(input);
+    expect(r.complete).toBe(true);
+    expect(r.placements).toHaveLength(1);
+    expect(r.placements[0]).toMatchObject({ dayOfWeek: 1, slotIds: ["p1", "p2"], roomId: "lab1" });
+    expect(r.moves).toHaveLength(1);
+    expect(r.moves[0]).toMatchObject({ divisionId: "10B", entryIds: ["gB-p1", "gB-p2"], fromDay: 1, fromSlotIds: ["p1", "p2"] });
+    expect(r.moves[0].toSlotIds).toHaveLength(2);            // the 2-period block stays together…
+    expect(finalConflicts(r, input.otherEntries, input.teacherUnavailable)).toEqual([]); // …and nothing clashes
+    // 10B still has all of its periods (moved, not dropped).
+    expect(r.moves[0].entryIds).toHaveLength(2);
+  });
+
+  it("never moves locked sessions", () => {
+    const r = generateTimetable(scenario({ otherEntries: labEntries("10B", "t4", "b", 1, "p1", "p2", "gB", true) }));
+    expect(r.complete).toBe(false);
+    expect(r.moves).toEqual([]);
+  });
+
+  it("never moves sections that aren't listed as movable (published / archived)", () => {
+    const r = generateTimetable(scenario({ movable: { divisionIds: new Set(), configs: [] } }));
+    expect(r.complete).toBe(false);
+    expect(r.moves).toEqual([]);
+  });
+
+  it("chains two moves when the first session's only alternative is also taken", () => {
+    // 10B's t4 can't teach on day 2, so 10B can only go to Mon P3-P4 — where 10C's session sits. 10C can go to day 2.
+    const others = [...labEntries("10B", "t4", "b", 1, "p1", "p2", "gB"), ...labEntries("10C", "t5", "c", 1, "p3", "p4", "gC")];
+    const unavail = new Set([...scenario().teacherUnavailable, ...unavailable("t4", allSlots.map((x): [number, string] => [2, x]))]);
+    const input = scenario({
+      otherEntries: others,
+      teacherUnavailable: unavail,
+      movable: { divisionIds: new Set(["10B", "10C"]), configs: [prac("b", "10B", "t4"), prac("c", "10C", "t5")] },
+    });
+    const r = generateTimetable(input);
+    expect(r.complete).toBe(true);
+    expect(r.moves).toHaveLength(2);
+    const b = r.moves.find((m) => m.divisionId === "10B")!;
+    const c = r.moves.find((m) => m.divisionId === "10C")!;
+    expect(b.toDay).toBe(1);
+    expect(b.toSlotIds).toEqual(["p3", "p4"]);
+    expect(c.toDay).toBe(2);
+    expect(finalConflicts(r, others, unavail)).toEqual([]);
+  });
+
+  it("leaves everything exactly as it was when no chain of moves can work", () => {
+    // Same as above but 10C also has nowhere to go (t5 is unavailable on day 2).
+    const others = [...labEntries("10B", "t4", "b", 1, "p1", "p2", "gB"), ...labEntries("10C", "t5", "c", 1, "p3", "p4", "gC")];
+    const unavail = new Set([
+      ...scenario().teacherUnavailable,
+      ...unavailable("t4", allSlots.map((x): [number, string] => [2, x])),
+      ...unavailable("t5", allSlots.map((x): [number, string] => [2, x])),
+    ]);
+    const r = generateTimetable(scenario({
+      otherEntries: others, teacherUnavailable: unavail,
+      movable: { divisionIds: new Set(["10B", "10C"]), configs: [prac("b", "10B", "t4"), prac("c", "10C", "t5")] },
+    }));
+    expect(r.complete).toBe(false);
+    expect(r.moves).toEqual([]);                 // fully rolled back — other sections untouched
+    expect(r.problems.join(" ")).toMatch(/tried moving other unpublished/i);
+  });
 });

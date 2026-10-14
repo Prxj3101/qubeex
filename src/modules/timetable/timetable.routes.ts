@@ -96,6 +96,11 @@ router.put("/divisions/:divisionId/configs", ...WRITE, h(async (r, c) => {
   audit(c.actor, "TIMETABLE_REQUIREMENTS_UPDATED", `Updated weekly requirements`, { divisionId: param(r, "divisionId"), academicYearId: c.year.id });
   return out;
 }));
+router.post("/divisions/:divisionId/configs/copy", ...WRITE, h(async (r, c) => {
+  const out = await studio.copyConfigsToSections(c.institutionId, c.year, param(r, "divisionId"), S.copyConfigsSchema.parse(r.body ?? {}));
+  audit(c.actor, "TIMETABLE_REQUIREMENTS_COPIED", `Copied requirements to ${out.length} section(s)`, { divisionId: param(r, "divisionId"), academicYearId: c.year.id });
+  return out;
+}));
 router.post("/divisions/:divisionId/generate", ...WRITE, h((r, c) => { const b = S.generateSchema.parse(r.body ?? {}); return gen.generateForDivision(c.institutionId, c.year, param(r, "divisionId"), b.keepLocked, c.actor, b.variation); }));
 router.post("/divisions/:divisionId/status", ...WRITE, h((r, c) => gen.setStatus(c.institutionId, c.year, param(r, "divisionId"), S.statusSchema.parse(r.body), c.actor)));
 router.post("/divisions/:divisionId/entries", ...WRITE, h((r, c) => entries.addEntry(c.institutionId, c.year, param(r, "divisionId"), S.entryCreateSchema.parse(r.body), c.actor), 201));
@@ -104,6 +109,7 @@ router.post("/divisions/:divisionId/restore", ...WRITE, h((r, c) => entries.rest
 router.post("/divisions/:divisionId/copy-day", ...WRITE, h((r, c) => entries.copyDay(c.institutionId, c.year, param(r, "divisionId"), S.copyDaySchema.parse(r.body), c.actor)));
 
 router.post("/generate-bulk", ...WRITE, h((r, c) => gen.generateBulk(c.institutionId, c.year, S.generateBulkSchema.parse(r.body ?? {}), c.actor)));
+router.post("/generate-publish", ...WRITE, h((r, c) => gen.generateAndPublish(c.institutionId, c.year, S.generatePublishSchema.parse(r.body ?? {}), c.actor)));
 router.post("/status-bulk", ...WRITE, h((r, c) => gen.setStatusBulk(c.institutionId, c.year, S.bulkStatusSchema.parse(r.body), c.actor)));
 router.post("/apply-to-all", ...WRITE, h((r, c) => entries.applyToAll(c.institutionId, c.year, S.applyToAllSchema.parse(r.body), c.actor)));
 

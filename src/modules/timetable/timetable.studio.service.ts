@@ -8,7 +8,7 @@ import {
 import {
   detectConflicts, requirementStatus, type Conflict, type EngineConfig, type EngineEntry,
 } from "./timetable.engine";
-import { configsSchema } from "./timetable.schema";
+import { configsSchema, copyConfigsSchema } from "./timetable.schema";
 
 export async function assertDivision(institutionId: string, divisionId: string) {
   const division = await academicDb().division.findFirst({
@@ -125,11 +125,17 @@ export async function getDivisionStudio(institutionId: string, year: AcademicYea
     orderBy: { createdAt: "asc" },
   });
   const resolvedById = new Map(configs.map((c) => [c.id, c]));
+  const siblings = await db.division.findMany({
+    where: { institutionId, standardId: division.standardId, id: { not: divisionId } },
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
 
   return {
     academicYear: { id: year.id, label: year.label, status: year.status, isCurrent: year.isCurrent },
     writable: year.status === "ACTIVE",
     division: { id: division.id, name: division.name, standardId: division.standardId, standardName: division.standard.name, classTeacherId: division.classTeacherId },
+    siblings: siblings.map((x) => ({ id: x.id, label: ctx.labels.division(x.id) })),
     timetable: timetable
       ? { id: timetable.id, status: timetable.status, generatedAt: timetable.generatedAt, publishedAt: timetable.publishedAt }
       : null,
@@ -214,4 +220,59 @@ export async function getYearConflicts(institutionId: string, year: AcademicYear
   const configs = await loadEngineConfigs(institutionId, year.id, divisions.map((d) => d.id));
   const all = yearConflicts(ctx, entries, configs);
   return divisionId ? all.filter((c) => involvesDivision(c, divisionId)) : all;
+}
+
+/**
+ * Copy one section's weekly requirements to the other sections of the same class, so a class is set up
+ * once instead of once per section. Matching rows (same subject + session type + title) are updated in
+ * place — keeping their ids, so generated sessions stay linked — and missing ones are added. Nothing is
+ * ever deleted, and each section keeps its own assigned teachers (explicit teacher overrides aren't copied).
+ */
+export async function copyConfigsToSections(
+  institutionId: string, year: AcademicYear, sourceDivisionId: string, body: z.infer<typeof copyConfigsSchema>
+) {
+  assertWritable(year);
+  const db = academicDb();
+  const source = await assertDivision(institutionId, sourceDivisionId);
+  const sourceConfigs = await db.timetableSubjectConfig.findMany({ where: { institutionId, academicYearId: year.id, divisionId: sourceDivisionId } });
+  if (!sourceConfigs.length) throw httpError(400, "This section has no requirements to copy yet. Save its requirements first.");
+
+  const targets = await db.division.findMany({
+    where: {
+      institutionId, standardId: source.standardId, id: { not: sourceDivisionId },
+      ...(body.targetDivisionIds?.length ? { id: { in: body.targetDivisionIds.filter((x) => x !== sourceDivisionId) } } : {}),
+    },
+    select: { id: true, name: true, standard: { select: { name: true } } },
+    orderBy: { name: "asc" },
+  });
+  if (!targets.length) throw httpError(404, "There are no other sections in this class to copy to.");
+  if (body.targetDivisionIds?.length && targets.length !== new Set(body.targetDivisionIds.filter((x) => x !== sourceDivisionId)).size) {
+    throw httpError(400, "A target section does not belong to this class.");
+  }
+
+  const keyOf = (c: { subjectId: string | null; sessionTypeId: string; title: string | null }) => `${c.subjectId ?? ""}|${c.sessionTypeId}|${(c.title ?? "").trim().toLowerCase()}`;
+  const results: { divisionId: string; divisionName: string; added: number; updated: number }[] = [];
+
+  for (const t of targets) {
+    await getOrCreateTimetable(institutionId, year, t.id);
+    const existing = await db.timetableSubjectConfig.findMany({ where: { institutionId, academicYearId: year.id, divisionId: t.id } });
+    const byKey = new Map(existing.map((e) => [keyOf(e), e]));
+    let added = 0;
+    let updated = 0;
+    await db.$transaction(async (tx) => {
+      for (const c of sourceConfigs) {
+        const match = byKey.get(keyOf(c));
+        const data = { periodsPerWeek: c.periodsPerWeek, span: c.span, maxPerDay: c.maxPerDay, roomId: c.roomId, roomType: c.roomType };
+        if (match) { await tx.timetableSubjectConfig.update({ where: { id: match.id }, data }); updated++; }
+        else {
+          await tx.timetableSubjectConfig.create({
+            data: { id: randomUUID(), institutionId, academicYearId: year.id, divisionId: t.id, subjectId: c.subjectId, sessionTypeId: c.sessionTypeId, title: c.title, teacherId: null, ...data },
+          });
+          added++;
+        }
+      }
+    });
+    results.push({ divisionId: t.id, divisionName: `${t.standard.name}-${t.name}`, added, updated });
+  }
+  return results;
 }

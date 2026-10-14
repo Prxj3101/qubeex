@@ -340,6 +340,23 @@ export interface GeneratorInput {
   maxNodes?: number;
   /** Different seeds → different (equally valid) arrangements. Omitted → fully deterministic. */
   seed?: number;
+  /**
+   * Other sections whose UNLOCKED sessions may be moved to make room for periods that would otherwise stay
+   * unplaced. Pass only sections that are not published/archived. Omitted → other sections are fixed.
+   */
+  movable?: { divisionIds: Set<string>; configs: EngineConfig[] };
+}
+
+/** A whole session (one period, or a consecutive block) of another section that was moved to make room. */
+export interface SessionMove {
+  divisionId: string;
+  configId: string | null;
+  entryIds: string[];          // ordered by period
+  fromDay: number;
+  fromSlotIds: string[];
+  toDay: number;
+  toSlotIds: string[];
+  toRoomId: string | null;
 }
 
 export interface Placement {
@@ -357,6 +374,8 @@ export interface GeneratorResult {
   unplaced: number;
   problems: string[];
   timedOut: boolean;
+  /** Sessions of other sections moved to make room (empty unless `movable` was given and needed). */
+  moves: SessionMove[];
 }
 
 interface Block {
@@ -686,6 +705,272 @@ export function generateTimetable(input: GeneratorInput): GeneratorResult {
   // `search` unwinds all state on failure but leaves it applied on success.
   if (!solved) rebuild();
 
+  // Which blocks are still unplaced after the search?
+  const unplacedBlocks: { b: Block; root: boolean }[] = [];
+  for (const b of infeasible) unplacedBlocks.push({ b, root: true });
+  {
+    const remainingBlocks = new Map<string, Block[]>();
+    for (const b of feasible) (remainingBlocks.get(b.config.id) ?? remainingBlocks.set(b.config.id, []).get(b.config.id)!).push(b);
+    for (const p of best) {
+      const list = remainingBlocks.get(p.configId);
+      if (!list) continue;
+      const at = list.findIndex((b) => b.size === p.slotIds.length);
+      if (at >= 0) list.splice(at, 1);
+    }
+    for (const list of remainingBlocks.values()) for (const b of list) unplacedBlocks.push({ b, root: false });
+  }
+
+  // ── Make room ──────────────────────────────────────────────────────────────────
+  // For a period that still has no home, look for a slot where the ONLY obstacle is a session of another
+  // (unpublished, unlocked) section, move that session somewhere else valid in its own section — and, if
+  // that spot is blocked in turn, move that blocker too (a short "ejection chain") — then place the period.
+  // Every step obeys the same hard rules as normal placement; a failed attempt is fully undone.
+  const moves: SessionMove[] = [];
+  const triedMakeRoom = !!input.movable && unplacedBlocks.length > 0;
+  if (input.movable && unplacedBlocks.length > 0) {
+    const mv = input.movable;
+    interface MSess {
+      id: string; divisionId: string; configId: string | null; sessionTypeId: string;
+      teacherId: string | null; roomId: string | null; size: number; day: number; start: number;
+      entryIds: string[]; origDay: number; origStart: number; origRoom: string | null;
+      roomType: string | null; span: number;
+    }
+    interface Spec { divisionId: string; teacherId: string | null; size: number; roomOpts: (string | null)[]; configId: string | null; span: number; sess?: MSess; block?: Block }
+    interface RCand { day: number; start: number; room: string | null; blockers: MSess[]; pen: number }
+
+    const MAX_DEPTH = 3;
+    const REPAIR_NODE_CAP = 6000;
+    const repairDeadline = Date.now() + 2500;
+    let repairNodes = 0;
+
+    const slotIdx = new Map(teaching.map((sl, i) => [sl.id, i]));
+    const cfgOf = new Map(mv.configs.map((c) => [c.id, c]));
+    const divBusyMap = new Map<string, Set<string>>();
+    const divSet = (d: string): Set<string> => (d === input.divisionId ? divisionBusy : (divBusyMap.get(d) ?? divBusyMap.set(d, new Set()).get(d)!));
+    const cfgCells = new Map<string, string>();   // `${division}|${cell}` → configId
+    const cfgDay = new Map<string, number>();     // `${division}|${config}|${day}` → periods
+    const sessAtTeacher = new Map<string, MSess>();
+    const sessAtRoom = new Map<string, MSess>();
+
+    for (const e of input.otherEntries) {
+      divSet(e.divisionId).add(cellKey(e.dayOfWeek, e.slotId));
+      if (e.configId && mv.divisionIds.has(e.divisionId)) {
+        cfgCells.set(`${e.divisionId}|${cellKey(e.dayOfWeek, e.slotId)}`, e.configId);
+        const k = `${e.divisionId}|${e.configId}|${e.dayOfWeek}`;
+        cfgDay.set(k, (cfgDay.get(k) ?? 0) + 1);
+      }
+    }
+
+    // Group movable entries into whole sessions; anything irregular simply stays where it is.
+    const groups = new Map<string, EngineEntry[]>();
+    for (const e of input.otherEntries) {
+      if (!mv.divisionIds.has(e.divisionId) || e.isLocked) continue;
+      const k = e.groupId ?? e.id;
+      (groups.get(k) ?? groups.set(k, []).get(k)!).push(e);
+    }
+    const sessions: MSess[] = [];
+    for (const list of groups.values()) {
+      const sorted = [...list].sort((a, b) => (slotIdx.get(a.slotId) ?? -1) - (slotIdx.get(b.slotId) ?? -1));
+      const idxs = sorted.map((e) => slotIdx.get(e.slotId));
+      if (idxs.some((i) => i === undefined)) continue;
+      const start = idxs[0]!;
+      const first = sorted[0];
+      const regular = days.includes(first.dayOfWeek)
+        && sorted.every((e, i) => e.dayOfWeek === first.dayOfWeek && idxs[i] === start + i && runOf[start + i] === runOf[start]
+          && e.teacherId === first.teacherId && e.roomId === first.roomId && e.sessionTypeId === first.sessionTypeId);
+      if (!regular) continue;
+      const cfg = first.configId ? cfgOf.get(first.configId) : undefined;
+      sessions.push({
+        id: first.groupId ?? first.id, divisionId: first.divisionId, configId: first.configId, sessionTypeId: first.sessionTypeId,
+        teacherId: first.teacherId, roomId: first.roomId, size: sorted.length, day: first.dayOfWeek, start,
+        entryIds: sorted.map((e) => e.id), origDay: first.dayOfWeek, origStart: start, origRoom: first.roomId,
+        roomType: cfg?.roomType ?? input.sessionTypes.get(first.sessionTypeId)?.roomType ?? null,
+        span: cfg?.span ?? sorted.length,
+      });
+    }
+    for (const sess of sessions) {
+      for (let k = 0; k < sess.size; k++) {
+        const slot = teaching[sess.start + k];
+        if (sess.teacherId) sessAtTeacher.set(resKey(sess.teacherId, sess.day, slot.id), sess);
+        if (sess.roomId) sessAtRoom.set(resKey(sess.roomId, sess.day, slot.id), sess);
+      }
+    }
+
+    const applySess = (sess: MSess, day: number, start: number, room: string | null, sign: 1 | -1) => {
+      const set = divSet(sess.divisionId);
+      for (let k = 0; k < sess.size; k++) {
+        const slot = teaching[start + k];
+        const ck = cellKey(day, slot.id);
+        if (sign === 1) set.add(ck); else set.delete(ck);
+        if (sess.teacherId) {
+          const rk = resKey(sess.teacherId, day, slot.id);
+          if (sign === 1) { teacherBusy.add(rk); sessAtTeacher.set(rk, sess); } else { teacherBusy.delete(rk); sessAtTeacher.delete(rk); }
+        }
+        if (room) {
+          const rk = resKey(room, day, slot.id);
+          if (sign === 1) { roomBusy.add(rk); sessAtRoom.set(rk, sess); } else { roomBusy.delete(rk); sessAtRoom.delete(rk); }
+        }
+        if (sess.configId) {
+          const key = `${sess.divisionId}|${ck}`;
+          if (sign === 1) cfgCells.set(key, sess.configId); else cfgCells.delete(key);
+        }
+      }
+      note(sess.teacherId, day, sign * sess.size);
+      if (sess.configId) {
+        const k = `${sess.divisionId}|${sess.configId}|${day}`;
+        cfgDay.set(k, (cfgDay.get(k) ?? 0) + sign * sess.size);
+      }
+    };
+
+    const roomOptsOf = (sess: MSess): (string | null)[] => {
+      if (!sess.roomId) return [null];
+      if (!sess.roomType) return [sess.roomId];
+      return [sess.roomId, ...(roomsByType.get(sess.roomType) ?? []).map((r) => r.id).filter((id) => id !== sess.roomId)];
+    };
+    const specOfSess = (sess: MSess): Spec => ({
+      divisionId: sess.divisionId, teacherId: sess.teacherId, size: sess.size, roomOpts: roomOptsOf(sess),
+      configId: sess.configId, span: sess.span, sess,
+    });
+
+    const softPen = (spec: Spec, day: number, start: number): number => {
+      let p = start * 0.1;
+      if (!spec.configId) return p;
+      const neighbours = [start - 1, start + spec.size].filter((i) => i >= 0 && i < teaching.length && runOf[i] === runOf[start]);
+      if (spec.sess) {
+        p += (cfgDay.get(`${spec.divisionId}|${spec.configId}|${day}`) ?? 0) * 10;
+        if (spec.span <= 1 && neighbours.some((i) => cfgCells.get(`${spec.divisionId}|${cellKey(day, teaching[i].id)}`) === spec.configId)) p += 25;
+      } else {
+        p += (subjectDay.get(`${spec.configId}|${day}`) ?? 0) * 10;
+        if (spec.span <= 1 && neighbours.some((i) => cellConfig.get(cellKey(day, teaching[i].id)) === spec.configId)) p += 25;
+      }
+      return p;
+    };
+
+    /** Every (day, start, room) where `spec` fits if some movable sessions were out of the way. */
+    const scan = (spec: Spec, maxBlockers: number, prot: Set<MSess>): RCand[] => {
+      const out: RCand[] = [];
+      const pref = spec.teacherId ? input.teacherPrefs.get(spec.teacherId) : undefined;
+      const dBusy = divSet(spec.divisionId);
+      for (const day of days) {
+        for (let start = 0; start + spec.size <= teaching.length; start++) {
+          if (runOf[start] !== runOf[start + spec.size - 1]) continue;
+          let free = true;
+          for (let k = 0; k < spec.size && free; k++) if (dBusy.has(cellKey(day, teaching[start + k].id))) free = false;
+          if (!free) continue;
+
+          const tBlockers = new Set<MSess>();
+          let ok = true;
+          if (spec.teacherId) {
+            for (let k = 0; k < spec.size && ok; k++) {
+              const rk = resKey(spec.teacherId, day, teaching[start + k].id);
+              if (input.teacherUnavailable.has(rk)) { ok = false; break; }
+              if (teacherBusy.has(rk)) {
+                const owner = sessAtTeacher.get(rk);
+                if (!owner || prot.has(owner)) ok = false; else tBlockers.add(owner);
+              }
+            }
+          }
+          if (!ok || tBlockers.size > maxBlockers) continue;
+
+          if (spec.teacherId && pref) {
+            const dayN = teacherDay.get(`${spec.teacherId}|${day}`) ?? 0;
+            if (pref.maxPeriodsPerDay != null && dayN + spec.size > pref.maxPeriodsPerDay) continue;
+            if (pref.maxPeriodsPerWeek != null && (teacherWeek.get(spec.teacherId) ?? 0) + spec.size > pref.maxPeriodsPerWeek) continue;
+            if (pref.maxConsecutive != null) {
+              let before = 0;
+              for (let i = start - 1; i >= 0 && runOf[i] === runOf[start]; i--) { if (teacherBusy.has(resKey(spec.teacherId, day, teaching[i].id))) before++; else break; }
+              let after = 0;
+              for (let i = start + spec.size; i < teaching.length && runOf[i] === runOf[start]; i++) { if (teacherBusy.has(resKey(spec.teacherId, day, teaching[i].id))) after++; else break; }
+              if (before + spec.size + after > pref.maxConsecutive) continue;
+            }
+          }
+
+          for (const room of spec.roomOpts) {
+            const blockers = new Set(tBlockers);
+            let roomOk = true;
+            if (room) {
+              for (let k = 0; k < spec.size && roomOk; k++) {
+                const rk = resKey(room, day, teaching[start + k].id);
+                if (input.roomUnavailable.has(rk)) { roomOk = false; break; }
+                if (roomBusy.has(rk)) {
+                  const owner = sessAtRoom.get(rk);
+                  if (!owner || prot.has(owner)) roomOk = false; else blockers.add(owner);
+                }
+              }
+            }
+            if (!roomOk || blockers.size > maxBlockers) continue;
+            out.push({ day, start, room, blockers: [...blockers], pen: blockers.size * 100 + softPen(spec, day, start) });
+          }
+        }
+      }
+      return out;
+    };
+
+    const placeSpec = (spec: Spec, cand: RCand, sign: 1 | -1) => {
+      if (spec.sess) {
+        applySess(spec.sess, cand.day, cand.start, cand.room, sign);
+        if (sign === 1) { spec.sess.day = cand.day; spec.sess.start = cand.start; spec.sess.roomId = cand.room; }
+      } else {
+        apply(spec.block!, { day: cand.day, runStart: cand.start, roomId: cand.room }, sign);
+      }
+    };
+
+    /** Find a home for `spec`, moving blockers (recursively) if needed. On success the state is updated; on failure it is untouched. */
+    const tryPlace = (spec: Spec, depth: number, prot: Set<MSess>): RCand | null => {
+      if (depth > MAX_DEPTH) return null;
+      if (++repairNodes > REPAIR_NODE_CAP || Date.now() > repairDeadline) return null;
+      const cands = scan(spec, depth === 0 ? 3 : 2, prot).sort((a, b) => a.pen - b.pen || a.day - b.day || a.start - b.start).slice(0, 20);
+      for (const cand of cands) {
+        const origin = cand.blockers.map((b) => ({ b, day: b.day, start: b.start, room: b.roomId }));
+        for (const o of origin) applySess(o.b, o.day, o.start, o.room, -1);        // 1. lift the blockers out
+        placeSpec(spec, cand, 1);                                                   // 2. put the new session in
+        const nextProt = new Set(prot);
+        if (spec.sess) nextProt.add(spec.sess);
+        const relocated: MSess[] = [];
+        let ok = true;
+        for (const o of origin) {                                                   // 3. find each blocker a new home
+          const r = tryPlace(specOfSess(o.b), depth + 1, nextProt);
+          if (!r) { ok = false; break; }
+          relocated.push(o.b);
+          nextProt.add(o.b);
+        }
+        if (ok) return cand;
+        for (const b of [...relocated].reverse()) applySess(b, b.day, b.start, b.roomId, -1);   // undo everything
+        placeSpec(spec, cand, -1);
+        for (const o of origin) { o.b.day = o.day; o.b.start = o.start; o.b.roomId = o.room; applySess(o.b, o.day, o.start, o.room, 1); }
+      }
+      return null;
+    };
+
+    const stillUnplaced: typeof unplacedBlocks = [];
+    for (const u of [...unplacedBlocks].sort((x, y) => y.b.size - x.b.size)) {
+      const c = u.b.config;
+      const opts = roomOptions(c);
+      const spec: Spec = {
+        divisionId: input.divisionId, teacherId: c.teacherId, size: u.b.size, configId: c.id, span: c.span, block: u.b,
+        roomOpts: opts === "NONE_AVAILABLE" ? [] : opts,
+      };
+      const cannotEverPlace = opts === "NONE_AVAILABLE" || (requiresTeacher(c) && !c.teacherId);
+      const cand = cannotEverPlace ? null : tryPlace(spec, 0, new Set());
+      if (!cand) { stillUnplaced.push(u); continue; }
+      best.push({
+        configId: c.id, dayOfWeek: cand.day, slotIds: Array.from({ length: u.b.size }, (_, k) => teaching[cand.start + k].id),
+        teacherId: c.teacherId, roomId: cand.room,
+      });
+    }
+    unplacedBlocks.length = 0;
+    unplacedBlocks.push(...stillUnplaced);
+
+    for (const sess of sessions) {
+      if (sess.day === sess.origDay && sess.start === sess.origStart && sess.roomId === sess.origRoom) continue;
+      moves.push({
+        divisionId: sess.divisionId, configId: sess.configId, entryIds: sess.entryIds,
+        fromDay: sess.origDay, fromSlotIds: Array.from({ length: sess.size }, (_, k) => teaching[sess.origStart + k].id),
+        toDay: sess.day, toSlotIds: Array.from({ length: sess.size }, (_, k) => teaching[sess.start + k].id), toRoomId: sess.roomId,
+      });
+    }
+  }
+
   let unplacedCount = 0;
   const explain = (b: Block, rootInfeasible: boolean): string => {
     const c = b.config;
@@ -735,24 +1020,12 @@ export function generateTimetable(input: GeneratorInput): GeneratorResult {
     return `${c.label}: ${b.size > 1 ? `${b.size}-period block` : "1 period"} could not be scheduled — ${lines.join("; ")}.`;
   };
 
-  for (const b of infeasible) {
-    unplacedCount += b.size;
-    problems.push(explain(b, true));
+  for (const u of unplacedBlocks) {
+    unplacedCount += u.b.size;
+    problems.push(explain(u.b, u.root));
   }
-  // Match placed placements to feasible blocks to determine which feasible blocks remain unplaced.
-  const remainingBlocks = new Map<string, Block[]>();
-  for (const b of feasible) (remainingBlocks.get(b.config.id) ?? remainingBlocks.set(b.config.id, []).get(b.config.id)!).push(b);
-  for (const p of best) {
-    const list = remainingBlocks.get(p.configId);
-    if (!list) continue;
-    const at = list.findIndex((b) => b.size === p.slotIds.length);
-    if (at >= 0) list.splice(at, 1);
-  }
-  for (const list of remainingBlocks.values()) {
-    for (const b of list) {
-      unplacedCount += b.size;
-      problems.push(explain(b, false));
-    }
+  if (triedMakeRoom && unplacedCount > 0) {
+    problems.push("The generator also tried moving other unpublished sections' unlocked sessions to make room, but no arrangement fit. Check the reasons above — often a teacher or room is simply over-booked.");
   }
   if (timedOut && unplacedCount > 0) problems.push("Search stopped at its time limit; a better arrangement may exist. Try unlocking sessions or relaxing availability.");
 
@@ -763,6 +1036,7 @@ export function generateTimetable(input: GeneratorInput): GeneratorResult {
     unplaced: unplacedCount,
     problems: dedupe(problems),
     timedOut,
+    moves,
   };
 }
 

@@ -173,3 +173,14 @@ export const copyDaySchema = forceSchema.extend({
 });
 export const bulkDeleteSchema = z.object({ ids: z.array(id).min(1).max(400) });
 export const clearSchema = z.object({ keepLocked: z.boolean().default(true), dayOfWeek: day.optional() });
+
+export const copyConfigsSchema = z.object({
+  /** Omit to copy to every other section of the same class. */
+  targetDivisionIds: z.array(id).max(100).optional(),
+});
+export const generatePublishSchema = z.object({
+  standardId: id.optional(),
+  divisionIds: z.array(id).max(300).optional(),
+  keepLocked: z.boolean().default(true),
+  variation: z.number().int().optional(),
+});

@@ -327,6 +327,53 @@ d("Timetable Studio (integration)", () => {
     });
   });
 
+  it("copies a section's requirements to the other sections, then generates and publishes in one go", async () => {
+    await inCtx(async () => {
+      const p = s.prisma;
+      const divC = await p.division.create({ data: { institutionId: ids.inst, standardId: ids.std, name: "C" } });
+      await p.divisionSubject.createMany({ data: [ids.maths, ids.eng, ids.sci].map((subjectId) => ({ divisionId: divC.id, subjectId, institutionId: ids.inst })) });
+      for (const [subjectId, teacherId] of [[ids.maths, ids.t1], [ids.eng, ids.t2], [ids.sci, ids.t3]]) {
+        await p.divisionAssignment.create({ data: { divisionId: divC.id, subjectId, teacherId, institutionId: ids.inst, academicYearId: year.id } });
+      }
+      const srcCount = (await s.studio.getDivisionStudio(ids.inst, year, ids.divA)).configs.length;
+      expect(srcCount).toBeGreaterThan(0);
+
+      const copied = await s.studio.copyConfigsToSections(ids.inst, year, ids.divA, {});
+      expect(copied.map((r) => r.divisionName).sort()).toEqual(["10-B", "10-C"]);
+      expect(copied.find((r) => r.divisionName === "10-C")).toMatchObject({ added: srcCount, updated: 0 });
+      expect(copied.find((r) => r.divisionName === "10-B")).toMatchObject({ added: 0, updated: srcCount }); // matched in place, nothing duplicated
+
+      const c = await s.studio.getDivisionStudio(ids.inst, year, divC.id);
+      expect(c.configs).toHaveLength(srcCount);
+      expect(c.configs.every((x) => x.teacherId === null)).toBe(true);       // each section keeps its own teachers
+      expect(c.configs.every((x) => x.resolvedTeacherId)).toBe(true);
+      expect(c.configs.reduce((n, x) => n + x.periodsPerWeek, 0)).toBe((await s.studio.getDivisionStudio(ids.inst, year, ids.divA)).configs.reduce((n, x) => n + x.periodsPerWeek, 0));
+      // Copying again changes nothing (idempotent).
+      const again = await s.studio.copyConfigsToSections(ids.inst, year, ids.divA, { targetDivisionIds: [divC.id] });
+      expect(again).toEqual([expect.objectContaining({ divisionName: "10-C", added: 0, updated: srcCount })]);
+      // Targets must belong to the same class.
+      await expect(s.studio.copyConfigsToSections(ids.inst, year, ids.divA, { targetDivisionIds: ["00000000-0000-0000-0000-000000000000"] })).rejects.toMatchObject({ status: 404 });
+
+      const res = await s.gen.generateAndPublish(ids.inst, year, { divisionIds: [ids.divA, ids.divB, divC.id], keepLocked: true }, actor());
+      const by = new Map(res.map((r) => [r.divisionName, r]));
+      expect(by.get("10-A")).toMatchObject({ outcome: "SKIPPED" });                 // already published → never silently regenerated
+      expect(by.get("10-B")).toMatchObject({ outcome: "PUBLISHED" });
+      expect(by.get("10-C")).toMatchObject({ outcome: "PUBLISHED" });
+      expect((await s.studio.getDivisionStudio(ids.inst, year, divC.id)).timetable?.status).toBe("PUBLISHED");
+      expect((await s.studio.getYearConflicts(ids.inst, year)).filter((x) => x.severity === "ERROR")).toEqual([]);
+    });
+  });
+
+  it("generate-and-publish leaves a section with no requirements alone and explains why", async () => {
+    await inCtx(async () => {
+      const p = s.prisma;
+      const divD = await p.division.create({ data: { institutionId: ids.inst, standardId: ids.std, name: "D" } });
+      const res = await s.gen.generateAndPublish(ids.inst, year, { divisionIds: [divD.id], keepLocked: true }, actor());
+      expect(res).toEqual([expect.objectContaining({ divisionName: "10-D", outcome: "SKIPPED" })]);
+      expect(res[0].reasons.join(" ")).toMatch(/requirements/i);
+    });
+  });
+
   it("keeps academic years separate and makes closed years read-only", async () => {
     await inCtx(async () => {
       const old = await s.studio.getDivisionStudio(ids.inst, oldYear, ids.divA);
@@ -357,7 +404,8 @@ d("Timetable Studio (integration)", () => {
 
   it("undo building blocks: bulk-delete, restore, clear snapshot and copy-day", async () => {
     await inCtx(async () => {
-      // Work on a clean B timetable (unpublished).
+      // Work on a clean B timetable (unpublished — a published one can't be cleared).
+      await s.gen.setStatus(ids.inst, year, ids.divB, { status: "DRAFT" }, actor());
       const cleared = await s.entries.clearDivision(ids.inst, year, ids.divB, false, actor());
       expect(cleared.removed).toBeGreaterThan(0);
       expect(cleared.snapshot).toHaveLength(cleared.removed);
@@ -391,6 +439,80 @@ d("Timetable Studio (integration)", () => {
       const undone = await s.entries.bulkDeleteEntries(ids.inst, year, { ids: copy.createdIds }, actor());
       expect(undone.removed).toBe(copy.createdIds.length);
       expect((await s.studio.getDivisionStudio(ids.inst, year, ids.divB)).entries.filter((e) => e.dayOfWeek === other)).toHaveLength(0);
+    });
+  });
+
+  it("fills a hole by moving another unpublished section's session, but never a locked or published one", async () => {
+    await inCtx(async () => {
+      const p = s.prisma;
+      const mkTeacher = async (key: string) => {
+        const u = await p.user.create({ data: { name: key, email: `${key}${Date.now()}@x.test`, role: "TEACHER", institutionId: ids.inst, isActive: true } });
+        return p.teacher.create({ data: { teacherId: `${key}-${Date.now()}`, userId: u.id, institutionId: ids.inst } });
+      };
+      const [t5, t6] = [await mkTeacher("T5"), await mkTeacher("T6")];
+      const divE = await p.division.create({ data: { institutionId: ids.inst, standardId: ids.std, name: "E" } });
+      const divF = await p.division.create({ data: { institutionId: ids.inst, standardId: ids.std, name: "F" } });
+      const prac = await sessionType("PRACTICAL");
+      const setup = await s.setup.getSetup(ids.inst, year);
+      // A lab of its own, so earlier tests' published practicals in the shared Science Lab can't interfere.
+      const lab = await s.setup.createRoom(ids.inst, { name: "Mini Lab", type: "LAB", isActive: true });
+      const periods = setup.slots.filter((x) => x.kind === "PERIOD");
+      const [p1, p2] = periods;
+      const allCells = setup.workingDays.flatMap((d) => periods.map((x) => ({ dayOfWeek: d, slotId: x.id })));
+      const key = (c: { dayOfWeek: number; slotId: string }) => `${c.dayOfWeek}|${c.slotId}`;
+
+      // The lab is usable only Mon & Tue P1–P2. F's teacher only works Mondays; E's teacher prefers Monday P1–P2.
+      const open = new Set([1, 2].flatMap((d) => [p1, p2].map((x) => key({ dayOfWeek: d, slotId: x.id }))));
+      await s.setup.setRoomUnavailability(ids.inst, year, lab.id, { cells: allCells.filter((c) => !open.has(key(c))) });
+      await s.setup.setTeacherAvailability(ids.inst, year, t6.id, { unavailable: allCells.filter((c) => c.dayOfWeek !== 1), preferred: [] });
+      await s.setup.setTeacherAvailability(ids.inst, year, t5.id, { unavailable: [], preferred: [{ dayOfWeek: 1, slotId: p1.id }, { dayOfWeek: 1, slotId: p2.id }] });
+      for (const [div, t] of [[divE.id, t5.id], [divF.id, t6.id]] as const) {
+        await s.studio.saveConfigs(ids.inst, year, div, { configs: [{ subjectId: ids.sci, sessionTypeId: prac.id, periodsPerWeek: 2, span: 2, maxPerDay: 2, teacherId: t, roomId: lab.id }] });
+      }
+      const cellsOf = async (div: string) => (await s.studio.getDivisionStudio(ids.inst, year, div)).entries.map((e) => ({ day: e.dayOfWeek, slot: e.slotId, id: e.id }));
+      const involvingEF = async () => (await s.studio.getYearConflicts(ids.inst, year)).filter(
+        (c) => c.severity === "ERROR" && (c.cells.some((x) => x.divisionId === divE.id || x.divisionId === divF.id) || c.divisionId === divE.id || c.divisionId === divF.id)
+      );
+
+      // E goes first and takes Monday (its teacher's preference).
+      const e1 = await s.gen.generateForDivision(ids.inst, year, divE.id, true, actor());
+      expect(e1.complete).toBe(true);
+      expect((await cellsOf(divE.id)).every((c) => c.day === 1)).toBe(true);
+
+      // F can only ever use Monday P1–P2 — taken by E. Locked: F stays incomplete and E is untouched.
+      const eEntries = await cellsOf(divE.id);
+      for (const e of eEntries) await s.entries.setLocked(ids.inst, year, e.id, true, actor());
+      const locked = await s.gen.generateForDivision(ids.inst, year, divF.id, true, actor());
+      expect(locked.complete).toBe(false);
+      expect(locked.rearranged).toEqual([]);
+      expect((await cellsOf(divE.id)).map((c) => `${c.day}|${c.slot}`).sort()).toEqual(eEntries.map((c) => `${c.day}|${c.slot}`).sort());
+
+      // Unlocked: E is moved to Tuesday and F is placed on Monday.
+      for (const e of eEntries) await s.entries.setLocked(ids.inst, year, e.id, false, actor());
+      const f = await s.gen.generateForDivision(ids.inst, year, divF.id, true, actor());
+      expect(f.complete).toBe(true);
+      expect(f.rearranged).toHaveLength(1);
+      expect(f.rearranged[0]).toMatchObject({ divisionName: "10-E" });
+      const eAfter = await cellsOf(divE.id);
+      const fAfter = await cellsOf(divF.id);
+      expect(eAfter).toHaveLength(2);                                     // E lost nothing — it only moved
+      expect(eAfter.every((c) => c.day === 2)).toBe(true);
+      expect(fAfter).toHaveLength(2);
+      expect(fAfter.every((c) => c.day === 1)).toBe(true);
+      expect(await involvingEF()).toEqual([]);                            // no teacher/room/class clash anywhere
+      const eStudio = await s.studio.getDivisionStudio(ids.inst, year, divE.id);
+      expect(eStudio.requirements.every((r) => r.status === "COMPLETE")).toBe(true);
+      expect(eStudio.entries.every((x) => x.roomName === "Mini Lab" && x.groupId)).toBe(true);
+
+      // Published sections are never moved: put E back on Monday, publish it, and F can no longer be placed.
+      await s.entries.clearDivision(ids.inst, year, divF.id, false, actor());
+      const eFirst = (await s.studio.getDivisionStudio(ids.inst, year, divE.id)).entries.sort((x, y) => (x.slotId === p1.id ? -1 : y.slotId === p1.id ? 1 : 0))[0];
+      await s.entries.moveEntry(ids.inst, year, { entryId: eFirst.id, toDayOfWeek: 1, toSlotId: p1.id }, actor());
+      await s.gen.setStatus(ids.inst, year, divE.id, { status: "PUBLISHED" }, actor());
+      const frozen = await s.gen.generateForDivision(ids.inst, year, divF.id, true, actor());
+      expect(frozen.complete).toBe(false);
+      expect(frozen.rearranged).toEqual([]);
+      expect((await cellsOf(divE.id)).every((c) => c.day === 1)).toBe(true);
     });
   });
 

@@ -1,3 +1,4 @@
+import { QUANTITY_PATTERN, QUANTITY_MESSAGE, isWhole, subtractQuantity } from "./quantity";
 import { lockReceiptOrder, validateOrderReceipt, finishOrderReceipt } from "./order-receipt.helpers";
 import { receiptUpload } from "./receipt-upload";
 import { uploadAttachmentToR2, scheduleR2FileDeletion } from "../../services/storage.service";
@@ -11,7 +12,7 @@ import { BadRequestError, ConflictError, NotFoundError } from "../../utils/error
 
 const router = Router();
 const idSchema = z.string().uuid();
-const quantitySchema = z.string().trim().regex(/^\d{1,10}$/, "Enter a whole-number quantity").refine(v => Number(v) <= 1_000_000_000, "Quantity is too large");
+const quantitySchema = z.string().trim().regex(QUANTITY_PATTERN, QUANTITY_MESSAGE).refine(v => Number(v) <= 1_000_000_000, "Quantity is too large");
 const itemSchema = z.object({
   name: z.string().trim().min(1).max(120).transform(v => v.replace(/\s+/g, " ")),
   code: z.string().trim().max(40).regex(/^[A-Za-z0-9_-]*$/, "Use letters, numbers, hyphens or underscores for item codes").transform(v => v.toUpperCase()).default(""),
@@ -202,13 +203,13 @@ const receiptSchema = z.object({
 }).strict().superRefine((value, ctx) => {
   if ((value.purchaseOrderId !== undefined) !== (value.purchaseOrderLine !== undefined)) ctx.addIssue({ code: "custom", message: "Select both purchase order and order line" });
   const delivered = Number(value.deliveredQuantity ?? value.quantity), rejected = Number(value.rejectedQuantity);
-  if (!Number.isInteger(delivered) || delivered < 1) ctx.addIssue({ code: "custom", message: "Enter a delivered quantity of at least 1" });
+  if (!(delivered > 0)) ctx.addIssue({ code: "custom", message: "Enter a delivered quantity greater than zero" });
   if (rejected > delivered) ctx.addIssue({ code: "custom", message: "Damaged/rejected quantity cannot exceed delivered quantity" });
   if (rejected > 0 && !value.damageReason) ctx.addIssue({ code: "custom", message: "Enter why these items were damaged or rejected" });
-  if (value.deliveredQuantity !== undefined && value.quantity !== undefined && Number(value.quantity) !== delivered - rejected) ctx.addIssue({ code: "custom", message: "Accepted quantity does not match delivered minus rejected quantity" });
+  if (value.deliveredQuantity !== undefined && value.quantity !== undefined && Number(value.quantity) !== Number(subtractQuantity(delivered, rejected))) ctx.addIssue({ code: "custom", message: "Accepted quantity does not match delivered minus rejected quantity" });
 }).transform(value => ({ ...value,
   deliveredQuantity: value.deliveredQuantity ?? value.quantity!,
-  quantity: String(Number(value.deliveredQuantity ?? value.quantity) - Number(value.rejectedQuantity)),
+  quantity: subtractQuantity(value.deliveredQuantity ?? value.quantity!, value.rejectedQuantity),
   damageReason: Number(value.rejectedQuantity) > 0 ? value.damageReason : "",
 }));
 
@@ -231,7 +232,7 @@ router.post("/items/:id/receive-stock", receiptUpload, async (req: AuthRequest, 
       await tx.$queryRaw`SELECT "id" FROM "InventoryItem" WHERE "id" = ${id} AND "institutionId" = ${institutionId} FOR UPDATE`;
       const item = await tx.inventoryItem.findFirst({ where: { id, institutionId } });
       if (!item) throw new NotFoundError("Item not found");
-      if (item.type !== "CONSUMABLE" && !Number.isInteger(Number(input.quantity))) throw new BadRequestError("Equipment and assets must use whole quantities");
+      if (item.type !== "CONSUMABLE" && !(isWhole(input.quantity) && isWhole(input.deliveredQuantity) && isWhole(input.rejectedQuantity))) throw new BadRequestError("Equipment and assets must use whole quantities");
       const existing = await tx.inventoryStockMovement.findFirst({ where: { institutionId, requestId: input.requestId } });
       if (existing) {
         const savedFiles = Array.isArray(existing.attachments) ? existing.attachments as { name: string; type: string; size: number; sha256: string }[] : [];

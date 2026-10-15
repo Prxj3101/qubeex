@@ -3,13 +3,14 @@ import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/errors";
+import { QUANTITY_PATTERN, QUANTITY_MESSAGE, isWhole } from "./quantity";
 import { movementUpload, fileFingerprints, uploadMovementFiles, commitMovementFiles } from "./movement-files";
 import { movementTime, occurredAt, checkEventOrder } from "./movement-time";
 import { requestProgress, RequestLine } from "./item-request-actions";
 import type { Prisma } from "../../generated/prisma/client";
 const router = Router();
 const id = z.string().uuid();
-const schema = z.object({ requestId: id, revision: z.number().int().min(0), reason: z.string().trim().min(1, 'Enter a correction reason').max(500), quantity: z.string().regex(/^\d{1,10}$/).refine(v => Number(v) >= 1 && Number(v) <= 1000000000, 'Enter a positive whole quantity'), locationId: id, recordedOn: z.iso.date(), recordedTime: movementTime, issuedToName: z.string().trim().min(1).max(120), notes: z.string().trim().max(500), dueOn: z.iso.date().nullable(), keepAttachments: z.array(z.string().url()).max(5) }).strict();
+const schema = z.object({ requestId: id, revision: z.number().int().min(0), reason: z.string().trim().min(1, 'Enter a correction reason').max(500), quantity: z.string().regex(QUANTITY_PATTERN, QUANTITY_MESSAGE).refine(v => Number(v) > 0 && Number(v) <= 1000000000, 'Enter a quantity greater than zero'), locationId: id, recordedOn: z.iso.date(), recordedTime: movementTime, issuedToName: z.string().trim().min(1).max(120), notes: z.string().trim().max(500), dueOn: z.iso.date().nullable(), keepAttachments: z.array(z.string().url()).max(5) }).strict();
 type Audit = { requestId: string; fingerprint: string; actorId: string; at: string; reason: string; before: Prisma.JsonObject; after: Prisma.JsonObject };
 router.post('/ledger/movements/:id/correct', movementUpload, async (req: AuthRequest, res: Response, next: NextFunction) => {
  try {
@@ -27,6 +28,8 @@ router.post('/ledger/movements/:id/correct', movementUpload, async (req: AuthReq
    const found = await tx.inventoryStockMovement.findFirst({ where: { id: movementId.data, institutionId } });
    if (!found || !['ISSUE', 'RETURN', 'ISSUE_DAMAGED', 'ISSUE_LOST'].includes(found.kind)) throw new NotFoundError('Ledger entry not found');
    await tx.$queryRaw`SELECT "id" FROM "InventoryItem" WHERE "id" = ${found.itemId} AND "institutionId" = ${institutionId} FOR UPDATE`;
+   const itemRow = await tx.inventoryItem.findFirst({ where: { id: found.itemId, institutionId }, select: { type: true } });
+   if (itemRow && itemRow.type !== 'CONSUMABLE' && !isWhole(input.quantity)) throw new BadRequestError('Equipment and assets must use whole quantities');
    const movement = await tx.inventoryStockMovement.findFirst({ where: { id: found.id, institutionId }, include: { returns: true, location: true } });
    if (!movement) throw new NotFoundError('Ledger entry not found');
    if (['ISSUE_DAMAGED', 'ISSUE_LOST'].includes(movement.kind) && !input.notes.trim()) throw new BadRequestError('Keep a reason for damage or loss');
@@ -71,7 +74,7 @@ router.post('/ledger/movements/:id/correct', movementUpload, async (req: AuthReq
    if (movement.kind === 'RETURN') add(movement.locationId, Number(input.quantity) - Number(movement.quantity));
    for (const [locationId, delta] of effects) {
     const balance = await tx.inventoryStockBalance.findFirst({ where: { institutionId, itemId: movement.itemId, locationId } });
-    const updated = Number(balance?.quantity || 0) + delta;
+    const updated = Math.round((Number(balance?.quantity || 0) + delta) * 1000) / 1000;
     if (updated < 0 || updated > 1000000000) throw new ConflictError('Not enough available stock for this correction');
     if (balance) await tx.inventoryStockBalance.update({ where: { id: balance.id }, data: { quantity: String(updated) } });
     else if (updated > 0) await tx.inventoryStockBalance.create({ data: { institutionId, itemId: movement.itemId, locationId, quantity: String(updated) } });

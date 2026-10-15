@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { QUANTITY_PATTERN, QUANTITY_MESSAGE } from "./quantity";
 import { Router, Response, NextFunction } from "express";
 import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
@@ -9,7 +10,7 @@ const router = Router();
 const idSchema = z.string().uuid();
 const schema = z.object({
   requestId: idSchema, fromLocationId: idSchema, toLocationId: idSchema,
-  quantity: z.string().trim().regex(/^\d{1,10}$/, "Enter a whole-number quantity").refine(v => Number(v) > 0 && Number(v) <= 1_000_000_000, "Enter a quantity greater than zero, up to 1,000,000,000"),
+  quantity: z.string().trim().regex(QUANTITY_PATTERN, QUANTITY_MESSAGE).refine(v => Number(v) > 0 && Number(v) <= 1_000_000_000, "Enter a quantity greater than zero, up to 1,000,000,000"),
   recordedOn: z.iso.date(), notes: z.string().trim().max(500).default(""),
 }).strict().refine(v => v.fromLocationId !== v.toLocationId, "Select two different locations");
 function parse<T>(schema: z.ZodType<T>, input: unknown): T {
@@ -24,7 +25,6 @@ router.post("/items/:id/transfer-stock", async (req: AuthRequest, res: Response,
     const institutionId = req.user?.institutionId;
     if (!institutionId) throw new BadRequestError("No institution associated with this account");
     const id = parse(idSchema, req.params.id), input = parse(schema, req.body);
-    if (!Number.isInteger(Number(input.quantity))) throw new BadRequestError("Transfer quantity must be a whole number");
     await academicDb().$transaction(async tx => {
       await tx.$queryRaw`SELECT "id" FROM "InventoryItem" WHERE "id" = ${id} AND "institutionId" = ${institutionId} FOR UPDATE`;
       const item = await tx.inventoryItem.findFirst({ where: { id, institutionId } });

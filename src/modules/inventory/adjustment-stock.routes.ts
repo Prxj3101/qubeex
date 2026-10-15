@@ -1,4 +1,5 @@
 import { Prisma } from "../../generated/prisma/client";
+import { QUANTITY_PATTERN, QUANTITY_MESSAGE, isWhole } from "./quantity";
 import { Router, Response, NextFunction } from "express";
 import { z } from "zod";
 import { AuthRequest } from "../../middlewares/auth.middleware";
@@ -9,10 +10,10 @@ const router = Router();
 const idSchema = z.string().uuid();
 const schema = z.object({
   requestId: idSchema, locationId: idSchema, adjustmentType: z.enum(["COUNT_CORRECTION", "DAMAGED", "LOST"]).default("COUNT_CORRECTION"),
-  quantity: z.string().trim().regex(/^\d{1,10}$/, "Enter a whole-number quantity").refine(v => Number(v) <= 1000000000, "Quantity is too large"),
+  quantity: z.string().trim().regex(QUANTITY_PATTERN, QUANTITY_MESSAGE).refine(v => Number(v) <= 1000000000, "Quantity is too large"),
   expectedQuantity: z.string().trim().regex(/^\d{1,10}(\.\d{1,3})?$/).refine(v => Number(v) <= 1000000000, "Quantity is too large"),
   recordedOn: z.iso.date(), reason: z.string().trim().min(1, "Enter an adjustment reason").max(500),
-}).strict().refine(v => v.adjustmentType === "COUNT_CORRECTION" || Number(v.quantity) >= 1, "Enter a damaged or lost quantity of at least 1");
+}).strict().refine(v => v.adjustmentType === "COUNT_CORRECTION" || Number(v.quantity) > 0, "Enter a damaged or lost quantity greater than zero");
 function parse<T>(schema: z.ZodType<T>, value: unknown): T {
   const result = schema.safeParse(value);
   if (!result.success) throw new BadRequestError(result.error.issues[0]?.message || "Invalid adjustment details");
@@ -31,6 +32,7 @@ router.post("/items/:id/adjust-stock", async (req: AuthRequest, res: Response, n
       await tx.$queryRaw`SELECT "id" FROM "InventoryItem" WHERE "id" = ${id} AND "institutionId" = ${institutionId} FOR UPDATE`;
       const item = await tx.inventoryItem.findFirst({ where: { id, institutionId } });
       if (!item) throw new NotFoundError("Item not found");
+      if (item.type !== "CONSUMABLE" && !isWhole(input.quantity)) throw new BadRequestError("Equipment and assets must use whole quantities");
       const existing = await tx.inventoryStockMovement.findFirst({ where: { institutionId, requestId: input.requestId } });
       if (existing) {
         if (existing.kind !== "ADJUSTMENT" || existing.itemId !== id || existing.locationId !== input.locationId || !existing.previousQuantity?.equals(input.expectedQuantity) || !existing.correctedQuantity?.equals(correctedQuantity) || (existing.adjustmentType || "COUNT_CORRECTION") !== input.adjustmentType || existing.recordedOn.toISOString().slice(0, 10) !== input.recordedOn || existing.notes !== input.reason) throw new ConflictError("This adjustment request was already used with different details");

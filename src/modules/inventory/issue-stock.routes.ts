@@ -1,3 +1,4 @@
+import { QUANTITY_PATTERN, QUANTITY_MESSAGE } from "./quantity";
 import { movementUpload, uploadMovementFiles, checkMovementFiles, commitMovementFiles } from "./movement-files";
 import { movementTime, occurredAt, checkEventOrder } from "./movement-time";
 import { Router, Response, NextFunction } from "express";
@@ -8,7 +9,7 @@ import { BadRequestError, ConflictError, NotFoundError } from "../../utils/error
 
 const router = Router();
 const idSchema = z.string().uuid();
-const quantity = z.string().trim().regex(/^\d{1,10}$/, "Enter a whole-number quantity").refine(v => Number(v) > 0 && Number(v) <= 1_000_000_000, "Enter a quantity greater than zero, up to 1,000,000,000");
+const quantity = z.string().trim().regex(QUANTITY_PATTERN, QUANTITY_MESSAGE).refine(v => Number(v) > 0 && Number(v) <= 1_000_000_000, "Enter a quantity greater than zero, up to 1,000,000,000");
 const issueSchema = z.object({
   requestId: idSchema, locationId: idSchema, quantity, recordedOn: z.iso.date(), recordedTime: movementTime,
   issuedToType: z.enum(["PRINCIPAL","VICE_PRINCIPAL","HEAD_MASTER","HEAD_MISTRESS","DIRECTOR","ADMINISTRATOR","COORDINATOR","DEAN","RECTOR","SUPERINTENDENT","CHAIRMAN","SECRETARY","TRUSTEE","TEACHER","STUDENT","LIBRARIAN","ACCOUNTANT","CLERK","RECEPTIONIST","LAB_ASSISTANT","SPORTS_COACH","IT_STAFF","PEON","DRIVER","SECURITY_GUARD","HOUSEKEEPING","CLASSROOM","DEPARTMENT","CUSTOM"]),

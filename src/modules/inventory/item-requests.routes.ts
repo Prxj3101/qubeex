@@ -8,6 +8,7 @@ import { prisma } from "../../utils/prisma";
 import { academicDb } from "../../utils/academicContext";
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from "../../utils/errors";
 import type { Prisma } from "../../generated/prisma/client";
+import { createNotification } from "../../services/notification.service";
 
 const router = Router();
 const idSchema = z.string().uuid();
@@ -29,8 +30,29 @@ async function requestBody(req: AuthRequest) {
   if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) throw new BadRequestError("Invalid request details");
   return { ...req.body, requestedByName: user.name };
 }
+// Item request notifications. A failed notification must never block the request action itself.
+async function notifyUsers(institutionId: string, userIds: (string | null | undefined)[], title: string, message: string, sentById: string) {
+  const ids = [...new Set(userIds.filter((x): x is string => !!x && x !== sentById))];
+  if (!ids.length) return;
+  try { await createNotification({ title, message, tag: "INVENTORY", recipientType: "USER", sentById, recipients: ids.map(userId => ({ institutionId, userId })) }); } catch { /* non-blocking */ }
+}
+async function inventoryStaffIds(institutionId: string) {
+  const [admins, subAdmins] = await Promise.all([
+    prisma.user.findMany({ where: { institutionId, role: "ADMIN" }, select: { id: true } }),
+    prisma.subAdmin.findMany({ where: { institutionId, permissions: { has: "INVENTORY" } }, select: { userId: true } }),
+  ]);
+  return [...admins.map(a => a.id), ...subAdmins.map(a => a.userId)];
+}
+const lineSummary = (lines: { name: string; quantity: number; unit: string }[]) => lines.length === 1 ? `${lines[0].name} (${lines[0].quantity} ${lines[0].unit})` : `${lines[0].name} and ${lines.length - 1} more item${lines.length > 2 ? "s" : ""}`;
 const event = (req: AuthRequest, action: string, reason = "") => ({ action, reason, actorId: req.user!.userId, actorRole: req.user!.role, at: new Date().toISOString() });
 
+// Names and units only (no stock numbers), so teachers can pick from the school's item list.
+router.get("/item-catalogue", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const items = await academicDb().inventoryItem.findMany({ where: { institutionId: school(req) }, orderBy: { name: "asc" }, select: { id: true, name: true, unit: { select: { name: true, abbreviation: true } } } });
+    res.json({ success: true, data: items.map(item => ({ id: item.id, name: item.name, unit: item.unit.name, unitAbbreviation: item.unit.abbreviation })) });
+  } catch (err) { next(err); }
+});
 router.get("/item-requests", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const page = parse(z.coerce.number().int().min(1).max(100000).default(1), req.query.page);
@@ -61,6 +83,7 @@ router.post("/item-requests", async (req: AuthRequest, res: Response, next: Next
       res.status(201).json({ success: true, data: existing }); return;
     }
     const data = await academicDb().inventoryPurchaseRequest.create({ data: { ...input, institutionId, ...(req.user!.role === "TEACHER" ? { source: "TEACHER", requestedById: req.user!.userId } : {}), requiredOn: new Date(input.requiredOn + "T00:00:00Z"), createdById: req.user!.userId, events: [event(req, "SUBMITTED")] } });
+    await notifyUsers(institutionId, await inventoryStaffIds(institutionId), "New item request", `${input.requestedByName} requested ${lineSummary(input.lines)}.`, req.user!.userId);
     res.status(201).json({ success: true, data });
   } catch (err) { if ((err as { code?: string })?.code === "P2002") return next(new ConflictError("Request already submitted. Refresh the list.")); next(err); }
 });
@@ -77,6 +100,7 @@ router.patch("/item-requests/:id", async (req: AuthRequest, res: Response, next:
       const { revision, ...fields } = input;
       return tx.inventoryPurchaseRequest.update({ where: { id }, data: { ...fields, requiredOn: new Date(input.requiredOn + "T00:00:00Z"), status: "PENDING", revision: revision + 1, events: [...current.events as Prisma.JsonArray, event(req, "RESUBMITTED")] } });
     });
+    await notifyUsers(institutionId, await inventoryStaffIds(institutionId), "Item request resubmitted", `${input.requestedByName} resubmitted ${lineSummary(input.lines)}.`, req.user!.userId);
     res.json({ success: true, data });
   } catch (err) { next(err); }
 });
@@ -92,6 +116,8 @@ router.post("/item-requests/:id/review", async (req: AuthRequest, res: Response,
       if (current.status !== "PENDING" || current.revision !== input.revision) throw new ConflictError("Request has changed or was already reviewed. Refresh the list.");
       return tx.inventoryPurchaseRequest.update({ where: { id }, data: { status: input.decision, revision: { increment: 1 }, events: [...current.events as Prisma.JsonArray, event(req, input.decision, input.reason)] } });
     });
+    const outcome = { APPROVED: "approved", REJECTED: "rejected", CHANGES_REQUESTED: "sent back for changes" }[input.decision];
+    await notifyUsers(institutionId, [data.requestedById], `Item request ${outcome}`, `Your request for ${lineSummary(data.lines as { name: string; quantity: number; unit: string }[])} was ${outcome}.${input.reason ? ` Reason: ${input.reason}` : ""}`, req.user!.userId);
     res.json({ success: true, data });
   } catch (err) { next(err); }
 });
@@ -108,6 +134,7 @@ router.post("/item-requests/:id/issue", movementUpload, async (req: AuthRequest,
   try {
     inventoryOperator(req);
     const id = parse(idSchema, req.params.id), institutionId = school(req), input = parse(issueRequestSchema, req.body);
+    const issued: { requestedById?: string | null; text?: string } = {};
     await academicDb().$transaction(async tx => {
       await tx.$queryRaw`SELECT "id" FROM "InventoryPurchaseRequest" WHERE "id" = ${id} AND "institutionId" = ${institutionId} FOR UPDATE`;
       const request = await tx.inventoryPurchaseRequest.findFirst({ where: { id, institutionId, source: "TEACHER" } });
@@ -134,8 +161,10 @@ router.post("/item-requests/:id/issue", movementUpload, async (req: AuthRequest,
       const updatedEvents = [...events, { ...event(req, "ITEM_ISSUED", input.notes), lineIndex: input.lineIndex, quantity: Number(input.quantity), itemId: input.itemId, locationId: input.locationId, movementId: movement.id, requestId: input.requestId, fingerprint }];
       const remaining = requestProgress(request.lines as RequestLine[], updatedEvents).some(line => line.pending > 0);
       await tx.inventoryPurchaseRequest.update({ where: { id }, data: { status: remaining ? "PARTIALLY_ISSUED" : "ISSUED", revision: { increment: 1 }, events: updatedEvents } });
+      issued.requestedById = request.requestedById; issued.text = `${item.name} (${input.quantity} ${line.unit})`;
     }, { timeout: 30000 });
     commitMovementFiles(req);
+    if (issued.text) await notifyUsers(institutionId, [issued.requestedById], "Item issued", `${issued.text} has been issued against your request.`, req.user!.userId);
     const data = await academicDb().inventoryItem.findFirst({ where: { id: input.itemId, institutionId }, include: { movements: { select: { kind: true, locationId: true } }, category: true, unit: true, balances: { include: { location: true } } } });
     res.status(201).json({ success: true, data });
   } catch (err) { if ((err as { code?: string })?.code === "P2002") return next(new ConflictError("Issue already recorded. Refresh before retrying.")); next(err); }

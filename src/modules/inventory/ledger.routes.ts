@@ -12,33 +12,36 @@ router.get("/ledger", async (req: AuthRequest, res: Response, next: NextFunction
   if (!institutionId) throw new BadRequestError("No institution associated with this account");
   const parsed = z.coerce.number().int().min(1).max(100000).default(1).safeParse(req.query.page);
   if (!parsed.success) throw new BadRequestError("Invalid page");
-  const dateInput = z.iso.date().optional().safeParse(req.query.date);
+  // A single day (date) or a range (from / to). Leave all empty to see every date.
+  const dateInput = z.object({ date: z.iso.date().optional(), from: z.iso.date().optional(), to: z.iso.date().optional() }).safeParse(req.query);
   if (!dateInput.success) throw new BadRequestError("Invalid ledger date");
-  const ledgerDate = dateInput.data || null;
+  const from = dateInput.data.from || dateInput.data.date || '0001-01-01', to = dateInput.data.to || dateInput.data.date || '9999-12-31';
+  if (from > to) throw new BadRequestError("The start date cannot be after the end date");
   const page = parsed.data, db = academicDb();
   // Request-linked issues remain inside their request, rather than appearing twice.
+  // "linked" is built once, so each direct issue is checked with a hash lookup instead of re-reading every request.
   const rows = await db.$queryRaw<{ id: string | null; source: string | null; total: bigint }[]>`
-   WITH ledger AS (
+   WITH linked AS (
+    SELECT DISTINCT r."id" AS rid, e->>'movementId' AS mid
+    FROM "InventoryPurchaseRequest" r, jsonb_array_elements(r."events") e
+    WHERE r."institutionId" = ${institutionId} AND r."source" = 'TEACHER'
+    AND e->>'action' = 'ITEM_ISSUED' AND e->>'movementId' IS NOT NULL
+   ), ledger AS (
     SELECT r."id", 'REQUEST' AS source, r."createdAt" FROM "InventoryPurchaseRequest" r
     WHERE r."institutionId" = ${institutionId} AND r."source" = 'TEACHER'
-    AND (CAST(${ledgerDate} AS date) IS NULL
-      OR (r."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata')::date = CAST(${ledgerDate} AS date)
-      OR EXISTS (SELECT 1 FROM "InventoryStockMovement" i, jsonb_array_elements(r."events") e
-        WHERE i."institutionId" = ${institutionId} AND i."kind" = 'ISSUE'
-        AND e->>'action' = 'ITEM_ISSUED' AND e->>'movementId' = i."id"
-        AND (i."recordedOn" = CAST(${ledgerDate} AS date) OR EXISTS
+    AND ((r."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata')::date BETWEEN CAST(${from} AS date) AND CAST(${to} AS date)
+      OR EXISTS (SELECT 1 FROM linked l JOIN "InventoryStockMovement" i ON i."id" = l.mid
+        WHERE l.rid = r."id" AND i."institutionId" = ${institutionId}
+        AND (i."recordedOn" BETWEEN CAST(${from} AS date) AND CAST(${to} AS date) OR EXISTS
           (SELECT 1 FROM "InventoryStockMovement" t WHERE t."institutionId" = ${institutionId}
-           AND t."issueId" = i."id" AND t."recordedOn" = CAST(${ledgerDate} AS date)))))
+           AND t."issueId" = i."id" AND t."recordedOn" BETWEEN CAST(${from} AS date) AND CAST(${to} AS date)))))
     UNION ALL
     SELECT m."id", 'DIRECT' AS source, m."createdAt" FROM "InventoryStockMovement" m
     WHERE m."institutionId" = ${institutionId} AND m."kind" = 'ISSUE'
-    AND (CAST(${ledgerDate} AS date) IS NULL OR m."recordedOn" = CAST(${ledgerDate} AS date)
+    AND (m."recordedOn" BETWEEN CAST(${from} AS date) AND CAST(${to} AS date)
       OR EXISTS (SELECT 1 FROM "InventoryStockMovement" t WHERE t."institutionId" = ${institutionId}
-        AND t."issueId" = m."id" AND t."recordedOn" = CAST(${ledgerDate} AS date)))
-    AND NOT EXISTS (SELECT 1 FROM "InventoryPurchaseRequest" r,
-      jsonb_array_elements(r."events") e
-      WHERE r."institutionId" = ${institutionId} AND r."source" = 'TEACHER'
-      AND e->>'action' = 'ITEM_ISSUED' AND e->>'movementId' = m."id")
+        AND t."issueId" = m."id" AND t."recordedOn" BETWEEN CAST(${from} AS date) AND CAST(${to} AS date)))
+    AND m."id" NOT IN (SELECT mid FROM linked)
    ) , paged AS (SELECT * FROM ledger ORDER BY "createdAt" DESC, "id" DESC LIMIT 50 OFFSET ${(page - 1) * 50})
    SELECT paged."id", paged.source, (SELECT COUNT(*) FROM ledger) AS total
    FROM (SELECT 1) anchor LEFT JOIN paged ON TRUE ORDER BY paged."createdAt" DESC, paged."id" DESC`;

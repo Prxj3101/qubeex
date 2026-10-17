@@ -64,7 +64,7 @@ router.get("/item-requests", async (req: AuthRequest, res: Response, next: NextF
     const returnStatus = (request: typeof data[number]) => {
       if (request.status !== 'ISSUED') return request.status;
       const ids = (request.events as Prisma.JsonObject[]).filter(e => e.action === 'ITEM_ISSUED' && typeof e.movementId === 'string').map(e => e.movementId as string);
-      const issues = ids.map(id => movementMap.get(id)).filter(m => !!m && m.returnExpected);
+      const issues = ids.map(id => movementMap.get(id)).filter((m): m is NonNullable<typeof m> => !!m && m.returnExpected);
       if (!issues.length) return request.status;
       const pending = issues.some(m => Number(m.quantity) > m.returns.filter(r => ['RETURN', 'ISSUE_DAMAGED', 'ISSUE_LOST'].includes(r.kind)).reduce((sum, r) => sum + Number(r.quantity), 0));
       if (pending) return 'RETURN_PENDING';

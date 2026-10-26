@@ -138,7 +138,10 @@ export const ModelName = {
   TimetableGeneration: 'TimetableGeneration',
   InventorySetupOrder: 'InventorySetupOrder',
   AdmissionSettings: 'AdmissionSettings',
-  AdmissionApplication: 'AdmissionApplication'
+  AdmissionApplication: 'AdmissionApplication',
+  ParentChatSettings: 'ParentChatSettings',
+  ParentChatThread: 'ParentChatThread',
+  ParentChatMessage: 'ParentChatMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1687,6 +1690,51 @@ export const AdmissionApplicationScalarFieldEnum = {
 } as const
 
 export type AdmissionApplicationScalarFieldEnum = (typeof AdmissionApplicationScalarFieldEnum)[keyof typeof AdmissionApplicationScalarFieldEnum]
+
+
+export const ParentChatSettingsScalarFieldEnum = {
+  institutionId: 'institutionId',
+  enabled: 'enabled',
+  officeStart: 'officeStart',
+  officeEnd: 'officeEnd',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ParentChatSettingsScalarFieldEnum = (typeof ParentChatSettingsScalarFieldEnum)[keyof typeof ParentChatSettingsScalarFieldEnum]
+
+
+export const ParentChatThreadScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  studentId: 'studentId',
+  teacherId: 'teacherId',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ParentChatThreadScalarFieldEnum = (typeof ParentChatThreadScalarFieldEnum)[keyof typeof ParentChatThreadScalarFieldEnum]
+
+
+export const ParentChatMessageScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  threadId: 'threadId',
+  fromTeacher: 'fromTeacher',
+  senderUserId: 'senderUserId',
+  text: 'text',
+  attachmentUrl: 'attachmentUrl',
+  attachmentType: 'attachmentType',
+  attachmentName: 'attachmentName',
+  readAt: 'readAt',
+  hiddenAt: 'hiddenAt',
+  hiddenByUserId: 'hiddenByUserId',
+  reportedAt: 'reportedAt',
+  reportedByUserId: 'reportedByUserId',
+  reportReason: 'reportReason',
+  createdAt: 'createdAt'
+} as const
+
+export type ParentChatMessageScalarFieldEnum = (typeof ParentChatMessageScalarFieldEnum)[keyof typeof ParentChatMessageScalarFieldEnum]
 
 
 export const SortOrder = {

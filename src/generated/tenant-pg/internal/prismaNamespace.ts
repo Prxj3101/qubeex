@@ -484,7 +484,10 @@ export const ModelName = {
   TimetableGeneration: 'TimetableGeneration',
   InventorySetupOrder: 'InventorySetupOrder',
   AdmissionSettings: 'AdmissionSettings',
-  AdmissionApplication: 'AdmissionApplication'
+  AdmissionApplication: 'AdmissionApplication',
+  ParentChatSettings: 'ParentChatSettings',
+  ParentChatThread: 'ParentChatThread',
+  ParentChatMessage: 'ParentChatMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -500,7 +503,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication" | "parentChatSettings" | "parentChatThread" | "parentChatMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -7016,6 +7019,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ParentChatSettings: {
+      payload: Prisma.$ParentChatSettingsPayload<ExtArgs>
+      fields: Prisma.ParentChatSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ParentChatSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ParentChatSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.ParentChatSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ParentChatSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.ParentChatSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.ParentChatSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.ParentChatSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ParentChatSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.ParentChatSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>
+        }
+        update: {
+          args: Prisma.ParentChatSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.ParentChatSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ParentChatSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ParentChatSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.ParentChatSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.ParentChatSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParentChatSettings>
+        }
+        groupBy: {
+          args: Prisma.ParentChatSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParentChatSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ParentChatSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParentChatSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    ParentChatThread: {
+      payload: Prisma.$ParentChatThreadPayload<ExtArgs>
+      fields: Prisma.ParentChatThreadFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ParentChatThreadFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ParentChatThreadFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>
+        }
+        findFirst: {
+          args: Prisma.ParentChatThreadFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ParentChatThreadFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>
+        }
+        findMany: {
+          args: Prisma.ParentChatThreadFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>[]
+        }
+        create: {
+          args: Prisma.ParentChatThreadCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>
+        }
+        createMany: {
+          args: Prisma.ParentChatThreadCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ParentChatThreadCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>[]
+        }
+        delete: {
+          args: Prisma.ParentChatThreadDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>
+        }
+        update: {
+          args: Prisma.ParentChatThreadUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>
+        }
+        deleteMany: {
+          args: Prisma.ParentChatThreadDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ParentChatThreadUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ParentChatThreadUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>[]
+        }
+        upsert: {
+          args: Prisma.ParentChatThreadUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatThreadPayload>
+        }
+        aggregate: {
+          args: Prisma.ParentChatThreadAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParentChatThread>
+        }
+        groupBy: {
+          args: Prisma.ParentChatThreadGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParentChatThreadGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ParentChatThreadCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParentChatThreadCountAggregateOutputType> | number
+        }
+      }
+    }
+    ParentChatMessage: {
+      payload: Prisma.$ParentChatMessagePayload<ExtArgs>
+      fields: Prisma.ParentChatMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ParentChatMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ParentChatMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.ParentChatMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ParentChatMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>
+        }
+        findMany: {
+          args: Prisma.ParentChatMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>[]
+        }
+        create: {
+          args: Prisma.ParentChatMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>
+        }
+        createMany: {
+          args: Prisma.ParentChatMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ParentChatMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.ParentChatMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>
+        }
+        update: {
+          args: Prisma.ParentChatMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.ParentChatMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ParentChatMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ParentChatMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.ParentChatMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ParentChatMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.ParentChatMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParentChatMessage>
+        }
+        groupBy: {
+          args: Prisma.ParentChatMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParentChatMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ParentChatMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParentChatMessageCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -8587,6 +8812,51 @@ export const AdmissionApplicationScalarFieldEnum = {
 export type AdmissionApplicationScalarFieldEnum = (typeof AdmissionApplicationScalarFieldEnum)[keyof typeof AdmissionApplicationScalarFieldEnum]
 
 
+export const ParentChatSettingsScalarFieldEnum = {
+  institutionId: 'institutionId',
+  enabled: 'enabled',
+  officeStart: 'officeStart',
+  officeEnd: 'officeEnd',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ParentChatSettingsScalarFieldEnum = (typeof ParentChatSettingsScalarFieldEnum)[keyof typeof ParentChatSettingsScalarFieldEnum]
+
+
+export const ParentChatThreadScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  studentId: 'studentId',
+  teacherId: 'teacherId',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ParentChatThreadScalarFieldEnum = (typeof ParentChatThreadScalarFieldEnum)[keyof typeof ParentChatThreadScalarFieldEnum]
+
+
+export const ParentChatMessageScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  threadId: 'threadId',
+  fromTeacher: 'fromTeacher',
+  senderUserId: 'senderUserId',
+  text: 'text',
+  attachmentUrl: 'attachmentUrl',
+  attachmentType: 'attachmentType',
+  attachmentName: 'attachmentName',
+  readAt: 'readAt',
+  hiddenAt: 'hiddenAt',
+  hiddenByUserId: 'hiddenByUserId',
+  reportedAt: 'reportedAt',
+  reportedByUserId: 'reportedByUserId',
+  reportReason: 'reportReason',
+  createdAt: 'createdAt'
+} as const
+
+export type ParentChatMessageScalarFieldEnum = (typeof ParentChatMessageScalarFieldEnum)[keyof typeof ParentChatMessageScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -9264,6 +9534,9 @@ export type GlobalOmitConfig = {
   inventorySetupOrder?: Prisma.InventorySetupOrderOmit
   admissionSettings?: Prisma.AdmissionSettingsOmit
   admissionApplication?: Prisma.AdmissionApplicationOmit
+  parentChatSettings?: Prisma.ParentChatSettingsOmit
+  parentChatThread?: Prisma.ParentChatThreadOmit
+  parentChatMessage?: Prisma.ParentChatMessageOmit
 }
 
 /* Types for Logging */

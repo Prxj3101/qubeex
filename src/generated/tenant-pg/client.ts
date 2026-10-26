@@ -479,3 +479,18 @@ export type AdmissionSettings = Prisma.AdmissionSettingsModel
  * 
  */
 export type AdmissionApplication = Prisma.AdmissionApplicationModel
+/**
+ * Model ParentChatSettings
+ * 
+ */
+export type ParentChatSettings = Prisma.ParentChatSettingsModel
+/**
+ * Model ParentChatThread
+ * 
+ */
+export type ParentChatThread = Prisma.ParentChatThreadModel
+/**
+ * Model ParentChatMessage
+ * 
+ */
+export type ParentChatMessage = Prisma.ParentChatMessageModel

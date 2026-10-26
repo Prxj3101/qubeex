@@ -1,4 +1,5 @@
 import { Router, Response, NextFunction } from "express";
+import multer from "multer";
 import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
 import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
@@ -9,6 +10,8 @@ import {
   getMessagesForStudent,
   sendMessageFromStudent,
   markReadForStudent,
+  uploadChatAttachment,
+  reportMessage,
   unreadCountForStudent,
   listThreadsForTeacher,
   getMessagesForTeacher,
@@ -21,13 +24,18 @@ import {
   getChatSettings,
   saveChatSettings,
 } from "../../services/parentChat.service";
-import { sendMessageSchema, messagesQuerySchema, chatSettingsSchema, idParamSchema } from "./parentChat.schema";
+import { sendMessageSchema, messagesQuerySchema, chatSettingsSchema, idParamSchema, reportMessageSchema } from "./parentChat.schema";
 
 function ctx(req: AuthRequest) {
   const { institutionId, userId } = req.user!;
   if (!institutionId) throw new BadRequestError("No institution associated with this account");
   return { institutionId, userId };
 }
+
+// Photos and PDFs only; 10 MB is the largest of the per-type caps in storage.service.ts
+// (which enforces the real per-type limit). multer runs before academicRoutingMiddleware —
+// see the note in staffroom.routes.ts on busboy and AsyncLocalStorage.
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024, files: 1 } });
 
 type Handler = (req: AuthRequest, res: Response) => Promise<unknown>;
 const wrap = (fn: Handler) => (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -59,8 +67,27 @@ studentParentChatRoutes.get("/teachers/:id/messages", ...S, wrap(async (req, res
 studentParentChatRoutes.post("/teachers/:id/messages", ...S, wrap(async (req, res) => {
   const { institutionId, userId } = ctx(req);
   const { id } = idParamSchema.parse(req.params);
-  const { text } = sendMessageSchema.parse(req.body);
-  res.status(201).json({ success: true, data: await sendMessageFromStudent(userId, institutionId, id, text) });
+  const input = sendMessageSchema.parse(req.body);
+  res.status(201).json({ success: true, data: await sendMessageFromStudent(userId, institutionId, id, input) });
+}));
+
+studentParentChatRoutes.post(
+  "/upload",
+  authMiddleware(["STUDENT"]), institutionAccessMiddleware, upload.single("file"), academicRoutingMiddleware,
+  wrap(async (req, res) => {
+    const { institutionId } = ctx(req);
+    const file = (req as AuthRequest & { file?: Express.Multer.File }).file;
+    if (!file) throw new BadRequestError("No file provided");
+    res.json({ success: true, data: await uploadChatAttachment(file.buffer, file.originalname, institutionId) });
+  })
+);
+
+studentParentChatRoutes.post("/messages/:id/report", ...S, wrap(async (req, res) => {
+  const { institutionId, userId } = ctx(req);
+  const { id } = idParamSchema.parse(req.params);
+  const { reason } = reportMessageSchema.parse(req.body ?? {});
+  await reportMessage(userId, institutionId, id, "student", reason);
+  res.json({ success: true });
 }));
 
 studentParentChatRoutes.patch("/teachers/:id/read", ...S, wrap(async (req, res) => {
@@ -95,8 +122,27 @@ teacherParentChatRoutes.get("/threads/:id/messages", ...T, wrap(async (req, res)
 teacherParentChatRoutes.post("/threads/:id/messages", ...T, wrap(async (req, res) => {
   const { institutionId, userId } = ctx(req);
   const { id } = idParamSchema.parse(req.params);
-  const { text } = sendMessageSchema.parse(req.body);
-  res.status(201).json({ success: true, data: await sendMessageFromTeacher(userId, institutionId, id, text) });
+  const input = sendMessageSchema.parse(req.body);
+  res.status(201).json({ success: true, data: await sendMessageFromTeacher(userId, institutionId, id, input) });
+}));
+
+teacherParentChatRoutes.post(
+  "/upload",
+  authMiddleware(["TEACHER"]), institutionAccessMiddleware, upload.single("file"), academicRoutingMiddleware,
+  wrap(async (req, res) => {
+    const { institutionId } = ctx(req);
+    const file = (req as AuthRequest & { file?: Express.Multer.File }).file;
+    if (!file) throw new BadRequestError("No file provided");
+    res.json({ success: true, data: await uploadChatAttachment(file.buffer, file.originalname, institutionId) });
+  })
+);
+
+teacherParentChatRoutes.post("/messages/:id/report", ...T, wrap(async (req, res) => {
+  const { institutionId, userId } = ctx(req);
+  const { id } = idParamSchema.parse(req.params);
+  const { reason } = reportMessageSchema.parse(req.body ?? {});
+  await reportMessage(userId, institutionId, id, "teacher", reason);
+  res.json({ success: true });
 }));
 
 teacherParentChatRoutes.patch("/threads/:id/read", ...T, wrap(async (req, res) => {

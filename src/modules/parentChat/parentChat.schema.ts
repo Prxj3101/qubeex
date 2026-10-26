@@ -1,7 +1,20 @@
 import { z } from "zod";
 
-export const sendMessageSchema = z.object({
-  text: z.string().trim().min(1, "Message cannot be empty").max(1000, "Message is too long"),
+export const attachmentSchema = z.object({
+  url: z.string().url().max(1000),
+  type: z.enum(["image", "pdf"]),
+  name: z.string().trim().min(1).max(200),
+});
+
+export const sendMessageSchema = z
+  .object({
+    text: z.string().trim().max(1000, "Message is too long").optional(),
+    attachment: attachmentSchema.optional(),
+  })
+  .refine((d) => !!d.text || !!d.attachment, { message: "Message cannot be empty" });
+
+export const reportMessageSchema = z.object({
+  reason: z.string().trim().max(300).optional(),
 });
 
 export const messagesQuerySchema = z.object({

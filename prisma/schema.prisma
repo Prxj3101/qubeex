@@ -2657,12 +2657,21 @@ model ParentChatMessage {
   fromTeacher     Boolean
   senderUserId    String
   text            String
+  // One optional attachment per message — "image" or "pdf", stored in R2 under
+  // institutions/{institutionId}/parent-chat/.
+  attachmentUrl   String?
+  attachmentType  String?
+  attachmentName  String?
   readAt          DateTime?
   hiddenAt        DateTime?
   hiddenByUserId  String?
+  reportedAt      DateTime?
+  reportedByUserId String?
+  reportReason    String?
   createdAt       DateTime         @default(now())
   thread          ParentChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
 
   @@index([threadId, createdAt])
   @@index([institutionId])
+  @@index([institutionId, reportedAt])
 }

@@ -87,6 +87,7 @@ d("Parent ↔ teacher chat (integration)", () => {
       await p.standard.deleteMany({ where: { institutionId: id } });
       await p.teacher.deleteMany({ where: { institutionId: id } });
       await p.academicYear.deleteMany({ where: { institutionId: id } });
+      await p.notificationRecipient.deleteMany({ where: { institutionId: id } });
       await p.auditLog.deleteMany({ where: { institutionId: id } });
       await p.user.deleteMany({ where: { institutionId: id } });
       await p.institution.deleteMany({ where: { id } });
@@ -104,12 +105,12 @@ d("Parent ↔ teacher chat (integration)", () => {
 
   it("rejects a message to a teacher of another division", () =>
     inCtx(async () => {
-      await expect(s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.otherDivT, "hi")).rejects.toThrow(/own class/);
+      await expect(s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.otherDivT, { text: "hi" })).rejects.toThrow(/own class/);
     }));
 
   it("round-trips a message and tracks unread on both sides", () =>
     inCtx(async () => {
-      await s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.classT, "Hello teacher");
+      await s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.classT, { text: "Hello teacher" });
       expect(await s.chat.unreadCountForTeacher(ids.classTUser, ids.inst)).toBe(1);
 
       const { threads } = await s.chat.listThreadsForTeacher(ids.classTUser, ids.inst);
@@ -120,7 +121,7 @@ d("Parent ↔ teacher chat (integration)", () => {
       await s.chat.markReadForTeacher(ids.classTUser, ids.inst, ids.thread);
       expect(await s.chat.unreadCountForTeacher(ids.classTUser, ids.inst)).toBe(0);
 
-      await s.chat.sendMessageFromTeacher(ids.classTUser, ids.inst, ids.thread, "Hello parent");
+      await s.chat.sendMessageFromTeacher(ids.classTUser, ids.inst, ids.thread, { text: "Hello parent" });
       expect(await s.chat.unreadCountForStudent(ids.stuUser, ids.inst)).toBe(1);
 
       const { messages } = await s.chat.getMessagesForStudent(ids.stuUser, ids.inst, ids.classT, {});
@@ -155,15 +156,57 @@ d("Parent ↔ teacher chat (integration)", () => {
   it("blocks sending when the school turns chat off", () =>
     inCtx(async () => {
       await s.chat.saveChatSettings(ids.inst, { enabled: false, officeStart: "08:00", officeEnd: "18:00" });
-      await expect(s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.classT, "x")).rejects.toThrow(/turned off/);
+      await expect(s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.classT, { text: "x" })).rejects.toThrow(/turned off/);
       await s.chat.saveChatSettings(ids.inst, { enabled: true, officeStart: "08:00", officeEnd: "18:00" });
+    }));
+
+  it("rejects an attachment that was not uploaded through this institution's parent-chat upload", () =>
+    inCtx(async () => {
+      await expect(
+        s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.classT, {
+          attachment: { url: "https://evil.example.com/x.pdf", type: "pdf", name: "x.pdf" },
+        })
+      ).rejects.toThrow(/Invalid attachment/);
+    }));
+
+  it("rejects an upload whose bytes are not a photo or PDF, whatever the client claims", async () => {
+    await expect(s.chat.uploadChatAttachment(Buffer.from("MZ not an image"), "photo.jpg", ids.inst)).rejects.toThrow(/Only photos/);
+  });
+
+  it("rejects an empty message with no attachment", () =>
+    inCtx(async () => {
+      await expect(s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.classT, { text: "  " })).rejects.toThrow(/empty/);
+    }));
+
+  it("lets a parent report a teacher message, but not their own or a stranger's", () =>
+    inCtx(async () => {
+      const { messages } = await s.chat.getMessagesForStudent(ids.stuUser, ids.inst, ids.classT, {});
+      const fromTeacher = messages.find((m) => m.fromTeacher);
+      const fromParent = messages.find((m) => !m.fromTeacher);
+      expect(fromTeacher && fromParent).toBeTruthy();
+
+      await expect(s.chat.reportMessage(ids.stuUser, ids.inst, fromParent!.id, "student")).rejects.toThrow(/sent to you/);
+      await expect(s.chat.reportMessage(ids.mathsTUser, ids.inst, fromTeacher!.id, "teacher")).rejects.toThrow(/not found/i);
+
+      await s.chat.reportMessage(ids.stuUser, ids.inst, fromTeacher!.id, "student", "rude");
+      const after = await s.chat.getMessagesForStudent(ids.stuUser, ids.inst, ids.classT, {});
+      expect(after.messages.find((m) => m.id === fromTeacher!.id)?.reportedByMe).toBe(true);
+    }));
+
+  it("floats reported threads to the top for the admin and exposes the reason", () =>
+    inCtx(async () => {
+      const list = await s.chat.listThreadsForAdmin(ids.inst);
+      expect(list[0].id).toBe(ids.thread);
+      expect(list[0].reportedCount).toBe(1);
+      const detail = await s.chat.getThreadForAdmin(ids.inst, ids.thread);
+      expect(detail.messages.some((m) => m.reportReason === "rude")).toBe(true);
     }));
 
   it("rate limits a burst of messages", () =>
     inCtx(async () => {
       const results: string[] = [];
       for (let i = 0; i < 12; i++) {
-        results.push(await s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.mathsT, `m${i}`).then(() => "ok", (e: Error) => e.message));
+        results.push(await s.chat.sendMessageFromStudent(ids.stuUser, ids.inst, ids.mathsT, { text: `m${i}` }).then(() => "ok", (e: Error) => e.message));
       }
       expect(results.filter((r) => r === "ok").length).toBeLessThanOrEqual(10);
       expect(results.some((r) => r !== "ok" && /too quickly/.test(r))).toBe(true);

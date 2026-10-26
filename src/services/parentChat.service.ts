@@ -10,6 +10,9 @@ import { academicDb } from "../utils/academicContext";
 import { getCurrentAcademicYear } from "../utils/academicYear";
 import { resolveUsers } from "./userLookup.service";
 import { dispatchPush } from "./pushNotification.service";
+import { createNotification } from "./notification.service";
+import { logAudit } from "./audit.service";
+import { uploadAttachmentToR2, r2KeyFromUrl } from "./storage.service";
 import { BadRequestError, ForbiddenError, NotFoundError, TooManyRequestsError } from "../utils/errors";
 
 const MAX_MESSAGES_PER_MINUTE = 10;
@@ -24,13 +27,27 @@ export interface ChatSettingsDTO {
   officeEnd: string;
 }
 
+export interface ChatAttachment {
+  url: string;
+  type: "image" | "pdf";
+  name: string;
+}
+
 export interface ChatMessageDTO {
   id: string;
   fromTeacher: boolean;
   text: string;
+  attachment: ChatAttachment | null;
   hidden: boolean;
+  /** True when the viewing user has reported this message. */
+  reportedByMe: boolean;
   createdAt: string;
   readAt: string | null;
+}
+
+export interface MessageInput {
+  text?: string;
+  attachment?: ChatAttachment;
 }
 
 export interface MessagePage {
@@ -43,7 +60,11 @@ type MessageRow = {
   id: string;
   fromTeacher: boolean;
   text: string;
+  attachmentUrl: string | null;
+  attachmentType: string | null;
+  attachmentName: string | null;
   hiddenAt: Date | null;
+  reportedByUserId: string | null;
   createdAt: Date;
   readAt: Date | null;
 };
@@ -95,12 +116,19 @@ export async function saveChatSettings(institutionId: string, input: ChatSetting
 
 // ── Shared helpers ───────────────────────────────────────────────────────────
 
-function toMessageDTO(row: MessageRow): ChatMessageDTO {
+function toAttachment(row: Pick<MessageRow, "attachmentUrl" | "attachmentType" | "attachmentName">): ChatAttachment | null {
+  if (!row.attachmentUrl || (row.attachmentType !== "image" && row.attachmentType !== "pdf")) return null;
+  return { url: row.attachmentUrl, type: row.attachmentType, name: row.attachmentName ?? "attachment" };
+}
+
+function toMessageDTO(row: MessageRow, viewerUserId?: string): ChatMessageDTO {
   const hidden = row.hiddenAt != null;
   return {
     id: row.id,
     fromTeacher: row.fromTeacher,
     text: hidden ? HIDDEN_PLACEHOLDER : row.text,
+    attachment: hidden ? null : toAttachment(row),
+    reportedByMe: !!viewerUserId && row.reportedByUserId === viewerUserId,
     hidden,
     createdAt: row.createdAt.toISOString(),
     readAt: row.readAt ? row.readAt.toISOString() : null,
@@ -112,7 +140,54 @@ function previewOf(text: string): string {
 }
 
 
-type LastMessage = { threadId: string; text: string; hiddenAt: Date | null; fromTeacher: boolean; createdAt: Date };
+type LastMessage = { threadId: string; text: string; attachmentType: string | null; hiddenAt: Date | null; fromTeacher: boolean; createdAt: Date };
+
+function labelOf(text: string, attachmentType: string | null): string {
+  if (text) return previewOf(text);
+  return attachmentType === "pdf" ? "📄 PDF" : attachmentType === "image" ? "📷 Photo" : "";
+}
+
+const IMAGE_MAGIC: Array<{ mime: string; test: (b: Buffer) => boolean }> = [
+  { mime: "image/jpeg", test: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
+  { mime: "image/png", test: (b) => b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) },
+  { mime: "image/webp", test: (b) => b.subarray(0, 4).toString("ascii") === "RIFF" && b.subarray(8, 12).toString("ascii") === "WEBP" },
+  { mime: "application/pdf", test: (b) => b.subarray(0, 5).toString("ascii") === "%PDF-" },
+];
+
+/**
+ * Parent-chat uploads accept photos and PDFs only. The type is decided by the
+ * file's own bytes, never the client-supplied mimetype.
+ */
+export async function uploadChatAttachment(
+  file: Buffer,
+  originalName: string,
+  institutionId: string
+): Promise<ChatAttachment> {
+  const detected = IMAGE_MAGIC.find((m) => m.test(file));
+  if (!detected) throw new BadRequestError("Only photos (JPG, PNG, WebP) and PDFs can be attached");
+  const result = await uploadAttachmentToR2(file, {
+    originalName,
+    contentType: detected.mime,
+    institutionId,
+    area: "parent-chat",
+  });
+  return { url: result.publicUrl, type: detected.mime === "application/pdf" ? "pdf" : "image", name: originalName.slice(0, 200) };
+}
+
+/** Only files uploaded through this institution's own parent-chat upload can be attached. */
+function assertOwnAttachment(attachment: ChatAttachment, institutionId: string): void {
+  const key = r2KeyFromUrl(attachment.url);
+  if (!key || !key.startsWith(`institutions/${institutionId}/parent-chat/`)) {
+    throw new BadRequestError("Invalid attachment");
+  }
+}
+
+function resolveInput(input: MessageInput, institutionId: string): { text: string; attachment: ChatAttachment | null } {
+  const text = (input.text ?? "").trim();
+  if (!text && !input.attachment) throw new BadRequestError("Message cannot be empty");
+  if (input.attachment) assertOwnAttachment(input.attachment, institutionId);
+  return { text, attachment: input.attachment ?? null };
+}
 
 async function unreadByThread(threadIds: string[], institutionId: string, fromTeacher: boolean): Promise<Map<string, number>> {
   if (threadIds.length === 0) return new Map();
@@ -130,14 +205,14 @@ async function lastMessageByThread(threadIds: string[], institutionId: string): 
     where: { institutionId, threadId: { in: threadIds } },
     orderBy: { createdAt: "desc" },
     distinct: ["threadId"],
-    select: { threadId: true, text: true, hiddenAt: true, fromTeacher: true, createdAt: true },
+    select: { threadId: true, text: true, attachmentType: true, hiddenAt: true, fromTeacher: true, createdAt: true },
   });
   return new Map(rows.map((r) => [r.threadId, r] as [string, LastMessage]));
 }
 
 function lastPreview(last: LastMessage | undefined) {
   if (!last || last.hiddenAt) return null;
-  return { text: previewOf(last.text), fromTeacher: last.fromTeacher, createdAt: last.createdAt.toISOString() };
+  return { text: labelOf(last.text, last.attachmentType), fromTeacher: last.fromTeacher, createdAt: last.createdAt.toISOString() };
 }
 
 async function assertWithinRateLimit(institutionId: string, senderUserId: string): Promise<void> {
@@ -151,7 +226,7 @@ async function assertWithinRateLimit(institutionId: string, senderUserId: string
 
 type PageQuery = { after?: Date; before?: Date; limit?: number };
 
-async function fetchMessagePage(threadId: string, institutionId: string, q: PageQuery): Promise<ChatMessageDTO[]> {
+async function fetchMessagePage(threadId: string, institutionId: string, viewerUserId: string, q: PageQuery): Promise<ChatMessageDTO[]> {
   const limit = Math.min(q.limit ?? DEFAULT_PAGE, DEFAULT_PAGE);
   if (q.after) {
     const rows = await academicDb().parentChatMessage.findMany({
@@ -159,14 +234,14 @@ async function fetchMessagePage(threadId: string, institutionId: string, q: Page
       orderBy: { createdAt: "asc" },
       take: limit,
     });
-    return rows.map(toMessageDTO);
+    return rows.map((r) => toMessageDTO(r, viewerUserId));
   }
   const rows = await academicDb().parentChatMessage.findMany({
     where: { threadId, institutionId, ...(q.before ? { createdAt: { lt: q.before } } : {}) },
     orderBy: { createdAt: "desc" },
     take: limit,
   });
-  return rows.reverse().map(toMessageDTO);
+  return rows.reverse().map((r) => toMessageDTO(r, viewerUserId));
 }
 
 // ── Student (parent) side ────────────────────────────────────────────────────
@@ -272,10 +347,11 @@ export async function getMessagesForStudent(userId: string, institutionId: strin
     where: { studentId_teacherId: { studentId: student.id, teacherId } },
   });
   if (!thread || thread.institutionId !== institutionId) return { messages: [] as ChatMessageDTO[] };
-  return { messages: await fetchMessagePage(thread.id, institutionId, q) };
+  return { messages: await fetchMessagePage(thread.id, institutionId, userId, q) };
 }
 
-export async function sendMessageFromStudent(userId: string, institutionId: string, teacherId: string, text: string) {
+export async function sendMessageFromStudent(userId: string, institutionId: string, teacherId: string, input: MessageInput) {
+  const { text, attachment } = resolveInput(input, institutionId);
   const student = await requireStudent(userId, institutionId);
   if (student.status !== "ACTIVE") throw new ForbiddenError("Messaging is unavailable for this account");
 
@@ -294,7 +370,10 @@ export async function sendMessageFromStudent(userId: string, institutionId: stri
     });
     if (thread.institutionId !== institutionId) throw new ForbiddenError("Thread does not belong to this institution");
     const created = await tx.parentChatMessage.create({
-      data: { institutionId, threadId: thread.id, fromTeacher: false, senderUserId: userId, text },
+      data: {
+        institutionId, threadId: thread.id, fromTeacher: false, senderUserId: userId, text,
+        attachmentUrl: attachment?.url, attachmentType: attachment?.type, attachmentName: attachment?.name,
+      },
     });
     await tx.parentChatThread.update({ where: { id: thread.id }, data: { lastMessageAt: created.createdAt } });
     return created;
@@ -304,12 +383,12 @@ export async function sendMessageFromStudent(userId: string, institutionId: stri
   if (withinOfficeHours) {
     const users = await resolveUsers([userId], { id: true, name: true });
     dispatchPush(
-      { id: message.threadId, title: `Parent of ${users.get(userId)?.name ?? "a student"}`, message: previewOf(text), tag: "parent_chat" },
+      { id: message.threadId, title: `Parent of ${users.get(userId)?.name ?? "a student"}`, message: labelOf(text, attachment?.type ?? null), tag: "parent_chat" },
       [{ userId: teacher.userId, institutionId }]
     ).catch((err: Error) => console.error("⚠️  Parent chat push failed (non-blocking):", err.message));
   }
 
-  return { message: toMessageDTO(message), outsideOfficeHours: !withinOfficeHours };
+  return { message: toMessageDTO(message, userId), outsideOfficeHours: !withinOfficeHours };
 }
 
 export async function markReadForStudent(userId: string, institutionId: string, teacherId: string): Promise<void> {
@@ -395,10 +474,11 @@ export async function listThreadsForTeacher(userId: string, institutionId: strin
 export async function getMessagesForTeacher(userId: string, institutionId: string, threadId: string, q: PageQuery) {
   const teacher = await requireTeacher(userId, institutionId);
   await requireTeacherThread(teacher.id, institutionId, threadId);
-  return { messages: await fetchMessagePage(threadId, institutionId, q) };
+  return { messages: await fetchMessagePage(threadId, institutionId, userId, q) };
 }
 
-export async function sendMessageFromTeacher(userId: string, institutionId: string, threadId: string, text: string) {
+export async function sendMessageFromTeacher(userId: string, institutionId: string, threadId: string, input: MessageInput) {
+  const { text, attachment } = resolveInput(input, institutionId);
   const teacher = await requireTeacher(userId, institutionId);
   if (teacher.status !== "ACTIVE") throw new ForbiddenError("Messaging is unavailable for this account");
   const thread = await requireTeacherThread(teacher.id, institutionId, threadId);
@@ -412,7 +492,10 @@ export async function sendMessageFromTeacher(userId: string, institutionId: stri
 
   const message = await academicDb().$transaction(async (tx) => {
     const created = await tx.parentChatMessage.create({
-      data: { institutionId, threadId, fromTeacher: true, senderUserId: userId, text },
+      data: {
+        institutionId, threadId, fromTeacher: true, senderUserId: userId, text,
+        attachmentUrl: attachment?.url, attachmentType: attachment?.type, attachmentName: attachment?.name,
+      },
     });
     await tx.parentChatThread.update({ where: { id: threadId }, data: { lastMessageAt: created.createdAt } });
     return created;
@@ -420,11 +503,11 @@ export async function sendMessageFromTeacher(userId: string, institutionId: stri
 
   const users = await resolveUsers([userId], { id: true, name: true });
   dispatchPush(
-    { id: threadId, title: users.get(userId)?.name ?? "Your teacher", message: previewOf(text), tag: "parent_chat" },
+    { id: threadId, title: users.get(userId)?.name ?? "Your teacher", message: labelOf(text, attachment?.type ?? null), tag: "parent_chat" },
     [{ userId: student.userId, institutionId }]
   ).catch((err: Error) => console.error("⚠️  Parent chat push failed (non-blocking):", err.message));
 
-  return { message: toMessageDTO(message) };
+  return { message: toMessageDTO(message, userId) };
 }
 
 export async function markReadForTeacher(userId: string, institutionId: string, threadId: string): Promise<void> {
@@ -458,19 +541,29 @@ export async function listThreadsForAdmin(institutionId: string) {
       _count: { select: { messages: true } },
     },
   });
-  const users = await resolveUsers(
-    threads.flatMap((t) => [t.student.userId, t.teacher.userId]),
-    { id: true, name: true }
-  );
-  return threads.map((t) => ({
+  const [users, reported] = await Promise.all([
+    resolveUsers(threads.flatMap((t) => [t.student.userId, t.teacher.userId]), { id: true, name: true }),
+    threads.length
+      ? db.parentChatMessage.groupBy({
+          by: ["threadId"],
+          where: { institutionId, threadId: { in: threads.map((t) => t.id) }, reportedAt: { not: null }, hiddenAt: null },
+          _count: { _all: true },
+        })
+      : Promise.resolve([] as Array<{ threadId: string; _count: { _all: number } }>),
+  ]);
+  const reportedByThread = new Map(reported.map((r) => [r.threadId, r._count._all] as [string, number]));
+  const rows = threads.map((t) => ({
     id: t.id,
     studentName: users.get(t.student.userId)?.name ?? "Student",
     rollNo: t.student.rollNo,
     className: t.student.division ? `${t.student.division.standard.name} ${t.student.division.name}` : null,
     teacherName: users.get(t.teacher.userId)?.name ?? "Teacher",
     messageCount: t._count.messages,
+    reportedCount: reportedByThread.get(t.id) ?? 0,
     lastMessageAt: t.lastMessageAt.toISOString(),
   }));
+  // Threads with open reports first, then newest activity.
+  return rows.sort((a, b) => Number(b.reportedCount > 0) - Number(a.reportedCount > 0) || b.lastMessageAt.localeCompare(a.lastMessageAt));
 }
 
 export async function getThreadForAdmin(institutionId: string, threadId: string) {
@@ -495,7 +588,13 @@ export async function getThreadForAdmin(institutionId: string, threadId: string)
     studentName: users.get(thread.student.userId)?.name ?? "Student",
     teacherName: users.get(thread.teacher.userId)?.name ?? "Teacher",
     // Admins see the original text of hidden messages (for moderation review).
-    messages: rows.map((r) => ({ ...toMessageDTO(r), text: r.text })),
+    messages: rows.map((r) => ({
+      ...toMessageDTO(r),
+      text: r.text,
+      attachment: toAttachment(r),
+      reportedAt: r.reportedAt ? r.reportedAt.toISOString() : null,
+      reportReason: r.reportReason,
+    })),
   };
 }
 
@@ -506,6 +605,51 @@ export async function hideMessage(institutionId: string, messageId: string, admi
     where: { id: messageId },
     data: { hiddenAt: new Date(), hiddenByUserId: adminUserId },
   });
+}
+
+/**
+ * A parent or teacher flags a message from the OTHER side of the conversation.
+ * Admins are notified and the thread floats to the top of their list.
+ */
+export async function reportMessage(
+  userId: string,
+  institutionId: string,
+  messageId: string,
+  reporter: "student" | "teacher",
+  reason?: string
+): Promise<void> {
+  const message = await academicDb().parentChatMessage.findFirst({
+    where: { id: messageId, institutionId },
+    include: { thread: { select: { id: true, student: { select: { userId: true } }, teacher: { select: { userId: true } } } } },
+  });
+  if (!message) throw new NotFoundError("Message not found");
+
+  const isParticipant = reporter === "student" ? message.thread.student.userId === userId : message.thread.teacher.userId === userId;
+  if (!isParticipant) throw new NotFoundError("Message not found");
+  if (message.fromTeacher === (reporter === "teacher")) throw new BadRequestError("You can only report messages sent to you");
+  if (message.reportedAt) return;
+
+  await academicDb().parentChatMessage.update({
+    where: { id: messageId },
+    data: { reportedAt: new Date(), reportedByUserId: userId, reportReason: reason?.trim() || null },
+  });
+
+  logAudit("PARENT_CHAT_MESSAGE_REPORTED", {
+    userId,
+    actorRole: reporter === "student" ? "STUDENT" : "TEACHER",
+    institutionId,
+    details: `message ${messageId} in thread ${message.thread.id}`,
+    category: "SECURITY",
+    severity: "WARNING",
+  });
+  createNotification({
+    title: "Parent chat message reported",
+    message: "A message in a parent–teacher conversation was reported. Review it in Insights → Parent Chat.",
+    tag: "parent_chat_report",
+    recipientType: "ADMIN",
+    recipients: [{ institutionId }],
+    adminOnly: true,
+  }).catch((err: Error) => console.error("⚠️  Report notification failed (non-blocking):", err.message));
 }
 
 export function assertValidOfficeHours(settings: ChatSettingsDTO): void {

@@ -274,6 +274,7 @@ model Teacher {
   assignments           DivisionAssignment[]
   createdMarksheets     Marksheet[]              @relation("MarksheetCreator")
   mindmaps              Mindmap[]
+  parentChatThreads     ParentChatThread[]
   questionShareTokens   QuestionShareToken[]
   taskAssignments       TaskAssignment[]
   taskContainers        TaskContainer[]
@@ -659,6 +660,7 @@ model Student {
   marksheetScores                  MarksheetScore[]
   ptmNotes                         PTMNote[]
   parentModeEvents                 ParentModeEvent[]
+  parentChatThreads                ParentChatThread[]
   division                         Division?                         @relation(fields: [divisionId], references: [id])
   institution                      Institution                       @relation(fields: [institutionId], references: [id])
   standard                         Standard?                         @relation(fields: [standardId], references: [id])
@@ -2682,4 +2684,62 @@ model AdmissionApplication {
   @@unique([institutionId, applicationNo])
   @@unique([institutionId, admissionNo])
   @@index([institutionId, academicYearId, stage])
+}
+
+// ── Parent ↔ teacher chat ────────────────────────────────────────────────────
+// Parent Mode lives inside the student's own login (no separate parent
+// account), so the "parent" side of a thread is the student account. One thread
+// per (student, teacher). Messages from the parent side are only ever sent to a
+// teacher of the student's division; teachers reply in the same thread.
+
+model ParentChatSettings {
+  institutionId String   @id
+  enabled       Boolean  @default(true)
+  // "HH:mm" in IST. Messages sent outside this window are still accepted but
+  // the teacher is not pushed, and the parent is told when to expect a reply.
+  officeStart   String   @default("08:00")
+  officeEnd     String   @default("18:00")
+  updatedAt     DateTime @updatedAt
+}
+
+model ParentChatThread {
+  id            String              @id @default(uuid())
+  institutionId String
+  studentId     String
+  teacherId     String
+  lastMessageAt DateTime            @default(now())
+  createdAt     DateTime            @default(now())
+  student       Student             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher       Teacher             @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  messages      ParentChatMessage[]
+
+  @@unique([studentId, teacherId])
+  @@index([institutionId, lastMessageAt])
+  @@index([teacherId, lastMessageAt])
+}
+
+model ParentChatMessage {
+  id              String           @id @default(uuid())
+  institutionId   String
+  threadId        String
+  fromTeacher     Boolean
+  senderUserId    String
+  text            String
+  // One optional attachment per message — "image" or "pdf", stored in R2 under
+  // institutions/{institutionId}/parent-chat/.
+  attachmentUrl   String?
+  attachmentType  String?
+  attachmentName  String?
+  readAt          DateTime?
+  hiddenAt        DateTime?
+  hiddenByUserId  String?
+  reportedAt      DateTime?
+  reportedByUserId String?
+  reportReason    String?
+  createdAt       DateTime         @default(now())
+  thread          ParentChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+  @@index([institutionId])
+  @@index([institutionId, reportedAt])
 }

@@ -136,7 +136,9 @@ export const ModelName = {
   TimetableException: 'TimetableException',
   TimetableSubstitution: 'TimetableSubstitution',
   TimetableGeneration: 'TimetableGeneration',
-  InventorySetupOrder: 'InventorySetupOrder'
+  InventorySetupOrder: 'InventorySetupOrder',
+  AdmissionSettings: 'AdmissionSettings',
+  AdmissionApplication: 'AdmissionApplication'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1624,6 +1626,67 @@ export const InventorySetupOrderScalarFieldEnum = {
 } as const
 
 export type InventorySetupOrderScalarFieldEnum = (typeof InventorySetupOrderScalarFieldEnum)[keyof typeof InventorySetupOrderScalarFieldEnum]
+
+
+export const AdmissionSettingsScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  formOpen: 'formOpen',
+  interactionStep: 'interactionStep',
+  registrationFee: 'registrationFee',
+  admissionFeeDays: 'admissionFeeDays',
+  ageCutoff: 'ageCutoff',
+  ageRules: 'ageRules',
+  fields: 'fields',
+  questions: 'questions',
+  documents: 'documents',
+  admissionForm: 'admissionForm',
+  admissionNoPrefix: 'admissionNoPrefix',
+  nextAdmissionNo: 'nextAdmissionNo',
+  nextApplicationNo: 'nextApplicationNo',
+  revision: 'revision',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdmissionSettingsScalarFieldEnum = (typeof AdmissionSettingsScalarFieldEnum)[keyof typeof AdmissionSettingsScalarFieldEnum]
+
+
+export const AdmissionApplicationScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  applicationNo: 'applicationNo',
+  standardId: 'standardId',
+  stage: 'stage',
+  outcome: 'outcome',
+  waitlistRank: 'waitlistRank',
+  source: 'source',
+  childName: 'childName',
+  dob: 'dob',
+  gender: 'gender',
+  parentName: 'parentName',
+  phoneLast4: 'phoneLast4',
+  details: 'details',
+  registrationFee: 'registrationFee',
+  interaction: 'interaction',
+  offer: 'offer',
+  admissionFee: 'admissionFee',
+  documents: 'documents',
+  admissionForm: 'admissionForm',
+  admissionNo: 'admissionNo',
+  divisionId: 'divisionId',
+  studentId: 'studentId',
+  statusToken: 'statusToken',
+  revision: 'revision',
+  events: 'events',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdmissionApplicationScalarFieldEnum = (typeof AdmissionApplicationScalarFieldEnum)[keyof typeof AdmissionApplicationScalarFieldEnum]
 
 
 export const SortOrder = {

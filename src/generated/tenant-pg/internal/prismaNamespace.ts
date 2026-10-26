@@ -482,7 +482,9 @@ export const ModelName = {
   TimetableException: 'TimetableException',
   TimetableSubstitution: 'TimetableSubstitution',
   TimetableGeneration: 'TimetableGeneration',
-  InventorySetupOrder: 'InventorySetupOrder'
+  InventorySetupOrder: 'InventorySetupOrder',
+  AdmissionSettings: 'AdmissionSettings',
+  AdmissionApplication: 'AdmissionApplication'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -498,7 +500,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "inventorySetupOrder"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -6866,6 +6868,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AdmissionSettings: {
+      payload: Prisma.$AdmissionSettingsPayload<ExtArgs>
+      fields: Prisma.AdmissionSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdmissionSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdmissionSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.AdmissionSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdmissionSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.AdmissionSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.AdmissionSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.AdmissionSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdmissionSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.AdmissionSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>
+        }
+        update: {
+          args: Prisma.AdmissionSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdmissionSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdmissionSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdmissionSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdmissionSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.AdmissionSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdmissionSettings>
+        }
+        groupBy: {
+          args: Prisma.AdmissionSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdmissionSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdmissionSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdmissionSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    AdmissionApplication: {
+      payload: Prisma.$AdmissionApplicationPayload<ExtArgs>
+      fields: Prisma.AdmissionApplicationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdmissionApplicationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdmissionApplicationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>
+        }
+        findFirst: {
+          args: Prisma.AdmissionApplicationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdmissionApplicationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>
+        }
+        findMany: {
+          args: Prisma.AdmissionApplicationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>[]
+        }
+        create: {
+          args: Prisma.AdmissionApplicationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>
+        }
+        createMany: {
+          args: Prisma.AdmissionApplicationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdmissionApplicationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>[]
+        }
+        delete: {
+          args: Prisma.AdmissionApplicationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>
+        }
+        update: {
+          args: Prisma.AdmissionApplicationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdmissionApplicationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdmissionApplicationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdmissionApplicationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdmissionApplicationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdmissionApplicationPayload>
+        }
+        aggregate: {
+          args: Prisma.AdmissionApplicationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdmissionApplication>
+        }
+        groupBy: {
+          args: Prisma.AdmissionApplicationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdmissionApplicationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdmissionApplicationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdmissionApplicationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -8376,6 +8526,67 @@ export const InventorySetupOrderScalarFieldEnum = {
 export type InventorySetupOrderScalarFieldEnum = (typeof InventorySetupOrderScalarFieldEnum)[keyof typeof InventorySetupOrderScalarFieldEnum]
 
 
+export const AdmissionSettingsScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  formOpen: 'formOpen',
+  interactionStep: 'interactionStep',
+  registrationFee: 'registrationFee',
+  admissionFeeDays: 'admissionFeeDays',
+  ageCutoff: 'ageCutoff',
+  ageRules: 'ageRules',
+  fields: 'fields',
+  questions: 'questions',
+  documents: 'documents',
+  admissionForm: 'admissionForm',
+  admissionNoPrefix: 'admissionNoPrefix',
+  nextAdmissionNo: 'nextAdmissionNo',
+  nextApplicationNo: 'nextApplicationNo',
+  revision: 'revision',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdmissionSettingsScalarFieldEnum = (typeof AdmissionSettingsScalarFieldEnum)[keyof typeof AdmissionSettingsScalarFieldEnum]
+
+
+export const AdmissionApplicationScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  applicationNo: 'applicationNo',
+  standardId: 'standardId',
+  stage: 'stage',
+  outcome: 'outcome',
+  waitlistRank: 'waitlistRank',
+  source: 'source',
+  childName: 'childName',
+  dob: 'dob',
+  gender: 'gender',
+  parentName: 'parentName',
+  phoneLast4: 'phoneLast4',
+  details: 'details',
+  registrationFee: 'registrationFee',
+  interaction: 'interaction',
+  offer: 'offer',
+  admissionFee: 'admissionFee',
+  documents: 'documents',
+  admissionForm: 'admissionForm',
+  admissionNo: 'admissionNo',
+  divisionId: 'divisionId',
+  studentId: 'studentId',
+  statusToken: 'statusToken',
+  revision: 'revision',
+  events: 'events',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdmissionApplicationScalarFieldEnum = (typeof AdmissionApplicationScalarFieldEnum)[keyof typeof AdmissionApplicationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -9051,6 +9262,8 @@ export type GlobalOmitConfig = {
   timetableSubstitution?: Prisma.TimetableSubstitutionOmit
   timetableGeneration?: Prisma.TimetableGenerationOmit
   inventorySetupOrder?: Prisma.InventorySetupOrderOmit
+  admissionSettings?: Prisma.AdmissionSettingsOmit
+  admissionApplication?: Prisma.AdmissionApplicationOmit
 }
 
 /* Types for Logging */

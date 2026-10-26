@@ -1,4 +1,7 @@
 import inventoryRoutes from "./modules/inventory/inventory.routes";
+import admissionsRoutes from "./modules/admissions/admissions.routes";
+import publicAdmissionsRoutes from "./modules/admissions/admissions.public.routes";
+import admissionsCheckRoutes from "./modules/admissions/admissions.check.routes";
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -64,6 +67,12 @@ app.use("/api/admin/payroll/attendance/day", express.json({ limit: "512kb" }));
 // Magic Chalk sends a small cropped picture of the strokes.
 app.use("/api/teacher/blackboard/ai/magic", express.json({ limit: "800kb" }));
 
+// Admissions: the admission form design (sections + marked boxes on the
+// school's own form) is bigger than a normal request; the AI auto-mark sends
+// one page picture plus strips of its blanks.
+app.use("/api/admin/admissions/admission-form/auto-mark", express.json({ limit: "12mb" }));
+app.use("/api/admin/admissions", express.json({ limit: "512kb" }));
+app.use("/api/public/admissions", express.json({ limit: "64kb" }));
 app.use(express.json({ limit: "10kb" }));
 
 app.use(generalLimiter);
@@ -81,6 +90,8 @@ app.use((req, res, next) => {
 app.use("/api/superadmin", superadminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/inventory", inventoryRoutes);
+app.use("/api/admin/admissions", admissionsRoutes);
+app.use("/api/admissions-check", admissionsCheckRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/staffroom", staffroomRoutes);
 app.use("/api/admin/campus", campusRoutes);
@@ -93,6 +104,7 @@ app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/branding", brandingRoutes);
+app.use("/api/public/admissions", publicAdmissionsRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/teacher/promotions", promotionTeacherRoutes);
 app.use("/api", academicYearRoutes);

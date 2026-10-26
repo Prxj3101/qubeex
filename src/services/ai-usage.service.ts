@@ -15,7 +15,8 @@ export type AiFeature =
   | "ATTENDANCE_SUMMARY"
   | "SCHOOL_ASSISTANT"
   | "PAYROLL_REVIEW"
-  | "INVENTORY_BRIEF";
+  | "INVENTORY_BRIEF"
+  | "ADMISSION_FORM_SCAN";
 
 // The institution/teacher token pool is a *monthly* allowance (see
 // PLAN_AI_TOKENS in billing.service), but the Redis counters that back the

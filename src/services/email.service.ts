@@ -953,3 +953,160 @@ export const sendDemoRequestConfirmationEmail = async ({
         return false;
     }
 };
+
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] as string));
+
+// One template for every admissions email a parent gets (form received,
+// interaction slot, offer, admission confirmed, login details). Text is passed
+// in already written; this only escapes and lays it out. Sent in the school's
+// own name, with a soft school-themed look like the parents' form.
+const ADMISSION_TONES = {
+    info: { bg: '#FFF1EA', fg: '#B4532F', emoji: '📝' },
+    good: { bg: '#DCFCE7', fg: '#15803D', emoji: '🎉' },
+    wait: { bg: '#FEF3C7', fg: '#B45309', emoji: '⏳' },
+    blue: { bg: '#DBEAFE', fg: '#1D4ED8', emoji: '📅' },
+    plain: { bg: '#F1F5F9', fg: '#475569', emoji: '✉️' },
+} as const;
+
+export const sendAdmissionEmail = async ({
+    to,
+    schoolName,
+    logoUrl,
+    subject,
+    badge,
+    tone = 'info',
+    heading,
+    lines,
+    facts = [],
+    note,
+    noteLabel = 'NOTE',
+    link,
+    linkLabel,
+    extraLink,
+}: {
+    to: string;
+    schoolName: string;
+    logoUrl?: string | null;
+    subject: string;
+    /** Small label above the heading, e.g. "Application received". */
+    badge?: string;
+    tone?: keyof typeof ADMISSION_TONES;
+    heading: string;
+    lines: string[];
+    /** Label / value rows shown in a box, e.g. the application number. */
+    facts?: { label: string; value: string }[];
+    /** A note from the school (e.g. "Bring 2 passport size photos"), shown highlighted. */
+    note?: string;
+    /** Word before the note, e.g. NOTE or REASON. */
+    noteLabel?: string;
+    link?: string;
+    linkLabel?: string;
+    /** A second, highlighted button above the status button (e.g. the admission form). */
+    extraLink?: { url: string; label: string };
+}) => {
+    if (!to) return false;
+    const t = ADMISSION_TONES[tone];
+    const school = escapeHtml(schoolName);
+    const logo = logoUrl && /^https:\/\//.test(logoUrl)
+        ? `<img src="${escapeHtml(logoUrl)}" width="64" height="64" alt="${school}" style="display:block;margin:0 auto;width:64px;height:64px;object-fit:contain;border-radius:16px;background:#ffffff;border:1px solid #E2E8F0;" />`
+        : `<div style="margin:0 auto;width:64px;height:64px;line-height:64px;border-radius:16px;background:#FFFFFF;font-size:30px;text-align:center;">🏫</div>`;
+    const factRows = facts.map(f => `
+              <tr>
+                <td style="padding:7px 0;font-size:13px;color:#64748B;">${escapeHtml(f.label)}</td>
+                <td style="padding:7px 0;font-size:14px;font-weight:700;color:#0F172A;text-align:right;">${escapeHtml(f.value)}</td>
+              </tr>`).join('');
+    try {
+        const { error } = await resend.emails.send({
+            from: `${schoolName.replace(/[<>"]/g, '')} <support@qubeex.in>`,
+            to,
+            subject,
+            html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark" />
+  <meta name="supported-color-schemes" content="light dark" />
+  <style>
+    :root { color-scheme: light dark; }
+    /* Cream header and terracotta button look the same in light and dark mode;
+       the green footer band turns deep green in dark mode. */
+    @media (prefers-color-scheme: dark) {
+      .adm-head { background-color: #F3E7D3 !important; }
+      .adm-school { color: #3B2F22 !important; }
+      .adm-sub { color: #8A6D45 !important; }
+      .adm-btn { background-color: #C9663F !important; color: #FFFFFF !important; }
+      .adm-curve { background-color: #1E4D33 !important; }
+      .adm-foot { background-color: #163F2A !important; }
+      .adm-foot-text { color: #BBF7D0 !important; }
+      .adm-note { background-color: #3B1212 !important; }
+      .adm-note-text, .adm-note-text strong { color: #FECACA !important; }
+    }
+    [data-ogsc] .adm-btn { color: #FFFFFF !important; }
+    [data-ogsc] .adm-foot-text { color: #BBF7D0 !important; }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#F3F7F6;font-family:'Segoe UI',Arial,sans-serif;color:#0F172A;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#F3F7F6;padding:28px 12px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;background:#ffffff;border-radius:24px;overflow:hidden;border:1px solid #DCE9E6;">
+        <tr>
+          <td align="center" bgcolor="#FBF1DE" class="adm-head" style="background-color:#FBF1DE;padding:24px 24px 22px;border-bottom:1px solid #EFE2C8;">
+            <div style="font-size:18px;letter-spacing:10px;margin-bottom:12px;">☀️ ☁️ ✏️ 📚</div>
+            ${logo}
+            <p class="adm-school" style="margin:12px 0 0;font-size:19px;font-weight:800;color:#3B2F22;">${school}</p>
+            <p class="adm-sub" style="margin:3px 0 0;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#9A7B4F;">Admissions</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:26px 28px 8px;">
+            ${badge ? `<span style="display:inline-block;background:${t.bg};color:${t.fg};font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;">${t.emoji} ${escapeHtml(badge)}</span>` : ''}
+            <h2 style="margin:12px 0 14px;font-size:22px;line-height:1.3;color:#0F172A;">${escapeHtml(heading)}</h2>
+            ${lines.map(line => `<p style="margin:0 0 10px;line-height:1.65;font-size:15px;color:#334155;">${escapeHtml(line)}</p>`).join('')}
+            ${note ? `<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:6px 0 4px;"><tr><td bgcolor="#FEF2F2" class="adm-note" style="background-color:#FEF2F2;border-left:4px solid #DC2626;border-radius:10px;padding:12px 14px;">
+              <p class="adm-note-text" style="margin:0;font-size:15px;line-height:1.5;color:#7F1D1D;"><span style="color:#DC2626;font-weight:800;">*</span> <strong style="color:#B91C1C;letter-spacing:0.5px;">${escapeHtml(noteLabel)}:</strong> <strong>${escapeHtml(note)}</strong></p>
+            </td></tr></table>` : ''}
+          </td>
+        </tr>
+        ${factRows ? `
+        <tr>
+          <td style="padding:6px 28px 4px;">
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:16px;padding:8px 16px;">
+              ${factRows}
+            </table>
+          </td>
+        </tr>` : ''}
+        ${extraLink ? `
+        <tr>
+          <td align="center" style="padding:22px 28px 0;">
+            <a href="${escapeHtml(extraLink.url)}" class="adm-btn" style="display:inline-block;background-color:#DA7756;color:#FFFFFF;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:14px;font-size:15px;">${escapeHtml(extraLink.label)} &rarr;</a>
+          </td>
+        </tr>` : ''}
+        ${link ? `
+        <tr>
+          <td align="center" style="padding:22px 28px 6px;">
+            <a href="${escapeHtml(link)}" class="adm-btn" style="display:inline-block;background-color:#DA7756;color:#FFFFFF;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:14px;font-size:15px;">${escapeHtml(linkLabel || 'Open')} &rarr;</a>
+            <p style="margin:10px 0 0;font-size:12px;color:#94A3B8;">Keep this email. The button always shows the latest status.</p>
+          </td>
+        </tr>` : ''}
+        <tr>
+          <td style="padding:22px 0 0;">
+            <div class="adm-curve" style="background-color:#BBF7D0;height:10px;border-radius:50% 50% 0 0 / 100% 100% 0 0;"></div>
+            <div class="adm-foot" style="background-color:#86EFAC;padding:14px 24px 18px;text-align:center;">
+              <div style="font-size:16px;letter-spacing:8px;margin-bottom:6px;">🌳 🚌 🎒 🏫 🌼</div>
+              <p class="adm-foot-text" style="margin:0;font-size:12px;color:#14532D;line-height:1.5;">This is an automated email from ${school}. For any question, please contact the school office.</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+        });
+        if (error) { console.error('Resend error (admission email):', error); return false; }
+        return true;
+    } catch (err) {
+        console.error('Admission email send failed:', err);
+        return false;
+    }
+};

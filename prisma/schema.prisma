@@ -2615,3 +2615,71 @@ model InventorySetupOrder {
   updatedAt DateTime @updatedAt
   @@id([institutionId, kind])
 }
+
+// ── Admissions ─────────────────────────────────────────────────────────────
+// One row per institution: how the school runs admissions. Kept free of
+// relations so the BYOD tenant schema copies it as-is.
+model AdmissionSettings {
+  id                String   @id @default(uuid())
+  institutionId     String   @unique
+  academicYearId    String?
+  formOpen          Boolean  @default(false)
+  interactionStep   Boolean  @default(true)
+  registrationFee   Decimal? @db.Decimal(12, 2)
+  admissionFeeDays  Int      @default(7)
+  ageCutoff         String   @default("06-01")
+  ageRules          Json     @default("[]")
+  fields            Json     @default("{}")
+  questions         Json     @default("[]")
+  documents         Json     @default("[]")
+  /// The school's admission form (sections, fields, declaration). See admissions.form.ts.
+  admissionForm     Json     @default("{}")
+  admissionNoPrefix String   @default("")
+  nextAdmissionNo   Int      @default(1)
+  nextApplicationNo Int      @default(1)
+  revision          Int      @default(1)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// One child's admission, from first enquiry to placement in a section.
+// Contact details live encrypted in `details` (AES-GCM, PII_ENC_KEY); only the
+// child's name, parent's name and the phone's last 4 digits stay readable for
+// search. No document files are ever stored - only who saw which original.
+model AdmissionApplication {
+  id              String   @id @default(uuid())
+  institutionId   String
+  academicYearId  String
+  applicationNo   String
+  standardId      String
+  stage           String   @default("ENQUIRY")
+  outcome         String?
+  waitlistRank    Int?
+  source          String   @default("COUNTER")
+  childName       String
+  dob             String?
+  gender          String?
+  parentName      String   @default("")
+  phoneLast4      String   @default("")
+  details         String
+  registrationFee Json?
+  interaction     Json?
+  offer           Json?
+  admissionFee    Json?
+  documents       Json     @default("[]")
+  /// Admission form status and values (values encrypted).
+  admissionForm   Json?
+  admissionNo     String?
+  divisionId      String?
+  studentId       String?
+  statusToken     String   @unique
+  revision        Int      @default(1)
+  events          Json     @default("[]")
+  createdById     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([institutionId, applicationNo])
+  @@unique([institutionId, admissionNo])
+  @@index([institutionId, academicYearId, stage])
+}

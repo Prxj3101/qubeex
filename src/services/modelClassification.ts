@@ -40,6 +40,8 @@ export const PLATFORM_MODELS = [
 // Academic / institution-owned data — routes to the tenant DB for BYOD institutions,
 // stays in the central DB for managed institutions.
 export const ACADEMIC_MODELS = [
+  "AdmissionSettings",
+  "AdmissionApplication",
   "InventorySetupOrder",
   "InventoryPurchaseOrder",
   "InventoryPurchaseRequest",

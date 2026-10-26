@@ -447,3 +447,13 @@ export type TimetableGeneration = Prisma.TimetableGenerationModel
  * 
  */
 export type InventorySetupOrder = Prisma.InventorySetupOrderModel
+/**
+ * Model AdmissionSettings
+ * 
+ */
+export type AdmissionSettings = Prisma.AdmissionSettingsModel
+/**
+ * Model AdmissionApplication
+ * 
+ */
+export type AdmissionApplication = Prisma.AdmissionApplicationModel

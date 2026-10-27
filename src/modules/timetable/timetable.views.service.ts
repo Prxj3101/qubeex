@@ -1,7 +1,7 @@
 import type { AcademicYear } from "../../generated/prisma/client";
 import { academicDb } from "../../utils/academicContext";
 import {
-  addDays, formatDateOnly, httpError, istMinutesNow, loadYearContext, parseDateOnly, todayUtc, weekStartOf, type YearContext,
+  addDays, formatDateOnly, httpError, istMinutesNow, loadYearContext, parseDateOnly, roomIsLab, todayUtc, weekStartOf, type YearContext,
 } from "./timetable.common";
 import { decorateEntries } from "./timetable.studio.service";
 
@@ -24,6 +24,8 @@ export interface WeekSession {
   teacherId: string | null;
   teacherName: string | null;
   roomName: string | null;
+  /** Held in a lab (shown with a flask icon). */
+  roomIsLab: boolean;
   status: SessionStatus;
   note: string | null;
   originalTeacherName: string | null;
@@ -105,21 +107,21 @@ async function buildWeek(institutionId: string, year: AcademicYear, ctx: YearCon
       const sub = subBy.get(`${e.id}|${ds}`);
       const common = { date: ds, dayOfWeek: dow, slotId: e.slotId, divisionId: e.divisionId };
       if (exc?.kind === "CANCEL") {
-        push({ ...common, sessionTypeId: e.sessionTypeId, color: e.subject?.color ?? null, subjectName: e.subject?.name ?? null, title: e.title, teacherId: e.teacherId, roomName: null, status: "CANCELLED", note: exc.reason, originalTeacherName: null, originalSubjectName: null });
+        push({ ...common, sessionTypeId: e.sessionTypeId, color: e.subject?.color ?? null, subjectName: e.subject?.name ?? null, title: e.title, teacherId: e.teacherId, roomName: null, roomIsLab: false, status: "CANCELLED", note: exc.reason, originalTeacherName: null, originalSubjectName: null });
       } else if (exc) {
         push({
           ...common, sessionTypeId: exc.sessionTypeId ?? e.sessionTypeId, color: exc.subject?.color ?? null, subjectName: exc.subject?.name ?? null,
-          title: exc.title, teacherId: exc.teacherId, roomName: exc.roomId ? ctx.labels.room(exc.roomId) : null, status: "CHANGED", note: exc.reason,
+          title: exc.title, teacherId: exc.teacherId, roomName: exc.roomId ? ctx.labels.room(exc.roomId) : null, roomIsLab: roomIsLab(ctx, exc.roomId), status: "CHANGED", note: exc.reason,
           originalTeacherName: e.teacherId ? ctx.labels.teacher(e.teacherId) : null, originalSubjectName: e.subject?.name ?? e.title,
         });
       } else if (sub) {
         push({
           ...common, sessionTypeId: e.sessionTypeId, color: e.subject?.color ?? null, subjectName: e.subject?.name ?? null, title: e.title,
-          teacherId: sub.substituteTeacherId, roomName: e.roomId ? ctx.labels.room(e.roomId) : null, status: "SUBSTITUTED", note: sub.reason,
+          teacherId: sub.substituteTeacherId, roomName: e.roomId ? ctx.labels.room(e.roomId) : null, roomIsLab: roomIsLab(ctx, e.roomId), status: "SUBSTITUTED", note: sub.reason,
           originalTeacherName: e.teacherId ? ctx.labels.teacher(e.teacherId) : null, originalSubjectName: null,
         });
       } else {
-        push({ ...common, sessionTypeId: e.sessionTypeId, color: e.subject?.color ?? null, subjectName: e.subject?.name ?? null, title: e.title, teacherId: e.teacherId, roomName: e.roomId ? ctx.labels.room(e.roomId) : null, status: "NORMAL", note: null, originalTeacherName: null, originalSubjectName: null });
+        push({ ...common, sessionTypeId: e.sessionTypeId, color: e.subject?.color ?? null, subjectName: e.subject?.name ?? null, title: e.title, teacherId: e.teacherId, roomName: e.roomId ? ctx.labels.room(e.roomId) : null, roomIsLab: roomIsLab(ctx, e.roomId), status: "NORMAL", note: null, originalTeacherName: null, originalSubjectName: null });
       }
     }
     // Overrides on a slot that has no permanent entry (e.g. a special event in a free period).
@@ -127,7 +129,7 @@ async function buildWeek(institutionId: string, year: AcademicYear, ctx: YearCon
       if (baseBy.has(`${exc.divisionId}|${dow}|${exc.slotId}`)) continue;
       push({
         date: ds, dayOfWeek: dow, slotId: exc.slotId, divisionId: exc.divisionId, sessionTypeId: exc.sessionTypeId, color: exc.subject?.color ?? null,
-        subjectName: exc.subject?.name ?? null, title: exc.title, teacherId: exc.teacherId, roomName: exc.roomId ? ctx.labels.room(exc.roomId) : null,
+        subjectName: exc.subject?.name ?? null, title: exc.title, teacherId: exc.teacherId, roomName: exc.roomId ? ctx.labels.room(exc.roomId) : null, roomIsLab: roomIsLab(ctx, exc.roomId),
         status: "CHANGED", note: exc.reason, originalTeacherName: null, originalSubjectName: null,
       });
     }

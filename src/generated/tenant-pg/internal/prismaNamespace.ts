@@ -482,6 +482,8 @@ export const ModelName = {
   TimetableException: 'TimetableException',
   TimetableSubstitution: 'TimetableSubstitution',
   TimetableGeneration: 'TimetableGeneration',
+  TimetableAiMessage: 'TimetableAiMessage',
+  TimetableVersion: 'TimetableVersion',
   InventorySetupOrder: 'InventorySetupOrder',
   AdmissionSettings: 'AdmissionSettings',
   AdmissionApplication: 'AdmissionApplication',
@@ -503,7 +505,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication" | "parentChatSettings" | "parentChatThread" | "parentChatMessage"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "timetableAiMessage" | "timetableVersion" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication" | "parentChatSettings" | "parentChatThread" | "parentChatMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -6797,6 +6799,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TimetableAiMessage: {
+      payload: Prisma.$TimetableAiMessagePayload<ExtArgs>
+      fields: Prisma.TimetableAiMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableAiMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableAiMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableAiMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableAiMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>
+        }
+        findMany: {
+          args: Prisma.TimetableAiMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>[]
+        }
+        create: {
+          args: Prisma.TimetableAiMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>
+        }
+        createMany: {
+          args: Prisma.TimetableAiMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableAiMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableAiMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>
+        }
+        update: {
+          args: Prisma.TimetableAiMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableAiMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableAiMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableAiMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableAiMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableAiMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableAiMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableAiMessage>
+        }
+        groupBy: {
+          args: Prisma.TimetableAiMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableAiMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableAiMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableAiMessageCountAggregateOutputType> | number
+        }
+      }
+    }
+    TimetableVersion: {
+      payload: Prisma.$TimetableVersionPayload<ExtArgs>
+      fields: Prisma.TimetableVersionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TimetableVersionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TimetableVersionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>
+        }
+        findFirst: {
+          args: Prisma.TimetableVersionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TimetableVersionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>
+        }
+        findMany: {
+          args: Prisma.TimetableVersionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>[]
+        }
+        create: {
+          args: Prisma.TimetableVersionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>
+        }
+        createMany: {
+          args: Prisma.TimetableVersionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TimetableVersionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>[]
+        }
+        delete: {
+          args: Prisma.TimetableVersionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>
+        }
+        update: {
+          args: Prisma.TimetableVersionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>
+        }
+        deleteMany: {
+          args: Prisma.TimetableVersionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TimetableVersionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TimetableVersionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>[]
+        }
+        upsert: {
+          args: Prisma.TimetableVersionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TimetableVersionPayload>
+        }
+        aggregate: {
+          args: Prisma.TimetableVersionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTimetableVersion>
+        }
+        groupBy: {
+          args: Prisma.TimetableVersionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableVersionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TimetableVersionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TimetableVersionCountAggregateOutputType> | number
+        }
+      }
+    }
     InventorySetupOrder: {
       payload: Prisma.$InventorySetupOrderPayload<ExtArgs>
       fields: Prisma.InventorySetupOrderFieldRefs
@@ -8740,6 +8890,36 @@ export const TimetableGenerationScalarFieldEnum = {
 export type TimetableGenerationScalarFieldEnum = (typeof TimetableGenerationScalarFieldEnum)[keyof typeof TimetableGenerationScalarFieldEnum]
 
 
+export const TimetableAiMessageScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  role: 'role',
+  text: 'text',
+  data: 'data',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableAiMessageScalarFieldEnum = (typeof TimetableAiMessageScalarFieldEnum)[keyof typeof TimetableAiMessageScalarFieldEnum]
+
+
+export const TimetableVersionScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  number: 'number',
+  label: 'label',
+  entries: 'entries',
+  periods: 'periods',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TimetableVersionScalarFieldEnum = (typeof TimetableVersionScalarFieldEnum)[keyof typeof TimetableVersionScalarFieldEnum]
+
+
 export const InventorySetupOrderScalarFieldEnum = {
   institutionId: 'institutionId',
   kind: 'kind',
@@ -9531,6 +9711,8 @@ export type GlobalOmitConfig = {
   timetableException?: Prisma.TimetableExceptionOmit
   timetableSubstitution?: Prisma.TimetableSubstitutionOmit
   timetableGeneration?: Prisma.TimetableGenerationOmit
+  timetableAiMessage?: Prisma.TimetableAiMessageOmit
+  timetableVersion?: Prisma.TimetableVersionOmit
   inventorySetupOrder?: Prisma.InventorySetupOrderOmit
   admissionSettings?: Prisma.AdmissionSettingsOmit
   admissionApplication?: Prisma.AdmissionApplicationOmit

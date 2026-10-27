@@ -1,0 +1,37 @@
+# Runs QubeEx backend + Caddy (HTTPS) on the Oracle server.
+# On the server:  cd ~/qubeex/deploy && docker compose up -d --build
+services:
+  backend:
+    build:
+      context: ..            # repo root, where the Dockerfile is
+    image: qubeex-backend
+    container_name: qubeex-backend
+    env_file: ../.env        # secrets live only on the server, never in git
+    environment:
+      PORT: "3000"
+    restart: always          # auto-restart on crash and after server reboot
+    expose:
+      - "3000"               # reachable by Caddy only, not from the internet
+    logging:
+      driver: json-file
+      options: { max-size: "20m", max-file: "5" }   # keep logs from filling the disk
+
+  caddy:
+    image: caddy:2
+    container_name: qubeex-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      API_DOMAIN: ${API_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data        # HTTPS certificates are stored here
+      - caddy_config:/config
+    depends_on:
+      - backend
+
+volumes:
+  caddy_data:
+  caddy_config:

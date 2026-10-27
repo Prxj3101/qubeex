@@ -15,6 +15,8 @@ import * as gen from "./timetable.generate.service";
 import * as changes from "./timetable.changes.service";
 import * as views from "./timetable.views.service";
 import { exportTimetable } from "./timetable.export.service";
+import * as aiTt from "./timetable.ai.service";
+import * as history from "./timetable.history.service";
 
 const router = Router();
 
@@ -89,6 +91,41 @@ router.put("/teachers/:id/prefs", ...WRITE, h(async (r, c) => { await setup.setT
 // ── Overview / studio ──────────────────────────────────────────────────────────
 router.get("/overview", ...READ, h((_r, c) => gen.listTimetableStatuses(c.institutionId, c.year)));
 router.get("/conflicts", ...READ, h((r, c) => studio.getYearConflicts(c.institutionId, c.year, typeof r.query.divisionId === "string" ? r.query.divisionId : undefined)));
+
+// ── AI Timetable (one-page builder) ──────────────────────────────────────────
+router.get("/ai/workspace", ...READ, h((_r, c) => aiTt.workspace(c.institutionId, c.year)));
+router.get("/ai/entries", ...READ, h((_r, c) => aiTt.entriesOnly(c.institutionId, c.year)));
+router.post("/ai/quick-setup", ...WRITE, h(async (r, c) => {
+  const out = await aiTt.quickSetup(c.institutionId, c.year, aiTt.quickSetupSchema.parse(r.body));
+  audit(c.actor, "TIMETABLE_SETTINGS_UPDATED", `School day set for ${c.year.label} (${out.slots} slots, ends ${out.ends})`, { academicYearId: c.year.id });
+  return out;
+}));
+router.get("/ai/requirements", ...READ, h((_r, c) => aiTt.suggestRequirements(c.institutionId, c.year)));
+router.put("/ai/requirements", ...WRITE, h(async (r, c) => {
+  const out = await aiTt.saveRequirements(c.institutionId, c.year, aiTt.requirementsSchema.parse(r.body));
+  audit(c.actor, "TIMETABLE_REQUIREMENTS_UPDATED", `Weekly periods set for ${out.sections} sections`, { academicYearId: c.year.id });
+  return out;
+}));
+router.post("/ai/chat", ...WRITE, h((r, c) => aiTt.chat(c.institutionId, c.year, aiTt.chatSchema.parse(r.body), { userId: c.actor.userId, role: c.actor.role })));
+router.post("/ai/apply", ...WRITE, h(async (r, c) => {
+  const out = await aiTt.applyActions(c.institutionId, c.year, aiTt.applySchema.parse(r.body), c.actor);
+  audit(c.actor, "TIMETABLE_AI_CHANGES", `AI timetable changes applied (${out.rebuild.length} sections to build again)`, { academicYearId: c.year.id });
+  return out;
+}));
+
+// Chat history and saved versions of the whole timetable
+router.get("/ai/messages", ...READ, h((_r, c) => history.listMessages(c.institutionId, c.year)));
+router.post("/ai/messages", ...WRITE, h((r, c) => history.addMessage(c.institutionId, c.year, history.messageSchema.parse(r.body), c.actor.userId), 201));
+router.patch("/ai/messages/:id", ...WRITE, h((r, c) => history.updateMessage(c.institutionId, c.year, param(r, "id"), history.messagePatchSchema.parse(r.body))));
+router.delete("/ai/messages", ...WRITE, h((_r, c) => history.clearMessages(c.institutionId, c.year)));
+router.get("/ai/versions", ...READ, h((_r, c) => history.listVersions(c.institutionId, c.year)));
+router.get("/ai/versions/:id", ...READ, h((r, c) => history.getVersion(c.institutionId, c.year, param(r, "id"))));
+router.post("/ai/versions", ...WRITE, h((r, c) => history.saveVersion(c.institutionId, c.year, history.versionSchema.parse(r.body).label, c.actor.userId), 201));
+router.post("/ai/versions/:id/restore", ...WRITE, h(async (r, c) => {
+  const out = await history.restoreVersion(c.institutionId, c.year, param(r, "id"), c.actor);
+  audit(c.actor, "TIMETABLE_VERSION_RESTORED", `Timetable put back to version ${out.restored}`, { academicYearId: c.year.id });
+  return out;
+}));
 
 router.get("/divisions/:divisionId", ...READ, h((r, c) => studio.getDivisionStudio(c.institutionId, c.year, param(r, "divisionId"))));
 router.put("/divisions/:divisionId/configs", ...WRITE, h(async (r, c) => {

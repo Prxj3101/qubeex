@@ -66,6 +66,8 @@ export const ACADEMIC_MODELS = [
   "TimetableException",
   "TimetableSubstitution",
   "TimetableGeneration",
+  "TimetableAiMessage",
+  "TimetableVersion",
   "TeacherNote",
   "TeacherTask",
   "AdminNote",

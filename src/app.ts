@@ -71,6 +71,8 @@ app.use("/api/teacher/blackboard/ai/magic", express.json({ limit: "800kb" }));
 // Admissions: the admission form design (sections + marked boxes on the
 // school's own form) is bigger than a normal request; the AI auto-mark sends
 // one page picture plus strips of its blanks.
+// AI timetable: the chat carries a short history; requirements list every class.
+app.use("/api/admin/timetable/ai", express.json({ limit: "64kb" }));
 app.use("/api/admin/admissions/admission-form/auto-mark", express.json({ limit: "12mb" }));
 app.use("/api/admin/admissions", express.json({ limit: "512kb" }));
 app.use("/api/public/admissions", express.json({ limit: "64kb" }));

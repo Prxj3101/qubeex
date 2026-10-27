@@ -136,6 +136,8 @@ export const ModelName = {
   TimetableException: 'TimetableException',
   TimetableSubstitution: 'TimetableSubstitution',
   TimetableGeneration: 'TimetableGeneration',
+  TimetableAiMessage: 'TimetableAiMessage',
+  TimetableVersion: 'TimetableVersion',
   InventorySetupOrder: 'InventorySetupOrder',
   AdmissionSettings: 'AdmissionSettings',
   AdmissionApplication: 'AdmissionApplication',
@@ -1618,6 +1620,36 @@ export const TimetableGenerationScalarFieldEnum = {
 } as const
 
 export type TimetableGenerationScalarFieldEnum = (typeof TimetableGenerationScalarFieldEnum)[keyof typeof TimetableGenerationScalarFieldEnum]
+
+
+export const TimetableAiMessageScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  role: 'role',
+  text: 'text',
+  data: 'data',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TimetableAiMessageScalarFieldEnum = (typeof TimetableAiMessageScalarFieldEnum)[keyof typeof TimetableAiMessageScalarFieldEnum]
+
+
+export const TimetableVersionScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  number: 'number',
+  label: 'label',
+  entries: 'entries',
+  periods: 'periods',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TimetableVersionScalarFieldEnum = (typeof TimetableVersionScalarFieldEnum)[keyof typeof TimetableVersionScalarFieldEnum]
 
 
 export const InventorySetupOrderScalarFieldEnum = {

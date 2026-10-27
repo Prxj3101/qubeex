@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { AcademicYear } from "../../generated/prisma/client";
 import { academicDb } from "../../utils/academicContext";
 import {
-  assertWritable, httpError, loadYearContext, loadYearEntries, type YearContext,
+  assertWritable, httpError, loadYearContext, loadYearEntries, roomIsLab, type YearContext,
 } from "./timetable.common";
 import {
   detectConflicts, requirementStatus, type Conflict, type EngineConfig, type EngineEntry,
@@ -79,7 +79,7 @@ export async function decorateEntries(institutionId: string, entryIds: string[] 
       sessionTypeId: e.sessionTypeId, sessionTypeName: st?.name ?? "", sessionKind: st?.kind ?? "CUSTOM", color: e.subject?.color ?? st?.color ?? null,
       subjectId: e.subjectId, subjectName: e.subject?.name ?? null, title: e.title,
       teacherId: e.teacherId, teacherName: e.teacherId ? ctx.labels.teacher(e.teacherId) : null,
-      roomId: e.roomId, roomName: e.roomId ? ctx.labels.room(e.roomId) : null,
+      roomId: e.roomId, roomName: e.roomId ? ctx.labels.room(e.roomId) : null, roomIsLab: roomIsLab(ctx, e.roomId),
       configId: e.configId, groupId: e.groupId, isLocked: e.isLocked,
     };
   });

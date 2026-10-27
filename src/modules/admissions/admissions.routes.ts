@@ -334,6 +334,20 @@ router.post("/applications/:id/resend-email", async (req: AuthRequest, res: Resp
   } catch (err) { next(err); }
 });
 
+// The office opened WhatsApp with a ready message for the parent (sent by hand
+// from their own WhatsApp). Only noted in the history; nothing is sent from here.
+router.post("/applications/:id/whatsapp", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = institutionOf(req);
+    const input = z.object({ label: z.string().trim().min(1).max(60), to: z.string().trim().max(20).default("") }).parse(req.body);
+    const a = await loadApplication(institutionId, req.params.id as string);
+    const by = await actorName(req);
+    const last4 = input.to.replace(/\D/g, "").slice(-4);
+    await academicDb().admissionApplication.update({ where: { id: a.id }, data: { events: withEvent(a.events, "WHATSAPP", by, `${input.label}${last4 ? ` to ...${last4}` : ""}`) } });
+    res.json({ success: true });
+  } catch (err) { next(err); }
+});
+
 // ── Admission form ──────────────────────────────────────────────────────────
 // Office fills or corrects the form (online mode), or ticks that the paper
 // form came back (offline mode). Only after the child is selected.

@@ -1,0 +1,9 @@
+# Caddy gets a free HTTPS certificate for API_DOMAIN automatically
+# and forwards every request to the backend container.
+{$API_DOMAIN} {
+	encode gzip
+	request_body {
+		max_size 50MB
+	}
+	reverse_proxy backend:3000
+}

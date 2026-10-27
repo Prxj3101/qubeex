@@ -2031,6 +2031,36 @@ model TimetableGeneration {
   @@index([timetableId, createdAt])
 }
 
+model TimetableAiMessage {
+  id             String   @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  role           String
+  text           String
+  /// Steps, proposed actions, their state (open/applied/undone...) and the undo snapshot.
+  data           Json?
+  createdById    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([institutionId, academicYearId, createdAt])
+}
+
+model TimetableVersion {
+  id             String   @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  number         Int
+  label          String
+  /// Every period at that moment: [{ divisionId, dayOfWeek, slotId, sessionTypeId, subjectId, title, teacherId, roomId, configId, groupId, isLocked }]
+  entries        Json
+  periods        Int
+  createdById    String?
+  createdAt      DateTime @default(now())
+
+  @@index([institutionId, academicYearId, createdAt])
+}
+
 model InventorySetupOrder {
   institutionId String
   kind String

@@ -465,6 +465,16 @@ export type TimetableSubstitution = Prisma.TimetableSubstitutionModel
  */
 export type TimetableGeneration = Prisma.TimetableGenerationModel
 /**
+ * Model TimetableAiMessage
+ * 
+ */
+export type TimetableAiMessage = Prisma.TimetableAiMessageModel
+/**
+ * Model TimetableVersion
+ * 
+ */
+export type TimetableVersion = Prisma.TimetableVersionModel
+/**
  * Model InventorySetupOrder
  * 
  */

@@ -187,6 +187,10 @@ export async function loadYearEntries(institutionId: string, academicYearId: str
 }
 
 // ── dates ─────────────────────────────────────────────────────────────────────
+/** True when a period is held in a lab (Science lab, Computer lab...), shown with a small flask icon. */
+export const roomIsLab = (ctx: { rooms: Map<string, { type: string }> }, roomId: string | null | undefined): boolean =>
+  !!roomId && (ctx.rooms.get(roomId)?.type ?? "").toUpperCase().includes("LAB");
+
 export const parseDateOnly = (s: string): Date => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
   if (!m) throw httpError(400, "Invalid date (expected YYYY-MM-DD)");

@@ -597,7 +597,9 @@ export function generateTimetable(input: GeneratorInput): GeneratorResult {
       if (next < teaching.length && runOf[next] === runOf[cand.runStart] && teacherBusy.has(resKey(c.teacherId, cand.day, teaching[next].id))) s += 2;
       s += (teacherDay.get(`${c.teacherId}|${cand.day}`) ?? 0) * 0.4;
     }
-    if (input.seed != null) s += seededUnit(`${c.id}|${b.index}|${cand.day}|${cand.runStart}|${cand.roomId}`, input.seed) * 2.5;
+    // "Try another version": a seeded nudge strong enough to change where periods go, still below the
+    // big penalties (same subject twice a day = 10, back-to-back lectures = 25), so the rules still win.
+    if (input.seed != null) s += seededUnit(`${c.id}|${b.index}|${cand.day}|${cand.runStart}|${cand.roomId}`, input.seed) * 9;
     return s;
   };
 

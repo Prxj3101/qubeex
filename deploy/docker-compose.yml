@@ -12,9 +12,28 @@ services:
     restart: always          # auto-restart on crash and after server reboot
     expose:
       - "3000"               # reachable by Caddy only, not from the internet
+    depends_on:
+      - redis
     logging:
       driver: json-file
       options: { max-size: "20m", max-file: "5" }   # keep logs from filling the disk
+
+  # Our own Redis (cache, rate limits, counters). Not exposed to the internet:
+  # only containers in this compose file can reach it, at redis://redis:6379
+  redis:
+    image: redis:7-alpine
+    container_name: qubeex-redis
+    restart: always
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 512mb
+      --maxmemory-policy volatile-lru
+    volumes:
+      - redis_data:/data       # saved to disk, survives restarts
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
 
   caddy:
     image: caddy:2
@@ -33,5 +52,6 @@ services:
       - backend
 
 volumes:
+  redis_data:
   caddy_data:
   caddy_config:

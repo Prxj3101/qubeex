@@ -15,7 +15,7 @@ import {
   getInstitutionPoolUsed,
   getInstitutionByFeatureBreakdown,
   currentMonthStartIST,
-  istMonthKey,
+  aiUsageInsightsCacheKey,
   getInstitutionTodayTokensUsed,
 } from "../../services/ai-usage.service";
 import { prisma } from "../../utils/prisma";
@@ -479,10 +479,10 @@ export const getAiUsageInsights = async (req: AuthRequest, res: Response, next: 
     // month's (or older) numbers even after the pool had visibly reset.
     // Cache key includes the month so a cached response from August can't
     // leak into a September page load.
-    const monthKey = istMonthKey(new Date());
     // v5: added todayTokensUsed — bumped so a stale v4 cache entry (without
     // it) doesn't leak through and show a missing/stale daily figure.
-    const cacheKey = `insights:ai-usage:v5:${institutionId}:${monthKey}`;
+    // recordAiUsage clears this key on every AI call, so the card stays fresh.
+    const cacheKey = aiUsageInsightsCacheKey(institutionId);
     const cached = await getCache<{ data: unknown; institutionByFeature: unknown; todayTokensUsed: number }>(cacheKey);
     if (cached) {
       res.json({ success: true, ...cached });

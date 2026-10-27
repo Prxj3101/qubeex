@@ -1,5 +1,6 @@
 import { prisma } from "../utils/prisma";
 import { redis, isRedisReady } from "../utils/redis";
+import { delCache } from "../utils/cache";
 import { TooManyRequestsError } from "../utils/errors";
 
 export type AiFeature =
@@ -84,6 +85,9 @@ export async function recordAiUsage(params: RecordAiUsageParams): Promise<void> 
     // A logging failure must never break the AI feature itself.
     console.error("[ai-usage] Failed to record AiUsageEvent:", err);
   }
+  // Drop the cached Insights "AI Usage" card for this school so the next page
+  // load shows this call right away instead of a number up to 5 minutes old.
+  await delCache(aiUsageInsightsCacheKey(params.institutionId)).catch(() => {});
 
   if (params.status !== "SUCCESS") return;
   const tokens = params.totalTokens ?? 0;
@@ -144,6 +148,12 @@ export function istDayKey(d: Date): string {
 // "YYYY-MM" on the IST calendar — the canonical month-bucket key.
 export function istMonthKey(d: Date): string {
   return istDayKey(d).slice(0, 7);
+}
+
+// Cache key of the admin Insights "AI Usage" card (per school, per IST month).
+// Shared with insights.controller so recordAiUsage can clear it on every call.
+export function aiUsageInsightsCacheKey(institutionId: string, at: Date = new Date()): string {
+  return `insights:ai-usage:v5:${institutionId}:${istMonthKey(at)}`;
 }
 
 // UTC instant of the 1st of the current IST calendar month, 00:00 IST — the

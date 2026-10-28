@@ -19,6 +19,10 @@ import teacherRoutes from "./modules/teacher/teacher.routes";
 import studentRoutes from "./modules/student/student.routes";
 import { razorpayWebhookHandler } from "./modules/webhooks/razorpay.webhook";
 import quizRoutes from "./modules/quiz/quiz.routes";
+import {
+  studentParentFormsRoutes, teacherParentFormsRoutes, adminParentFormsRoutes,
+  studentPtmRoutes, teacherPtmRoutes, adminPtmRoutes,
+} from "./modules/parentForms/parentForms.routes";
 import { studentParentChatRoutes, teacherParentChatRoutes, adminParentChatRoutes } from "./modules/parentChat/parentChat.routes";
 import brandingRoutes from "./modules/branding/branding.routes";
 import publicRoutes from "./modules/public/public.routes";
@@ -96,6 +100,8 @@ app.use("/api/admin/inventory", inventoryRoutes);
 app.use("/api/admin/admissions", admissionsRoutes);
 app.use("/api/admissions-check", admissionsCheckRoutes);
 app.use("/api/admin/parent-chat", adminParentChatRoutes);
+app.use("/api/admin/parent-forms", adminParentFormsRoutes);
+app.use("/api/admin/ptm", adminPtmRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/staffroom", staffroomRoutes);
 app.use("/api/admin/campus", campusRoutes);
@@ -103,8 +109,12 @@ app.use("/api/admin/timetable", timetableRoutes);
 app.use("/api/teacher/campus", teacherCampusRoutes);
 app.use("/api/teacher/timetable", teacherTimetableRouter);
 app.use("/api/teacher/parent-chat", teacherParentChatRoutes);
+app.use("/api/teacher/parent-forms", teacherParentFormsRoutes);
+app.use("/api/teacher/ptm", teacherPtmRoutes);
 app.use("/api/student/timetable", studentTimetableRouter);
 app.use("/api/student/parent-chat", studentParentChatRoutes);
+app.use("/api/student/parent-forms", studentParentFormsRoutes);
+app.use("/api/student/ptm", studentPtmRoutes);
 app.use("/api/teacher/staffroom", teacherStaffroomRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/student", studentRoutes);

@@ -2,6 +2,8 @@ import cron from "node-cron";
 import { prisma } from "../utils/prisma";
 import { recordCronRun } from "../services/cronTracker.service";
 import { createNotification } from "../services/notification.service";
+import { runWithAcademicClient } from "../utils/academicContext";
+import { sendAutomaticFormReminders } from "../services/parentForms.service";
 
 // Managed institutions only — BYOD tenants keep TaskTest/TaskAssignment in
 // their own database, and no cron here iterates per-tenant connections yet
@@ -83,6 +85,8 @@ export function startDeadlineReminderCron() {
     try {
       await runTestDeadlineReminders();
       await runAssignmentDeadlineReminders();
+      const forms = await runWithAcademicClient(prisma, () => sendAutomaticFormReminders());
+      console.log(`[Deadline Reminder Cron] Sent ${forms} parent form reminder(s)`);
       await recordCronRun("task-deadline-reminders", true);
     } catch (err) {
       console.error("[Deadline Reminder Cron] Run failed:", err);

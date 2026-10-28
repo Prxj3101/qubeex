@@ -246,7 +246,7 @@ async function fetchMessagePage(threadId: string, institutionId: string, viewerU
 
 // ── Student (parent) side ────────────────────────────────────────────────────
 
-async function requireStudent(userId: string, institutionId: string) {
+export async function requireStudent(userId: string, institutionId: string) {
   const student = await academicDb().student.findFirst({
     where: { userId, institutionId },
     select: { id: true, userId: true, divisionId: true, status: true },
@@ -256,7 +256,7 @@ async function requireStudent(userId: string, institutionId: string) {
 }
 
 /** Teachers a parent may message: class teacher + this year's subject teachers of the student's division. */
-async function eligibleTeachersForStudent(institutionId: string, divisionId: string | null) {
+export async function eligibleTeachersForStudent(institutionId: string, divisionId: string | null) {
   if (!divisionId) return [];
   const db = academicDb();
   const year = await getCurrentAcademicYear(institutionId);
@@ -414,7 +414,7 @@ export async function unreadCountForStudent(userId: string, institutionId: strin
 
 // ── Teacher side ─────────────────────────────────────────────────────────────
 
-async function requireTeacher(userId: string, institutionId: string) {
+export async function requireTeacher(userId: string, institutionId: string) {
   const teacher = await academicDb().teacher.findFirst({
     where: { userId, institutionId },
     select: { id: true, userId: true, status: true },
@@ -596,6 +596,11 @@ export async function getThreadForAdmin(institutionId: string, threadId: string)
       reportReason: r.reportReason,
     })),
   };
+}
+
+/** Reported messages an admin has not yet hidden — drives the badge in the admin nav. */
+export async function reportedCountForAdmin(institutionId: string): Promise<number> {
+  return academicDb().parentChatMessage.count({ where: { institutionId, reportedAt: { not: null }, hiddenAt: null } });
 }
 
 export async function hideMessage(institutionId: string, messageId: string, adminUserId: string): Promise<void> {

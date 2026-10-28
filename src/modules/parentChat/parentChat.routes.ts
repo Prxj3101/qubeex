@@ -19,6 +19,7 @@ import {
   markReadForTeacher,
   unreadCountForTeacher,
   listThreadsForAdmin,
+  reportedCountForAdmin,
   getThreadForAdmin,
   hideMessage,
   getChatSettings,
@@ -173,6 +174,11 @@ adminParentChatRoutes.put("/settings", ...A, wrap(async (req, res) => {
 adminParentChatRoutes.get("/threads", ...A, wrap(async (req, res) => {
   const { institutionId } = ctx(req);
   res.json({ success: true, data: await listThreadsForAdmin(institutionId) });
+}));
+
+adminParentChatRoutes.get("/reported-count", ...A, wrap(async (req, res) => {
+  const { institutionId } = ctx(req);
+  res.json({ success: true, data: { reported: await reportedCountForAdmin(institutionId) } });
 }));
 
 adminParentChatRoutes.get("/threads/:id", ...A, wrap(async (req, res) => {

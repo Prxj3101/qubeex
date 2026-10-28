@@ -275,6 +275,7 @@ model Teacher {
   createdMarksheets     Marksheet[]              @relation("MarksheetCreator")
   mindmaps              Mindmap[]
   parentChatThreads     ParentChatThread[]
+  ptmSessions           PtmSession[]
   questionShareTokens   QuestionShareToken[]
   taskAssignments       TaskAssignment[]
   taskContainers        TaskContainer[]
@@ -531,6 +532,7 @@ model Division {
   timetableUrl        String?
   attendances         Attendance[]
   attendanceDayNotes  AttendanceDayNote[]
+  parentFormTargets   ParentFormTarget[]
   calendarEvents      CalendarEvent[]
   campusPosts         CampusFeedPost[]
   classTeacher        Teacher?                 @relation("ClassTeacherDivisions", fields: [classTeacherId], references: [id])
@@ -661,6 +663,8 @@ model Student {
   ptmNotes                         PTMNote[]
   parentModeEvents                 ParentModeEvent[]
   parentChatThreads                ParentChatThread[]
+  parentFormResponses              ParentFormResponse[]
+  ptmSlots                         PtmSlot[]
   division                         Division?                         @relation(fields: [divisionId], references: [id])
   institution                      Institution                       @relation(fields: [institutionId], references: [id])
   standard                         Standard?                         @relation(fields: [standardId], references: [id])
@@ -2774,4 +2778,108 @@ model ParentChatMessage {
   @@index([threadId, createdAt])
   @@index([institutionId])
   @@index([institutionId, reportedAt])
+}
+
+// ── Parent forms: permission slips & polls ───────────────────────────────────
+// Created by a class teacher (for their own division(s)) or an admin (any
+// divisions / the whole school). Answered by the parent from Parent Mode, which
+// lives inside the student's own login — so a response belongs to a student.
+
+model ParentForm {
+  id              String               @id @default(uuid())
+  institutionId   String
+  kind            String               // "SLIP" (Yes/No consent) | "POLL" (single choice)
+  title           String
+  description     String?
+  // Answer choices. A slip is always ["Yes", "No"]; a poll has 2-6 custom ones.
+  options         Json
+  allowComment    Boolean              @default(true)
+  deadline        DateTime?
+  closedAt        DateTime?
+  // Set when the automatic ~24h-before-deadline reminder went out (sent once).
+  reminderSentAt  DateTime?
+  // Last time any reminder (manual or automatic) was sent; throttles the manual button.
+  lastRemindedAt  DateTime?
+  allDivisions    Boolean              @default(false)
+  createdByUserId String
+  createdByRole   String               // "ADMIN" | "TEACHER"
+  createdAt       DateTime             @default(now())
+  targets         ParentFormTarget[]
+  responses       ParentFormResponse[]
+
+  @@index([institutionId, createdAt])
+  @@index([institutionId, createdByUserId])
+}
+
+model ParentFormTarget {
+  id            String     @id @default(uuid())
+  institutionId String
+  formId        String
+  divisionId    String
+  form          ParentForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+  division      Division   @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+
+  @@unique([formId, divisionId])
+  @@index([divisionId])
+}
+
+model ParentFormResponse {
+  id            String     @id @default(uuid())
+  institutionId String
+  formId        String
+  studentId     String
+  optionIndex   Int
+  comment       String?
+  // Every answer given, oldest first: [{ optionIndex, comment, at }]. Parents can
+  // change their answer until the deadline; this is the audit trail.
+  history       Json
+  respondedAt   DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  form          ParentForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+  student       Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([formId, studentId])
+  @@index([studentId])
+}
+
+// ── Parent-teacher meeting scheduler ─────────────────────────────────────────
+// A teacher publishes a session (date + time window + slot length); slots are
+// generated up front and a parent books one slot per session from Parent Mode.
+
+model PtmSession {
+  id            String    @id @default(uuid())
+  institutionId String
+  teacherId     String
+  title         String
+  date          DateTime  @db.Date
+  startMinute   Int       // minutes after midnight, IST
+  endMinute     Int
+  slotMinutes   Int
+  location      String?
+  note          String?
+  cancelledAt   DateTime?
+  createdAt     DateTime  @default(now())
+  teacher       Teacher   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  slots         PtmSlot[]
+
+  @@index([institutionId, date])
+  @@index([teacherId, date])
+}
+
+model PtmSlot {
+  id             String     @id @default(uuid())
+  institutionId  String
+  sessionId      String
+  startMinute    Int
+  endMinute      Int
+  studentId      String?
+  bookedByUserId String?
+  bookedAt       DateTime?
+  session        PtmSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student        Student?   @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@unique([sessionId, startMinute])
+  // One booking per student per session (nulls don't collide in Postgres).
+  @@unique([sessionId, studentId])
+  @@index([studentId])
 }

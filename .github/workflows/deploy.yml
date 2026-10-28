@@ -1,0 +1,31 @@
+# Auto deploy: every push to main deploys the backend on the Oracle server.
+# Needs 2 repo secrets (Settings > Secrets and variables > Actions):
+#   DEPLOY_SSH_KEY      - private key whose public half is in the server's
+#                         authorized_keys, locked to run deploy/deploy.sh only
+#   DEPLOY_KNOWN_HOSTS  - the server's SSH host key line, so we only talk to our server
+name: Deploy backend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}        # also allows a manual "Run workflow" button
+
+concurrency:
+  group: deploy-production     # never run two deploys at the same time
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Deploy on server
+        # The server forces this key to run deploy/deploy.sh, so no command is sent.
+        run: ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes ubuntu@api.qubeex.in

@@ -241,6 +241,44 @@ router.get("/buses/:id/students", async (req: AuthRequest, res: Response, next: 
   } catch (err) { next(err); }
 });
 
+// Find students to put on a bus (by name or admission number).
+router.get("/students/search", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = institution(req);
+    const q = z.string().trim().min(1).max(60).parse(req.query.q);
+    const users = await prisma.user.findMany({
+      where: { institutionId, role: "STUDENT", name: { contains: q, mode: "insensitive" } },
+      select: { id: true, name: true },
+      take: 30,
+    });
+    const students = await academicDb().student.findMany({
+      where: { institutionId, OR: [{ userId: { in: users.map((u) => u.id) } }, { studentId: { contains: q, mode: "insensitive" } }] },
+      select: {
+        id: true, userId: true, studentId: true,
+        division: { select: { name: true, standard: { select: { name: true } } } },
+        transport: { select: { bus: { select: { id: true, name: true } } } },
+      },
+      take: 30,
+    });
+    const names = new Map(users.map((u) => [u.id, u.name ?? ""]));
+    const missing = students.filter((s) => !names.has(s.userId)).map((s) => s.userId);
+    if (missing.length) (await resolveUsers(missing, { id: true, name: true })).forEach((u, id) => names.set(id, u.name ?? ""));
+    res.json({
+      success: true,
+      data: students
+        .map((s) => ({
+          studentId: s.id,
+          admissionNo: s.studentId,
+          name: names.get(s.userId) ?? "",
+          className: s.division ? `${s.division.standard.name} ${s.division.name}` : "",
+          currentBus: s.transport?.bus ?? null,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .slice(0, 20),
+    });
+  } catch (err) { next(err); }
+});
+
 router.put("/students/:studentId", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const institutionId = institution(req);

@@ -51,7 +51,27 @@ services:
     depends_on:
       - backend
 
+  # GPS server for live bus tracking. Trackers / test phones send locations
+  # to it; it decodes every tracker brand and (later) forwards to the backend.
+  traccar:
+    image: traccar/traccar:6.16-alpine
+    container_name: qubeex-traccar
+    restart: always
+    ports:
+      - "5055:5055"              # OsmAnd (Traccar Client phone app, test script)
+      - "5023:5023"              # GT06 trackers (for later)
+      - "127.0.0.1:8082:8082"    # admin web page: server-only, use an SSH tunnel
+    volumes:
+      - ./traccar/traccar.xml:/opt/traccar/conf/traccar.xml:ro
+      - traccar_data:/opt/traccar/data      # devices + positions, survives restarts
+      - traccar_logs:/opt/traccar/logs
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
 volumes:
   redis_data:
   caddy_data:
   caddy_config:
+  traccar_data:
+  traccar_logs:

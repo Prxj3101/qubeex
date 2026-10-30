@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE properties SYSTEM 'http://java.sun.com/dtd/properties.dtd'>
+<!--
+  Traccar = the GPS server. Bus trackers (and the free "Traccar Client" phone
+  app, used for testing) send their location here, Traccar understands each
+  tracker brand's protocol, and later forwards every position to our backend.
+
+  Ports (opened in docker-compose.yml):
+    5055 = OsmAnd protocol (simple HTTP), used by the Traccar Client phone app
+           and by our fake-bus test script
+    5023 = GT06 protocol (Concox and many cheap Indian bus trackers), for later
+    8082 = Traccar's own admin web page, only on the server itself (open it
+           from the laptop with an SSH tunnel, never public)
+
+  Database: the built-in H2 file is fine while testing. Before real schools
+  come on board, switch to Postgres (see Traccar docs, "Production deployment").
+-->
+<properties>
+    <entry key='database.driver'>org.h2.Driver</entry>
+    <entry key='database.url'>jdbc:h2:./data/database</entry>
+    <entry key='database.user'>sa</entry>
+    <entry key='database.password'></entry>
+</properties>

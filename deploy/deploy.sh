@@ -20,6 +20,9 @@ main() {
   cd deploy
   echo "==> Building and restarting backend"
   docker compose up -d --build backend
+  # start any service that is new in docker-compose.yml (e.g. traccar);
+  # services that are already running and unchanged are left alone
+  docker compose up -d
 
   echo "==> Waiting for health check"
   for i in $(seq 1 20); do

@@ -504,3 +504,48 @@ export type ParentChatThread = Prisma.ParentChatThreadModel
  * 
  */
 export type ParentChatMessage = Prisma.ParentChatMessageModel
+/**
+ * Model ParentForm
+ * 
+ */
+export type ParentForm = Prisma.ParentFormModel
+/**
+ * Model ParentFormTarget
+ * 
+ */
+export type ParentFormTarget = Prisma.ParentFormTargetModel
+/**
+ * Model ParentFormResponse
+ * 
+ */
+export type ParentFormResponse = Prisma.ParentFormResponseModel
+/**
+ * Model PtmSession
+ * 
+ */
+export type PtmSession = Prisma.PtmSessionModel
+/**
+ * Model PtmSlot
+ * 
+ */
+export type PtmSlot = Prisma.PtmSlotModel
+/**
+ * Model TransportRoute
+ * 
+ */
+export type TransportRoute = Prisma.TransportRouteModel
+/**
+ * Model TransportStop
+ * 
+ */
+export type TransportStop = Prisma.TransportStopModel
+/**
+ * Model TransportBus
+ * 
+ */
+export type TransportBus = Prisma.TransportBusModel
+/**
+ * Model StudentTransport
+ * 
+ */
+export type StudentTransport = Prisma.StudentTransportModel

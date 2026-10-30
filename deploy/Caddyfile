@@ -5,5 +5,9 @@
 	request_body {
 		max_size 50MB
 	}
+	# /api/internal/* is only for containers on the server (Traccar -> backend),
+	# never from the internet
+	@internal path /api/internal/*
+	respond @internal 404
 	reverse_proxy backend:3000
 }

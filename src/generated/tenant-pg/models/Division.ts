@@ -250,6 +250,7 @@ export type DivisionWhereInput = {
   timetableUrl?: Prisma.StringNullableFilter<"Division"> | string | null
   attendances?: Prisma.AttendanceListRelationFilter
   attendanceDayNotes?: Prisma.AttendanceDayNoteListRelationFilter
+  parentFormTargets?: Prisma.ParentFormTargetListRelationFilter
   calendarEvents?: Prisma.CalendarEventListRelationFilter
   campusPosts?: Prisma.CampusFeedPostListRelationFilter
   classTeacher?: Prisma.XOR<Prisma.TeacherNullableScalarRelationFilter, Prisma.TeacherWhereInput> | null
@@ -282,6 +283,7 @@ export type DivisionOrderByWithRelationInput = {
   timetableUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   attendances?: Prisma.AttendanceOrderByRelationAggregateInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteOrderByRelationAggregateInput
+  parentFormTargets?: Prisma.ParentFormTargetOrderByRelationAggregateInput
   calendarEvents?: Prisma.CalendarEventOrderByRelationAggregateInput
   campusPosts?: Prisma.CampusFeedPostOrderByRelationAggregateInput
   classTeacher?: Prisma.TeacherOrderByWithRelationInput
@@ -318,6 +320,7 @@ export type DivisionWhereUniqueInput = Prisma.AtLeast<{
   timetableUrl?: Prisma.StringNullableFilter<"Division"> | string | null
   attendances?: Prisma.AttendanceListRelationFilter
   attendanceDayNotes?: Prisma.AttendanceDayNoteListRelationFilter
+  parentFormTargets?: Prisma.ParentFormTargetListRelationFilter
   calendarEvents?: Prisma.CalendarEventListRelationFilter
   campusPosts?: Prisma.CampusFeedPostListRelationFilter
   classTeacher?: Prisma.XOR<Prisma.TeacherNullableScalarRelationFilter, Prisma.TeacherWhereInput> | null
@@ -380,6 +383,7 @@ export type DivisionCreateInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -412,6 +416,7 @@ export type DivisionUncheckedCreateInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -440,6 +445,7 @@ export type DivisionUpdateInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -472,6 +478,7 @@ export type DivisionUncheckedUpdateInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -935,6 +942,20 @@ export type DivisionUpdateOneRequiredWithoutTimetableExceptionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DivisionUpdateToOneWithWhereWithoutTimetableExceptionsInput, Prisma.DivisionUpdateWithoutTimetableExceptionsInput>, Prisma.DivisionUncheckedUpdateWithoutTimetableExceptionsInput>
 }
 
+export type DivisionCreateNestedOneWithoutParentFormTargetsInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutParentFormTargetsInput, Prisma.DivisionUncheckedCreateWithoutParentFormTargetsInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutParentFormTargetsInput
+  connect?: Prisma.DivisionWhereUniqueInput
+}
+
+export type DivisionUpdateOneRequiredWithoutParentFormTargetsNestedInput = {
+  create?: Prisma.XOR<Prisma.DivisionCreateWithoutParentFormTargetsInput, Prisma.DivisionUncheckedCreateWithoutParentFormTargetsInput>
+  connectOrCreate?: Prisma.DivisionCreateOrConnectWithoutParentFormTargetsInput
+  upsert?: Prisma.DivisionUpsertWithoutParentFormTargetsInput
+  connect?: Prisma.DivisionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DivisionUpdateToOneWithWhereWithoutParentFormTargetsInput, Prisma.DivisionUpdateWithoutParentFormTargetsInput>, Prisma.DivisionUncheckedUpdateWithoutParentFormTargetsInput>
+}
+
 export type DivisionCreateWithoutClassTeacherInput = {
   id?: string
   institutionId: string
@@ -945,6 +966,7 @@ export type DivisionCreateWithoutClassTeacherInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -975,6 +997,7 @@ export type DivisionUncheckedCreateWithoutClassTeacherInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -1044,6 +1067,7 @@ export type DivisionCreateWithoutStandardInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -1074,6 +1098,7 @@ export type DivisionUncheckedCreateWithoutStandardInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -1128,6 +1153,7 @@ export type DivisionCreateWithoutDivisionSubjectsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -1159,6 +1185,7 @@ export type DivisionUncheckedCreateWithoutDivisionSubjectsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -1202,6 +1229,7 @@ export type DivisionUpdateWithoutDivisionSubjectsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -1233,6 +1261,7 @@ export type DivisionUncheckedUpdateWithoutDivisionSubjectsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -1260,6 +1289,7 @@ export type DivisionCreateWithoutAssignmentsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -1291,6 +1321,7 @@ export type DivisionUncheckedCreateWithoutAssignmentsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutDivisionInput
@@ -1334,6 +1365,7 @@ export type DivisionUpdateWithoutAssignmentsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -1365,6 +1397,7 @@ export type DivisionUncheckedUpdateWithoutAssignmentsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutDivisionNestedInput
@@ -1392,6 +1425,7 @@ export type DivisionCreateWithoutStudentsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -1423,6 +1457,7 @@ export type DivisionUncheckedCreateWithoutStudentsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -1466,6 +1501,7 @@ export type DivisionUpdateWithoutStudentsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -1497,6 +1533,7 @@ export type DivisionUncheckedUpdateWithoutStudentsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -1524,6 +1561,7 @@ export type DivisionCreateWithoutEnrollmentsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -1555,6 +1593,7 @@ export type DivisionUncheckedCreateWithoutEnrollmentsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -1598,6 +1637,7 @@ export type DivisionUpdateWithoutEnrollmentsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -1629,6 +1669,7 @@ export type DivisionUncheckedUpdateWithoutEnrollmentsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -1656,6 +1697,7 @@ export type DivisionCreateWithoutTimetablesInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -1687,6 +1729,7 @@ export type DivisionUncheckedCreateWithoutTimetablesInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -1730,6 +1773,7 @@ export type DivisionUpdateWithoutTimetablesInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -1761,6 +1805,7 @@ export type DivisionUncheckedUpdateWithoutTimetablesInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -1787,6 +1832,7 @@ export type DivisionCreateWithoutAttendancesInput = {
   updatedAt?: Date | string
   timetableUrl?: string | null
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -1818,6 +1864,7 @@ export type DivisionUncheckedCreateWithoutAttendancesInput = {
   classTeacherId?: string | null
   timetableUrl?: string | null
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -1861,6 +1908,7 @@ export type DivisionUpdateWithoutAttendancesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -1892,6 +1940,7 @@ export type DivisionUncheckedUpdateWithoutAttendancesInput = {
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -1919,6 +1968,7 @@ export type DivisionCreateWithoutAttendanceDayNotesInput = {
   updatedAt?: Date | string
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -1950,6 +2000,7 @@ export type DivisionUncheckedCreateWithoutAttendanceDayNotesInput = {
   classTeacherId?: string | null
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -1993,6 +2044,7 @@ export type DivisionUpdateWithoutAttendanceDayNotesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -2024,6 +2076,7 @@ export type DivisionUncheckedUpdateWithoutAttendanceDayNotesInput = {
   classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2052,6 +2105,7 @@ export type DivisionCreateWithoutCampusPostsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -2083,6 +2137,7 @@ export type DivisionUncheckedCreateWithoutCampusPostsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutDivisionInput
@@ -2126,6 +2181,7 @@ export type DivisionUpdateWithoutCampusPostsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -2157,6 +2213,7 @@ export type DivisionUncheckedUpdateWithoutCampusPostsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2184,6 +2241,7 @@ export type DivisionCreateWithoutCalendarEventsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
   standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
@@ -2215,6 +2273,7 @@ export type DivisionUncheckedCreateWithoutCalendarEventsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutDivisionInput
@@ -2258,6 +2317,7 @@ export type DivisionUpdateWithoutCalendarEventsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -2289,6 +2349,7 @@ export type DivisionUncheckedUpdateWithoutCalendarEventsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
   feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2316,6 +2377,7 @@ export type DivisionCreateWithoutFeeStructuresInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -2347,6 +2409,7 @@ export type DivisionUncheckedCreateWithoutFeeStructuresInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -2390,6 +2453,7 @@ export type DivisionUpdateWithoutFeeStructuresInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -2421,6 +2485,7 @@ export type DivisionUncheckedUpdateWithoutFeeStructuresInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2448,6 +2513,7 @@ export type DivisionCreateWithoutTaskContainersInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -2479,6 +2545,7 @@ export type DivisionUncheckedCreateWithoutTaskContainersInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -2522,6 +2589,7 @@ export type DivisionUpdateWithoutTaskContainersInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -2553,6 +2621,7 @@ export type DivisionUncheckedUpdateWithoutTaskContainersInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2580,6 +2649,7 @@ export type DivisionCreateWithoutTaskTestsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -2611,6 +2681,7 @@ export type DivisionUncheckedCreateWithoutTaskTestsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -2654,6 +2725,7 @@ export type DivisionUpdateWithoutTaskTestsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -2685,6 +2757,7 @@ export type DivisionUncheckedUpdateWithoutTaskTestsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2712,6 +2785,7 @@ export type DivisionCreateWithoutTaskAssignmentsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -2743,6 +2817,7 @@ export type DivisionUncheckedCreateWithoutTaskAssignmentsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -2786,6 +2861,7 @@ export type DivisionUpdateWithoutTaskAssignmentsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -2817,6 +2893,7 @@ export type DivisionUncheckedUpdateWithoutTaskAssignmentsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2844,6 +2921,7 @@ export type DivisionCreateWithoutMarksheetsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -2875,6 +2953,7 @@ export type DivisionUncheckedCreateWithoutMarksheetsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -2918,6 +2997,7 @@ export type DivisionUpdateWithoutMarksheetsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -2949,6 +3029,7 @@ export type DivisionUncheckedUpdateWithoutMarksheetsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -2976,6 +3057,7 @@ export type DivisionCreateWithoutSchoolTimetablesInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -3007,6 +3089,7 @@ export type DivisionUncheckedCreateWithoutSchoolTimetablesInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -3050,6 +3133,7 @@ export type DivisionUpdateWithoutSchoolTimetablesInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -3081,6 +3165,7 @@ export type DivisionUncheckedUpdateWithoutSchoolTimetablesInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -3108,6 +3193,7 @@ export type DivisionCreateWithoutTimetableConfigsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -3139,6 +3225,7 @@ export type DivisionUncheckedCreateWithoutTimetableConfigsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -3182,6 +3269,7 @@ export type DivisionUpdateWithoutTimetableConfigsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -3213,6 +3301,7 @@ export type DivisionUncheckedUpdateWithoutTimetableConfigsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -3240,6 +3329,7 @@ export type DivisionCreateWithoutTimetableEntriesInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -3271,6 +3361,7 @@ export type DivisionUncheckedCreateWithoutTimetableEntriesInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -3314,6 +3405,7 @@ export type DivisionUpdateWithoutTimetableEntriesInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -3345,6 +3437,7 @@ export type DivisionUncheckedUpdateWithoutTimetableEntriesInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -3372,6 +3465,7 @@ export type DivisionCreateWithoutTimetableExceptionsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
   classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
@@ -3403,6 +3497,7 @@ export type DivisionUncheckedCreateWithoutTimetableExceptionsInput = {
   timetableUrl?: string | null
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedCreateNestedManyWithoutDivisionInput
   calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
   campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
@@ -3446,6 +3541,7 @@ export type DivisionUpdateWithoutTimetableExceptionsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -3477,6 +3573,7 @@ export type DivisionUncheckedUpdateWithoutTimetableExceptionsInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -3492,6 +3589,142 @@ export type DivisionUncheckedUpdateWithoutTimetableExceptionsInput = {
   schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
   timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
   timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionCreateWithoutParentFormTargetsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostCreateNestedManyWithoutDivisionInput
+  classTeacher?: Prisma.TeacherCreateNestedOneWithoutClassDivisionsInput
+  standard: Prisma.StandardCreateNestedOneWithoutDivisionsInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionUncheckedCreateWithoutParentFormTargetsInput = {
+  id?: string
+  standardId: string
+  institutionId: string
+  name: string
+  capacity?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  classTeacherId?: string | null
+  timetableUrl?: string | null
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutDivisionInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedCreateNestedManyWithoutDivisionInput
+  calendarEvents?: Prisma.CalendarEventUncheckedCreateNestedManyWithoutDivisionInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedCreateNestedManyWithoutDivisionInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedCreateNestedManyWithoutDivisionInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedCreateNestedManyWithoutDivisionInput
+  marksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutDivisionInput
+  students?: Prisma.StudentUncheckedCreateNestedManyWithoutDivisionInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutDivisionInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutDivisionInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutDivisionInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedCreateNestedManyWithoutDivisionInput
+  timetables?: Prisma.DivisionTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedCreateNestedManyWithoutDivisionInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutDivisionInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutDivisionInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutDivisionInput
+}
+
+export type DivisionCreateOrConnectWithoutParentFormTargetsInput = {
+  where: Prisma.DivisionWhereUniqueInput
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutParentFormTargetsInput, Prisma.DivisionUncheckedCreateWithoutParentFormTargetsInput>
+}
+
+export type DivisionUpsertWithoutParentFormTargetsInput = {
+  update: Prisma.XOR<Prisma.DivisionUpdateWithoutParentFormTargetsInput, Prisma.DivisionUncheckedUpdateWithoutParentFormTargetsInput>
+  create: Prisma.XOR<Prisma.DivisionCreateWithoutParentFormTargetsInput, Prisma.DivisionUncheckedCreateWithoutParentFormTargetsInput>
+  where?: Prisma.DivisionWhereInput
+}
+
+export type DivisionUpdateToOneWithWhereWithoutParentFormTargetsInput = {
+  where?: Prisma.DivisionWhereInput
+  data: Prisma.XOR<Prisma.DivisionUpdateWithoutParentFormTargetsInput, Prisma.DivisionUncheckedUpdateWithoutParentFormTargetsInput>
+}
+
+export type DivisionUpdateWithoutParentFormTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
+  classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
+  standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutDivisionNestedInput
+}
+
+export type DivisionUncheckedUpdateWithoutParentFormTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  standardId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  classTeacherId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
+  attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
+  campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  feeStructures?: Prisma.DivisionFeeStructureUncheckedUpdateManyWithoutDivisionNestedInput
+  divisionSubjects?: Prisma.DivisionSubjectUncheckedUpdateManyWithoutDivisionNestedInput
+  marksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutDivisionNestedInput
+  students?: Prisma.StudentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutDivisionNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutDivisionNestedInput
+  enrollments?: Prisma.StudentEnrollmentUncheckedUpdateManyWithoutDivisionNestedInput
+  timetables?: Prisma.DivisionTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  schoolTimetables?: Prisma.SchoolTimetableUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutDivisionNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutDivisionNestedInput
 }
 
 export type DivisionCreateManyClassTeacherInput = {
@@ -3515,6 +3748,7 @@ export type DivisionUpdateWithoutClassTeacherInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   standard?: Prisma.StandardUpdateOneRequiredWithoutDivisionsNestedInput
@@ -3545,6 +3779,7 @@ export type DivisionUncheckedUpdateWithoutClassTeacherInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -3595,6 +3830,7 @@ export type DivisionUpdateWithoutStandardInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUpdateManyWithoutDivisionNestedInput
   classTeacher?: Prisma.TeacherUpdateOneWithoutClassDivisionsNestedInput
@@ -3625,6 +3861,7 @@ export type DivisionUncheckedUpdateWithoutStandardInput = {
   timetableUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutDivisionNestedInput
   attendanceDayNotes?: Prisma.AttendanceDayNoteUncheckedUpdateManyWithoutDivisionNestedInput
+  parentFormTargets?: Prisma.ParentFormTargetUncheckedUpdateManyWithoutDivisionNestedInput
   calendarEvents?: Prisma.CalendarEventUncheckedUpdateManyWithoutDivisionNestedInput
   campusPosts?: Prisma.CampusFeedPostUncheckedUpdateManyWithoutDivisionNestedInput
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutDivisionNestedInput
@@ -3662,6 +3899,7 @@ export type DivisionUncheckedUpdateManyWithoutStandardInput = {
 export type DivisionCountOutputType = {
   attendances: number
   attendanceDayNotes: number
+  parentFormTargets: number
   calendarEvents: number
   campusPosts: number
   assignments: number
@@ -3683,6 +3921,7 @@ export type DivisionCountOutputType = {
 export type DivisionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   attendances?: boolean | DivisionCountOutputTypeCountAttendancesArgs
   attendanceDayNotes?: boolean | DivisionCountOutputTypeCountAttendanceDayNotesArgs
+  parentFormTargets?: boolean | DivisionCountOutputTypeCountParentFormTargetsArgs
   calendarEvents?: boolean | DivisionCountOutputTypeCountCalendarEventsArgs
   campusPosts?: boolean | DivisionCountOutputTypeCountCampusPostsArgs
   assignments?: boolean | DivisionCountOutputTypeCountAssignmentsArgs
@@ -3723,6 +3962,13 @@ export type DivisionCountOutputTypeCountAttendancesArgs<ExtArgs extends runtime.
  */
 export type DivisionCountOutputTypeCountAttendanceDayNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AttendanceDayNoteWhereInput
+}
+
+/**
+ * DivisionCountOutputType without action
+ */
+export type DivisionCountOutputTypeCountParentFormTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ParentFormTargetWhereInput
 }
 
 /**
@@ -3850,6 +4096,7 @@ export type DivisionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   timetableUrl?: boolean
   attendances?: boolean | Prisma.Division$attendancesArgs<ExtArgs>
   attendanceDayNotes?: boolean | Prisma.Division$attendanceDayNotesArgs<ExtArgs>
+  parentFormTargets?: boolean | Prisma.Division$parentFormTargetsArgs<ExtArgs>
   calendarEvents?: boolean | Prisma.Division$calendarEventsArgs<ExtArgs>
   campusPosts?: boolean | Prisma.Division$campusPostsArgs<ExtArgs>
   classTeacher?: boolean | Prisma.Division$classTeacherArgs<ExtArgs>
@@ -3915,6 +4162,7 @@ export type DivisionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type DivisionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   attendances?: boolean | Prisma.Division$attendancesArgs<ExtArgs>
   attendanceDayNotes?: boolean | Prisma.Division$attendanceDayNotesArgs<ExtArgs>
+  parentFormTargets?: boolean | Prisma.Division$parentFormTargetsArgs<ExtArgs>
   calendarEvents?: boolean | Prisma.Division$calendarEventsArgs<ExtArgs>
   campusPosts?: boolean | Prisma.Division$campusPostsArgs<ExtArgs>
   classTeacher?: boolean | Prisma.Division$classTeacherArgs<ExtArgs>
@@ -3949,6 +4197,7 @@ export type $DivisionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     attendances: Prisma.$AttendancePayload<ExtArgs>[]
     attendanceDayNotes: Prisma.$AttendanceDayNotePayload<ExtArgs>[]
+    parentFormTargets: Prisma.$ParentFormTargetPayload<ExtArgs>[]
     calendarEvents: Prisma.$CalendarEventPayload<ExtArgs>[]
     campusPosts: Prisma.$CampusFeedPostPayload<ExtArgs>[]
     classTeacher: Prisma.$TeacherPayload<ExtArgs> | null
@@ -4374,6 +4623,7 @@ export interface Prisma__DivisionClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   attendances<T extends Prisma.Division$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attendanceDayNotes<T extends Prisma.Division$attendanceDayNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$attendanceDayNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendanceDayNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  parentFormTargets<T extends Prisma.Division$parentFormTargetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$parentFormTargetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParentFormTargetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   calendarEvents<T extends Prisma.Division$calendarEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$calendarEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   campusPosts<T extends Prisma.Division$campusPostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$campusPostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CampusFeedPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   classTeacher<T extends Prisma.Division$classTeacherArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Division$classTeacherArgs<ExtArgs>>): Prisma.Prisma__TeacherClient<runtime.Types.Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -4876,6 +5126,30 @@ export type Division$attendanceDayNotesArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.AttendanceDayNoteScalarFieldEnum | Prisma.AttendanceDayNoteScalarFieldEnum[]
+}
+
+/**
+ * Division.parentFormTargets
+ */
+export type Division$parentFormTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ParentFormTarget
+   */
+  select?: Prisma.ParentFormTargetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ParentFormTarget
+   */
+  omit?: Prisma.ParentFormTargetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParentFormTargetInclude<ExtArgs> | null
+  where?: Prisma.ParentFormTargetWhereInput
+  orderBy?: Prisma.ParentFormTargetOrderByWithRelationInput | Prisma.ParentFormTargetOrderByWithRelationInput[]
+  cursor?: Prisma.ParentFormTargetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ParentFormTargetScalarFieldEnum | Prisma.ParentFormTargetScalarFieldEnum[]
 }
 
 /**

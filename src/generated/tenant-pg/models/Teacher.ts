@@ -359,6 +359,7 @@ export type TeacherWhereInput = {
   createdMarksheets?: Prisma.MarksheetListRelationFilter
   mindmaps?: Prisma.MindmapListRelationFilter
   parentChatThreads?: Prisma.ParentChatThreadListRelationFilter
+  ptmSessions?: Prisma.PtmSessionListRelationFilter
   questionShareTokens?: Prisma.QuestionShareTokenListRelationFilter
   taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   taskContainers?: Prisma.TaskContainerListRelationFilter
@@ -406,6 +407,7 @@ export type TeacherOrderByWithRelationInput = {
   createdMarksheets?: Prisma.MarksheetOrderByRelationAggregateInput
   mindmaps?: Prisma.MindmapOrderByRelationAggregateInput
   parentChatThreads?: Prisma.ParentChatThreadOrderByRelationAggregateInput
+  ptmSessions?: Prisma.PtmSessionOrderByRelationAggregateInput
   questionShareTokens?: Prisma.QuestionShareTokenOrderByRelationAggregateInput
   taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
   taskContainers?: Prisma.TaskContainerOrderByRelationAggregateInput
@@ -457,6 +459,7 @@ export type TeacherWhereUniqueInput = Prisma.AtLeast<{
   createdMarksheets?: Prisma.MarksheetListRelationFilter
   mindmaps?: Prisma.MindmapListRelationFilter
   parentChatThreads?: Prisma.ParentChatThreadListRelationFilter
+  ptmSessions?: Prisma.PtmSessionListRelationFilter
   questionShareTokens?: Prisma.QuestionShareTokenListRelationFilter
   taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   taskContainers?: Prisma.TaskContainerListRelationFilter
@@ -562,6 +565,7 @@ export type TeacherCreateInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -609,6 +613,7 @@ export type TeacherUncheckedCreateInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -656,6 +661,7 @@ export type TeacherUpdateInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -703,6 +709,7 @@ export type TeacherUncheckedUpdateInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -1233,6 +1240,20 @@ export type TeacherUpdateOneRequiredWithoutParentChatThreadsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutParentChatThreadsInput, Prisma.TeacherUpdateWithoutParentChatThreadsInput>, Prisma.TeacherUncheckedUpdateWithoutParentChatThreadsInput>
 }
 
+export type TeacherCreateNestedOneWithoutPtmSessionsInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutPtmSessionsInput, Prisma.TeacherUncheckedCreateWithoutPtmSessionsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutPtmSessionsInput
+  connect?: Prisma.TeacherWhereUniqueInput
+}
+
+export type TeacherUpdateOneRequiredWithoutPtmSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.TeacherCreateWithoutPtmSessionsInput, Prisma.TeacherUncheckedCreateWithoutPtmSessionsInput>
+  connectOrCreate?: Prisma.TeacherCreateOrConnectWithoutPtmSessionsInput
+  upsert?: Prisma.TeacherUpsertWithoutPtmSessionsInput
+  connect?: Prisma.TeacherWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TeacherUpdateToOneWithWhereWithoutPtmSessionsInput, Prisma.TeacherUpdateWithoutPtmSessionsInput>, Prisma.TeacherUncheckedUpdateWithoutPtmSessionsInput>
+}
+
 export type TeacherCreateWithoutTeacherNotesInput = {
   id?: string
   teacherId: string
@@ -1263,6 +1284,7 @@ export type TeacherCreateWithoutTeacherNotesInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -1309,6 +1331,7 @@ export type TeacherUncheckedCreateWithoutTeacherNotesInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -1371,6 +1394,7 @@ export type TeacherUpdateWithoutTeacherNotesInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -1417,6 +1441,7 @@ export type TeacherUncheckedUpdateWithoutTeacherNotesInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -1463,6 +1488,7 @@ export type TeacherCreateWithoutTeacherTasksInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -1509,6 +1535,7 @@ export type TeacherUncheckedCreateWithoutTeacherTasksInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -1571,6 +1598,7 @@ export type TeacherUpdateWithoutTeacherTasksInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -1617,6 +1645,7 @@ export type TeacherUncheckedUpdateWithoutTeacherTasksInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -1662,6 +1691,7 @@ export type TeacherCreateWithoutClassDivisionsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -1708,6 +1738,7 @@ export type TeacherUncheckedCreateWithoutClassDivisionsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -1770,6 +1801,7 @@ export type TeacherUpdateWithoutClassDivisionsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -1816,6 +1848,7 @@ export type TeacherUncheckedUpdateWithoutClassDivisionsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -1862,6 +1895,7 @@ export type TeacherCreateWithoutAssignmentsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -1908,6 +1942,7 @@ export type TeacherUncheckedCreateWithoutAssignmentsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -1970,6 +2005,7 @@ export type TeacherUpdateWithoutAssignmentsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -2016,6 +2052,7 @@ export type TeacherUncheckedUpdateWithoutAssignmentsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2062,6 +2099,7 @@ export type TeacherCreateWithoutBlackboardFoldersInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -2108,6 +2146,7 @@ export type TeacherUncheckedCreateWithoutBlackboardFoldersInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -2170,6 +2209,7 @@ export type TeacherUpdateWithoutBlackboardFoldersInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -2216,6 +2256,7 @@ export type TeacherUncheckedUpdateWithoutBlackboardFoldersInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2262,6 +2303,7 @@ export type TeacherCreateWithoutBlackboardMaterialsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -2308,6 +2350,7 @@ export type TeacherUncheckedCreateWithoutBlackboardMaterialsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -2370,6 +2413,7 @@ export type TeacherUpdateWithoutBlackboardMaterialsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -2416,6 +2460,7 @@ export type TeacherUncheckedUpdateWithoutBlackboardMaterialsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2462,6 +2507,7 @@ export type TeacherCreateWithoutMindmapsInput = {
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -2508,6 +2554,7 @@ export type TeacherUncheckedCreateWithoutMindmapsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -2570,6 +2617,7 @@ export type TeacherUpdateWithoutMindmapsInput = {
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -2616,6 +2664,7 @@ export type TeacherUncheckedUpdateWithoutMindmapsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2663,6 +2712,7 @@ export type TeacherCreateWithoutTaskContainersInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
@@ -2709,6 +2759,7 @@ export type TeacherUncheckedCreateWithoutTaskContainersInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
@@ -2771,6 +2822,7 @@ export type TeacherUpdateWithoutTaskContainersInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
@@ -2817,6 +2869,7 @@ export type TeacherUncheckedUpdateWithoutTaskContainersInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2863,6 +2916,7 @@ export type TeacherCreateWithoutTaskQuestionsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -2909,6 +2963,7 @@ export type TeacherUncheckedCreateWithoutTaskQuestionsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -2971,6 +3026,7 @@ export type TeacherUpdateWithoutTaskQuestionsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -3017,6 +3073,7 @@ export type TeacherUncheckedUpdateWithoutTaskQuestionsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3063,6 +3120,7 @@ export type TeacherCreateWithoutTaskModulesInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -3109,6 +3167,7 @@ export type TeacherUncheckedCreateWithoutTaskModulesInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -3171,6 +3230,7 @@ export type TeacherUpdateWithoutTaskModulesInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -3217,6 +3277,7 @@ export type TeacherUncheckedUpdateWithoutTaskModulesInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3263,6 +3324,7 @@ export type TeacherCreateWithoutTaskTestsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -3309,6 +3371,7 @@ export type TeacherUncheckedCreateWithoutTaskTestsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -3371,6 +3434,7 @@ export type TeacherUpdateWithoutTaskTestsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -3417,6 +3481,7 @@ export type TeacherUncheckedUpdateWithoutTaskTestsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3463,6 +3528,7 @@ export type TeacherCreateWithoutTaskPdfUploadsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -3509,6 +3575,7 @@ export type TeacherUncheckedCreateWithoutTaskPdfUploadsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -3571,6 +3638,7 @@ export type TeacherUpdateWithoutTaskPdfUploadsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -3617,6 +3685,7 @@ export type TeacherUncheckedUpdateWithoutTaskPdfUploadsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3663,6 +3732,7 @@ export type TeacherCreateWithoutQuestionShareTokensInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
@@ -3709,6 +3779,7 @@ export type TeacherUncheckedCreateWithoutQuestionShareTokensInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
@@ -3771,6 +3842,7 @@ export type TeacherUpdateWithoutQuestionShareTokensInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
@@ -3817,6 +3889,7 @@ export type TeacherUncheckedUpdateWithoutQuestionShareTokensInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3863,6 +3936,7 @@ export type TeacherCreateWithoutTaskAssignmentsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
@@ -3909,6 +3983,7 @@ export type TeacherUncheckedCreateWithoutTaskAssignmentsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
   taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
@@ -3971,6 +4046,7 @@ export type TeacherUpdateWithoutTaskAssignmentsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
@@ -4017,6 +4093,7 @@ export type TeacherUncheckedUpdateWithoutTaskAssignmentsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
   taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
@@ -4062,6 +4139,7 @@ export type TeacherCreateWithoutCreatedMarksheetsInput = {
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -4108,6 +4186,7 @@ export type TeacherUncheckedCreateWithoutCreatedMarksheetsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -4170,6 +4249,7 @@ export type TeacherUpdateWithoutCreatedMarksheetsInput = {
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -4216,6 +4296,7 @@ export type TeacherUncheckedUpdateWithoutCreatedMarksheetsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -4263,6 +4344,7 @@ export type TeacherCreateWithoutTimetableAvailabilityInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -4309,6 +4391,7 @@ export type TeacherUncheckedCreateWithoutTimetableAvailabilityInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -4371,6 +4454,7 @@ export type TeacherUpdateWithoutTimetableAvailabilityInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -4417,6 +4501,7 @@ export type TeacherUncheckedUpdateWithoutTimetableAvailabilityInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -4463,6 +4548,7 @@ export type TeacherCreateWithoutTimetablePrefsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -4509,6 +4595,7 @@ export type TeacherUncheckedCreateWithoutTimetablePrefsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -4571,6 +4658,7 @@ export type TeacherUpdateWithoutTimetablePrefsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -4617,6 +4705,7 @@ export type TeacherUncheckedUpdateWithoutTimetablePrefsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -4663,6 +4752,7 @@ export type TeacherCreateWithoutTimetableConfigsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -4709,6 +4799,7 @@ export type TeacherUncheckedCreateWithoutTimetableConfigsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -4771,6 +4862,7 @@ export type TeacherUpdateWithoutTimetableConfigsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -4817,6 +4909,7 @@ export type TeacherUncheckedUpdateWithoutTimetableConfigsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -4863,6 +4956,7 @@ export type TeacherCreateWithoutTimetableEntriesInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -4909,6 +5003,7 @@ export type TeacherUncheckedCreateWithoutTimetableEntriesInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -4971,6 +5066,7 @@ export type TeacherUpdateWithoutTimetableEntriesInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -5017,6 +5113,7 @@ export type TeacherUncheckedUpdateWithoutTimetableEntriesInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -5063,6 +5160,7 @@ export type TeacherCreateWithoutTimetableExceptionsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -5109,6 +5207,7 @@ export type TeacherUncheckedCreateWithoutTimetableExceptionsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -5171,6 +5270,7 @@ export type TeacherUpdateWithoutTimetableExceptionsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -5217,6 +5317,7 @@ export type TeacherUncheckedUpdateWithoutTimetableExceptionsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -5263,6 +5364,7 @@ export type TeacherCreateWithoutSubstitutionsInput = {
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -5309,6 +5411,7 @@ export type TeacherUncheckedCreateWithoutSubstitutionsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -5371,6 +5474,7 @@ export type TeacherUpdateWithoutSubstitutionsInput = {
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -5417,6 +5521,7 @@ export type TeacherUncheckedUpdateWithoutSubstitutionsInput = {
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
   parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -5462,6 +5567,7 @@ export type TeacherCreateWithoutParentChatThreadsInput = {
   assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
   createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
@@ -5508,6 +5614,7 @@ export type TeacherUncheckedCreateWithoutParentChatThreadsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
   mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  ptmSessions?: Prisma.PtmSessionUncheckedCreateNestedManyWithoutTeacherInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
   taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
@@ -5570,6 +5677,7 @@ export type TeacherUpdateWithoutParentChatThreadsInput = {
   assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
   createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
@@ -5616,6 +5724,211 @@ export type TeacherUncheckedUpdateWithoutParentChatThreadsInput = {
   assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
   mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  ptmSessions?: Prisma.PtmSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUncheckedUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherCreateWithoutPtmSessionsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapCreateNestedManyWithoutTeacherInput
+  parentChatThreads?: Prisma.ParentChatThreadCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherUncheckedCreateWithoutPtmSessionsInput = {
+  id?: string
+  teacherId: string
+  userId: string
+  institutionId: string
+  phone?: string | null
+  avatarUrl?: string | null
+  dob?: string | null
+  gender?: string | null
+  address?: string | null
+  city?: string | null
+  state?: string | null
+  pincode?: string | null
+  country?: string | null
+  qualification?: string | null
+  experience?: string | null
+  status?: $Enums.TeacherStatus
+  joinedAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  prefix?: string | null
+  title?: string | null
+  aiSoftLimitTokens?: number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedCreateNestedManyWithoutTeacherInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedCreateNestedManyWithoutTeacherInput
+  classDivisions?: Prisma.DivisionUncheckedCreateNestedManyWithoutClassTeacherInput
+  assignments?: Prisma.DivisionAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  createdMarksheets?: Prisma.MarksheetUncheckedCreateNestedManyWithoutCreatedByInput
+  mindmaps?: Prisma.MindmapUncheckedCreateNestedManyWithoutTeacherInput
+  parentChatThreads?: Prisma.ParentChatThreadUncheckedCreateNestedManyWithoutTeacherInput
+  questionShareTokens?: Prisma.QuestionShareTokenUncheckedCreateNestedManyWithoutTeacherInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeacherInput
+  taskContainers?: Prisma.TaskContainerUncheckedCreateNestedManyWithoutTeacherInput
+  taskModules?: Prisma.TaskModuleUncheckedCreateNestedManyWithoutTeacherInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUncheckedCreateNestedManyWithoutTeacherInput
+  taskQuestions?: Prisma.TaskQuestionUncheckedCreateNestedManyWithoutTeacherInput
+  taskTests?: Prisma.TaskTestUncheckedCreateNestedManyWithoutTeacherInput
+  teacherNotes?: Prisma.TeacherNoteUncheckedCreateNestedManyWithoutTeacherInput
+  teacherTasks?: Prisma.TeacherTaskUncheckedCreateNestedManyWithoutTeacherInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUncheckedCreateNestedManyWithoutTeacherInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUncheckedCreateNestedManyWithoutTeacherInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUncheckedCreateNestedManyWithoutTeacherInput
+  timetableEntries?: Prisma.TimetableEntryUncheckedCreateNestedManyWithoutTeacherInput
+  timetableExceptions?: Prisma.TimetableExceptionUncheckedCreateNestedManyWithoutTeacherInput
+  substitutions?: Prisma.TimetableSubstitutionUncheckedCreateNestedManyWithoutSubstituteTeacherInput
+}
+
+export type TeacherCreateOrConnectWithoutPtmSessionsInput = {
+  where: Prisma.TeacherWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutPtmSessionsInput, Prisma.TeacherUncheckedCreateWithoutPtmSessionsInput>
+}
+
+export type TeacherUpsertWithoutPtmSessionsInput = {
+  update: Prisma.XOR<Prisma.TeacherUpdateWithoutPtmSessionsInput, Prisma.TeacherUncheckedUpdateWithoutPtmSessionsInput>
+  create: Prisma.XOR<Prisma.TeacherCreateWithoutPtmSessionsInput, Prisma.TeacherUncheckedCreateWithoutPtmSessionsInput>
+  where?: Prisma.TeacherWhereInput
+}
+
+export type TeacherUpdateToOneWithWhereWithoutPtmSessionsInput = {
+  where?: Prisma.TeacherWhereInput
+  data: Prisma.XOR<Prisma.TeacherUpdateWithoutPtmSessionsInput, Prisma.TeacherUncheckedUpdateWithoutPtmSessionsInput>
+}
+
+export type TeacherUpdateWithoutPtmSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUpdateManyWithoutTeacherNestedInput
+  parentChatThreads?: Prisma.ParentChatThreadUpdateManyWithoutTeacherNestedInput
+  questionShareTokens?: Prisma.QuestionShareTokenUpdateManyWithoutTeacherNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeacherNestedInput
+  taskContainers?: Prisma.TaskContainerUpdateManyWithoutTeacherNestedInput
+  taskModules?: Prisma.TaskModuleUpdateManyWithoutTeacherNestedInput
+  taskPdfUploads?: Prisma.TaskPdfUploadUpdateManyWithoutTeacherNestedInput
+  taskQuestions?: Prisma.TaskQuestionUpdateManyWithoutTeacherNestedInput
+  taskTests?: Prisma.TaskTestUpdateManyWithoutTeacherNestedInput
+  teacherNotes?: Prisma.TeacherNoteUpdateManyWithoutTeacherNestedInput
+  teacherTasks?: Prisma.TeacherTaskUpdateManyWithoutTeacherNestedInput
+  timetableAvailability?: Prisma.TeacherAvailabilityUpdateManyWithoutTeacherNestedInput
+  timetablePrefs?: Prisma.TeacherTimetablePrefUpdateManyWithoutTeacherNestedInput
+  timetableConfigs?: Prisma.TimetableSubjectConfigUpdateManyWithoutTeacherNestedInput
+  timetableEntries?: Prisma.TimetableEntryUpdateManyWithoutTeacherNestedInput
+  timetableExceptions?: Prisma.TimetableExceptionUpdateManyWithoutTeacherNestedInput
+  substitutions?: Prisma.TimetableSubstitutionUpdateManyWithoutSubstituteTeacherNestedInput
+}
+
+export type TeacherUncheckedUpdateWithoutPtmSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dob?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pincode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumTeacherStatusFieldUpdateOperationsInput | $Enums.TeacherStatus
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiSoftLimitTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  blackboardFolders?: Prisma.BlackboardFolderUncheckedUpdateManyWithoutTeacherNestedInput
+  blackboardMaterials?: Prisma.BlackboardMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+  classDivisions?: Prisma.DivisionUncheckedUpdateManyWithoutClassTeacherNestedInput
+  assignments?: Prisma.DivisionAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
+  createdMarksheets?: Prisma.MarksheetUncheckedUpdateManyWithoutCreatedByNestedInput
+  mindmaps?: Prisma.MindmapUncheckedUpdateManyWithoutTeacherNestedInput
+  parentChatThreads?: Prisma.ParentChatThreadUncheckedUpdateManyWithoutTeacherNestedInput
   questionShareTokens?: Prisma.QuestionShareTokenUncheckedUpdateManyWithoutTeacherNestedInput
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeacherNestedInput
   taskContainers?: Prisma.TaskContainerUncheckedUpdateManyWithoutTeacherNestedInput
@@ -5646,6 +5959,7 @@ export type TeacherCountOutputType = {
   createdMarksheets: number
   mindmaps: number
   parentChatThreads: number
+  ptmSessions: number
   questionShareTokens: number
   taskAssignments: number
   taskContainers: number
@@ -5671,6 +5985,7 @@ export type TeacherCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   createdMarksheets?: boolean | TeacherCountOutputTypeCountCreatedMarksheetsArgs
   mindmaps?: boolean | TeacherCountOutputTypeCountMindmapsArgs
   parentChatThreads?: boolean | TeacherCountOutputTypeCountParentChatThreadsArgs
+  ptmSessions?: boolean | TeacherCountOutputTypeCountPtmSessionsArgs
   questionShareTokens?: boolean | TeacherCountOutputTypeCountQuestionShareTokensArgs
   taskAssignments?: boolean | TeacherCountOutputTypeCountTaskAssignmentsArgs
   taskContainers?: boolean | TeacherCountOutputTypeCountTaskContainersArgs
@@ -5745,6 +6060,13 @@ export type TeacherCountOutputTypeCountMindmapsArgs<ExtArgs extends runtime.Type
  */
 export type TeacherCountOutputTypeCountParentChatThreadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ParentChatThreadWhereInput
+}
+
+/**
+ * TeacherCountOutputType without action
+ */
+export type TeacherCountOutputTypeCountPtmSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PtmSessionWhereInput
 }
 
 /**
@@ -5883,6 +6205,7 @@ export type TeacherSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdMarksheets?: boolean | Prisma.Teacher$createdMarksheetsArgs<ExtArgs>
   mindmaps?: boolean | Prisma.Teacher$mindmapsArgs<ExtArgs>
   parentChatThreads?: boolean | Prisma.Teacher$parentChatThreadsArgs<ExtArgs>
+  ptmSessions?: boolean | Prisma.Teacher$ptmSessionsArgs<ExtArgs>
   questionShareTokens?: boolean | Prisma.Teacher$questionShareTokensArgs<ExtArgs>
   taskAssignments?: boolean | Prisma.Teacher$taskAssignmentsArgs<ExtArgs>
   taskContainers?: boolean | Prisma.Teacher$taskContainersArgs<ExtArgs>
@@ -5985,6 +6308,7 @@ export type TeacherInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdMarksheets?: boolean | Prisma.Teacher$createdMarksheetsArgs<ExtArgs>
   mindmaps?: boolean | Prisma.Teacher$mindmapsArgs<ExtArgs>
   parentChatThreads?: boolean | Prisma.Teacher$parentChatThreadsArgs<ExtArgs>
+  ptmSessions?: boolean | Prisma.Teacher$ptmSessionsArgs<ExtArgs>
   questionShareTokens?: boolean | Prisma.Teacher$questionShareTokensArgs<ExtArgs>
   taskAssignments?: boolean | Prisma.Teacher$taskAssignmentsArgs<ExtArgs>
   taskContainers?: boolean | Prisma.Teacher$taskContainersArgs<ExtArgs>
@@ -6015,6 +6339,7 @@ export type $TeacherPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     createdMarksheets: Prisma.$MarksheetPayload<ExtArgs>[]
     mindmaps: Prisma.$MindmapPayload<ExtArgs>[]
     parentChatThreads: Prisma.$ParentChatThreadPayload<ExtArgs>[]
+    ptmSessions: Prisma.$PtmSessionPayload<ExtArgs>[]
     questionShareTokens: Prisma.$QuestionShareTokenPayload<ExtArgs>[]
     taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
     taskContainers: Prisma.$TaskContainerPayload<ExtArgs>[]
@@ -6455,6 +6780,7 @@ export interface Prisma__TeacherClient<T, Null = never, ExtArgs extends runtime.
   createdMarksheets<T extends Prisma.Teacher$createdMarksheetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$createdMarksheetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarksheetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mindmaps<T extends Prisma.Teacher$mindmapsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$mindmapsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MindmapPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   parentChatThreads<T extends Prisma.Teacher$parentChatThreadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$parentChatThreadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParentChatThreadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ptmSessions<T extends Prisma.Teacher$ptmSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$ptmSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PtmSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   questionShareTokens<T extends Prisma.Teacher$questionShareTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$questionShareTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionShareTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskAssignments<T extends Prisma.Teacher$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskContainers<T extends Prisma.Teacher$taskContainersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Teacher$taskContainersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskContainerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -7079,6 +7405,30 @@ export type Teacher$parentChatThreadsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.ParentChatThreadScalarFieldEnum | Prisma.ParentChatThreadScalarFieldEnum[]
+}
+
+/**
+ * Teacher.ptmSessions
+ */
+export type Teacher$ptmSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PtmSession
+   */
+  select?: Prisma.PtmSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PtmSession
+   */
+  omit?: Prisma.PtmSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PtmSessionInclude<ExtArgs> | null
+  where?: Prisma.PtmSessionWhereInput
+  orderBy?: Prisma.PtmSessionOrderByWithRelationInput | Prisma.PtmSessionOrderByWithRelationInput[]
+  cursor?: Prisma.PtmSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PtmSessionScalarFieldEnum | Prisma.PtmSessionScalarFieldEnum[]
 }
 
 /**

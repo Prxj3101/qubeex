@@ -1,4 +1,7 @@
 import inventoryRoutes from "./modules/inventory/inventory.routes";
+import transportRoutes from "./modules/transport/transport.routes";
+import studentTransportRoutes from "./modules/transport/student-transport.routes";
+import internalGpsRoutes from "./modules/transport/internal-gps.routes";
 import admissionsRoutes from "./modules/admissions/admissions.routes";
 import publicAdmissionsRoutes from "./modules/admissions/admissions.public.routes";
 import admissionsCheckRoutes from "./modules/admissions/admissions.check.routes";
@@ -65,6 +68,10 @@ app.post(
   razorpayWebhookHandler
 );
 
+// GPS positions from Traccar (internal only; before the rate limiter, since
+// every bus reports every few seconds). Has its own JSON parser.
+app.use("/api/internal", internalGpsRoutes);
+
 // Staff attendance: a month of machine punches / a whole staff day can be bigger than 10kb.
 app.use("/api/admin/payroll/attendance/import", express.json({ limit: "5mb" }));
 app.use("/api/admin/payroll/attendance/day", express.json({ limit: "512kb" }));
@@ -97,6 +104,7 @@ app.use((req, res, next) => {
 app.use("/api/superadmin", superadminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/inventory", inventoryRoutes);
+app.use("/api/admin/transport", transportRoutes);
 app.use("/api/admin/admissions", admissionsRoutes);
 app.use("/api/admissions-check", admissionsCheckRoutes);
 app.use("/api/admin/parent-chat", adminParentChatRoutes);
@@ -112,6 +120,7 @@ app.use("/api/teacher/parent-chat", teacherParentChatRoutes);
 app.use("/api/teacher/parent-forms", teacherParentFormsRoutes);
 app.use("/api/teacher/ptm", teacherPtmRoutes);
 app.use("/api/student/timetable", studentTimetableRouter);
+app.use("/api/student/transport", studentTransportRoutes);
 app.use("/api/student/parent-chat", studentParentChatRoutes);
 app.use("/api/student/parent-forms", studentParentFormsRoutes);
 app.use("/api/student/ptm", studentPtmRoutes);

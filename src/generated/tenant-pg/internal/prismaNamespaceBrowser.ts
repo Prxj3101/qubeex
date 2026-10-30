@@ -143,7 +143,16 @@ export const ModelName = {
   AdmissionApplication: 'AdmissionApplication',
   ParentChatSettings: 'ParentChatSettings',
   ParentChatThread: 'ParentChatThread',
-  ParentChatMessage: 'ParentChatMessage'
+  ParentChatMessage: 'ParentChatMessage',
+  ParentForm: 'ParentForm',
+  ParentFormTarget: 'ParentFormTarget',
+  ParentFormResponse: 'ParentFormResponse',
+  PtmSession: 'PtmSession',
+  PtmSlot: 'PtmSlot',
+  TransportRoute: 'TransportRoute',
+  TransportStop: 'TransportStop',
+  TransportBus: 'TransportBus',
+  StudentTransport: 'StudentTransport'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1767,6 +1776,143 @@ export const ParentChatMessageScalarFieldEnum = {
 } as const
 
 export type ParentChatMessageScalarFieldEnum = (typeof ParentChatMessageScalarFieldEnum)[keyof typeof ParentChatMessageScalarFieldEnum]
+
+
+export const ParentFormScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  kind: 'kind',
+  title: 'title',
+  description: 'description',
+  options: 'options',
+  allowComment: 'allowComment',
+  deadline: 'deadline',
+  closedAt: 'closedAt',
+  reminderSentAt: 'reminderSentAt',
+  lastRemindedAt: 'lastRemindedAt',
+  allDivisions: 'allDivisions',
+  createdByUserId: 'createdByUserId',
+  createdByRole: 'createdByRole',
+  createdAt: 'createdAt'
+} as const
+
+export type ParentFormScalarFieldEnum = (typeof ParentFormScalarFieldEnum)[keyof typeof ParentFormScalarFieldEnum]
+
+
+export const ParentFormTargetScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  formId: 'formId',
+  divisionId: 'divisionId'
+} as const
+
+export type ParentFormTargetScalarFieldEnum = (typeof ParentFormTargetScalarFieldEnum)[keyof typeof ParentFormTargetScalarFieldEnum]
+
+
+export const ParentFormResponseScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  formId: 'formId',
+  studentId: 'studentId',
+  optionIndex: 'optionIndex',
+  comment: 'comment',
+  history: 'history',
+  respondedAt: 'respondedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ParentFormResponseScalarFieldEnum = (typeof ParentFormResponseScalarFieldEnum)[keyof typeof ParentFormResponseScalarFieldEnum]
+
+
+export const PtmSessionScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  teacherId: 'teacherId',
+  title: 'title',
+  date: 'date',
+  startMinute: 'startMinute',
+  endMinute: 'endMinute',
+  slotMinutes: 'slotMinutes',
+  location: 'location',
+  note: 'note',
+  cancelledAt: 'cancelledAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PtmSessionScalarFieldEnum = (typeof PtmSessionScalarFieldEnum)[keyof typeof PtmSessionScalarFieldEnum]
+
+
+export const PtmSlotScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  sessionId: 'sessionId',
+  startMinute: 'startMinute',
+  endMinute: 'endMinute',
+  studentId: 'studentId',
+  bookedByUserId: 'bookedByUserId',
+  bookedAt: 'bookedAt'
+} as const
+
+export type PtmSlotScalarFieldEnum = (typeof PtmSlotScalarFieldEnum)[keyof typeof PtmSlotScalarFieldEnum]
+
+
+export const TransportRouteScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  nameKey: 'nameKey',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TransportRouteScalarFieldEnum = (typeof TransportRouteScalarFieldEnum)[keyof typeof TransportRouteScalarFieldEnum]
+
+
+export const TransportStopScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  routeId: 'routeId',
+  name: 'name',
+  lat: 'lat',
+  lng: 'lng',
+  sequence: 'sequence',
+  pickupTime: 'pickupTime',
+  createdAt: 'createdAt'
+} as const
+
+export type TransportStopScalarFieldEnum = (typeof TransportStopScalarFieldEnum)[keyof typeof TransportStopScalarFieldEnum]
+
+
+export const TransportBusScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name',
+  nameKey: 'nameKey',
+  plateNumber: 'plateNumber',
+  trackerId: 'trackerId',
+  driverName: 'driverName',
+  driverPhone: 'driverPhone',
+  capacity: 'capacity',
+  routeId: 'routeId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TransportBusScalarFieldEnum = (typeof TransportBusScalarFieldEnum)[keyof typeof TransportBusScalarFieldEnum]
+
+
+export const StudentTransportScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  studentId: 'studentId',
+  busId: 'busId',
+  stopId: 'stopId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StudentTransportScalarFieldEnum = (typeof StudentTransportScalarFieldEnum)[keyof typeof StudentTransportScalarFieldEnum]
 
 
 export const SortOrder = {

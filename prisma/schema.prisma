@@ -47,6 +47,9 @@ model Institution {
   inventoryStockMovements InventoryStockMovement[]
   inventorySuppliers               InventorySupplier[]
   inventoryLocations               InventoryLocation[]
+  transportRoutes                  TransportRoute[]
+  transportBuses                   TransportBus[]
+  gpsTrackers                      GpsTracker[]
   inventoryCategories              InventoryCategory[]
   inventoryUnits                   InventoryUnit[]
   adminNotes                       AdminNote[]
@@ -676,6 +679,7 @@ model Student {
   taskAssignmentSubmissionAttempts TaskAssignmentSubmissionAttempt[]
   taskTestAttempts                 TaskTestAttempt[]
   enrollments                      StudentEnrollment[]
+  transport                        StudentTransport?
 
   @@unique([studentId, institutionId])
   @@index([institutionId])
@@ -2882,4 +2886,87 @@ model PtmSlot {
   // One booking per student per session (nulls don't collide in Postgres).
   @@unique([sessionId, studentId])
   @@index([studentId])
+}
+
+// ── Transport: live GPS bus tracking ──────────────────────────────────────────
+// Bus trackers (or the Traccar Client phone app) report to Traccar, which
+// forwards every position to POST /api/internal/gps. Positions live in Redis
+// (latest only); these tables hold who rides which bus and where it stops.
+
+// Central registry of tracker ids, so one tracker can belong to only one school
+// (a school can't add another school's tracker and watch its bus).
+model GpsTracker {
+  trackerId     String      @id
+  institutionId String
+  createdAt     DateTime    @default(now())
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@index([institutionId])
+}
+
+model TransportRoute {
+  id            String          @id @default(uuid())
+  institutionId String
+  name          String
+  nameKey       String
+  color         String          @default("#DA7756")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  institution   Institution     @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  stops         TransportStop[]
+  buses         TransportBus[]
+
+  @@unique([institutionId, nameKey])
+}
+
+model TransportStop {
+  id            String             @id @default(uuid())
+  institutionId String
+  routeId       String
+  name          String
+  lat           Float
+  lng           Float
+  sequence      Int
+  pickupTime    String             @default("")
+  createdAt     DateTime           @default(now())
+  route         TransportRoute     @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  students      StudentTransport[]
+
+  @@index([routeId, sequence])
+}
+
+model TransportBus {
+  id            String             @id @default(uuid())
+  institutionId String
+  name          String
+  nameKey       String
+  plateNumber   String             @default("")
+  trackerId     String?
+  driverName    String             @default("")
+  driverPhone   String             @default("")
+  capacity      Int?
+  routeId       String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  institution   Institution        @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  route         TransportRoute?    @relation(fields: [routeId], references: [id], onDelete: SetNull)
+  students      StudentTransport[]
+
+  @@unique([institutionId, nameKey])
+  @@unique([trackerId])
+}
+
+model StudentTransport {
+  id            String         @id @default(uuid())
+  institutionId String
+  studentId     String         @unique
+  busId         String
+  stopId        String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  student       Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  bus           TransportBus   @relation(fields: [busId], references: [id], onDelete: Cascade)
+  stop          TransportStop? @relation(fields: [stopId], references: [id], onDelete: SetNull)
+
+  @@index([busId])
 }

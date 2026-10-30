@@ -81,6 +81,7 @@ const updateAiSoftLimitSchema = z.object({
 
 const VALID_PERMISSIONS = [
   "INVENTORY",
+  "TRANSPORT",
   "ADMISSIONS",
   "STAFF_TEACHERS",
   "STAFF_STAFFROOM",

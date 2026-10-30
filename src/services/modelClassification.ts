@@ -35,12 +35,18 @@ export const PLATFORM_MODELS = [
   // read/written through the central client.
   "PushToken",
   "AiChatMessage",
+  // Tracker id -> school registry, read on every GPS position (central lookup).
+  "GpsTracker",
 ] as const;
 
 // Academic / institution-owned data — routes to the tenant DB for BYOD institutions,
 // stays in the central DB for managed institutions.
 export const ACADEMIC_MODELS = [
   "AdmissionSettings",
+  "TransportRoute",
+  "TransportStop",
+  "TransportBus",
+  "StudentTransport",
   "AdmissionApplication",
   "InventorySetupOrder",
   "InventoryPurchaseOrder",

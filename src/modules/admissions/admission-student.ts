@@ -6,7 +6,8 @@ import { generateUserId } from "../../utils/userId";
 import { upsertCurrentEnrollment } from "../../utils/academicYear";
 import { recordUserStatusEvent } from "../../services/userStatusEvent.service";
 import { buildStudentPIIUpdate } from "../../services/fieldEncryption.service";
-import type { Details } from "./admissions.shared";
+import { busNeed, type Details } from "./admissions.shared";
+import { BUS_REQUEST_KEY } from "../../services/studentBus.service";
 
 const BCRYPT_ROUNDS = 12;
 const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#$!";
@@ -44,6 +45,8 @@ export async function createAdmittedStudent(input: {
     pincode: details.pincode || undefined,
     guardians: guardians.length ? guardians : undefined,
   });
+  // Asked for the school bus: they wait on Transport → Waiting list until given a bus.
+  const bus = busNeed(details.transport);
   const studentData = (userId: string, studentId: string) => ({
     studentId, userId, institutionId, standardId, divisionId,
     dob: input.dob ?? undefined,
@@ -55,6 +58,7 @@ export async function createAdmittedStudent(input: {
     country: "India",
     tempPassword: plainPassword,
     joinedAt: new Date(),
+    ...(bus.need ? { extraDetailFields: { [BUS_REQUEST_KEY]: bus.area || "Yes" } } : {}),
     ...pii,
   });
 

@@ -59,6 +59,7 @@ import {
   updateFeePayment,
   updateStudentDetailField,
 } from "./campus.students.controller";
+import { getDivisionTransport, setStudentBus, setStudentBusFee } from "./campus.bus.controller";
 
 const router = Router();
 
@@ -123,6 +124,10 @@ router.put("/divisions/:divisionId/fee-structure", ...CAMPUS_FEES_PERM, saveFeeS
 router.get("/divisions/:divisionId/fee-payments", ...CAMPUS_FEES_PERM, getDivisionFeePayments);
 router.patch("/divisions/:divisionId/fee-payments", ...CAMPUS_FEES_PERM, updateFeePayment);
 router.patch("/divisions/:divisionId/students/:studentId/detail-fields", ...CAMPUS_FEES_PERM, updateStudentDetailField);
+// Fee card Bus field <-> Transport (real bus + stop, bus fee kept in step)
+router.get("/divisions/:divisionId/transport", ...CAMPUS_FEES_PERM, getDivisionTransport);
+router.put("/divisions/:divisionId/students/:studentId/bus", ...CAMPUS_FEES_PERM, setStudentBus);
+router.patch("/divisions/:divisionId/students/:studentId/bus-fee", ...CAMPUS_FEES_PERM, setStudentBusFee);
 
 // Feed upload — campus feed OR class overview (VIEW). multer runs before
 // academicRoutingMiddleware (not via `...FEED_WRITE`): busboy's internal stream

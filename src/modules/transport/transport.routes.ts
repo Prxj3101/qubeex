@@ -8,7 +8,9 @@ import { academicDb } from "../../utils/academicContext";
 import { prisma } from "../../utils/prisma";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/errors";
 import { resolveUsers } from "../../services/userLookup.service";
+import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { forgetTrackerCache, getFixes, isOnline } from "../../services/gps.service";
+import { assignStudentBus, BUS_REQUEST_KEY, busFeeMonths, removeStudentBus, renameBusOnFeeCards } from "../../services/studentBus.service";
 
 // Admin: Transport (routes, stops, buses, who rides which bus) + live bus map.
 const router = Router();
@@ -26,12 +28,14 @@ const handleError = (err: unknown, next: NextFunction) => {
   next(err);
 };
 
+const hhmm = z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use HH:MM").or(z.literal("")).default("");
 const stopSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().trim().min(1).max(80),
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
   pickupTime: z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use HH:MM").or(z.literal("")).default(""),
+  monthlyFee: z.number().int().min(0).max(100000).nullable().default(null),
 }).strict();
 const routeSchema = z.object({
   name: z.string().trim().min(1).max(60),
@@ -46,18 +50,32 @@ const busSchema = z.object({
   driverPhone: z.string().trim().max(20).default(""),
   capacity: z.number().int().min(1).max(200).nullable().default(null),
   routeId: z.string().uuid().nullable().default(null),
-}).strict();
+  // Timings: pickup = bus leaves the first stop, drop = bus leaves school.
+  morningShift: z.boolean().default(true),
+  morningPickup: hhmm,
+  morningDrop: hhmm,
+  afternoonShift: z.boolean().default(false),
+  afternoonPickup: hhmm,
+  afternoonDrop: hhmm,
+}).strict().superRefine((b, ctx) => {
+  if (!b.morningShift && !b.afternoonShift) ctx.addIssue({ code: "custom", path: ["morningShift"], message: "Pick at least one shift for this bus" });
+  if (b.morningShift && (!b.morningPickup || !b.morningDrop)) ctx.addIssue({ code: "custom", path: ["morningPickup"], message: "Add the morning pickup and drop times" });
+  if (b.afternoonShift && (!b.afternoonPickup || !b.afternoonDrop)) ctx.addIssue({ code: "custom", path: ["afternoonPickup"], message: "Add the afternoon pickup and drop times" });
+});
 const assignSchema = z.object({
   busId: z.string().uuid(),
   stopId: z.string().uuid().nullable().default(null),
+  shift: z.enum(["MORNING", "AFTERNOON"]).optional(),
+  months: z.array(z.string().min(1)).max(24).optional(), // fee months that carry the bus fee (default: months to come)
 }).strict();
 
 const ROUTE_SELECT = {
   id: true, name: true, color: true,
-  stops: { orderBy: { sequence: "asc" as const }, select: { id: true, name: true, lat: true, lng: true, sequence: true, pickupTime: true } },
+  stops: { orderBy: { sequence: "asc" as const }, select: { id: true, name: true, lat: true, lng: true, sequence: true, pickupTime: true, monthlyFee: true } },
 };
 const BUS_SELECT = {
   id: true, name: true, plateNumber: true, trackerId: true, driverName: true, driverPhone: true, capacity: true, routeId: true,
+  morningShift: true, morningPickup: true, morningDrop: true, afternoonShift: true, afternoonPickup: true, afternoonDrop: true,
   route: { select: { id: true, name: true, color: true } },
   _count: { select: { students: true } },
 };
@@ -66,11 +84,13 @@ const BUS_SELECT = {
 router.get("/overview", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const institutionId = institution(req);
-    const [routes, buses] = await Promise.all([
+    const [routes, buses, inst] = await Promise.all([
       academicDb().transportRoute.findMany({ where: { institutionId }, orderBy: { name: "asc" }, select: { ...ROUTE_SELECT, _count: { select: { buses: true } } } }),
       academicDb().transportBus.findMany({ where: { institutionId }, orderBy: { name: "asc" }, select: BUS_SELECT }),
+      prisma.institution.findUnique({ where: { id: institutionId }, select: { name: true, schoolLat: true, schoolLng: true } }),
     ]);
-    res.json({ success: true, data: { routes, buses } });
+    const school = inst?.schoolLat != null && inst.schoolLng != null ? { name: inst.name, lat: inst.schoolLat, lng: inst.schoolLng } : null;
+    res.json({ success: true, data: { routes, buses, school } });
   } catch (err) { next(err); }
 });
 
@@ -96,6 +116,22 @@ router.get("/live", async (req: AuthRequest, res: Response, next: NextFunction) 
   } catch (err) { next(err); }
 });
 
+// ── School location (where every route ends) ────────────────────────────────
+const schoolSchema = z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) }).strict();
+router.put("/school", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { lat, lng } = schoolSchema.parse(req.body);
+    await prisma.institution.update({ where: { id: institution(req) }, data: { schoolLat: lat, schoolLng: lng } });
+    res.json({ success: true });
+  } catch (err) { next(err); }
+});
+router.delete("/school", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    await prisma.institution.update({ where: { id: institution(req) }, data: { schoolLat: null, schoolLng: null } });
+    res.json({ success: true });
+  } catch (err) { next(err); }
+});
+
 // ── Routes + stops ───────────────────────────────────────────────────────────
 router.post("/routes", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -105,7 +141,7 @@ router.post("/routes", async (req: AuthRequest, res: Response, next: NextFunctio
     const data = await academicDb().transportRoute.create({
       data: {
         institutionId, name, nameKey: name.toLowerCase(), color: input.color,
-        stops: { create: input.stops.map((s, i) => ({ institutionId, name: clean(s.name), lat: s.lat, lng: s.lng, pickupTime: s.pickupTime, sequence: i })) },
+        stops: { create: input.stops.map((s, i) => ({ institutionId, name: clean(s.name), lat: s.lat, lng: s.lng, pickupTime: s.pickupTime, monthlyFee: s.monthlyFee, sequence: i })) },
       },
       select: ROUTE_SELECT,
     });
@@ -130,7 +166,7 @@ router.put("/routes/:id", async (req: AuthRequest, res: Response, next: NextFunc
       db.transportRoute.update({ where: { id }, data: { name, nameKey: name.toLowerCase(), color: input.color } }),
       db.transportStop.deleteMany({ where: { routeId: id, id: { notIn: keep } } }),
       ...input.stops.map((s, i) => {
-        const fields = { name: clean(s.name), lat: s.lat, lng: s.lng, pickupTime: s.pickupTime, sequence: i };
+        const fields = { name: clean(s.name), lat: s.lat, lng: s.lng, pickupTime: s.pickupTime, monthlyFee: s.monthlyFee, sequence: i };
         return s.id && ownIds.has(s.id)
           ? db.transportStop.update({ where: { id: s.id }, data: fields })
           : db.transportStop.create({ data: { ...fields, institutionId, routeId: id } });
@@ -162,6 +198,15 @@ async function claimTracker(institutionId: string, trackerId: string | null, pre
   forgetTrackerCache();
 }
 
+// Times of a switched-off shift are cleared so they don't show anywhere.
+function timings<T extends z.infer<typeof busSchema>>(b: T): T {
+  return {
+    ...b,
+    morningPickup: b.morningShift ? b.morningPickup : "", morningDrop: b.morningShift ? b.morningDrop : "",
+    afternoonPickup: b.afternoonShift ? b.afternoonPickup : "", afternoonDrop: b.afternoonShift ? b.afternoonDrop : "",
+  };
+}
+
 async function checkRoute(institutionId: string, routeId: string | null) {
   if (routeId && !(await academicDb().transportRoute.count({ where: { id: routeId, institutionId } }))) throw new BadRequestError("Route not found");
 }
@@ -176,7 +221,7 @@ router.post("/buses", async (req: AuthRequest, res: Response, next: NextFunction
     if (trackerId && (await academicDb().transportBus.count({ where: { trackerId } }))) throw new ConflictError("Another bus already uses this tracker");
     await claimTracker(institutionId, trackerId, null);
     try {
-      const data = await academicDb().transportBus.create({ data: { ...input, trackerId, name, nameKey: name.toLowerCase(), institutionId }, select: BUS_SELECT });
+      const data = await academicDb().transportBus.create({ data: { ...timings(input), trackerId, name, nameKey: name.toLowerCase(), institutionId }, select: BUS_SELECT });
       res.status(201).json({ success: true, data });
     } catch (err) {
       await claimTracker(institutionId, null, trackerId).catch(() => {}); // undo the claim
@@ -192,12 +237,17 @@ router.put("/buses/:id", async (req: AuthRequest, res: Response, next: NextFunct
     const input = busSchema.parse(req.body);
     const name = clean(input.name);
     const trackerId = input.trackerId || null;
-    const bus = await academicDb().transportBus.findFirst({ where: { id, institutionId }, select: { trackerId: true } });
+    const bus = await academicDb().transportBus.findFirst({ where: { id, institutionId }, select: { trackerId: true, name: true } });
     if (!bus) throw new NotFoundError("Bus not found");
     await checkRoute(institutionId, input.routeId);
     if (trackerId && trackerId !== bus.trackerId && (await academicDb().transportBus.count({ where: { trackerId } }))) throw new ConflictError("Another bus already uses this tracker");
     await claimTracker(institutionId, trackerId, bus.trackerId);
-    const data = await academicDb().transportBus.update({ where: { id }, data: { ...input, trackerId, name, nameKey: name.toLowerCase() }, select: BUS_SELECT });
+    const db = academicDb();
+    const data = await db.transportBus.update({ where: { id }, data: { ...timings(input), trackerId, name, nameKey: name.toLowerCase() }, select: BUS_SELECT });
+    // a shift was switched off: its riders move to the shift the bus still runs
+    if (!input.morningShift) await db.studentTransport.updateMany({ where: { busId: id, shift: "MORNING" }, data: { shift: "AFTERNOON" } });
+    if (!input.afternoonShift) await db.studentTransport.updateMany({ where: { busId: id, shift: "AFTERNOON" }, data: { shift: "MORNING" } });
+    if (bus.name !== name) await renameBusOnFeeCards(institutionId, id, name);
     res.json({ success: true, data });
   } catch (err) { handleError(err, next); }
 });
@@ -208,6 +258,9 @@ router.delete("/buses/:id", async (req: AuthRequest, res: Response, next: NextFu
     const id = idSchema.parse(req.params.id);
     const bus = await academicDb().transportBus.findFirst({ where: { id, institutionId }, select: { trackerId: true } });
     if (!bus) throw new NotFoundError("Bus not found");
+    // riders come off the bus properly, so their fee cards stop the bus fee too
+    const riders = await academicDb().studentTransport.findMany({ where: { busId: id, institutionId }, select: { studentId: true } });
+    for (const r of riders) await removeStudentBus(institutionId, r.studentId);
     await academicDb().transportBus.delete({ where: { id } });
     await claimTracker(institutionId, null, bus.trackerId);
     res.json({ success: true });
@@ -222,6 +275,7 @@ router.get("/buses/:id/students", async (req: AuthRequest, res: Response, next: 
     const rows = await academicDb().studentTransport.findMany({
       where: { busId, institutionId },
       select: {
+        shift: true,
         stop: { select: { id: true, name: true } },
         student: { select: { id: true, userId: true, studentId: true, rollNo: true, division: { select: { name: true, standard: { select: { name: true } } } } } },
       },
@@ -235,6 +289,7 @@ router.get("/buses/:id/students", async (req: AuthRequest, res: Response, next: 
         rollNo: r.student.rollNo,
         className: r.student.division ? `${r.student.division.standard.name} ${r.student.division.name}` : "",
         stop: r.stop,
+        shift: r.shift,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
     res.json({ success: true, data });
@@ -281,31 +336,90 @@ router.get("/students/search", async (req: AuthRequest, res: Response, next: Nex
 
 router.put("/students/:studentId", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const institutionId = institution(req);
-    const studentId = idSchema.parse(req.params.studentId);
-    const { busId, stopId } = assignSchema.parse(req.body);
-    const db = academicDb();
-    const [student, bus] = await Promise.all([
-      db.student.count({ where: { id: studentId, institutionId } }),
-      db.transportBus.findFirst({ where: { id: busId, institutionId }, select: { routeId: true } }),
-    ]);
-    if (!student) throw new NotFoundError("Student not found");
-    if (!bus) throw new NotFoundError("Bus not found");
-    if (stopId && !(bus.routeId && (await db.transportStop.count({ where: { id: stopId, routeId: bus.routeId } })))) {
-      throw new BadRequestError("This stop is not on the bus's route");
-    }
-    await db.studentTransport.upsert({
-      where: { studentId },
-      create: { institutionId, studentId, busId, stopId },
-      update: { busId, stopId },
-    });
+    const { busId, stopId, shift, months } = assignSchema.parse(req.body);
+    // also turns on the bus fee on the student's fee card (see studentBus.service)
+    await assignStudentBus(institution(req), idSchema.parse(req.params.studentId), { busId, stopId, shift, months });
     res.json({ success: true });
+  } catch (err) { next(err); }
+});
+
+// The student's fee months, for picking which carry the bus fee.
+router.get("/students/:studentId/fee-months", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    res.json({ success: true, data: await busFeeMonths(institution(req), idSchema.parse(req.params.studentId)) });
   } catch (err) { next(err); }
 });
 
 router.delete("/students/:studentId", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    await academicDb().studentTransport.deleteMany({ where: { studentId: idSchema.parse(req.params.studentId), institutionId: institution(req) } });
+    await removeStudentBus(institution(req), idSchema.parse(req.params.studentId));
+    res.json({ success: true });
+  } catch (err) { next(err); }
+});
+
+// ── Waiting list: students who need a bus but don't have one yet ────────────
+// • asked for the bus at admission (BUS_REQUEST_KEY on the student), or
+// • bus turned on in their fee card before buses were linked (old "Bus No.").
+type WaitingStudent = { studentId: string; divisionId: string | null; admissionNo: string; name: string; className: string; rollNo: string | null; avatarUrl: string | null; reason: "ADMISSION" | "FEE_CARD"; note: string };
+
+function waitingReason(fields: Record<string, string> | null): { reason: WaitingStudent["reason"]; note: string } | null {
+  if (!fields) return null;
+  const req = fields[BUS_REQUEST_KEY];
+  if (req === "FEE_CARD") return { reason: "FEE_CARD", note: "Bus to be decided" };
+  if (req) return { reason: "ADMISSION", note: req === "Yes" ? "" : req };
+  // the fee card's Bus field keeps `${id}-enabled` next to `${id}-number`
+  for (const key of Object.keys(fields)) {
+    if (!key.endsWith("-enabled") || fields[key] !== "true") continue;
+    const id = key.slice(0, -"-enabled".length);
+    if (id === "f-bus" || `${id}-number` in fields) return { reason: "FEE_CARD", note: fields[`${id}-number`] ? `Was Bus No. ${fields[`${id}-number`]}` : "" };
+  }
+  return null;
+}
+
+router.get("/waiting", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = institution(req);
+    const students = await academicDb().student.findMany({
+      where: { institutionId, transport: null, status: { notIn: ["WITHDRAWN", "GRADUATED", "INACTIVE"] } },
+      select: { id: true, userId: true, studentId: true, divisionId: true, rollNo: true, avatarUrl: true, extraDetailFields: true, division: { select: { name: true, standard: { select: { name: true } } } } },
+    });
+    const waiting = students
+      .map((s) => ({ s, why: waitingReason(s.extraDetailFields as Record<string, string> | null) }))
+      .filter((x): x is { s: typeof students[number]; why: NonNullable<ReturnType<typeof waitingReason>> } => !!x.why);
+    const [users, signed] = await Promise.all([
+      resolveUsers(waiting.map((x) => x.s.userId), { id: true, name: true }),
+      generateSignedAvatarUrlsBatch(waiting.map((x) => x.s.avatarUrl)),
+    ]);
+    const data: WaitingStudent[] = waiting
+      .map(({ s, why }) => ({
+        studentId: s.id,
+        divisionId: s.divisionId,
+        admissionNo: s.studentId,
+        name: users.get(s.userId)?.name ?? "",
+        className: s.division ? `${s.division.standard.name} ${s.division.name}` : "",
+        rollNo: s.rollNo,
+        avatarUrl: s.avatarUrl ? (signed[s.avatarUrl] ?? s.avatarUrl) : null,
+        ...why,
+      }))
+      .sort((a, b) => a.className.localeCompare(b.className) || a.name.localeCompare(b.name));
+    res.json({ success: true, data });
+  } catch (err) { next(err); }
+});
+
+// Take a student off the waiting list without giving a bus ("doesn't need it").
+router.delete("/waiting/:studentId", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = institution(req);
+    const studentId = idSchema.parse(req.params.studentId);
+    const student = await academicDb().student.findFirst({ where: { id: studentId, institutionId }, select: { extraDetailFields: true } });
+    if (!student) throw new NotFoundError("Student not found");
+    const fields = { ...((student.extraDetailFields as Record<string, string> | null) ?? {}) };
+    if (fields[BUS_REQUEST_KEY]) {
+      delete fields[BUS_REQUEST_KEY];
+      await academicDb().student.update({ where: { id: studentId }, data: { extraDetailFields: fields } });
+    } else {
+      await removeStudentBus(institutionId, studentId); // old fee-card bus: turn it off (old months keep their fee)
+    }
     res.json({ success: true });
   } catch (err) { next(err); }
 });

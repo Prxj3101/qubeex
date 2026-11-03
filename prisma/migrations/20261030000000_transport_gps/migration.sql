@@ -73,3 +73,7 @@ CREATE INDEX "StudentTransport_busId_idx" ON "StudentTransport"("busId");
 ALTER TABLE "StudentTransport" ADD CONSTRAINT "StudentTransport_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "StudentTransport" ADD CONSTRAINT "StudentTransport_busId_fkey" FOREIGN KEY ("busId") REFERENCES "TransportBus"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "StudentTransport" ADD CONSTRAINT "StudentTransport_stopId_fkey" FOREIGN KEY ("stopId") REFERENCES "TransportStop"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- School location on the map (Transport)
+ALTER TABLE "Institution" ADD COLUMN IF NOT EXISTS "schoolLat" DOUBLE PRECISION;
+ALTER TABLE "Institution" ADD COLUMN IF NOT EXISTS "schoolLng" DOUBLE PRECISION;

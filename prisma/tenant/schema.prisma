@@ -2306,6 +2306,8 @@ model TransportStop {
   lng           Float
   sequence      Int
   pickupTime    String             @default("")
+  /// Monthly bus fee in rupees for students picked up here (null = not set)
+  monthlyFee    Int?
   createdAt     DateTime           @default(now())
   route         TransportRoute     @relation(fields: [routeId], references: [id], onDelete: Cascade)
   students      StudentTransport[]
@@ -2324,6 +2326,13 @@ model TransportBus {
   driverPhone   String             @default("")
   capacity      Int?
   routeId       String?
+  /// Shifts this bus runs. Times are HH:MM: pickup = leaves the first stop, drop = leaves school.
+  morningShift    Boolean          @default(true)
+  morningPickup   String           @default("")
+  morningDrop     String           @default("")
+  afternoonShift  Boolean          @default(false)
+  afternoonPickup String           @default("")
+  afternoonDrop   String           @default("")
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   route         TransportRoute?    @relation(fields: [routeId], references: [id], onDelete: SetNull)
@@ -2339,6 +2348,8 @@ model StudentTransport {
   studentId     String         @unique
   busId         String
   stopId        String?
+  /// MORNING or AFTERNOON: which of the bus's shifts this student rides
+  shift         String         @default("MORNING")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   student       Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)

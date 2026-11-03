@@ -3,7 +3,9 @@ import { authMiddleware, AuthRequest } from "../../middlewares/auth.middleware";
 import { institutionAccessMiddleware } from "../../middlewares/institutionAccess.middleware";
 import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
 import { academicDb } from "../../utils/academicContext";
+import { prisma } from "../../utils/prisma";
 import { etaMinutes, getFixes, isOnline } from "../../services/gps.service";
+import { isCombinedMidday, stopTimes, type Shift } from "../../services/transportSchedule";
 
 // Student / parent app: "My bus" — the child's bus, its route and stops, the
 // child's stop, where the bus is right now and roughly when it will arrive.
@@ -22,11 +24,13 @@ router.get("/", async (req: AuthRequest, res: Response, next: NextFunction) => {
     const ride = await academicDb().studentTransport.findUnique({
       where: { studentId: student.id },
       select: {
-        stop: { select: { id: true, name: true, lat: true, lng: true, pickupTime: true } },
+        shift: true,
+        stop: { select: { id: true, name: true, lat: true, lng: true } },
         bus: {
           select: {
             name: true, plateNumber: true, driverName: true, driverPhone: true, trackerId: true,
-            route: { select: { name: true, color: true, stops: { orderBy: { sequence: "asc" }, select: { id: true, name: true, lat: true, lng: true, pickupTime: true } } } },
+            morningShift: true, afternoonShift: true, morningPickup: true, morningDrop: true, afternoonPickup: true, afternoonDrop: true,
+            route: { select: { name: true, color: true, stops: { orderBy: { sequence: "asc" }, select: { id: true, name: true, lat: true, lng: true } } } },
           },
         },
       },
@@ -35,14 +39,31 @@ router.get("/", async (req: AuthRequest, res: Response, next: NextFunction) => {
       res.json({ success: true, data: null }); // not on any school bus
       return;
     }
+    const inst = req.user?.institutionId
+      ? await prisma.institution.findUnique({ where: { id: req.user.institutionId }, select: { name: true, schoolLat: true, schoolLng: true } })
+      : null;
+    const school = inst?.schoolLat != null && inst.schoolLng != null ? { name: inst.name, lat: inst.schoolLat, lng: inst.schoolLng } : null;
     const fix = ride.bus.trackerId ? (await getFixes([ride.bus.trackerId])).get(ride.bus.trackerId) ?? null : null;
     const online = isOnline(fix);
-    const { trackerId: _tracker, ...bus } = ride.bus;
+    // planned times for the child's shift: pickup trip (to school) and drop trip (home)
+    const shift = (ride.shift === "AFTERNOON" ? "AFTERNOON" : "MORNING") as Shift;
+    const combined = shift === "MORNING" && isCombinedMidday(ride.bus); // morning drop rides the combined midday trip
+    const { trackerId: _tracker, morningShift: _m, afternoonShift: _a, morningPickup, morningDrop, afternoonPickup, afternoonDrop, route, ...busInfo } = ride.bus;
+    const pickupStart = shift === "AFTERNOON" ? afternoonPickup : morningPickup;
+    const dropStart = shift === "AFTERNOON" ? afternoonDrop : morningDrop;
+    const routeStops = route?.stops ?? [];
+    const pickupTimes = stopTimes(routeStops, school, pickupStart, "PICKUP");
+    const dropTimes = stopTimes(routeStops, school, dropStart, "DROP", combined);
+    const withTimes = <T extends { id: string }>(s: T) => ({ ...s, pickupAt: pickupTimes.get(s.id) ?? null, dropAt: dropTimes.get(s.id) ?? null });
+    const bus = { ...busInfo, route: route ? { ...route, stops: routeStops.map(withTimes) } : null };
     res.json({
       success: true,
       data: {
         bus,
-        stop: ride.stop,
+        shift,
+        trip: { pickupStart: pickupStart || null, dropStart: dropStart || null },
+        stop: ride.stop ? withTimes(ride.stop) : null,
+        school,
         position: fix,
         online,
         etaMinutes: online && fix && ride.stop ? etaMinutes(fix, ride.stop) : null,

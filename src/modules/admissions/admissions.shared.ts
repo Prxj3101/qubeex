@@ -85,6 +85,19 @@ export const detailsSchema = z.object({
 });
 export type Details = z.infer<typeof detailsSchema>;
 
+/**
+ * The "Need the school bus?" answer, kept in `details.transport`:
+ * "" not answered, "No", "Yes", or the pickup area (which means yes).
+ * Older free-text answers ("Nallasopara West") read as yes + that area.
+ */
+export function busNeed(transport: string | null | undefined): { need: boolean | null; area: string } {
+  const v = (transport ?? "").trim();
+  if (!v) return { need: null, area: "" };
+  if (/^no$/i.test(v)) return { need: false, area: "" };
+  if (/^yes$/i.test(v)) return { need: true, area: "" };
+  return { need: true, area: v };
+}
+
 export const childSchema = z.object({
   childName: z.string().trim().min(1, "Enter the child's name").max(100),
   dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Enter the date of birth").nullable().optional(),

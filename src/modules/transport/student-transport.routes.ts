@@ -4,7 +4,8 @@ import { institutionAccessMiddleware } from "../../middlewares/institutionAccess
 import { academicRoutingMiddleware } from "../../middlewares/academicRouting.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { prisma } from "../../utils/prisma";
-import { etaMinutes, getFixes, isOnline } from "../../services/gps.service";
+import { getFixes, isOnline } from "../../services/gps.service";
+import { stopEta } from "../../services/tripProgress";
 import { isCombinedMidday, stopTimes, type Shift } from "../../services/transportSchedule";
 
 // Student / parent app: "My bus" — the child's bus, its route and stops, the
@@ -56,6 +57,9 @@ router.get("/", async (req: AuthRequest, res: Response, next: NextFunction) => {
     const dropTimes = stopTimes(routeStops, school, dropStart, "DROP", combined);
     const withTimes = <T extends { id: string }>(s: T) => ({ ...s, pickupAt: pickupTimes.get(s.id) ?? null, dropAt: dropTimes.get(s.id) ?? null });
     const bus = { ...busInfo, route: route ? { ...route, stops: routeStops.map(withTimes) } : null };
+    const live = online && fix && ride.stop && ride.bus.trackerId
+      ? await stopEta(ride.bus.trackerId, fix, routeStops, school, ride.bus, ride.stop.id)
+      : { etaMinutes: null, atStop: false, passedStop: false, stopsBefore: null, standingAt: null, reachedSchool: false };
     res.json({
       success: true,
       data: {
@@ -66,7 +70,8 @@ router.get("/", async (req: AuthRequest, res: Response, next: NextFunction) => {
         school,
         position: fix,
         online,
-        etaMinutes: online && fix && ride.stop ? etaMinutes(fix, ride.stop) : null,
+        // route-aware: follows the trip stop by stop (see tripProgress.ts)
+        ...live,
         serverTime: new Date().toISOString(),
       },
     });

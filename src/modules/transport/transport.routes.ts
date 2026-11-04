@@ -10,6 +10,8 @@ import { BadRequestError, ConflictError, NotFoundError } from "../../utils/error
 import { resolveUsers } from "../../services/userLookup.service";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { forgetTrackerCache, getFixes, isOnline } from "../../services/gps.service";
+import { busTrip } from "../../services/tripProgress";
+import { demoStatus, SIM_PREFIX, startDemo, stopDemo } from "../../services/busDemo.service";
 import { assignStudentBus, BUS_REQUEST_KEY, busFeeMonths, removeStudentBus, renameBusOnFeeCards } from "../../services/studentBus.service";
 
 // Admin: Transport (routes, stops, buses, who rides which bus) + live bus map.
@@ -101,19 +103,64 @@ router.get("/live", async (req: AuthRequest, res: Response, next: NextFunction) 
     const buses = await academicDb().transportBus.findMany({
       where: { institutionId },
       orderBy: { name: "asc" },
-      select: { id: true, name: true, plateNumber: true, trackerId: true, routeId: true, route: { select: { name: true, color: true } } },
+      select: {
+        id: true, name: true, plateNumber: true, trackerId: true, routeId: true,
+        morningShift: true, afternoonShift: true, morningPickup: true, morningDrop: true, afternoonPickup: true, afternoonDrop: true,
+        route: { select: { name: true, color: true, stops: { orderBy: { sequence: "asc" }, select: { name: true, lat: true, lng: true } } } },
+      },
     });
-    const fixes = await getFixes(buses.map((b) => b.trackerId ?? ""));
+    const [fixes, inst] = await Promise.all([
+      getFixes(buses.map((b) => b.trackerId ?? "")),
+      prisma.institution.findUnique({ where: { id: institutionId }, select: { schoolLat: true, schoolLng: true } }),
+    ]);
+    const school = inst?.schoolLat != null && inst.schoolLng != null ? { lat: inst.schoolLat, lng: inst.schoolLng } : null;
     const now = Date.now();
+    const data = await Promise.all(buses.map(async (b) => {
+      const fix = b.trackerId ? fixes.get(b.trackerId) ?? null : null;
+      const online = isOnline(fix, now);
+      // where it is on its trip: "At Patankar", "Going to 4th Road · 2/5 stops", "Reached school"
+      const trip = online && fix && b.trackerId && b.route ? await busTrip(b.trackerId, fix, b.route.stops, school, b).catch(() => null) : null;
+      return {
+        busId: b.id, name: b.name, plateNumber: b.plateNumber, routeId: b.routeId,
+        route: b.route ? { name: b.route.name, color: b.route.color } : null,
+        hasTracker: !!b.trackerId, position: fix, online, trip,
+      };
+    }));
     res.json({
       success: true,
-      data: buses.map((b) => {
-        const fix = b.trackerId ? fixes.get(b.trackerId) ?? null : null;
-        return { busId: b.id, name: b.name, plateNumber: b.plateNumber, routeId: b.routeId, route: b.route, hasTracker: !!b.trackerId, position: fix, online: isOnline(fix, now) };
-      }),
+      data,
       serverTime: new Date(now).toISOString(),
     });
   } catch (err) { next(err); }
+});
+
+// ── Demo buses (for showing the product): moves only "sim-" buses ───────────
+router.get("/demo", (req: AuthRequest, res: Response) => {
+  res.json({ success: true, data: demoStatus(institution(req)) });
+});
+
+router.post("/demo/start", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = institution(req);
+    const [inst, buses] = await Promise.all([
+      prisma.institution.findUnique({ where: { id: institutionId }, select: { schoolLat: true, schoolLng: true } }),
+      academicDb().transportBus.findMany({
+        where: { institutionId, trackerId: { startsWith: SIM_PREFIX }, routeId: { not: null } },
+        orderBy: { name: "asc" },
+        select: { name: true, trackerId: true, route: { select: { stops: { orderBy: { sequence: "asc" }, select: { name: true, lat: true, lng: true } } } } },
+      }),
+    ]);
+    if (inst?.schoolLat == null || inst.schoolLng == null) throw new BadRequestError("Set the school location first");
+    const ready = buses.filter((b) => b.trackerId && b.route?.stops.length);
+    if (!ready.length) throw new BadRequestError(`No demo buses. Give a bus a route and a tracker id starting with "${SIM_PREFIX}", e.g. ${SIM_PREFIX}bus-1`);
+    const data = startDemo(institutionId, { lat: inst.schoolLat, lng: inst.schoolLng }, ready.map((b) => ({ trackerId: b.trackerId!, name: b.name, stops: b.route!.stops })));
+    res.json({ success: true, data });
+  } catch (err) { next(err); }
+});
+
+router.post("/demo/stop", (req: AuthRequest, res: Response) => {
+  stopDemo(institution(req));
+  res.json({ success: true, data: demoStatus(institution(req)) });
 });
 
 // ── School location (where every route ends) ────────────────────────────────
@@ -277,16 +324,18 @@ router.get("/buses/:id/students", async (req: AuthRequest, res: Response, next: 
       select: {
         shift: true,
         stop: { select: { id: true, name: true } },
-        student: { select: { id: true, userId: true, studentId: true, rollNo: true, division: { select: { name: true, standard: { select: { name: true } } } } } },
+        student: { select: { id: true, userId: true, studentId: true, rollNo: true, avatarUrl: true, division: { select: { name: true, standard: { select: { name: true } } } } } },
       },
     });
     const users = await resolveUsers(rows.map((r) => r.student.userId), { id: true, name: true });
+    const riderPhotos = await generateSignedAvatarUrlsBatch(rows.map((r) => r.student.avatarUrl));
     const data = rows
       .map((r) => ({
         studentId: r.student.id,
         admissionNo: r.student.studentId,
         name: users.get(r.student.userId)?.name ?? "",
         rollNo: r.student.rollNo,
+        avatarUrl: r.student.avatarUrl ? (riderPhotos[r.student.avatarUrl] ?? r.student.avatarUrl) : null,
         className: r.student.division ? `${r.student.division.standard.name} ${r.student.division.name}` : "",
         stop: r.stop,
         shift: r.shift,
@@ -309,12 +358,13 @@ router.get("/students/search", async (req: AuthRequest, res: Response, next: Nex
     const students = await academicDb().student.findMany({
       where: { institutionId, OR: [{ userId: { in: users.map((u) => u.id) } }, { studentId: { contains: q, mode: "insensitive" } }] },
       select: {
-        id: true, userId: true, studentId: true,
+        id: true, userId: true, studentId: true, avatarUrl: true,
         division: { select: { name: true, standard: { select: { name: true } } } },
         transport: { select: { bus: { select: { id: true, name: true } } } },
       },
       take: 30,
     });
+    const foundPhotos = await generateSignedAvatarUrlsBatch(students.map((s) => s.avatarUrl));
     const names = new Map(users.map((u) => [u.id, u.name ?? ""]));
     const missing = students.filter((s) => !names.has(s.userId)).map((s) => s.userId);
     if (missing.length) (await resolveUsers(missing, { id: true, name: true })).forEach((u, id) => names.set(id, u.name ?? ""));
@@ -325,6 +375,7 @@ router.get("/students/search", async (req: AuthRequest, res: Response, next: Nex
           studentId: s.id,
           admissionNo: s.studentId,
           name: names.get(s.userId) ?? "",
+          avatarUrl: s.avatarUrl ? (foundPhotos[s.avatarUrl] ?? s.avatarUrl) : null,
           className: s.division ? `${s.division.standard.name} ${s.division.name}` : "",
           currentBus: s.transport?.bus ?? null,
         }))

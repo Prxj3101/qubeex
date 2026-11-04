@@ -1,5 +1,6 @@
 import express, { Router, Request, Response } from "express";
-import { forgetTrackerCache, saveFix, trackerInstitution } from "../../services/gps.service";
+import { forgetTrackerCache, saveFix, trackerInstitution, type GpsFix } from "../../services/gps.service";
+import { pushTrail } from "../../services/tripProgress";
 
 // Traccar (running next to the backend on the server) forwards every decoded GPS
 // position here, as JSON: { position: {...}, device: { uniqueId, ... } }.
@@ -34,14 +35,16 @@ router.post("/gps", express.json({ limit: "64kb" }), async (req: Request, res: R
     }
     const rawTime = typeof p.fixTime === "string" ? p.fixTime : typeof p.deviceTime === "string" ? p.deviceTime : null;
     const fixTime = rawTime && !Number.isNaN(Date.parse(rawTime)) ? new Date(rawTime).toISOString() : new Date().toISOString();
-    await saveFix(trackerId, {
+    const fix: GpsFix = {
       lat,
       lng,
       speedKmh: Math.round((num(p.speed) ?? 0) * 1.852 * 10) / 10, // Traccar sends knots
       course: Math.round(num(p.course) ?? 0),
       fixTime,
       receivedAt: new Date().toISOString(),
-    });
+    };
+    await saveFix(trackerId, fix);
+    await pushTrail(trackerId, fix); // short history, so the parent app can follow the trip stop by stop
     res.status(204).end();
   } catch (err) {
     console.error("[gps] forward failed", err);

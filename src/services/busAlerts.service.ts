@@ -98,28 +98,33 @@ export function forgetTrackers(trackerIds: string[]) {
 /** Forget cached bus info (after riders / stops / alert settings change). */
 export const forgetBusAlertCache = () => ctxCache.clear();
 
-// Which shift a trip that left school at `t` belongs to (null = can't tell / combined trip: everyone).
 const IST = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: false });
-const hhmm = (s: string) => { const m = /^(\d{2}):(\d{2})$/.exec(s); return m ? Number(m[1]) * 60 + Number(m[2]) : null; };
-function tripShift(b: BusTimings, t: number): "MORNING" | "AFTERNOON" | null {
-  if (b.morningShift && b.afternoonShift && b.morningDrop && b.morningDrop === b.afternoonPickup) {
-    // combined midday trip serves both shifts; the first and last trips are one shift each
-    const [h, m] = IST.format(new Date(t)).split(":").map(Number);
-    const now = h * 60 + m, mid = hhmm(b.morningDrop);
-    if (mid != null && Math.abs(now - mid) <= 90) return null;
-  }
+const hhmm = (v: string) => { const m = /^(\d{2}):(\d{2})$/.exec(v); return m ? Number(m[1]) * 60 + Number(m[2]) : null; };
+
+// Which shift a trip belongs to, so morning-shift children don't get the afternoon
+// bus's alerts. Only when it's clear: the bus runs both shifts AND the trip left
+// school close to one of its timetable trips of the SAME kind (pickup / drop).
+// Otherwise (one shift only, the combined midday trip, or a trip at an odd time
+// like a demo) null = alert every child on the bus.
+function tripShift(b: BusTimings, t: number, order: "FORWARD" | "REVERSE" | null | undefined): "MORNING" | "AFTERNOON" | null {
+  if (!(b.morningShift && b.afternoonShift) || !order) return null;
+  const combined = !!b.morningDrop && b.morningDrop === b.afternoonPickup;
   const [h, m] = IST.format(new Date(t)).split(":").map(Number);
   const now = h * 60 + m;
-  let best: { gap: number; shift: "MORNING" | "AFTERNOON" } | null = null;
-  const consider = (at: string, shift: "MORNING" | "AFTERNOON") => {
-    const v = hhmm(at);
-    if (v == null) return;
+  const trips: { at: string; shift: "MORNING" | "AFTERNOON" | null; order: "FORWARD" | "REVERSE" }[] = [
+    { at: b.morningPickup, shift: "MORNING", order: "FORWARD" },
+    { at: b.morningDrop, shift: combined ? null : "MORNING", order: combined ? "FORWARD" : "REVERSE" },
+    ...(combined ? [] : [{ at: b.afternoonPickup, shift: "AFTERNOON" as const, order: "FORWARD" as const }]),
+    { at: b.afternoonDrop, shift: "AFTERNOON", order: "REVERSE" },
+  ];
+  let best: { gap: number; shift: "MORNING" | "AFTERNOON" | null } | null = null;
+  for (const trip of trips) {
+    const v = hhmm(trip.at);
+    if (v == null || trip.order !== order) continue;
     const gap = Math.abs(now - v);
-    if (gap <= 90 && (!best || gap < best.gap)) best = { gap, shift };
-  };
-  if (b.morningShift) { consider(b.morningPickup, "MORNING"); consider(b.morningDrop, "MORNING"); }
-  if (b.afternoonShift) { consider(b.afternoonPickup, "AFTERNOON"); consider(b.afternoonDrop, "AFTERNOON"); }
-  return (best as { shift: "MORNING" | "AFTERNOON" } | null)?.shift ?? null;
+    if (gap <= 90 && (!best || gap < best.gap)) best = { gap, shift: trip.shift };
+  }
+  return best?.shift ?? null;
 }
 
 /** Call on every GPS fix of a tracker that belongs to `institutionId`. */
@@ -150,26 +155,44 @@ export async function onBusFix(trackerId: string, fix: GpsFix, institutionId: st
     // parents: reached school, after a pickup trip
     if (!st.active && st.atSchool && st.ended?.order === "FORWARD" && now - st.ended.at < 10 * 60_000) {
       if (await once(`school:${trackerId}:${st.ended.at}`, 12 * 3600)) {
-        const who = listeners(tripShift(ctx.timings, st.ended.startedAt ?? st.ended.at)).map((r) => r.userId);
+        const who = listeners(tripShift(ctx.timings, st.ended.startedAt ?? st.ended.at, st.ended.order)).map((r) => r.userId);
         await pushToUsers(who, `🏫 ${ctx.name} reached school`, "The school bus has reached school.", { type: "BUS" });
       }
       return;
     }
     if (!st.active) return;
 
+    const shift = tripShift(ctx.timings, st.startedAt, st.order);
+
+    // parents: the bus has just left school (once per trip). Pickup or drop is only a
+    // guess from the timings at this point, so the drop wording is used only then.
+    if (now - st.startedAt < 5 * 60_000 && st.next === 0 && (await once(`left:${trackerId}:${st.startedAt}`, 12 * 3600))) {
+      const drop = st.order === "REVERSE";
+      await pushToUsers(
+        listeners(shift).map((r) => r.userId),
+        `🚌 ${ctx.name} left school`,
+        drop ? "The bus is on its way to drop the children home." : "The bus has left school and is on its way.",
+        { type: "BUS" },
+      );
+    }
+
     // parents: almost at your stop (route-aware ETA, once per trip per child)
-    const shift = tripShift(ctx.timings, st.startedAt);
     for (const r of listeners(shift)) {
       if (!r.stopId) continue;
       const eta = etaFromState(st, fix, ctx.stops, r.stopId);
       const coming = eta.atStop || (eta.stopsBefore === 0 && eta.etaMinutes != null && eta.etaMinutes <= ARRIVING_MIN);
-      if (!coming) continue;
+      // a short halt can fall between two checks: if the stop was reached in the last
+      // 3 min and the parent heard nothing yet, still tell them
+      const pos = ctx.stops.findIndex((s) => s.id === r.stopId);
+      const reachedAt = st.reached?.find((x) => x.s === pos)?.t;
+      const justReached = eta.passedStop && !!reachedAt && now - reachedAt < 3 * 60_000;
+      if (!coming && !justReached) continue;
       if (!(await once(`near:${trackerId}:${st.startedAt}:${r.userId}`, 12 * 3600))) continue;
       const stop = ctx.stops.find((s) => s.id === r.stopId)?.name ?? "your stop";
       await pushToUsers(
         [r.userId],
-        eta.atStop ? `🚌 ${ctx.name} is at your stop` : `🚌 ${ctx.name} is almost here`,
-        eta.atStop ? `The bus is at ${stop} now.` : `About ${Math.max(1, eta.etaMinutes ?? 1)} min from ${stop}. Please be ready at the stop.`,
+        eta.atStop || justReached ? `🚌 ${ctx.name} is at your stop` : `🚌 ${ctx.name} is almost here`,
+        eta.atStop || justReached ? `The bus is at ${stop} now.` : `About ${Math.max(1, eta.etaMinutes ?? 1)} min from ${stop}. Please be ready at the stop.`,
         { type: "BUS" },
       );
     }

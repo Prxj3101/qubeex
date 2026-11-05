@@ -1,6 +1,7 @@
 import express, { Router, Request, Response } from "express";
 import { forgetTrackerCache, saveFix, trackerInstitution, type GpsFix } from "../../services/gps.service";
 import { pushTrail } from "../../services/tripProgress";
+import { onBusFix } from "../../services/busAlerts.service";
 
 // Traccar (running next to the backend on the server) forwards every decoded GPS
 // position here, as JSON: { position: {...}, device: { uniqueId, ... } }.
@@ -29,7 +30,8 @@ router.post("/gps", express.json({ limit: "64kb" }), async (req: Request, res: R
       return;
     }
     // Only keep positions of trackers that a school has added to a bus
-    if (!(await trackerInstitution(trackerId))) {
+    const institutionId = await trackerInstitution(trackerId);
+    if (!institutionId) {
       res.status(204).end();
       return;
     }
@@ -45,6 +47,7 @@ router.post("/gps", express.json({ limit: "64kb" }), async (req: Request, res: R
     };
     await saveFix(trackerId, fix);
     await pushTrail(trackerId, fix); // short history, so the parent app can follow the trip stop by stop
+    void onBusFix(trackerId, fix, institutionId); // parent / admin alerts (never throws)
     res.status(204).end();
   } catch (err) {
     console.error("[gps] forward failed", err);

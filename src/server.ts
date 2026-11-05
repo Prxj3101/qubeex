@@ -12,6 +12,7 @@ import { startStorageCron } from "./crons/storage.cron";
 import { startHealthMonitorCron } from "./crons/healthMonitor.cron";
 import { startDeadlineReminderCron } from "./crons/deadlineReminder.cron";
 import { startApiMetricsFlusher } from "./services/systemHealth.service";
+import { startBusWatchdog } from "./services/busAlerts.service";
 
 const port = process.env.PORT || 3000;
 
@@ -48,4 +49,5 @@ app.listen(port, async () => {
   startHealthMonitorCron();
   startDeadlineReminderCron();
   startApiMetricsFlusher();
+  startBusWatchdog(); // admin alert when a bus on a trip stops sending its location
 });

@@ -98,3 +98,32 @@ export async function dispatchPush(
     await prisma.pushToken.deleteMany({ where: { token: { in: invalidTokens } } });
   }
 }
+
+/**
+ * Push straight to some users' devices, without an in-app notification row.
+ * For short-lived alerts (e.g. "bus is 2 min away") that would only clutter the
+ * notification list. Never throws.
+ */
+export async function pushToUsers(userIds: string[], title: string, body: string, data: Record<string, unknown> = {}): Promise<void> {
+  try {
+    const ids = [...new Set(userIds)].filter(Boolean);
+    if (!ids.length) return;
+    const tokens = await prisma.pushToken.findMany({ where: { userId: { in: ids } }, select: { token: true } });
+    const { Expo } = await loadExpo();
+    const messages: ExpoPushMessage[] = tokens
+      .filter((t) => Expo.isExpoPushToken(t.token))
+      .map((t) => ({ to: t.token, title, body, data, sound: "default", priority: "high" }));
+    if (!messages.length) return;
+    const expo = await getExpoClient();
+    const invalid: string[] = [];
+    for (const chunk of expo.chunkPushNotifications(messages)) {
+      try {
+        const receipts = await expo.sendPushNotificationsAsync(chunk);
+        receipts.forEach((r, i) => { if (r.status === "error" && r.details?.error === "DeviceNotRegistered") invalid.push(chunk[i].to as string); });
+      } catch (err) { console.error("[Push] chunk send failed:", (err as Error).message); }
+    }
+    if (invalid.length) await prisma.pushToken.deleteMany({ where: { token: { in: invalid } } });
+  } catch (err) {
+    console.error("[Push] pushToUsers failed:", (err as Error).message);
+  }
+}

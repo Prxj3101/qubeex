@@ -38,7 +38,7 @@ type TrailFix = { lat: number; lng: number; s: number; t: number }; // s = km/h,
 // order: from the bus timings at first (a guess); `confirmed` once the bus actually
 // stops at the first stop of that order (stop 1 for pickup, last stop for drop).
 // ended: how the last trip finished (a pickup trip parked at school = "reached school")
-type TripState = { atSchool: boolean; active: boolean; order: Order | null; confirmed?: boolean; next: number; lastT: number; startedAt: number; ended?: { order: Order | null; at: number } };
+export type TripState = { atSchool: boolean; active: boolean; order: Order | null; confirmed?: boolean; next: number; lastT: number; startedAt: number; ended?: { order: Order | null; at: number; startedAt?: number } };
 
 export type BusTimings = {
   morningShift: boolean; afternoonShift: boolean;
@@ -81,6 +81,9 @@ async function readState(trackerId: string): Promise<TripState | null> {
   }
   return memState.get(trackerId) ?? null;
 }
+
+/** Current trip state of a tracker (no update), e.g. for the offline watchdog. */
+export const readTripState = (trackerId: string) => readState(trackerId);
 
 async function writeState(trackerId: string, st: TripState): Promise<void> {
   memState.set(trackerId, st);
@@ -125,7 +128,7 @@ function advance(st: TripState, fixes: TrailFix[], stops: Pt[], school: Pt | nul
       if (!inSchool) st = { atSchool: false, active: true, order: orderFromTimings(bus, f.t), confirmed: false, next: 0, lastT: f.t, startedAt: f.t }; // left school: new trip
     } else if (parkedAtSchool) {
       // parked back at school: trip over (remember which way it went, for "reached school")
-      const ended = st.active && confirmedOf(st) ? { order: st.order, at: f.t } : st.ended;
+      const ended = st.active && confirmedOf(st) ? { order: st.order, at: f.t, startedAt: st.startedAt } : st.ended;
       st = { ...st, atSchool: true, active: false, order: null, confirmed: false, next: 0, ended };
     } else if (st.active && !confirmedOf(st)) {
       // Which way is it going? The first stop it actually stops at tells us:
@@ -169,7 +172,7 @@ function standingAtOf(st: TripState, fix: GpsFix, stops: (Pt & { name: string })
 }
 
 /** Bring the trip state up to date with the GPS trail (shared by the parent app and the admin map). */
-async function syncTrip(trackerId: string, fix: GpsFix, stops: Pt[], school: Pt | null, bus: BusTimings): Promise<TripState> {
+export async function syncTrip(trackerId: string, fix: GpsFix, stops: Pt[], school: Pt | null, bus: BusTimings): Promise<TripState> {
   let st = await readState(trackerId);
   if (!st) {
     // first look at this bus: start from where it is now
@@ -228,10 +231,15 @@ export type StopEta = {
 export async function stopEta(
   trackerId: string, fix: GpsFix, stops: (Pt & { id: string; name: string })[], school: Pt | null, bus: BusTimings, myStopId: string,
 ): Promise<StopEta> {
-  const none: StopEta = { etaMinutes: null, atStop: false, passedStop: false, stopsBefore: null, standingAt: null, reachedSchool: false };
-  if (!stops.length) return none;
-  const st = await syncTrip(trackerId, fix, stops, school, bus);
+  if (!stops.length) return NO_ETA;
+  return etaFromState(await syncTrip(trackerId, fix, stops, school, bus), fix, stops, myStopId);
+}
 
+const NO_ETA: StopEta = { etaMinutes: null, atStop: false, passedStop: false, stopsBefore: null, standingAt: null, reachedSchool: false };
+
+/** Same as stopEta, from an already up-to-date trip state (the alert engine checks many children at once). */
+export function etaFromState(st: TripState, fix: GpsFix, stops: (Pt & { id: string; name: string })[], myStopId: string): StopEta {
+  const none = NO_ETA;
   const mine = stops.find((s) => s.id === myStopId);
   if (!mine) return none;
   const here = distanceKm(fix, mine);

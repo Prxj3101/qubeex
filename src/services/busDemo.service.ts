@@ -1,5 +1,6 @@
 import { distanceKm, saveFix } from "./gps.service";
 import { pushTrail } from "./tripProgress";
+import { forgetTrackers, onBusFix } from "./busAlerts.service";
 
 // Demo buses, started from the admin Transport page ("Start demo").
 //
@@ -75,6 +76,7 @@ export function startDemo(institutionId: string, school: Pt, buses: DemoBus[]) {
     const fix = { lat: p.lat, lng: p.lng, speedKmh: Math.round(speedKmh * 10) / 10, course: Math.round(course), fixTime: now, receivedAt: now };
     await saveFix(trackerId, fix);
     await pushTrail(trackerId, fix);
+    void onBusFix(trackerId, fix, institutionId); // same alerts as a real bus
   };
 
   const drive = async (bus: DemoBus, index: number) => {
@@ -126,7 +128,8 @@ export function startDemo(institutionId: string, school: Pt, buses: DemoBus[]) {
 
   const startedAt = Date.now();
   const endsAt = startedAt + DEMO_MINUTES * 60_000;
-  const stop = () => { stopped = true; timers.forEach(clearTimeout); };
+  // stopping mid-trip must not look like a bus that lost signal
+  const stop = () => { stopped = true; timers.forEach(clearTimeout); forgetTrackers(buses.map((b) => b.trackerId)); };
   timers.add(setTimeout(() => stopDemo(institutionId), DEMO_MINUTES * 60_000));
   running.set(institutionId, { startedAt, endsAt, stop, buses: buses.map((b) => b.name) });
   buses.forEach((b, i) => { drive(b, i).catch((err) => console.error("[bus-demo]", b.name, err)); });

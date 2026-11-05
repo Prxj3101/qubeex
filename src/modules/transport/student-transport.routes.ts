@@ -6,6 +6,7 @@ import { academicDb } from "../../utils/academicContext";
 import { prisma } from "../../utils/prisma";
 import { getFixes, isOnline } from "../../services/gps.service";
 import { stopEta } from "../../services/tripProgress";
+import { BUS_ALERTS_KEY, forgetBusAlertCache } from "../../services/busAlerts.service";
 import { isCombinedMidday, stopTimes, type Shift } from "../../services/transportSchedule";
 
 // Student / parent app: "My bus" — the child's bus, its route and stops, the
@@ -17,7 +18,7 @@ router.use(authMiddleware(["STUDENT"]), institutionAccessMiddleware, academicRou
 router.get("/", async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.userId;
-    const student = await academicDb().student.findFirst({ where: { userId }, select: { id: true } });
+    const student = await academicDb().student.findFirst({ where: { userId }, select: { id: true, extraDetailFields: true } });
     if (!student) {
       res.json({ success: true, data: null });
       return;
@@ -72,9 +73,27 @@ router.get("/", async (req: AuthRequest, res: Response, next: NextFunction) => {
         online,
         // route-aware: follows the trip stop by stop (see tripProgress.ts)
         ...live,
+        // phone alerts ("bus is 2 min away", "reached school"); parents can switch them off
+        alertsOn: ((student.extraDetailFields ?? {}) as Record<string, unknown>)[BUS_ALERTS_KEY] !== "off",
         serverTime: new Date().toISOString(),
       },
     });
+  } catch (err) { next(err); }
+});
+
+// Bus alerts on / off for this child
+router.put("/alerts", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const on = (req.body as { on?: unknown })?.on;
+    if (typeof on !== "boolean") { res.status(400).json({ success: false, message: "on must be true or false" }); return; }
+    const student = await academicDb().student.findFirst({ where: { userId: req.user!.userId }, select: { id: true, extraDetailFields: true } });
+    if (!student) { res.status(404).json({ success: false, message: "Student not found" }); return; }
+    const fields = { ...((student.extraDetailFields ?? {}) as Record<string, unknown>) };
+    if (on) delete fields[BUS_ALERTS_KEY];
+    else fields[BUS_ALERTS_KEY] = "off";
+    await academicDb().student.update({ where: { id: student.id }, data: { extraDetailFields: fields as object } });
+    forgetBusAlertCache();
+    res.json({ success: true, data: { alertsOn: on } });
   } catch (err) { next(err); }
 });
 

@@ -5,6 +5,7 @@ import { createNotification } from "./notification.service";
 import { pushToUsers } from "./pushNotification.service";
 import { readTripState, etaFromState, syncTrip, type BusTimings } from "./tripProgress";
 import type { GpsFix } from "./gps.service";
+import { recordTrips } from "./busTrips.service";
 
 // Bus alerts, worked out on every GPS fix (real tracker or demo bus):
 //   parents  - "Bus is ~2 min from your stop"   (once per trip, per child)
@@ -27,6 +28,7 @@ type Pt = { lat: number; lng: number };
 type Ctx = {
   at: number;
   institutionId: string;
+  busId: string;
   name: string;
   timings: BusTimings;
   stops: (Pt & { id: string; name: string })[];
@@ -72,6 +74,7 @@ async function loadCtx(trackerId: string, institutionId: string): Promise<Ctx | 
   const ctx: Ctx = {
     at: Date.now(),
     institutionId,
+    busId: bus.id,
     name: bus.name,
     timings: bus,
     stops: bus.route?.stops ?? [],
@@ -138,8 +141,10 @@ export async function onBusFix(trackerId: string, fix: GpsFix, institutionId: st
     if (now - (lastEval.get(trackerId) ?? 0) < EVAL_EVERY_MS) return;
     lastEval.set(trackerId, now);
     const ctx = await loadCtx(trackerId, institutionId);
-    if (!ctx || !ctx.stops.length || !ctx.riders.length) return;
+    if (!ctx || !ctx.stops.length) return;
     const st = await syncTrip(trackerId, fix, ctx.stops, ctx.school, ctx.timings);
+    await recordTrips(ctx.institutionId, ctx.busId, st, ctx.stops, ctx.school, ctx.timings); // trip history
+    if (!ctx.riders.length) return;
     const listeners = (shift: ReturnType<typeof tripShift>) => ctx.riders.filter((r) => !r.alertsOff && (!shift || r.shift === shift));
 
     // parents: reached school, after a pickup trip

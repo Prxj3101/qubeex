@@ -2337,9 +2337,31 @@ model TransportBus {
   updatedAt     DateTime           @updatedAt
   route         TransportRoute?    @relation(fields: [routeId], references: [id], onDelete: SetNull)
   students      StudentTransport[]
+  trips         TransportTrip[]
 
   @@unique([institutionId, nameKey])
   @@unique([trackerId])
+}
+
+model TransportTrip {
+  id            String       @id @default(uuid())
+  institutionId String
+  busId         String
+  /// YYYY-MM-DD (India time) the trip started
+  day           String
+  /// PICKUP | DROP | UNKNOWN (direction not known yet)
+  kind          String       @default("UNKNOWN")
+  startedAt     DateTime
+  endedAt       DateTime?
+  /// [{ stopId, name, plannedAt: "HH:MM" | null, reachedAt: ISO | null }] in the order the bus drives them
+  stops         Json         @default("[]")
+  maxSpeedKmh   Float        @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  bus           TransportBus @relation(fields: [busId], references: [id], onDelete: Cascade)
+
+  @@unique([busId, startedAt])
+  @@index([institutionId, day])
 }
 
 model StudentTransport {

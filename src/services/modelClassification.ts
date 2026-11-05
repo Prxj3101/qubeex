@@ -47,6 +47,7 @@ export const ACADEMIC_MODELS = [
   "TransportStop",
   "TransportBus",
   "StudentTransport",
+  "TransportTrip",
   "AdmissionApplication",
   "InventorySetupOrder",
   "InventoryPurchaseOrder",

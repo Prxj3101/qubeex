@@ -24,12 +24,21 @@ type Pt = { lat: number; lng: number };
 type Named = Pt & { name: string };
 export type DemoBus = { trackerId: string; name: string; stops: Named[] };
 
-type Demo = { startedAt: number; endsAt: number; stop: () => void; buses: string[] };
+// speed: 1x (real), 2x or 3x - the buses drive and wait that much faster (can change while running)
+type Demo = { startedAt: number; endsAt: number; stop: () => void; buses: string[]; speed: number };
+export const DEMO_SPEEDS = [1, 2, 3] as const;
 const running = new Map<string, Demo>(); // by institution
 
 export function demoStatus(institutionId: string) {
   const d = running.get(institutionId);
-  return d ? { running: true, startedAt: new Date(d.startedAt).toISOString(), endsAt: new Date(d.endsAt).toISOString(), buses: d.buses } : { running: false };
+  return d ? { running: true, startedAt: new Date(d.startedAt).toISOString(), endsAt: new Date(d.endsAt).toISOString(), buses: d.buses, speed: d.speed } : { running: false };
+}
+
+/** Change the speed of a running demo (takes effect on the next step). */
+export function setDemoSpeed(institutionId: string, speed: number) {
+  const d = running.get(institutionId);
+  if (d) d.speed = speed;
+  return demoStatus(institutionId);
 }
 
 export function stopDemo(institutionId: string) {
@@ -64,9 +73,10 @@ const bearing = (a: Pt, b: Pt) => {
 };
 
 /** Start (or restart) the demo for a school. `school` = where every trip starts and ends. */
-export function startDemo(institutionId: string, school: Pt, buses: DemoBus[]) {
+export function startDemo(institutionId: string, school: Pt, buses: DemoBus[], speed = 1) {
   stopDemo(institutionId);
   let stopped = false;
+  const fast = () => running.get(institutionId)?.speed ?? speed; // current speed (1x / 2x / 3x)
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const sleep = (ms: number) => new Promise<void>((res) => { const t = setTimeout(() => { timers.delete(t); res(); }, ms); timers.add(t); });
 
@@ -87,7 +97,7 @@ export function startDemo(institutionId: string, school: Pt, buses: DemoBus[]) {
     await sleep(index * 4000); // buses leave a little apart
     while (!stopped) {
       // parked at school
-      for (let s = 0; s < SCHOOL_WAIT_S && !stopped; s += TICK_S) { await send(bus.trackerId, pos, 0, course); await sleep(TICK_S * 1000); }
+      for (let s = 0; s < SCHOOL_WAIT_S && !stopped; s += TICK_S * fast()) { await send(bus.trackerId, pos, 0, course); await sleep(TICK_S * 1000); }
       const order = kind === "PICKUP" ? bus.stops : [...bus.stops].reverse();
       const points: Named[] = [home, ...order, home];
       for (let li = 0; li < points.length - 1 && !stopped; li++) {
@@ -100,7 +110,7 @@ export function startDemo(institutionId: string, school: Pt, buses: DemoBus[]) {
         while (i < path.length - 1 && !stopped) {
           const left = distanceKm(pos, to);
           const speed = left < 0.12 ? Math.max(8, cruise * 0.45) : cruise * (0.85 + Math.random() * 0.3);
-          let step = (speed / 3600) * TICK_S;
+          let step = (speed / 3600) * TICK_S * fast(); // reported speed stays real; it just covers more road per update
           while (step > 0 && i < path.length - 1) {
             const seg = distanceKm(path[i], path[i + 1]);
             if (along + step < seg) { along += step; step = 0; }
@@ -119,7 +129,7 @@ export function startDemo(institutionId: string, school: Pt, buses: DemoBus[]) {
         if (li < points.length - 2) {
           // at a stop: children get on / off
           const wait = STOP_WAIT_S[0] + Math.random() * (STOP_WAIT_S[1] - STOP_WAIT_S[0]);
-          for (let s = 0; s < wait && !stopped; s += TICK_S) { await send(bus.trackerId, pos, 0, course); await sleep(TICK_S * 1000); }
+          for (let s = 0; s < wait && !stopped; s += TICK_S * fast()) { await send(bus.trackerId, pos, 0, course); await sleep(TICK_S * 1000); }
         }
       }
       kind = kind === "PICKUP" ? "DROP" : "PICKUP";
@@ -131,7 +141,7 @@ export function startDemo(institutionId: string, school: Pt, buses: DemoBus[]) {
   // stopping mid-trip must not look like a bus that lost signal
   const stop = () => { stopped = true; timers.forEach(clearTimeout); forgetTrackers(buses.map((b) => b.trackerId)); };
   timers.add(setTimeout(() => stopDemo(institutionId), DEMO_MINUTES * 60_000));
-  running.set(institutionId, { startedAt, endsAt, stop, buses: buses.map((b) => b.name) });
+  running.set(institutionId, { startedAt, endsAt, stop, buses: buses.map((b) => b.name), speed });
   buses.forEach((b, i) => { drive(b, i).catch((err) => console.error("[bus-demo]", b.name, err)); });
   return demoStatus(institutionId);
 }

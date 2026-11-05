@@ -11,7 +11,9 @@ import { resolveUsers } from "../../services/userLookup.service";
 import { generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { forgetTrackerCache, getFixes, isOnline } from "../../services/gps.service";
 import { busTrip } from "../../services/tripProgress";
-import { demoStatus, SIM_PREFIX, startDemo, stopDemo } from "../../services/busDemo.service";
+import { DEMO_SPEEDS, demoStatus, setDemoSpeed, SIM_PREFIX, startDemo, stopDemo } from "../../services/busDemo.service";
+
+const demoSpeed = (v: unknown) => (DEMO_SPEEDS as readonly number[]).includes(Number(v)) ? Number(v) : 1;
 import { assignStudentBus, BUS_REQUEST_KEY, busFeeMonths, removeStudentBus, renameBusOnFeeCards } from "../../services/studentBus.service";
 
 // Admin: Transport (routes, stops, buses, who rides which bus) + live bus map.
@@ -134,6 +136,24 @@ router.get("/live", async (req: AuthRequest, res: Response, next: NextFunction) 
   } catch (err) { next(err); }
 });
 
+// ── Trip history: every trip of a day (Transport -> History) ────────────────
+router.get("/trips", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = institution(req);
+    const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).parse(req.query.day);
+    const busId = req.query.busId ? idSchema.parse(req.query.busId) : undefined;
+    const trips = await academicDb().transportTrip.findMany({
+      where: { institutionId, day, ...(busId ? { busId } : {}) },
+      orderBy: { startedAt: "asc" },
+      select: {
+        id: true, busId: true, kind: true, startedAt: true, endedAt: true, stops: true, maxSpeedKmh: true,
+        bus: { select: { name: true, plateNumber: true, route: { select: { name: true, color: true } } } },
+      },
+    });
+    res.json({ success: true, data: trips });
+  } catch (err) { next(err); }
+});
+
 // ── Demo buses (for showing the product): moves only "sim-" buses ───────────
 router.get("/demo", (req: AuthRequest, res: Response) => {
   res.json({ success: true, data: demoStatus(institution(req)) });
@@ -153,9 +173,13 @@ router.post("/demo/start", async (req: AuthRequest, res: Response, next: NextFun
     if (inst?.schoolLat == null || inst.schoolLng == null) throw new BadRequestError("Set the school location first");
     const ready = buses.filter((b) => b.trackerId && b.route?.stops.length);
     if (!ready.length) throw new BadRequestError(`No demo buses. Give a bus a route and a tracker id starting with "${SIM_PREFIX}", e.g. ${SIM_PREFIX}bus-1`);
-    const data = startDemo(institutionId, { lat: inst.schoolLat, lng: inst.schoolLng }, ready.map((b) => ({ trackerId: b.trackerId!, name: b.name, stops: b.route!.stops })));
+    const data = startDemo(institutionId, { lat: inst.schoolLat, lng: inst.schoolLng }, ready.map((b) => ({ trackerId: b.trackerId!, name: b.name, stops: b.route!.stops })), demoSpeed((req.body as { speed?: unknown })?.speed));
     res.json({ success: true, data });
   } catch (err) { next(err); }
+});
+
+router.post("/demo/speed", (req: AuthRequest, res: Response) => {
+  res.json({ success: true, data: setDemoSpeed(institution(req), demoSpeed((req.body as { speed?: unknown })?.speed)) });
 });
 
 router.post("/demo/stop", (req: AuthRequest, res: Response) => {

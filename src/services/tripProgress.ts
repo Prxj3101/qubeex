@@ -38,7 +38,14 @@ type TrailFix = { lat: number; lng: number; s: number; t: number }; // s = km/h,
 // order: from the bus timings at first (a guess); `confirmed` once the bus actually
 // stops at the first stop of that order (stop 1 for pickup, last stop for drop).
 // ended: how the last trip finished (a pickup trip parked at school = "reached school")
-export type TripState = { atSchool: boolean; active: boolean; order: Order | null; confirmed?: boolean; next: number; lastT: number; startedAt: number; ended?: { order: Order | null; at: number; startedAt?: number } };
+// reached: stops reached on this trip, as route positions (0 = stop 1) + time, for the trip history.
+// vmax: top speed on this trip. ended: the last finished trip (kept for "reached school" and history).
+export type Reached = { s: number; t: number };
+export type EndedTrip = { order: Order | null; at: number; startedAt?: number; reached?: Reached[]; vmax?: number };
+export type TripState = {
+  atSchool: boolean; active: boolean; order: Order | null; confirmed?: boolean; next: number; lastT: number; startedAt: number;
+  reached?: Reached[]; vmax?: number; ended?: EndedTrip;
+};
 
 export type BusTimings = {
   morningShift: boolean; afternoonShift: boolean;
@@ -118,36 +125,42 @@ const confirmedOf = (st: TripState) => st.confirmed ?? st.next > 0;
 function advance(st: TripState, fixes: TrailFix[], stops: Pt[], school: Pt | null, bus: BusTimings): TripState {
   const n = stops.length;
   const ordered = (o: Order) => (o === "FORWARD" ? stops : [...stops].reverse());
+  // remember "reached position k of the trip" as a route position (stop 1 = 0)
+  const mark = (k: number, t: number, o: Order | null) => {
+    const s = o === "REVERSE" ? n - 1 - k : k;
+    st.reached = [...(st.reached ?? []).filter((r) => r.s !== s), { s, t }];
+  };
   for (const f of fixes) {
+    if (st.active) st.vmax = Math.max(st.vmax ?? 0, f.s);
     const toSchool = school ? distanceKm(f, school) : Infinity;
     const inSchool = toSchool < SCHOOL_KM;
     // Parked AT school, not at a stop that happens to be near the school (e.g. a
     // stop 150 m from the gate): the school must be the closest place.
     const parkedAtSchool = inSchool && f.s < SLOW_KMH && stops.every((p) => distanceKm(f, p) > toSchool);
     if (st.atSchool) {
-      if (!inSchool) st = { atSchool: false, active: true, order: orderFromTimings(bus, f.t), confirmed: false, next: 0, lastT: f.t, startedAt: f.t }; // left school: new trip
+      if (!inSchool) st = { atSchool: false, active: true, order: orderFromTimings(bus, f.t), confirmed: false, next: 0, lastT: f.t, startedAt: f.t, reached: [], vmax: f.s, ended: st.ended }; // left school: new trip
     } else if (parkedAtSchool) {
       // parked back at school: trip over (remember which way it went, for "reached school")
-      const ended = st.active && confirmedOf(st) ? { order: st.order, at: f.t, startedAt: st.startedAt } : st.ended;
-      st = { ...st, atSchool: true, active: false, order: null, confirmed: false, next: 0, ended };
+      const ended = st.active && confirmedOf(st) ? { order: st.order, at: f.t, startedAt: st.startedAt, reached: st.reached ?? [], vmax: st.vmax ?? 0 } : st.ended;
+      st = { ...st, atSchool: true, active: false, order: null, confirmed: false, next: 0, reached: [], vmax: 0, ended };
     } else if (st.active && !confirmedOf(st)) {
       // Which way is it going? The first stop it actually stops at tells us:
       // stop 1 -> pickup order, last stop -> drop order. Until then nothing is
       // ticked off, so driving past other stops on the way out changes nothing
       // (and a wrong guess from the timings gets corrected here).
       if (f.s < SLOW_KMH) {
-        if (distanceKm(f, stops[0]) < REACH_KM) st = { ...st, order: "FORWARD", confirmed: true, next: 1 };
-        else if (n > 1 && distanceKm(f, stops[n - 1]) < REACH_KM) st = { ...st, order: "REVERSE", confirmed: true, next: 1 };
+        if (distanceKm(f, stops[0]) < REACH_KM) { st = { ...st, order: "FORWARD", confirmed: true, next: 1 }; mark(0, f.t, "FORWARD"); }
+        else if (n > 1 && distanceKm(f, stops[n - 1]) < REACH_KM) { st = { ...st, order: "REVERSE", confirmed: true, next: 1 }; mark(0, f.t, "REVERSE"); }
       }
     } else if (st.active && st.order) {
       const list = ordered(st.order);
       // the next stop counts once the bus is really there: stopped at it, or driving
       // right over it (no one waiting) - not already when it's 80 m before it
       const dNext = st.next < n ? distanceKm(f, list[st.next]) : Infinity;
-      if (dNext < PASS_KM || (dNext < REACH_KM && f.s < SLOW_KMH)) st.next += 1;
+      if (dNext < PASS_KM || (dNext < REACH_KM && f.s < SLOW_KMH)) { mark(st.next, f.t, st.order); st.next += 1; }
       else if (f.s < SLOW_KMH) {
         // stopped at a later stop (an earlier one was skipped, e.g. nobody there)
-        for (let k = st.next + 1; k < n; k++) if (distanceKm(f, list[k]) < REACH_KM) { st.next = k + 1; break; }
+        for (let k = st.next + 1; k < n; k++) if (distanceKm(f, list[k]) < REACH_KM) { mark(k, f.t, st.order); st.next = k + 1; break; }
       }
     }
     st.lastT = f.t;

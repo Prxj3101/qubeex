@@ -155,7 +155,13 @@ export const ModelName = {
   TransportStop: 'TransportStop',
   TransportBus: 'TransportBus',
   TransportTrip: 'TransportTrip',
-  StudentTransport: 'StudentTransport'
+  StudentTransport: 'StudentTransport',
+  LibrarySettings: 'LibrarySettings',
+  LibraryRule: 'LibraryRule',
+  LibraryBook: 'LibraryBook',
+  LibraryCopy: 'LibraryCopy',
+  LibraryLoan: 'LibraryLoan',
+  LibraryFine: 'LibraryFine'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1982,6 +1988,105 @@ export const StudentTransportScalarFieldEnum = {
 } as const
 
 export type StudentTransportScalarFieldEnum = (typeof StudentTransportScalarFieldEnum)[keyof typeof StudentTransportScalarFieldEnum]
+
+
+export const LibrarySettingsScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  finesMode: 'finesMode',
+  rulesConfigured: 'rulesConfigured',
+  dueSoonDays: 'dueSoonDays',
+  lostChargePaise: 'lostChargePaise',
+  damagedChargePaise: 'damagedChargePaise',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibrarySettingsScalarFieldEnum = (typeof LibrarySettingsScalarFieldEnum)[keyof typeof LibrarySettingsScalarFieldEnum]
+
+
+export const LibraryRuleScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  borrowerType: 'borrowerType',
+  maxBooks: 'maxBooks',
+  loanDays: 'loanDays',
+  maxRenewals: 'maxRenewals',
+  finePerDayPaise: 'finePerDayPaise',
+  graceDays: 'graceDays',
+  fineCapPaise: 'fineCapPaise',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibraryRuleScalarFieldEnum = (typeof LibraryRuleScalarFieldEnum)[keyof typeof LibraryRuleScalarFieldEnum]
+
+
+export const LibraryBookScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  title: 'title',
+  author: 'author',
+  isbn: 'isbn',
+  category: 'category',
+  language: 'language',
+  shelf: 'shelf',
+  pricePaise: 'pricePaise',
+  coverUrl: 'coverUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibraryBookScalarFieldEnum = (typeof LibraryBookScalarFieldEnum)[keyof typeof LibraryBookScalarFieldEnum]
+
+
+export const LibraryCopyScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  bookId: 'bookId',
+  accessionCode: 'accessionCode',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibraryCopyScalarFieldEnum = (typeof LibraryCopyScalarFieldEnum)[keyof typeof LibraryCopyScalarFieldEnum]
+
+
+export const LibraryLoanScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  copyId: 'copyId',
+  borrowerUserId: 'borrowerUserId',
+  borrowerType: 'borrowerType',
+  issuedAt: 'issuedAt',
+  dueAt: 'dueAt',
+  returnedAt: 'returnedAt',
+  renewals: 'renewals',
+  issuedById: 'issuedById',
+  returnedById: 'returnedById',
+  lastRemindedAt: 'lastRemindedAt'
+} as const
+
+export type LibraryLoanScalarFieldEnum = (typeof LibraryLoanScalarFieldEnum)[keyof typeof LibraryLoanScalarFieldEnum]
+
+
+export const LibraryFineScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  loanId: 'loanId',
+  borrowerUserId: 'borrowerUserId',
+  kind: 'kind',
+  amountPaise: 'amountPaise',
+  status: 'status',
+  collectedVia: 'collectedVia',
+  paidAt: 'paidAt',
+  collectedById: 'collectedById',
+  waivedReason: 'waivedReason',
+  createdAt: 'createdAt'
+} as const
+
+export type LibraryFineScalarFieldEnum = (typeof LibraryFineScalarFieldEnum)[keyof typeof LibraryFineScalarFieldEnum]
 
 
 export const SortOrder = {

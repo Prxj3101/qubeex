@@ -501,7 +501,13 @@ export const ModelName = {
   TransportStop: 'TransportStop',
   TransportBus: 'TransportBus',
   TransportTrip: 'TransportTrip',
-  StudentTransport: 'StudentTransport'
+  StudentTransport: 'StudentTransport',
+  LibrarySettings: 'LibrarySettings',
+  LibraryRule: 'LibraryRule',
+  LibraryBook: 'LibraryBook',
+  LibraryCopy: 'LibraryCopy',
+  LibraryLoan: 'LibraryLoan',
+  LibraryFine: 'LibraryFine'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -517,7 +523,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "feeReceipt" | "feeReminder" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "timetableAiMessage" | "timetableVersion" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication" | "parentChatSettings" | "parentChatThread" | "parentChatMessage" | "parentForm" | "parentFormTarget" | "parentFormResponse" | "ptmSession" | "ptmSlot" | "transportRoute" | "transportStop" | "transportBus" | "transportTrip" | "studentTransport"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "feeReceipt" | "feeReminder" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "timetableAiMessage" | "timetableVersion" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication" | "parentChatSettings" | "parentChatThread" | "parentChatMessage" | "parentForm" | "parentFormTarget" | "parentFormResponse" | "ptmSession" | "ptmSlot" | "transportRoute" | "transportStop" | "transportBus" | "transportTrip" | "studentTransport" | "librarySettings" | "libraryRule" | "libraryBook" | "libraryCopy" | "libraryLoan" | "libraryFine"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -8291,6 +8297,450 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LibrarySettings: {
+      payload: Prisma.$LibrarySettingsPayload<ExtArgs>
+      fields: Prisma.LibrarySettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LibrarySettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LibrarySettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.LibrarySettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LibrarySettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>
+        }
+        findMany: {
+          args: Prisma.LibrarySettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>[]
+        }
+        create: {
+          args: Prisma.LibrarySettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>
+        }
+        createMany: {
+          args: Prisma.LibrarySettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LibrarySettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.LibrarySettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>
+        }
+        update: {
+          args: Prisma.LibrarySettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.LibrarySettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LibrarySettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LibrarySettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.LibrarySettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibrarySettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.LibrarySettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLibrarySettings>
+        }
+        groupBy: {
+          args: Prisma.LibrarySettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibrarySettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LibrarySettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibrarySettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    LibraryRule: {
+      payload: Prisma.$LibraryRulePayload<ExtArgs>
+      fields: Prisma.LibraryRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LibraryRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LibraryRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>
+        }
+        findFirst: {
+          args: Prisma.LibraryRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LibraryRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>
+        }
+        findMany: {
+          args: Prisma.LibraryRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>[]
+        }
+        create: {
+          args: Prisma.LibraryRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>
+        }
+        createMany: {
+          args: Prisma.LibraryRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LibraryRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>[]
+        }
+        delete: {
+          args: Prisma.LibraryRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>
+        }
+        update: {
+          args: Prisma.LibraryRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.LibraryRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LibraryRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LibraryRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.LibraryRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryRulePayload>
+        }
+        aggregate: {
+          args: Prisma.LibraryRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLibraryRule>
+        }
+        groupBy: {
+          args: Prisma.LibraryRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LibraryRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryRuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    LibraryBook: {
+      payload: Prisma.$LibraryBookPayload<ExtArgs>
+      fields: Prisma.LibraryBookFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LibraryBookFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LibraryBookFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>
+        }
+        findFirst: {
+          args: Prisma.LibraryBookFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LibraryBookFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>
+        }
+        findMany: {
+          args: Prisma.LibraryBookFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>[]
+        }
+        create: {
+          args: Prisma.LibraryBookCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>
+        }
+        createMany: {
+          args: Prisma.LibraryBookCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LibraryBookCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>[]
+        }
+        delete: {
+          args: Prisma.LibraryBookDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>
+        }
+        update: {
+          args: Prisma.LibraryBookUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>
+        }
+        deleteMany: {
+          args: Prisma.LibraryBookDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LibraryBookUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LibraryBookUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>[]
+        }
+        upsert: {
+          args: Prisma.LibraryBookUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryBookPayload>
+        }
+        aggregate: {
+          args: Prisma.LibraryBookAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLibraryBook>
+        }
+        groupBy: {
+          args: Prisma.LibraryBookGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryBookGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LibraryBookCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryBookCountAggregateOutputType> | number
+        }
+      }
+    }
+    LibraryCopy: {
+      payload: Prisma.$LibraryCopyPayload<ExtArgs>
+      fields: Prisma.LibraryCopyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LibraryCopyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LibraryCopyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>
+        }
+        findFirst: {
+          args: Prisma.LibraryCopyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LibraryCopyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>
+        }
+        findMany: {
+          args: Prisma.LibraryCopyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>[]
+        }
+        create: {
+          args: Prisma.LibraryCopyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>
+        }
+        createMany: {
+          args: Prisma.LibraryCopyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LibraryCopyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>[]
+        }
+        delete: {
+          args: Prisma.LibraryCopyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>
+        }
+        update: {
+          args: Prisma.LibraryCopyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>
+        }
+        deleteMany: {
+          args: Prisma.LibraryCopyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LibraryCopyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LibraryCopyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>[]
+        }
+        upsert: {
+          args: Prisma.LibraryCopyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryCopyPayload>
+        }
+        aggregate: {
+          args: Prisma.LibraryCopyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLibraryCopy>
+        }
+        groupBy: {
+          args: Prisma.LibraryCopyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryCopyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LibraryCopyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryCopyCountAggregateOutputType> | number
+        }
+      }
+    }
+    LibraryLoan: {
+      payload: Prisma.$LibraryLoanPayload<ExtArgs>
+      fields: Prisma.LibraryLoanFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LibraryLoanFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LibraryLoanFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>
+        }
+        findFirst: {
+          args: Prisma.LibraryLoanFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LibraryLoanFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>
+        }
+        findMany: {
+          args: Prisma.LibraryLoanFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>[]
+        }
+        create: {
+          args: Prisma.LibraryLoanCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>
+        }
+        createMany: {
+          args: Prisma.LibraryLoanCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LibraryLoanCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>[]
+        }
+        delete: {
+          args: Prisma.LibraryLoanDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>
+        }
+        update: {
+          args: Prisma.LibraryLoanUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>
+        }
+        deleteMany: {
+          args: Prisma.LibraryLoanDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LibraryLoanUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LibraryLoanUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>[]
+        }
+        upsert: {
+          args: Prisma.LibraryLoanUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryLoanPayload>
+        }
+        aggregate: {
+          args: Prisma.LibraryLoanAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLibraryLoan>
+        }
+        groupBy: {
+          args: Prisma.LibraryLoanGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryLoanGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LibraryLoanCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryLoanCountAggregateOutputType> | number
+        }
+      }
+    }
+    LibraryFine: {
+      payload: Prisma.$LibraryFinePayload<ExtArgs>
+      fields: Prisma.LibraryFineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LibraryFineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LibraryFineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>
+        }
+        findFirst: {
+          args: Prisma.LibraryFineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LibraryFineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>
+        }
+        findMany: {
+          args: Prisma.LibraryFineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>[]
+        }
+        create: {
+          args: Prisma.LibraryFineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>
+        }
+        createMany: {
+          args: Prisma.LibraryFineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LibraryFineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>[]
+        }
+        delete: {
+          args: Prisma.LibraryFineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>
+        }
+        update: {
+          args: Prisma.LibraryFineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>
+        }
+        deleteMany: {
+          args: Prisma.LibraryFineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LibraryFineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LibraryFineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>[]
+        }
+        upsert: {
+          args: Prisma.LibraryFineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LibraryFinePayload>
+        }
+        aggregate: {
+          args: Prisma.LibraryFineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLibraryFine>
+        }
+        groupBy: {
+          args: Prisma.LibraryFineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryFineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LibraryFineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LibraryFineCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -10140,6 +10590,105 @@ export const StudentTransportScalarFieldEnum = {
 export type StudentTransportScalarFieldEnum = (typeof StudentTransportScalarFieldEnum)[keyof typeof StudentTransportScalarFieldEnum]
 
 
+export const LibrarySettingsScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  finesMode: 'finesMode',
+  rulesConfigured: 'rulesConfigured',
+  dueSoonDays: 'dueSoonDays',
+  lostChargePaise: 'lostChargePaise',
+  damagedChargePaise: 'damagedChargePaise',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibrarySettingsScalarFieldEnum = (typeof LibrarySettingsScalarFieldEnum)[keyof typeof LibrarySettingsScalarFieldEnum]
+
+
+export const LibraryRuleScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  borrowerType: 'borrowerType',
+  maxBooks: 'maxBooks',
+  loanDays: 'loanDays',
+  maxRenewals: 'maxRenewals',
+  finePerDayPaise: 'finePerDayPaise',
+  graceDays: 'graceDays',
+  fineCapPaise: 'fineCapPaise',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibraryRuleScalarFieldEnum = (typeof LibraryRuleScalarFieldEnum)[keyof typeof LibraryRuleScalarFieldEnum]
+
+
+export const LibraryBookScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  title: 'title',
+  author: 'author',
+  isbn: 'isbn',
+  category: 'category',
+  language: 'language',
+  shelf: 'shelf',
+  pricePaise: 'pricePaise',
+  coverUrl: 'coverUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibraryBookScalarFieldEnum = (typeof LibraryBookScalarFieldEnum)[keyof typeof LibraryBookScalarFieldEnum]
+
+
+export const LibraryCopyScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  bookId: 'bookId',
+  accessionCode: 'accessionCode',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibraryCopyScalarFieldEnum = (typeof LibraryCopyScalarFieldEnum)[keyof typeof LibraryCopyScalarFieldEnum]
+
+
+export const LibraryLoanScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  copyId: 'copyId',
+  borrowerUserId: 'borrowerUserId',
+  borrowerType: 'borrowerType',
+  issuedAt: 'issuedAt',
+  dueAt: 'dueAt',
+  returnedAt: 'returnedAt',
+  renewals: 'renewals',
+  issuedById: 'issuedById',
+  returnedById: 'returnedById',
+  lastRemindedAt: 'lastRemindedAt'
+} as const
+
+export type LibraryLoanScalarFieldEnum = (typeof LibraryLoanScalarFieldEnum)[keyof typeof LibraryLoanScalarFieldEnum]
+
+
+export const LibraryFineScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  loanId: 'loanId',
+  borrowerUserId: 'borrowerUserId',
+  kind: 'kind',
+  amountPaise: 'amountPaise',
+  status: 'status',
+  collectedVia: 'collectedVia',
+  paidAt: 'paidAt',
+  collectedById: 'collectedById',
+  waivedReason: 'waivedReason',
+  createdAt: 'createdAt'
+} as const
+
+export type LibraryFineScalarFieldEnum = (typeof LibraryFineScalarFieldEnum)[keyof typeof LibraryFineScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -10834,6 +11383,12 @@ export type GlobalOmitConfig = {
   transportBus?: Prisma.TransportBusOmit
   transportTrip?: Prisma.TransportTripOmit
   studentTransport?: Prisma.StudentTransportOmit
+  librarySettings?: Prisma.LibrarySettingsOmit
+  libraryRule?: Prisma.LibraryRuleOmit
+  libraryBook?: Prisma.LibraryBookOmit
+  libraryCopy?: Prisma.LibraryCopyOmit
+  libraryLoan?: Prisma.LibraryLoanOmit
+  libraryFine?: Prisma.LibraryFineOmit
 }
 
 /* Types for Logging */

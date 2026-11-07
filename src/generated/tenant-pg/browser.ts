@@ -542,3 +542,33 @@ export type TransportTrip = Prisma.TransportTripModel
  * 
  */
 export type StudentTransport = Prisma.StudentTransportModel
+/**
+ * Model LibrarySettings
+ * 
+ */
+export type LibrarySettings = Prisma.LibrarySettingsModel
+/**
+ * Model LibraryRule
+ * 
+ */
+export type LibraryRule = Prisma.LibraryRuleModel
+/**
+ * Model LibraryBook
+ * 
+ */
+export type LibraryBook = Prisma.LibraryBookModel
+/**
+ * Model LibraryCopy
+ * 
+ */
+export type LibraryCopy = Prisma.LibraryCopyModel
+/**
+ * Model LibraryLoan
+ * 
+ */
+export type LibraryLoan = Prisma.LibraryLoanModel
+/**
+ * Model LibraryFine
+ * 
+ */
+export type LibraryFine = Prisma.LibraryFineModel

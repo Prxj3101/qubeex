@@ -2428,3 +2428,107 @@ model StudentTransport {
 
   @@index([busId])
 }
+
+model LibrarySettings {
+  id                 String   @id @default(uuid())
+  institutionId      String   @unique
+  finesMode          String   @default("OFF") // OFF | LIBRARIAN | FEES
+  rulesConfigured    Boolean  @default(false)
+  dueSoonDays        Int      @default(2)
+  lostChargePaise    Int      @default(0)
+  damagedChargePaise Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model LibraryRule {
+  id              String   @id @default(uuid())
+  institutionId   String
+  borrowerType    String // STUDENT | TEACHER | STAFF (staff = admin/sub-admin)
+  maxBooks        Int
+  loanDays        Int
+  maxRenewals     Int
+  finePerDayPaise Int
+  graceDays       Int
+  fineCapPaise    Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([institutionId, borrowerType])
+  @@index([institutionId])
+}
+
+model LibraryBook {
+  id            String        @id @default(uuid())
+  institutionId String
+  title         String
+  author        String?
+  isbn          String?
+  category      String?
+  language      String?
+  shelf         String?
+  pricePaise    Int?
+  coverUrl      String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  copies        LibraryCopy[]
+
+  @@index([institutionId])
+  @@index([institutionId, isbn])
+}
+
+model LibraryCopy {
+  id            String        @id @default(uuid())
+  institutionId String
+  bookId        String
+  accessionCode String
+  status        String        @default("AVAILABLE") // AVAILABLE | ISSUED | LOST | DAMAGED | WITHDRAWN
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  book          LibraryBook   @relation(fields: [bookId], references: [id])
+  loans         LibraryLoan[]
+
+  @@unique([institutionId, accessionCode])
+  @@index([institutionId])
+  @@index([bookId])
+}
+
+model LibraryLoan {
+  id             String        @id @default(uuid())
+  institutionId  String
+  copyId         String
+  borrowerUserId String
+  borrowerType   String
+  issuedAt       DateTime      @default(now())
+  dueAt          DateTime
+  returnedAt     DateTime?
+  renewals       Int           @default(0)
+  issuedById     String
+  returnedById   String?
+  lastRemindedAt DateTime?
+  copy           LibraryCopy   @relation(fields: [copyId], references: [id])
+  fines          LibraryFine[]
+
+  @@index([institutionId, borrowerUserId])
+  @@index([institutionId, returnedAt])
+  @@index([copyId])
+}
+
+model LibraryFine {
+  id             String      @id @default(uuid())
+  institutionId  String
+  loanId         String
+  borrowerUserId String
+  kind           String // LATE | LOST | DAMAGED
+  amountPaise    Int
+  status         String      @default("PENDING") // PENDING | PAID | WAIVED
+  collectedVia   String // LIBRARIAN | FEES
+  paidAt         DateTime?
+  collectedById  String?
+  waivedReason   String?
+  createdAt      DateTime    @default(now())
+  loan           LibraryLoan @relation(fields: [loanId], references: [id])
+
+  @@index([institutionId, borrowerUserId])
+  @@index([institutionId, status])
+}

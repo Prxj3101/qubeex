@@ -149,6 +149,13 @@ export const ACADEMIC_MODELS = [
   "AcademicYear",
   "StudentEnrollment",
   "DivisionTimetable",
+  // Library — per-institution catalogue, loans and fines.
+  "LibrarySettings",
+  "LibraryRule",
+  "LibraryBook",
+  "LibraryCopy",
+  "LibraryLoan",
+  "LibraryFine",
 ] as const;
 
 const academicSet = new Set<string>(ACADEMIC_MODELS);

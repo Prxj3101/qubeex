@@ -81,6 +81,8 @@ export const ModelName = {
   CalendarEvent: 'CalendarEvent',
   DivisionFeeStructure: 'DivisionFeeStructure',
   StudentFeePayment: 'StudentFeePayment',
+  FeeReceipt: 'FeeReceipt',
+  FeeReminder: 'FeeReminder',
   BlackboardFolder: 'BlackboardFolder',
   BlackboardMaterial: 'BlackboardMaterial',
   Mindmap: 'Mindmap',
@@ -152,6 +154,7 @@ export const ModelName = {
   TransportRoute: 'TransportRoute',
   TransportStop: 'TransportStop',
   TransportBus: 'TransportBus',
+  TransportTrip: 'TransportTrip',
   StudentTransport: 'StudentTransport'
 } as const
 
@@ -635,6 +638,47 @@ export const StudentFeePaymentScalarFieldEnum = {
 } as const
 
 export type StudentFeePaymentScalarFieldEnum = (typeof StudentFeePaymentScalarFieldEnum)[keyof typeof StudentFeePaymentScalarFieldEnum]
+
+
+export const FeeReceiptScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  studentId: 'studentId',
+  divisionId: 'divisionId',
+  number: 'number',
+  receiptNo: 'receiptNo',
+  lines: 'lines',
+  amount: 'amount',
+  discount: 'discount',
+  mode: 'mode',
+  reference: 'reference',
+  note: 'note',
+  day: 'day',
+  collectedById: 'collectedById',
+  cancelledAt: 'cancelledAt',
+  cancelledById: 'cancelledById',
+  cancelReason: 'cancelReason',
+  createdAt: 'createdAt'
+} as const
+
+export type FeeReceiptScalarFieldEnum = (typeof FeeReceiptScalarFieldEnum)[keyof typeof FeeReceiptScalarFieldEnum]
+
+
+export const FeeReminderScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  studentId: 'studentId',
+  kind: 'kind',
+  lang: 'lang',
+  sentTo: 'sentTo',
+  amount: 'amount',
+  sentById: 'sentById',
+  createdAt: 'createdAt'
+} as const
+
+export type FeeReminderScalarFieldEnum = (typeof FeeReminderScalarFieldEnum)[keyof typeof FeeReminderScalarFieldEnum]
 
 
 export const BlackboardFolderScalarFieldEnum = {
@@ -1878,6 +1922,7 @@ export const TransportStopScalarFieldEnum = {
   lng: 'lng',
   sequence: 'sequence',
   pickupTime: 'pickupTime',
+  monthlyFee: 'monthlyFee',
   createdAt: 'createdAt'
 } as const
 
@@ -1895,11 +1940,34 @@ export const TransportBusScalarFieldEnum = {
   driverPhone: 'driverPhone',
   capacity: 'capacity',
   routeId: 'routeId',
+  morningShift: 'morningShift',
+  morningPickup: 'morningPickup',
+  morningDrop: 'morningDrop',
+  afternoonShift: 'afternoonShift',
+  afternoonPickup: 'afternoonPickup',
+  afternoonDrop: 'afternoonDrop',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type TransportBusScalarFieldEnum = (typeof TransportBusScalarFieldEnum)[keyof typeof TransportBusScalarFieldEnum]
+
+
+export const TransportTripScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  busId: 'busId',
+  day: 'day',
+  kind: 'kind',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  stops: 'stops',
+  maxSpeedKmh: 'maxSpeedKmh',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TransportTripScalarFieldEnum = (typeof TransportTripScalarFieldEnum)[keyof typeof TransportTripScalarFieldEnum]
 
 
 export const StudentTransportScalarFieldEnum = {
@@ -1908,6 +1976,7 @@ export const StudentTransportScalarFieldEnum = {
   studentId: 'studentId',
   busId: 'busId',
   stopId: 'stopId',
+  shift: 'shift',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

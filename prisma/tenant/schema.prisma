@@ -628,6 +628,54 @@ model StudentFeePayment {
   @@index([institutionId])
 }
 
+model FeeReceipt {
+  id             String    @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  studentId      String
+  divisionId     String?
+  number         Int
+  receiptNo      String
+  /// [{ feeMonthId, month, heads: string[], amount, discount, markedPaid }]
+  lines          Json
+  amount         Int
+  discount       Int       @default(0)
+  /// CASH | UPI | CHEQUE | CARD | BANK
+  mode           String
+  reference      String?
+  note           String?
+  /// Payment date "YYYY-MM-DD" (India time)
+  day            String
+  collectedById  String?
+  cancelledAt    DateTime?
+  cancelledById  String?
+  cancelReason   String?
+  createdAt      DateTime  @default(now())
+
+  @@unique([institutionId, academicYearId, number])
+  @@index([institutionId, day])
+  @@index([institutionId, studentId])
+}
+
+model FeeReminder {
+  id             String   @id @default(uuid())
+  institutionId  String
+  academicYearId String
+  studentId      String
+  /// GENTLE | OVERDUE | FINAL | THANKS
+  kind           String
+  /// en | hi
+  lang           String   @default("en")
+  /// Who it went to, e.g. "Father"
+  sentTo         String?
+  /// Amount due when it was sent, in paise
+  amount         Int      @default(0)
+  sentById       String?
+  createdAt      DateTime @default(now())
+
+  @@index([institutionId, academicYearId, studentId])
+}
+
 model BlackboardFolder {
   id            String               @id @default(uuid())
   institutionId String

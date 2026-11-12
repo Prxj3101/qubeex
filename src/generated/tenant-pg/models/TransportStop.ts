@@ -30,12 +30,14 @@ export type TransportStopAvgAggregateOutputType = {
   lat: number | null
   lng: number | null
   sequence: number | null
+  monthlyFee: number | null
 }
 
 export type TransportStopSumAggregateOutputType = {
   lat: number | null
   lng: number | null
   sequence: number | null
+  monthlyFee: number | null
 }
 
 export type TransportStopMinAggregateOutputType = {
@@ -47,6 +49,7 @@ export type TransportStopMinAggregateOutputType = {
   lng: number | null
   sequence: number | null
   pickupTime: string | null
+  monthlyFee: number | null
   createdAt: Date | null
 }
 
@@ -59,6 +62,7 @@ export type TransportStopMaxAggregateOutputType = {
   lng: number | null
   sequence: number | null
   pickupTime: string | null
+  monthlyFee: number | null
   createdAt: Date | null
 }
 
@@ -71,6 +75,7 @@ export type TransportStopCountAggregateOutputType = {
   lng: number
   sequence: number
   pickupTime: number
+  monthlyFee: number
   createdAt: number
   _all: number
 }
@@ -80,12 +85,14 @@ export type TransportStopAvgAggregateInputType = {
   lat?: true
   lng?: true
   sequence?: true
+  monthlyFee?: true
 }
 
 export type TransportStopSumAggregateInputType = {
   lat?: true
   lng?: true
   sequence?: true
+  monthlyFee?: true
 }
 
 export type TransportStopMinAggregateInputType = {
@@ -97,6 +104,7 @@ export type TransportStopMinAggregateInputType = {
   lng?: true
   sequence?: true
   pickupTime?: true
+  monthlyFee?: true
   createdAt?: true
 }
 
@@ -109,6 +117,7 @@ export type TransportStopMaxAggregateInputType = {
   lng?: true
   sequence?: true
   pickupTime?: true
+  monthlyFee?: true
   createdAt?: true
 }
 
@@ -121,6 +130,7 @@ export type TransportStopCountAggregateInputType = {
   lng?: true
   sequence?: true
   pickupTime?: true
+  monthlyFee?: true
   createdAt?: true
   _all?: true
 }
@@ -220,6 +230,7 @@ export type TransportStopGroupByOutputType = {
   lng: number
   sequence: number
   pickupTime: string
+  monthlyFee: number | null
   createdAt: Date
   _count: TransportStopCountAggregateOutputType | null
   _avg: TransportStopAvgAggregateOutputType | null
@@ -255,6 +266,7 @@ export type TransportStopWhereInput = {
   lng?: Prisma.FloatFilter<"TransportStop"> | number
   sequence?: Prisma.IntFilter<"TransportStop"> | number
   pickupTime?: Prisma.StringFilter<"TransportStop"> | string
+  monthlyFee?: Prisma.IntNullableFilter<"TransportStop"> | number | null
   createdAt?: Prisma.DateTimeFilter<"TransportStop"> | Date | string
   route?: Prisma.XOR<Prisma.TransportRouteScalarRelationFilter, Prisma.TransportRouteWhereInput>
   students?: Prisma.StudentTransportListRelationFilter
@@ -269,6 +281,7 @@ export type TransportStopOrderByWithRelationInput = {
   lng?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   pickupTime?: Prisma.SortOrder
+  monthlyFee?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   route?: Prisma.TransportRouteOrderByWithRelationInput
   students?: Prisma.StudentTransportOrderByRelationAggregateInput
@@ -286,6 +299,7 @@ export type TransportStopWhereUniqueInput = Prisma.AtLeast<{
   lng?: Prisma.FloatFilter<"TransportStop"> | number
   sequence?: Prisma.IntFilter<"TransportStop"> | number
   pickupTime?: Prisma.StringFilter<"TransportStop"> | string
+  monthlyFee?: Prisma.IntNullableFilter<"TransportStop"> | number | null
   createdAt?: Prisma.DateTimeFilter<"TransportStop"> | Date | string
   route?: Prisma.XOR<Prisma.TransportRouteScalarRelationFilter, Prisma.TransportRouteWhereInput>
   students?: Prisma.StudentTransportListRelationFilter
@@ -300,6 +314,7 @@ export type TransportStopOrderByWithAggregationInput = {
   lng?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   pickupTime?: Prisma.SortOrder
+  monthlyFee?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.TransportStopCountOrderByAggregateInput
   _avg?: Prisma.TransportStopAvgOrderByAggregateInput
@@ -320,6 +335,7 @@ export type TransportStopScalarWhereWithAggregatesInput = {
   lng?: Prisma.FloatWithAggregatesFilter<"TransportStop"> | number
   sequence?: Prisma.IntWithAggregatesFilter<"TransportStop"> | number
   pickupTime?: Prisma.StringWithAggregatesFilter<"TransportStop"> | string
+  monthlyFee?: Prisma.IntNullableWithAggregatesFilter<"TransportStop"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TransportStop"> | Date | string
 }
 
@@ -331,6 +347,7 @@ export type TransportStopCreateInput = {
   lng: number
   sequence: number
   pickupTime?: string
+  monthlyFee?: number | null
   createdAt?: Date | string
   route: Prisma.TransportRouteCreateNestedOneWithoutStopsInput
   students?: Prisma.StudentTransportCreateNestedManyWithoutStopInput
@@ -345,6 +362,7 @@ export type TransportStopUncheckedCreateInput = {
   lng: number
   sequence: number
   pickupTime?: string
+  monthlyFee?: number | null
   createdAt?: Date | string
   students?: Prisma.StudentTransportUncheckedCreateNestedManyWithoutStopInput
 }
@@ -357,6 +375,7 @@ export type TransportStopUpdateInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   route?: Prisma.TransportRouteUpdateOneRequiredWithoutStopsNestedInput
   students?: Prisma.StudentTransportUpdateManyWithoutStopNestedInput
@@ -371,6 +390,7 @@ export type TransportStopUncheckedUpdateInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentTransportUncheckedUpdateManyWithoutStopNestedInput
 }
@@ -384,6 +404,7 @@ export type TransportStopCreateManyInput = {
   lng: number
   sequence: number
   pickupTime?: string
+  monthlyFee?: number | null
   createdAt?: Date | string
 }
 
@@ -395,6 +416,7 @@ export type TransportStopUpdateManyMutationInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -407,6 +429,7 @@ export type TransportStopUncheckedUpdateManyInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -429,6 +452,7 @@ export type TransportStopCountOrderByAggregateInput = {
   lng?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   pickupTime?: Prisma.SortOrder
+  monthlyFee?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -436,6 +460,7 @@ export type TransportStopAvgOrderByAggregateInput = {
   lat?: Prisma.SortOrder
   lng?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
+  monthlyFee?: Prisma.SortOrder
 }
 
 export type TransportStopMaxOrderByAggregateInput = {
@@ -447,6 +472,7 @@ export type TransportStopMaxOrderByAggregateInput = {
   lng?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   pickupTime?: Prisma.SortOrder
+  monthlyFee?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -459,6 +485,7 @@ export type TransportStopMinOrderByAggregateInput = {
   lng?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
   pickupTime?: Prisma.SortOrder
+  monthlyFee?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -466,6 +493,7 @@ export type TransportStopSumOrderByAggregateInput = {
   lat?: Prisma.SortOrder
   lng?: Prisma.SortOrder
   sequence?: Prisma.SortOrder
+  monthlyFee?: Prisma.SortOrder
 }
 
 export type TransportStopNullableScalarRelationFilter = {
@@ -539,6 +567,7 @@ export type TransportStopCreateWithoutRouteInput = {
   lng: number
   sequence: number
   pickupTime?: string
+  monthlyFee?: number | null
   createdAt?: Date | string
   students?: Prisma.StudentTransportCreateNestedManyWithoutStopInput
 }
@@ -551,6 +580,7 @@ export type TransportStopUncheckedCreateWithoutRouteInput = {
   lng: number
   sequence: number
   pickupTime?: string
+  monthlyFee?: number | null
   createdAt?: Date | string
   students?: Prisma.StudentTransportUncheckedCreateNestedManyWithoutStopInput
 }
@@ -593,6 +623,7 @@ export type TransportStopScalarWhereInput = {
   lng?: Prisma.FloatFilter<"TransportStop"> | number
   sequence?: Prisma.IntFilter<"TransportStop"> | number
   pickupTime?: Prisma.StringFilter<"TransportStop"> | string
+  monthlyFee?: Prisma.IntNullableFilter<"TransportStop"> | number | null
   createdAt?: Prisma.DateTimeFilter<"TransportStop"> | Date | string
 }
 
@@ -604,6 +635,7 @@ export type TransportStopCreateWithoutStudentsInput = {
   lng: number
   sequence: number
   pickupTime?: string
+  monthlyFee?: number | null
   createdAt?: Date | string
   route: Prisma.TransportRouteCreateNestedOneWithoutStopsInput
 }
@@ -617,6 +649,7 @@ export type TransportStopUncheckedCreateWithoutStudentsInput = {
   lng: number
   sequence: number
   pickupTime?: string
+  monthlyFee?: number | null
   createdAt?: Date | string
 }
 
@@ -644,6 +677,7 @@ export type TransportStopUpdateWithoutStudentsInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   route?: Prisma.TransportRouteUpdateOneRequiredWithoutStopsNestedInput
 }
@@ -657,6 +691,7 @@ export type TransportStopUncheckedUpdateWithoutStudentsInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -668,6 +703,7 @@ export type TransportStopCreateManyRouteInput = {
   lng: number
   sequence: number
   pickupTime?: string
+  monthlyFee?: number | null
   createdAt?: Date | string
 }
 
@@ -679,6 +715,7 @@ export type TransportStopUpdateWithoutRouteInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentTransportUpdateManyWithoutStopNestedInput
 }
@@ -691,6 +728,7 @@ export type TransportStopUncheckedUpdateWithoutRouteInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentTransportUncheckedUpdateManyWithoutStopNestedInput
 }
@@ -703,6 +741,7 @@ export type TransportStopUncheckedUpdateManyWithoutRouteInput = {
   lng?: Prisma.FloatFieldUpdateOperationsInput | number
   sequence?: Prisma.IntFieldUpdateOperationsInput | number
   pickupTime?: Prisma.StringFieldUpdateOperationsInput | string
+  monthlyFee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -746,6 +785,7 @@ export type TransportStopSelect<ExtArgs extends runtime.Types.Extensions.Interna
   lng?: boolean
   sequence?: boolean
   pickupTime?: boolean
+  monthlyFee?: boolean
   createdAt?: boolean
   route?: boolean | Prisma.TransportRouteDefaultArgs<ExtArgs>
   students?: boolean | Prisma.TransportStop$studentsArgs<ExtArgs>
@@ -761,6 +801,7 @@ export type TransportStopSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   lng?: boolean
   sequence?: boolean
   pickupTime?: boolean
+  monthlyFee?: boolean
   createdAt?: boolean
   route?: boolean | Prisma.TransportRouteDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transportStop"]>
@@ -774,6 +815,7 @@ export type TransportStopSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   lng?: boolean
   sequence?: boolean
   pickupTime?: boolean
+  monthlyFee?: boolean
   createdAt?: boolean
   route?: boolean | Prisma.TransportRouteDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transportStop"]>
@@ -787,10 +829,11 @@ export type TransportStopSelectScalar = {
   lng?: boolean
   sequence?: boolean
   pickupTime?: boolean
+  monthlyFee?: boolean
   createdAt?: boolean
 }
 
-export type TransportStopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "routeId" | "name" | "lat" | "lng" | "sequence" | "pickupTime" | "createdAt", ExtArgs["result"]["transportStop"]>
+export type TransportStopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "routeId" | "name" | "lat" | "lng" | "sequence" | "pickupTime" | "monthlyFee" | "createdAt", ExtArgs["result"]["transportStop"]>
 export type TransportStopInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   route?: boolean | Prisma.TransportRouteDefaultArgs<ExtArgs>
   students?: boolean | Prisma.TransportStop$studentsArgs<ExtArgs>
@@ -818,6 +861,10 @@ export type $TransportStopPayload<ExtArgs extends runtime.Types.Extensions.Inter
     lng: number
     sequence: number
     pickupTime: string
+    /**
+     * Monthly bus fee in rupees for students picked up here (null = not set)
+     */
+    monthlyFee: number | null
     createdAt: Date
   }, ExtArgs["result"]["transportStop"]>
   composites: {}
@@ -1252,6 +1299,7 @@ export interface TransportStopFieldRefs {
   readonly lng: Prisma.FieldRef<"TransportStop", 'Float'>
   readonly sequence: Prisma.FieldRef<"TransportStop", 'Int'>
   readonly pickupTime: Prisma.FieldRef<"TransportStop", 'String'>
+  readonly monthlyFee: Prisma.FieldRef<"TransportStop", 'Int'>
   readonly createdAt: Prisma.FieldRef<"TransportStop", 'DateTime'>
 }
     

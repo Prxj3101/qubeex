@@ -190,6 +190,16 @@ export type DivisionFeeStructure = Prisma.DivisionFeeStructureModel
  */
 export type StudentFeePayment = Prisma.StudentFeePaymentModel
 /**
+ * Model FeeReceipt
+ * 
+ */
+export type FeeReceipt = Prisma.FeeReceiptModel
+/**
+ * Model FeeReminder
+ * 
+ */
+export type FeeReminder = Prisma.FeeReminderModel
+/**
  * Model BlackboardFolder
  * 
  */
@@ -544,6 +554,11 @@ export type TransportStop = Prisma.TransportStopModel
  * 
  */
 export type TransportBus = Prisma.TransportBusModel
+/**
+ * Model TransportTrip
+ * 
+ */
+export type TransportTrip = Prisma.TransportTripModel
 /**
  * Model StudentTransport
  * 

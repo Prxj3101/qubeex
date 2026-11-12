@@ -45,6 +45,12 @@ export type TransportBusMinAggregateOutputType = {
   driverPhone: string | null
   capacity: number | null
   routeId: string | null
+  morningShift: boolean | null
+  morningPickup: string | null
+  morningDrop: string | null
+  afternoonShift: boolean | null
+  afternoonPickup: string | null
+  afternoonDrop: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +66,12 @@ export type TransportBusMaxAggregateOutputType = {
   driverPhone: string | null
   capacity: number | null
   routeId: string | null
+  morningShift: boolean | null
+  morningPickup: string | null
+  morningDrop: string | null
+  afternoonShift: boolean | null
+  afternoonPickup: string | null
+  afternoonDrop: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -75,6 +87,12 @@ export type TransportBusCountAggregateOutputType = {
   driverPhone: number
   capacity: number
   routeId: number
+  morningShift: number
+  morningPickup: number
+  morningDrop: number
+  afternoonShift: number
+  afternoonPickup: number
+  afternoonDrop: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -100,6 +118,12 @@ export type TransportBusMinAggregateInputType = {
   driverPhone?: true
   capacity?: true
   routeId?: true
+  morningShift?: true
+  morningPickup?: true
+  morningDrop?: true
+  afternoonShift?: true
+  afternoonPickup?: true
+  afternoonDrop?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -115,6 +139,12 @@ export type TransportBusMaxAggregateInputType = {
   driverPhone?: true
   capacity?: true
   routeId?: true
+  morningShift?: true
+  morningPickup?: true
+  morningDrop?: true
+  afternoonShift?: true
+  afternoonPickup?: true
+  afternoonDrop?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +160,12 @@ export type TransportBusCountAggregateInputType = {
   driverPhone?: true
   capacity?: true
   routeId?: true
+  morningShift?: true
+  morningPickup?: true
+  morningDrop?: true
+  afternoonShift?: true
+  afternoonPickup?: true
+  afternoonDrop?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -232,6 +268,12 @@ export type TransportBusGroupByOutputType = {
   driverPhone: string
   capacity: number | null
   routeId: string | null
+  morningShift: boolean
+  morningPickup: string
+  morningDrop: string
+  afternoonShift: boolean
+  afternoonPickup: string
+  afternoonDrop: string
   createdAt: Date
   updatedAt: Date
   _count: TransportBusCountAggregateOutputType | null
@@ -270,10 +312,17 @@ export type TransportBusWhereInput = {
   driverPhone?: Prisma.StringFilter<"TransportBus"> | string
   capacity?: Prisma.IntNullableFilter<"TransportBus"> | number | null
   routeId?: Prisma.StringNullableFilter<"TransportBus"> | string | null
+  morningShift?: Prisma.BoolFilter<"TransportBus"> | boolean
+  morningPickup?: Prisma.StringFilter<"TransportBus"> | string
+  morningDrop?: Prisma.StringFilter<"TransportBus"> | string
+  afternoonShift?: Prisma.BoolFilter<"TransportBus"> | boolean
+  afternoonPickup?: Prisma.StringFilter<"TransportBus"> | string
+  afternoonDrop?: Prisma.StringFilter<"TransportBus"> | string
   createdAt?: Prisma.DateTimeFilter<"TransportBus"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TransportBus"> | Date | string
   route?: Prisma.XOR<Prisma.TransportRouteNullableScalarRelationFilter, Prisma.TransportRouteWhereInput> | null
   students?: Prisma.StudentTransportListRelationFilter
+  trips?: Prisma.TransportTripListRelationFilter
 }
 
 export type TransportBusOrderByWithRelationInput = {
@@ -287,10 +336,17 @@ export type TransportBusOrderByWithRelationInput = {
   driverPhone?: Prisma.SortOrder
   capacity?: Prisma.SortOrderInput | Prisma.SortOrder
   routeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  morningShift?: Prisma.SortOrder
+  morningPickup?: Prisma.SortOrder
+  morningDrop?: Prisma.SortOrder
+  afternoonShift?: Prisma.SortOrder
+  afternoonPickup?: Prisma.SortOrder
+  afternoonDrop?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   route?: Prisma.TransportRouteOrderByWithRelationInput
   students?: Prisma.StudentTransportOrderByRelationAggregateInput
+  trips?: Prisma.TransportTripOrderByRelationAggregateInput
 }
 
 export type TransportBusWhereUniqueInput = Prisma.AtLeast<{
@@ -308,10 +364,17 @@ export type TransportBusWhereUniqueInput = Prisma.AtLeast<{
   driverPhone?: Prisma.StringFilter<"TransportBus"> | string
   capacity?: Prisma.IntNullableFilter<"TransportBus"> | number | null
   routeId?: Prisma.StringNullableFilter<"TransportBus"> | string | null
+  morningShift?: Prisma.BoolFilter<"TransportBus"> | boolean
+  morningPickup?: Prisma.StringFilter<"TransportBus"> | string
+  morningDrop?: Prisma.StringFilter<"TransportBus"> | string
+  afternoonShift?: Prisma.BoolFilter<"TransportBus"> | boolean
+  afternoonPickup?: Prisma.StringFilter<"TransportBus"> | string
+  afternoonDrop?: Prisma.StringFilter<"TransportBus"> | string
   createdAt?: Prisma.DateTimeFilter<"TransportBus"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TransportBus"> | Date | string
   route?: Prisma.XOR<Prisma.TransportRouteNullableScalarRelationFilter, Prisma.TransportRouteWhereInput> | null
   students?: Prisma.StudentTransportListRelationFilter
+  trips?: Prisma.TransportTripListRelationFilter
 }, "id" | "institutionId_nameKey" | "trackerId">
 
 export type TransportBusOrderByWithAggregationInput = {
@@ -325,6 +388,12 @@ export type TransportBusOrderByWithAggregationInput = {
   driverPhone?: Prisma.SortOrder
   capacity?: Prisma.SortOrderInput | Prisma.SortOrder
   routeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  morningShift?: Prisma.SortOrder
+  morningPickup?: Prisma.SortOrder
+  morningDrop?: Prisma.SortOrder
+  afternoonShift?: Prisma.SortOrder
+  afternoonPickup?: Prisma.SortOrder
+  afternoonDrop?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TransportBusCountOrderByAggregateInput
@@ -348,6 +417,12 @@ export type TransportBusScalarWhereWithAggregatesInput = {
   driverPhone?: Prisma.StringWithAggregatesFilter<"TransportBus"> | string
   capacity?: Prisma.IntNullableWithAggregatesFilter<"TransportBus"> | number | null
   routeId?: Prisma.StringNullableWithAggregatesFilter<"TransportBus"> | string | null
+  morningShift?: Prisma.BoolWithAggregatesFilter<"TransportBus"> | boolean
+  morningPickup?: Prisma.StringWithAggregatesFilter<"TransportBus"> | string
+  morningDrop?: Prisma.StringWithAggregatesFilter<"TransportBus"> | string
+  afternoonShift?: Prisma.BoolWithAggregatesFilter<"TransportBus"> | boolean
+  afternoonPickup?: Prisma.StringWithAggregatesFilter<"TransportBus"> | string
+  afternoonDrop?: Prisma.StringWithAggregatesFilter<"TransportBus"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TransportBus"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TransportBus"> | Date | string
 }
@@ -362,10 +437,17 @@ export type TransportBusCreateInput = {
   driverName?: string
   driverPhone?: string
   capacity?: number | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   route?: Prisma.TransportRouteCreateNestedOneWithoutBusesInput
   students?: Prisma.StudentTransportCreateNestedManyWithoutBusInput
+  trips?: Prisma.TransportTripCreateNestedManyWithoutBusInput
 }
 
 export type TransportBusUncheckedCreateInput = {
@@ -379,9 +461,16 @@ export type TransportBusUncheckedCreateInput = {
   driverPhone?: string
   capacity?: number | null
   routeId?: string | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentTransportUncheckedCreateNestedManyWithoutBusInput
+  trips?: Prisma.TransportTripUncheckedCreateNestedManyWithoutBusInput
 }
 
 export type TransportBusUpdateInput = {
@@ -394,10 +483,17 @@ export type TransportBusUpdateInput = {
   driverName?: Prisma.StringFieldUpdateOperationsInput | string
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   route?: Prisma.TransportRouteUpdateOneWithoutBusesNestedInput
   students?: Prisma.StudentTransportUpdateManyWithoutBusNestedInput
+  trips?: Prisma.TransportTripUpdateManyWithoutBusNestedInput
 }
 
 export type TransportBusUncheckedUpdateInput = {
@@ -411,9 +507,16 @@ export type TransportBusUncheckedUpdateInput = {
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   routeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentTransportUncheckedUpdateManyWithoutBusNestedInput
+  trips?: Prisma.TransportTripUncheckedUpdateManyWithoutBusNestedInput
 }
 
 export type TransportBusCreateManyInput = {
@@ -427,6 +530,12 @@ export type TransportBusCreateManyInput = {
   driverPhone?: string
   capacity?: number | null
   routeId?: string | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -441,6 +550,12 @@ export type TransportBusUpdateManyMutationInput = {
   driverName?: Prisma.StringFieldUpdateOperationsInput | string
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -456,6 +571,12 @@ export type TransportBusUncheckedUpdateManyInput = {
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   routeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -486,6 +607,12 @@ export type TransportBusCountOrderByAggregateInput = {
   driverPhone?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   routeId?: Prisma.SortOrder
+  morningShift?: Prisma.SortOrder
+  morningPickup?: Prisma.SortOrder
+  morningDrop?: Prisma.SortOrder
+  afternoonShift?: Prisma.SortOrder
+  afternoonPickup?: Prisma.SortOrder
+  afternoonDrop?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -505,6 +632,12 @@ export type TransportBusMaxOrderByAggregateInput = {
   driverPhone?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   routeId?: Prisma.SortOrder
+  morningShift?: Prisma.SortOrder
+  morningPickup?: Prisma.SortOrder
+  morningDrop?: Prisma.SortOrder
+  afternoonShift?: Prisma.SortOrder
+  afternoonPickup?: Prisma.SortOrder
+  afternoonDrop?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -520,6 +653,12 @@ export type TransportBusMinOrderByAggregateInput = {
   driverPhone?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   routeId?: Prisma.SortOrder
+  morningShift?: Prisma.SortOrder
+  morningPickup?: Prisma.SortOrder
+  morningDrop?: Prisma.SortOrder
+  afternoonShift?: Prisma.SortOrder
+  afternoonPickup?: Prisma.SortOrder
+  afternoonDrop?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -575,6 +714,20 @@ export type TransportBusUncheckedUpdateManyWithoutRouteNestedInput = {
   deleteMany?: Prisma.TransportBusScalarWhereInput | Prisma.TransportBusScalarWhereInput[]
 }
 
+export type TransportBusCreateNestedOneWithoutTripsInput = {
+  create?: Prisma.XOR<Prisma.TransportBusCreateWithoutTripsInput, Prisma.TransportBusUncheckedCreateWithoutTripsInput>
+  connectOrCreate?: Prisma.TransportBusCreateOrConnectWithoutTripsInput
+  connect?: Prisma.TransportBusWhereUniqueInput
+}
+
+export type TransportBusUpdateOneRequiredWithoutTripsNestedInput = {
+  create?: Prisma.XOR<Prisma.TransportBusCreateWithoutTripsInput, Prisma.TransportBusUncheckedCreateWithoutTripsInput>
+  connectOrCreate?: Prisma.TransportBusCreateOrConnectWithoutTripsInput
+  upsert?: Prisma.TransportBusUpsertWithoutTripsInput
+  connect?: Prisma.TransportBusWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TransportBusUpdateToOneWithWhereWithoutTripsInput, Prisma.TransportBusUpdateWithoutTripsInput>, Prisma.TransportBusUncheckedUpdateWithoutTripsInput>
+}
+
 export type TransportBusCreateNestedOneWithoutStudentsInput = {
   create?: Prisma.XOR<Prisma.TransportBusCreateWithoutStudentsInput, Prisma.TransportBusUncheckedCreateWithoutStudentsInput>
   connectOrCreate?: Prisma.TransportBusCreateOrConnectWithoutStudentsInput
@@ -599,9 +752,16 @@ export type TransportBusCreateWithoutRouteInput = {
   driverName?: string
   driverPhone?: string
   capacity?: number | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentTransportCreateNestedManyWithoutBusInput
+  trips?: Prisma.TransportTripCreateNestedManyWithoutBusInput
 }
 
 export type TransportBusUncheckedCreateWithoutRouteInput = {
@@ -614,9 +774,16 @@ export type TransportBusUncheckedCreateWithoutRouteInput = {
   driverName?: string
   driverPhone?: string
   capacity?: number | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   students?: Prisma.StudentTransportUncheckedCreateNestedManyWithoutBusInput
+  trips?: Prisma.TransportTripUncheckedCreateNestedManyWithoutBusInput
 }
 
 export type TransportBusCreateOrConnectWithoutRouteInput = {
@@ -659,8 +826,118 @@ export type TransportBusScalarWhereInput = {
   driverPhone?: Prisma.StringFilter<"TransportBus"> | string
   capacity?: Prisma.IntNullableFilter<"TransportBus"> | number | null
   routeId?: Prisma.StringNullableFilter<"TransportBus"> | string | null
+  morningShift?: Prisma.BoolFilter<"TransportBus"> | boolean
+  morningPickup?: Prisma.StringFilter<"TransportBus"> | string
+  morningDrop?: Prisma.StringFilter<"TransportBus"> | string
+  afternoonShift?: Prisma.BoolFilter<"TransportBus"> | boolean
+  afternoonPickup?: Prisma.StringFilter<"TransportBus"> | string
+  afternoonDrop?: Prisma.StringFilter<"TransportBus"> | string
   createdAt?: Prisma.DateTimeFilter<"TransportBus"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TransportBus"> | Date | string
+}
+
+export type TransportBusCreateWithoutTripsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  nameKey: string
+  plateNumber?: string
+  trackerId?: string | null
+  driverName?: string
+  driverPhone?: string
+  capacity?: number | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  route?: Prisma.TransportRouteCreateNestedOneWithoutBusesInput
+  students?: Prisma.StudentTransportCreateNestedManyWithoutBusInput
+}
+
+export type TransportBusUncheckedCreateWithoutTripsInput = {
+  id?: string
+  institutionId: string
+  name: string
+  nameKey: string
+  plateNumber?: string
+  trackerId?: string | null
+  driverName?: string
+  driverPhone?: string
+  capacity?: number | null
+  routeId?: string | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  students?: Prisma.StudentTransportUncheckedCreateNestedManyWithoutBusInput
+}
+
+export type TransportBusCreateOrConnectWithoutTripsInput = {
+  where: Prisma.TransportBusWhereUniqueInput
+  create: Prisma.XOR<Prisma.TransportBusCreateWithoutTripsInput, Prisma.TransportBusUncheckedCreateWithoutTripsInput>
+}
+
+export type TransportBusUpsertWithoutTripsInput = {
+  update: Prisma.XOR<Prisma.TransportBusUpdateWithoutTripsInput, Prisma.TransportBusUncheckedUpdateWithoutTripsInput>
+  create: Prisma.XOR<Prisma.TransportBusCreateWithoutTripsInput, Prisma.TransportBusUncheckedCreateWithoutTripsInput>
+  where?: Prisma.TransportBusWhereInput
+}
+
+export type TransportBusUpdateToOneWithWhereWithoutTripsInput = {
+  where?: Prisma.TransportBusWhereInput
+  data: Prisma.XOR<Prisma.TransportBusUpdateWithoutTripsInput, Prisma.TransportBusUncheckedUpdateWithoutTripsInput>
+}
+
+export type TransportBusUpdateWithoutTripsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  plateNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  trackerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  driverName?: Prisma.StringFieldUpdateOperationsInput | string
+  driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  route?: Prisma.TransportRouteUpdateOneWithoutBusesNestedInput
+  students?: Prisma.StudentTransportUpdateManyWithoutBusNestedInput
+}
+
+export type TransportBusUncheckedUpdateWithoutTripsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  nameKey?: Prisma.StringFieldUpdateOperationsInput | string
+  plateNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  trackerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  driverName?: Prisma.StringFieldUpdateOperationsInput | string
+  driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  routeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  students?: Prisma.StudentTransportUncheckedUpdateManyWithoutBusNestedInput
 }
 
 export type TransportBusCreateWithoutStudentsInput = {
@@ -673,9 +950,16 @@ export type TransportBusCreateWithoutStudentsInput = {
   driverName?: string
   driverPhone?: string
   capacity?: number | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   route?: Prisma.TransportRouteCreateNestedOneWithoutBusesInput
+  trips?: Prisma.TransportTripCreateNestedManyWithoutBusInput
 }
 
 export type TransportBusUncheckedCreateWithoutStudentsInput = {
@@ -689,8 +973,15 @@ export type TransportBusUncheckedCreateWithoutStudentsInput = {
   driverPhone?: string
   capacity?: number | null
   routeId?: string | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  trips?: Prisma.TransportTripUncheckedCreateNestedManyWithoutBusInput
 }
 
 export type TransportBusCreateOrConnectWithoutStudentsInput = {
@@ -719,9 +1010,16 @@ export type TransportBusUpdateWithoutStudentsInput = {
   driverName?: Prisma.StringFieldUpdateOperationsInput | string
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   route?: Prisma.TransportRouteUpdateOneWithoutBusesNestedInput
+  trips?: Prisma.TransportTripUpdateManyWithoutBusNestedInput
 }
 
 export type TransportBusUncheckedUpdateWithoutStudentsInput = {
@@ -735,8 +1033,15 @@ export type TransportBusUncheckedUpdateWithoutStudentsInput = {
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   routeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trips?: Prisma.TransportTripUncheckedUpdateManyWithoutBusNestedInput
 }
 
 export type TransportBusCreateManyRouteInput = {
@@ -749,6 +1054,12 @@ export type TransportBusCreateManyRouteInput = {
   driverName?: string
   driverPhone?: string
   capacity?: number | null
+  morningShift?: boolean
+  morningPickup?: string
+  morningDrop?: string
+  afternoonShift?: boolean
+  afternoonPickup?: string
+  afternoonDrop?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -763,9 +1074,16 @@ export type TransportBusUpdateWithoutRouteInput = {
   driverName?: Prisma.StringFieldUpdateOperationsInput | string
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentTransportUpdateManyWithoutBusNestedInput
+  trips?: Prisma.TransportTripUpdateManyWithoutBusNestedInput
 }
 
 export type TransportBusUncheckedUpdateWithoutRouteInput = {
@@ -778,9 +1096,16 @@ export type TransportBusUncheckedUpdateWithoutRouteInput = {
   driverName?: Prisma.StringFieldUpdateOperationsInput | string
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.StudentTransportUncheckedUpdateManyWithoutBusNestedInput
+  trips?: Prisma.TransportTripUncheckedUpdateManyWithoutBusNestedInput
 }
 
 export type TransportBusUncheckedUpdateManyWithoutRouteInput = {
@@ -793,6 +1118,12 @@ export type TransportBusUncheckedUpdateManyWithoutRouteInput = {
   driverName?: Prisma.StringFieldUpdateOperationsInput | string
   driverPhone?: Prisma.StringFieldUpdateOperationsInput | string
   capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  morningShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  morningPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  morningDrop?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonShift?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  afternoonPickup?: Prisma.StringFieldUpdateOperationsInput | string
+  afternoonDrop?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -804,10 +1135,12 @@ export type TransportBusUncheckedUpdateManyWithoutRouteInput = {
 
 export type TransportBusCountOutputType = {
   students: number
+  trips: number
 }
 
 export type TransportBusCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   students?: boolean | TransportBusCountOutputTypeCountStudentsArgs
+  trips?: boolean | TransportBusCountOutputTypeCountTripsArgs
 }
 
 /**
@@ -827,6 +1160,13 @@ export type TransportBusCountOutputTypeCountStudentsArgs<ExtArgs extends runtime
   where?: Prisma.StudentTransportWhereInput
 }
 
+/**
+ * TransportBusCountOutputType without action
+ */
+export type TransportBusCountOutputTypeCountTripsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TransportTripWhereInput
+}
+
 
 export type TransportBusSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -839,10 +1179,17 @@ export type TransportBusSelect<ExtArgs extends runtime.Types.Extensions.Internal
   driverPhone?: boolean
   capacity?: boolean
   routeId?: boolean
+  morningShift?: boolean
+  morningPickup?: boolean
+  morningDrop?: boolean
+  afternoonShift?: boolean
+  afternoonPickup?: boolean
+  afternoonDrop?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   route?: boolean | Prisma.TransportBus$routeArgs<ExtArgs>
   students?: boolean | Prisma.TransportBus$studentsArgs<ExtArgs>
+  trips?: boolean | Prisma.TransportBus$tripsArgs<ExtArgs>
   _count?: boolean | Prisma.TransportBusCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transportBus"]>
 
@@ -857,6 +1204,12 @@ export type TransportBusSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   driverPhone?: boolean
   capacity?: boolean
   routeId?: boolean
+  morningShift?: boolean
+  morningPickup?: boolean
+  morningDrop?: boolean
+  afternoonShift?: boolean
+  afternoonPickup?: boolean
+  afternoonDrop?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   route?: boolean | Prisma.TransportBus$routeArgs<ExtArgs>
@@ -873,6 +1226,12 @@ export type TransportBusSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   driverPhone?: boolean
   capacity?: boolean
   routeId?: boolean
+  morningShift?: boolean
+  morningPickup?: boolean
+  morningDrop?: boolean
+  afternoonShift?: boolean
+  afternoonPickup?: boolean
+  afternoonDrop?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   route?: boolean | Prisma.TransportBus$routeArgs<ExtArgs>
@@ -889,14 +1248,21 @@ export type TransportBusSelectScalar = {
   driverPhone?: boolean
   capacity?: boolean
   routeId?: boolean
+  morningShift?: boolean
+  morningPickup?: boolean
+  morningDrop?: boolean
+  afternoonShift?: boolean
+  afternoonPickup?: boolean
+  afternoonDrop?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TransportBusOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "nameKey" | "plateNumber" | "trackerId" | "driverName" | "driverPhone" | "capacity" | "routeId" | "createdAt" | "updatedAt", ExtArgs["result"]["transportBus"]>
+export type TransportBusOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "name" | "nameKey" | "plateNumber" | "trackerId" | "driverName" | "driverPhone" | "capacity" | "routeId" | "morningShift" | "morningPickup" | "morningDrop" | "afternoonShift" | "afternoonPickup" | "afternoonDrop" | "createdAt" | "updatedAt", ExtArgs["result"]["transportBus"]>
 export type TransportBusInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   route?: boolean | Prisma.TransportBus$routeArgs<ExtArgs>
   students?: boolean | Prisma.TransportBus$studentsArgs<ExtArgs>
+  trips?: boolean | Prisma.TransportBus$tripsArgs<ExtArgs>
   _count?: boolean | Prisma.TransportBusCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TransportBusIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -911,6 +1277,7 @@ export type $TransportBusPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     route: Prisma.$TransportRoutePayload<ExtArgs> | null
     students: Prisma.$StudentTransportPayload<ExtArgs>[]
+    trips: Prisma.$TransportTripPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -923,6 +1290,15 @@ export type $TransportBusPayload<ExtArgs extends runtime.Types.Extensions.Intern
     driverPhone: string
     capacity: number | null
     routeId: string | null
+    /**
+     * Shifts this bus runs. Times are HH:MM: pickup = leaves the first stop, drop = leaves school.
+     */
+    morningShift: boolean
+    morningPickup: string
+    morningDrop: string
+    afternoonShift: boolean
+    afternoonPickup: string
+    afternoonDrop: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["transportBus"]>
@@ -1321,6 +1697,7 @@ export interface Prisma__TransportBusClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   route<T extends Prisma.TransportBus$routeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransportBus$routeArgs<ExtArgs>>): Prisma.Prisma__TransportRouteClient<runtime.Types.Result.GetResult<Prisma.$TransportRoutePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   students<T extends Prisma.TransportBus$studentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransportBus$studentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentTransportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  trips<T extends Prisma.TransportBus$tripsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransportBus$tripsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransportTripPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1360,6 +1737,12 @@ export interface TransportBusFieldRefs {
   readonly driverPhone: Prisma.FieldRef<"TransportBus", 'String'>
   readonly capacity: Prisma.FieldRef<"TransportBus", 'Int'>
   readonly routeId: Prisma.FieldRef<"TransportBus", 'String'>
+  readonly morningShift: Prisma.FieldRef<"TransportBus", 'Boolean'>
+  readonly morningPickup: Prisma.FieldRef<"TransportBus", 'String'>
+  readonly morningDrop: Prisma.FieldRef<"TransportBus", 'String'>
+  readonly afternoonShift: Prisma.FieldRef<"TransportBus", 'Boolean'>
+  readonly afternoonPickup: Prisma.FieldRef<"TransportBus", 'String'>
+  readonly afternoonDrop: Prisma.FieldRef<"TransportBus", 'String'>
   readonly createdAt: Prisma.FieldRef<"TransportBus", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TransportBus", 'DateTime'>
 }
@@ -1803,6 +2186,30 @@ export type TransportBus$studentsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.StudentTransportScalarFieldEnum | Prisma.StudentTransportScalarFieldEnum[]
+}
+
+/**
+ * TransportBus.trips
+ */
+export type TransportBus$tripsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TransportTrip
+   */
+  select?: Prisma.TransportTripSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TransportTrip
+   */
+  omit?: Prisma.TransportTripOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransportTripInclude<ExtArgs> | null
+  where?: Prisma.TransportTripWhereInput
+  orderBy?: Prisma.TransportTripOrderByWithRelationInput | Prisma.TransportTripOrderByWithRelationInput[]
+  cursor?: Prisma.TransportTripWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TransportTripScalarFieldEnum | Prisma.TransportTripScalarFieldEnum[]
 }
 
 /**

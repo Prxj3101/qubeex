@@ -30,6 +30,7 @@ export type StudentTransportMinAggregateOutputType = {
   studentId: string | null
   busId: string | null
   stopId: string | null
+  shift: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -40,6 +41,7 @@ export type StudentTransportMaxAggregateOutputType = {
   studentId: string | null
   busId: string | null
   stopId: string | null
+  shift: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +52,7 @@ export type StudentTransportCountAggregateOutputType = {
   studentId: number
   busId: number
   stopId: number
+  shift: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -62,6 +65,7 @@ export type StudentTransportMinAggregateInputType = {
   studentId?: true
   busId?: true
   stopId?: true
+  shift?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -72,6 +76,7 @@ export type StudentTransportMaxAggregateInputType = {
   studentId?: true
   busId?: true
   stopId?: true
+  shift?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +87,7 @@ export type StudentTransportCountAggregateInputType = {
   studentId?: true
   busId?: true
   stopId?: true
+  shift?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -165,6 +171,7 @@ export type StudentTransportGroupByOutputType = {
   studentId: string
   busId: string
   stopId: string | null
+  shift: string
   createdAt: Date
   updatedAt: Date
   _count: StudentTransportCountAggregateOutputType | null
@@ -196,6 +203,7 @@ export type StudentTransportWhereInput = {
   studentId?: Prisma.StringFilter<"StudentTransport"> | string
   busId?: Prisma.StringFilter<"StudentTransport"> | string
   stopId?: Prisma.StringNullableFilter<"StudentTransport"> | string | null
+  shift?: Prisma.StringFilter<"StudentTransport"> | string
   createdAt?: Prisma.DateTimeFilter<"StudentTransport"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudentTransport"> | Date | string
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
@@ -209,6 +217,7 @@ export type StudentTransportOrderByWithRelationInput = {
   studentId?: Prisma.SortOrder
   busId?: Prisma.SortOrder
   stopId?: Prisma.SortOrderInput | Prisma.SortOrder
+  shift?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   student?: Prisma.StudentOrderByWithRelationInput
@@ -225,6 +234,7 @@ export type StudentTransportWhereUniqueInput = Prisma.AtLeast<{
   institutionId?: Prisma.StringFilter<"StudentTransport"> | string
   busId?: Prisma.StringFilter<"StudentTransport"> | string
   stopId?: Prisma.StringNullableFilter<"StudentTransport"> | string | null
+  shift?: Prisma.StringFilter<"StudentTransport"> | string
   createdAt?: Prisma.DateTimeFilter<"StudentTransport"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudentTransport"> | Date | string
   student?: Prisma.XOR<Prisma.StudentScalarRelationFilter, Prisma.StudentWhereInput>
@@ -238,6 +248,7 @@ export type StudentTransportOrderByWithAggregationInput = {
   studentId?: Prisma.SortOrder
   busId?: Prisma.SortOrder
   stopId?: Prisma.SortOrderInput | Prisma.SortOrder
+  shift?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.StudentTransportCountOrderByAggregateInput
@@ -254,6 +265,7 @@ export type StudentTransportScalarWhereWithAggregatesInput = {
   studentId?: Prisma.StringWithAggregatesFilter<"StudentTransport"> | string
   busId?: Prisma.StringWithAggregatesFilter<"StudentTransport"> | string
   stopId?: Prisma.StringNullableWithAggregatesFilter<"StudentTransport"> | string | null
+  shift?: Prisma.StringWithAggregatesFilter<"StudentTransport"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentTransport"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"StudentTransport"> | Date | string
 }
@@ -261,6 +273,7 @@ export type StudentTransportScalarWhereWithAggregatesInput = {
 export type StudentTransportCreateInput = {
   id?: string
   institutionId: string
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.StudentCreateNestedOneWithoutTransportInput
@@ -274,6 +287,7 @@ export type StudentTransportUncheckedCreateInput = {
   studentId: string
   busId: string
   stopId?: string | null
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -281,6 +295,7 @@ export type StudentTransportUncheckedCreateInput = {
 export type StudentTransportUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.StudentUpdateOneRequiredWithoutTransportNestedInput
@@ -294,6 +309,7 @@ export type StudentTransportUncheckedUpdateInput = {
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   busId?: Prisma.StringFieldUpdateOperationsInput | string
   stopId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -304,6 +320,7 @@ export type StudentTransportCreateManyInput = {
   studentId: string
   busId: string
   stopId?: string | null
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -311,6 +328,7 @@ export type StudentTransportCreateManyInput = {
 export type StudentTransportUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -321,6 +339,7 @@ export type StudentTransportUncheckedUpdateManyInput = {
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   busId?: Prisma.StringFieldUpdateOperationsInput | string
   stopId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -346,6 +365,7 @@ export type StudentTransportCountOrderByAggregateInput = {
   studentId?: Prisma.SortOrder
   busId?: Prisma.SortOrder
   stopId?: Prisma.SortOrder
+  shift?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -356,6 +376,7 @@ export type StudentTransportMaxOrderByAggregateInput = {
   studentId?: Prisma.SortOrder
   busId?: Prisma.SortOrder
   stopId?: Prisma.SortOrder
+  shift?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -366,6 +387,7 @@ export type StudentTransportMinOrderByAggregateInput = {
   studentId?: Prisma.SortOrder
   busId?: Prisma.SortOrder
   stopId?: Prisma.SortOrder
+  shift?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -489,6 +511,7 @@ export type StudentTransportUncheckedUpdateManyWithoutBusNestedInput = {
 export type StudentTransportCreateWithoutStudentInput = {
   id?: string
   institutionId: string
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   bus: Prisma.TransportBusCreateNestedOneWithoutStudentsInput
@@ -500,6 +523,7 @@ export type StudentTransportUncheckedCreateWithoutStudentInput = {
   institutionId: string
   busId: string
   stopId?: string | null
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -523,6 +547,7 @@ export type StudentTransportUpdateToOneWithWhereWithoutStudentInput = {
 export type StudentTransportUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bus?: Prisma.TransportBusUpdateOneRequiredWithoutStudentsNestedInput
@@ -534,6 +559,7 @@ export type StudentTransportUncheckedUpdateWithoutStudentInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   busId?: Prisma.StringFieldUpdateOperationsInput | string
   stopId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -541,6 +567,7 @@ export type StudentTransportUncheckedUpdateWithoutStudentInput = {
 export type StudentTransportCreateWithoutStopInput = {
   id?: string
   institutionId: string
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.StudentCreateNestedOneWithoutTransportInput
@@ -552,6 +579,7 @@ export type StudentTransportUncheckedCreateWithoutStopInput = {
   institutionId: string
   studentId: string
   busId: string
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -591,6 +619,7 @@ export type StudentTransportScalarWhereInput = {
   studentId?: Prisma.StringFilter<"StudentTransport"> | string
   busId?: Prisma.StringFilter<"StudentTransport"> | string
   stopId?: Prisma.StringNullableFilter<"StudentTransport"> | string | null
+  shift?: Prisma.StringFilter<"StudentTransport"> | string
   createdAt?: Prisma.DateTimeFilter<"StudentTransport"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudentTransport"> | Date | string
 }
@@ -598,6 +627,7 @@ export type StudentTransportScalarWhereInput = {
 export type StudentTransportCreateWithoutBusInput = {
   id?: string
   institutionId: string
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.StudentCreateNestedOneWithoutTransportInput
@@ -609,6 +639,7 @@ export type StudentTransportUncheckedCreateWithoutBusInput = {
   institutionId: string
   studentId: string
   stopId?: string | null
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -644,6 +675,7 @@ export type StudentTransportCreateManyStopInput = {
   institutionId: string
   studentId: string
   busId: string
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -651,6 +683,7 @@ export type StudentTransportCreateManyStopInput = {
 export type StudentTransportUpdateWithoutStopInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.StudentUpdateOneRequiredWithoutTransportNestedInput
@@ -662,6 +695,7 @@ export type StudentTransportUncheckedUpdateWithoutStopInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   busId?: Prisma.StringFieldUpdateOperationsInput | string
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -671,6 +705,7 @@ export type StudentTransportUncheckedUpdateManyWithoutStopInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   busId?: Prisma.StringFieldUpdateOperationsInput | string
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -680,6 +715,7 @@ export type StudentTransportCreateManyBusInput = {
   institutionId: string
   studentId: string
   stopId?: string | null
+  shift?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -687,6 +723,7 @@ export type StudentTransportCreateManyBusInput = {
 export type StudentTransportUpdateWithoutBusInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.StudentUpdateOneRequiredWithoutTransportNestedInput
@@ -698,6 +735,7 @@ export type StudentTransportUncheckedUpdateWithoutBusInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   stopId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -707,6 +745,7 @@ export type StudentTransportUncheckedUpdateManyWithoutBusInput = {
   institutionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   stopId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shift?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -719,6 +758,7 @@ export type StudentTransportSelect<ExtArgs extends runtime.Types.Extensions.Inte
   studentId?: boolean
   busId?: boolean
   stopId?: boolean
+  shift?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -732,6 +772,7 @@ export type StudentTransportSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   studentId?: boolean
   busId?: boolean
   stopId?: boolean
+  shift?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -745,6 +786,7 @@ export type StudentTransportSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   studentId?: boolean
   busId?: boolean
   stopId?: boolean
+  shift?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -758,11 +800,12 @@ export type StudentTransportSelectScalar = {
   studentId?: boolean
   busId?: boolean
   stopId?: boolean
+  shift?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type StudentTransportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "studentId" | "busId" | "stopId" | "createdAt" | "updatedAt", ExtArgs["result"]["studentTransport"]>
+export type StudentTransportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "institutionId" | "studentId" | "busId" | "stopId" | "shift" | "createdAt" | "updatedAt", ExtArgs["result"]["studentTransport"]>
 export type StudentTransportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
   bus?: boolean | Prisma.TransportBusDefaultArgs<ExtArgs>
@@ -792,6 +835,10 @@ export type $StudentTransportPayload<ExtArgs extends runtime.Types.Extensions.In
     studentId: string
     busId: string
     stopId: string | null
+    /**
+     * MORNING or AFTERNOON: which of the bus's shifts this student rides
+     */
+    shift: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["studentTransport"]>
@@ -1225,6 +1272,7 @@ export interface StudentTransportFieldRefs {
   readonly studentId: Prisma.FieldRef<"StudentTransport", 'String'>
   readonly busId: Prisma.FieldRef<"StudentTransport", 'String'>
   readonly stopId: Prisma.FieldRef<"StudentTransport", 'String'>
+  readonly shift: Prisma.FieldRef<"StudentTransport", 'String'>
   readonly createdAt: Prisma.FieldRef<"StudentTransport", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"StudentTransport", 'DateTime'>
 }

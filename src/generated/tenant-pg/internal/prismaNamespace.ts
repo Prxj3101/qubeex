@@ -427,6 +427,8 @@ export const ModelName = {
   CalendarEvent: 'CalendarEvent',
   DivisionFeeStructure: 'DivisionFeeStructure',
   StudentFeePayment: 'StudentFeePayment',
+  FeeReceipt: 'FeeReceipt',
+  FeeReminder: 'FeeReminder',
   BlackboardFolder: 'BlackboardFolder',
   BlackboardMaterial: 'BlackboardMaterial',
   Mindmap: 'Mindmap',
@@ -498,6 +500,7 @@ export const ModelName = {
   TransportRoute: 'TransportRoute',
   TransportStop: 'TransportStop',
   TransportBus: 'TransportBus',
+  TransportTrip: 'TransportTrip',
   StudentTransport: 'StudentTransport'
 } as const
 
@@ -514,7 +517,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "timetableAiMessage" | "timetableVersion" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication" | "parentChatSettings" | "parentChatThread" | "parentChatMessage" | "parentForm" | "parentFormTarget" | "parentFormResponse" | "ptmSession" | "ptmSlot" | "transportRoute" | "transportStop" | "transportBus" | "studentTransport"
+    modelProps: "teacher" | "teacherNote" | "teacherTask" | "adminNote" | "adminTask" | "standard" | "division" | "subject" | "divisionSubject" | "divisionAssignment" | "student" | "parentModeEvent" | "academicYear" | "studentEnrollment" | "divisionTimetable" | "promotionBatch" | "studentPromotionOutcome" | "studentRemark" | "pTMNote" | "attendance" | "schoolHoliday" | "attendanceDayNote" | "staffPost" | "staffPostReaction" | "staffPostComment" | "staffMessage" | "campusFeedPost" | "calendarEvent" | "divisionFeeStructure" | "studentFeePayment" | "feeReceipt" | "feeReminder" | "blackboardFolder" | "blackboardMaterial" | "mindmap" | "taskContainer" | "taskQuestion" | "taskModule" | "taskModuleQuestion" | "taskTest" | "taskTestQuestion" | "taskTestAttempt" | "taskStudentAnswer" | "taskPdfUpload" | "questionShareToken" | "taskAssignment" | "taskAssignmentSubmission" | "taskAssignmentSubmissionAttempt" | "marksheet" | "marksheetSubjectConfig" | "marksheetExamColumn" | "marksheetScore" | "marksheetGradedSubject" | "marksheetGradedScore" | "marksheetRemark" | "translationCache" | "payrollSettings" | "staffAttendance" | "staffPunch" | "salaryComponent" | "salaryTemplate" | "staff" | "staffSalaryStructure" | "payrollRun" | "payslip" | "inventoryCategory" | "inventoryUnit" | "inventoryLocation" | "inventorySupplier" | "inventoryItem" | "inventoryStockBalance" | "inventoryStockMovement" | "inventoryPurchaseRequest" | "inventoryPurchaseOrder" | "timetableSettings" | "timeSlot" | "timetableSessionType" | "room" | "roomUnavailability" | "teacherAvailability" | "teacherTimetablePref" | "schoolTimetable" | "timetableSubjectConfig" | "timetableEntry" | "timetableException" | "timetableSubstitution" | "timetableGeneration" | "timetableAiMessage" | "timetableVersion" | "inventorySetupOrder" | "admissionSettings" | "admissionApplication" | "parentChatSettings" | "parentChatThread" | "parentChatMessage" | "parentForm" | "parentFormTarget" | "parentFormResponse" | "ptmSession" | "ptmSlot" | "transportRoute" | "transportStop" | "transportBus" | "transportTrip" | "studentTransport"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2735,6 +2738,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.StudentFeePaymentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.StudentFeePaymentCountAggregateOutputType> | number
+        }
+      }
+    }
+    FeeReceipt: {
+      payload: Prisma.$FeeReceiptPayload<ExtArgs>
+      fields: Prisma.FeeReceiptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeeReceiptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeeReceiptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>
+        }
+        findFirst: {
+          args: Prisma.FeeReceiptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeeReceiptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>
+        }
+        findMany: {
+          args: Prisma.FeeReceiptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>[]
+        }
+        create: {
+          args: Prisma.FeeReceiptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>
+        }
+        createMany: {
+          args: Prisma.FeeReceiptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeeReceiptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>[]
+        }
+        delete: {
+          args: Prisma.FeeReceiptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>
+        }
+        update: {
+          args: Prisma.FeeReceiptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeeReceiptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeeReceiptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeeReceiptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeeReceiptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReceiptPayload>
+        }
+        aggregate: {
+          args: Prisma.FeeReceiptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeeReceipt>
+        }
+        groupBy: {
+          args: Prisma.FeeReceiptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeeReceiptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeeReceiptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeeReceiptCountAggregateOutputType> | number
+        }
+      }
+    }
+    FeeReminder: {
+      payload: Prisma.$FeeReminderPayload<ExtArgs>
+      fields: Prisma.FeeReminderFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeeReminderFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeeReminderFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>
+        }
+        findFirst: {
+          args: Prisma.FeeReminderFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeeReminderFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>
+        }
+        findMany: {
+          args: Prisma.FeeReminderFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>[]
+        }
+        create: {
+          args: Prisma.FeeReminderCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>
+        }
+        createMany: {
+          args: Prisma.FeeReminderCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeeReminderCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>[]
+        }
+        delete: {
+          args: Prisma.FeeReminderDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>
+        }
+        update: {
+          args: Prisma.FeeReminderUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeeReminderDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeeReminderUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeeReminderUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeeReminderUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeeReminderPayload>
+        }
+        aggregate: {
+          args: Prisma.FeeReminderAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeeReminder>
+        }
+        groupBy: {
+          args: Prisma.FeeReminderGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeeReminderGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeeReminderCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeeReminderCountAggregateOutputType> | number
         }
       }
     }
@@ -7992,6 +8143,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TransportTrip: {
+      payload: Prisma.$TransportTripPayload<ExtArgs>
+      fields: Prisma.TransportTripFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TransportTripFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TransportTripFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>
+        }
+        findFirst: {
+          args: Prisma.TransportTripFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TransportTripFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>
+        }
+        findMany: {
+          args: Prisma.TransportTripFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>[]
+        }
+        create: {
+          args: Prisma.TransportTripCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>
+        }
+        createMany: {
+          args: Prisma.TransportTripCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TransportTripCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>[]
+        }
+        delete: {
+          args: Prisma.TransportTripDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>
+        }
+        update: {
+          args: Prisma.TransportTripUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>
+        }
+        deleteMany: {
+          args: Prisma.TransportTripDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TransportTripUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TransportTripUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>[]
+        }
+        upsert: {
+          args: Prisma.TransportTripUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransportTripPayload>
+        }
+        aggregate: {
+          args: Prisma.TransportTripAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTransportTrip>
+        }
+        groupBy: {
+          args: Prisma.TransportTripGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TransportTripGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TransportTripCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TransportTripCountAggregateOutputType> | number
+        }
+      }
+    }
     StudentTransport: {
       payload: Prisma.$StudentTransportPayload<ExtArgs>
       fields: Prisma.StudentTransportFieldRefs
@@ -8569,6 +8794,47 @@ export const StudentFeePaymentScalarFieldEnum = {
 } as const
 
 export type StudentFeePaymentScalarFieldEnum = (typeof StudentFeePaymentScalarFieldEnum)[keyof typeof StudentFeePaymentScalarFieldEnum]
+
+
+export const FeeReceiptScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  studentId: 'studentId',
+  divisionId: 'divisionId',
+  number: 'number',
+  receiptNo: 'receiptNo',
+  lines: 'lines',
+  amount: 'amount',
+  discount: 'discount',
+  mode: 'mode',
+  reference: 'reference',
+  note: 'note',
+  day: 'day',
+  collectedById: 'collectedById',
+  cancelledAt: 'cancelledAt',
+  cancelledById: 'cancelledById',
+  cancelReason: 'cancelReason',
+  createdAt: 'createdAt'
+} as const
+
+export type FeeReceiptScalarFieldEnum = (typeof FeeReceiptScalarFieldEnum)[keyof typeof FeeReceiptScalarFieldEnum]
+
+
+export const FeeReminderScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  academicYearId: 'academicYearId',
+  studentId: 'studentId',
+  kind: 'kind',
+  lang: 'lang',
+  sentTo: 'sentTo',
+  amount: 'amount',
+  sentById: 'sentById',
+  createdAt: 'createdAt'
+} as const
+
+export type FeeReminderScalarFieldEnum = (typeof FeeReminderScalarFieldEnum)[keyof typeof FeeReminderScalarFieldEnum]
 
 
 export const BlackboardFolderScalarFieldEnum = {
@@ -9812,6 +10078,7 @@ export const TransportStopScalarFieldEnum = {
   lng: 'lng',
   sequence: 'sequence',
   pickupTime: 'pickupTime',
+  monthlyFee: 'monthlyFee',
   createdAt: 'createdAt'
 } as const
 
@@ -9829,11 +10096,34 @@ export const TransportBusScalarFieldEnum = {
   driverPhone: 'driverPhone',
   capacity: 'capacity',
   routeId: 'routeId',
+  morningShift: 'morningShift',
+  morningPickup: 'morningPickup',
+  morningDrop: 'morningDrop',
+  afternoonShift: 'afternoonShift',
+  afternoonPickup: 'afternoonPickup',
+  afternoonDrop: 'afternoonDrop',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type TransportBusScalarFieldEnum = (typeof TransportBusScalarFieldEnum)[keyof typeof TransportBusScalarFieldEnum]
+
+
+export const TransportTripScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  busId: 'busId',
+  day: 'day',
+  kind: 'kind',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  stops: 'stops',
+  maxSpeedKmh: 'maxSpeedKmh',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TransportTripScalarFieldEnum = (typeof TransportTripScalarFieldEnum)[keyof typeof TransportTripScalarFieldEnum]
 
 
 export const StudentTransportScalarFieldEnum = {
@@ -9842,6 +10132,7 @@ export const StudentTransportScalarFieldEnum = {
   studentId: 'studentId',
   busId: 'busId',
   stopId: 'stopId',
+  shift: 'shift',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -10468,6 +10759,8 @@ export type GlobalOmitConfig = {
   calendarEvent?: Prisma.CalendarEventOmit
   divisionFeeStructure?: Prisma.DivisionFeeStructureOmit
   studentFeePayment?: Prisma.StudentFeePaymentOmit
+  feeReceipt?: Prisma.FeeReceiptOmit
+  feeReminder?: Prisma.FeeReminderOmit
   blackboardFolder?: Prisma.BlackboardFolderOmit
   blackboardMaterial?: Prisma.BlackboardMaterialOmit
   mindmap?: Prisma.MindmapOmit
@@ -10539,6 +10832,7 @@ export type GlobalOmitConfig = {
   transportRoute?: Prisma.TransportRouteOmit
   transportStop?: Prisma.TransportStopOmit
   transportBus?: Prisma.TransportBusOmit
+  transportTrip?: Prisma.TransportTripOmit
   studentTransport?: Prisma.StudentTransportOmit
 }
 

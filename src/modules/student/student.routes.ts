@@ -10,6 +10,7 @@ import multer from "multer";
 import { listTests, startTest, heartbeatAttempt, submitTest, getAttempt, downloadAttemptPdf, listAssignments, submitAssignment, getOwnSubmission, assignmentUpload, getAssignmentPaper, downloadAssignmentPaperPdf } from "./tasks.controller";
 import { uploadImageToR2, generateSignedAvatarUrl, generateSignedAvatarUrlsBatch } from "../../services/storage.service";
 import { listStudentRemarks } from "../../services/remark.service";
+import { studentMoney, getReceipt } from "../fees/fees.service";
 import { listPTMNotes, acknowledgePTMNote } from "../../services/ptmNote.service";
 import { translateBatch, DynamicTranslateLang } from "../../services/translation.service";
 import { delCache } from "../../utils/cache";
@@ -1563,6 +1564,10 @@ router.get("/fees", ...S, async (req: AuthRequest, res: Response, next: NextFunc
       select: { feeMonthId: true, status: true, paidDate: true, remark: true, extraFields: true, extraStructureIds: true },
     });
 
+    // Paid / still due per month (part payments too) and the receipts from the
+    // school's fee counter. Never blocks the page if it fails.
+    const money = structure ? await studentMoney(institutionId, year, student.id, feeDivisionId).catch(() => null) : null;
+
     res.json({
       success: true,
       data: {
@@ -1590,8 +1595,28 @@ router.get("/fees", ...S, async (req: AuthRequest, res: Response, next: NextFunc
           extraStructureIds: (p.extraStructureIds as string[] | null) ?? null,
         })),
         extraDetailFields: (student.extraDetailFields as Record<string, string> | null) ?? null,
+        money,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── GET /student/fees/receipts/:id — one of the student's own fee receipts (to print) ─
+router.get("/fees/receipts/:id", ...S, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId, institutionId } = req.user!;
+    if (!institutionId) {
+      res.status(400).json({ success: false, error: "No institution associated with this account" });
+      return;
+    }
+    const student = await academicDb().student.findFirst({ where: { userId, institutionId }, select: { id: true } });
+    if (!student) {
+      res.status(404).json({ success: false, error: "Student not found" });
+      return;
+    }
+    res.json({ success: true, data: await getReceipt(institutionId, String(req.params.id), student.id) });
   } catch (err) {
     next(err);
   }

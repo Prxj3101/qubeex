@@ -109,6 +109,8 @@ export const ACADEMIC_MODELS = [
   "CalendarEvent",
   "DivisionFeeStructure",
   "StudentFeePayment",
+  "FeeReceipt",
+  "FeeReminder",
   "BlackboardFolder",
   "BlackboardMaterial",
   "Mindmap",

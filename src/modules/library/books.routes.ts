@@ -4,7 +4,7 @@ import type { AuthRequest } from "../../middlewares/auth.middleware";
 import { academicDb } from "../../utils/academicContext";
 import { ConflictError, NotFoundError } from "../../utils/errors";
 import {
-  addCopiesSchema, copyStatusSchema, createBookSchema, idSchema, pageSchema, updateBookSchema,
+  addCopiesSchema, copyStatusSchema, createBookSchema, idSchema, labelRangeSchema, pageSchema, updateBookSchema,
 } from "./library.schema";
 import { institutionOf, auditLibrary } from "./library.common";
 
@@ -75,6 +75,36 @@ booksRouter.post("/", async (req: AuthRequest, res: Response, next: NextFunction
     auditLibrary(req, "LIBRARY_BOOK_CREATED", `Added "${fields.title}" with ${copies} copies`, { bookId: book.id, copies });
     res.status(201).json({ success: true, data: book });
   } catch (err) { conflictOnDuplicate(err, next); }
+});
+
+const MAX_LABELS = 2000;
+
+// Codes are fixed-width (LIB-000001), so a plain string range returns them in order.
+booksRouter.get("/labels", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = institutionOf(req);
+    const { from, to } = labelRangeSchema.parse(req.query);
+    const rows = await academicDb().libraryCopy.findMany({
+      where: { institutionId, accessionCode: { gte: from, lte: to } },
+      orderBy: { accessionCode: "asc" }, take: MAX_LABELS + 1,
+      select: { accessionCode: true, book: { select: { title: true } } },
+    });
+    const labels = rows.slice(0, MAX_LABELS).map((r) => ({ code: r.accessionCode, title: r.book.title }));
+    res.json({ success: true, data: { labels, truncated: rows.length > MAX_LABELS } });
+  } catch (err) { next(err); }
+});
+
+booksRouter.get("/:id/copies", async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const institutionId = institutionOf(req);
+    const id = idSchema.parse(req.params.id);
+    const book = await academicDb().libraryBook.findFirst({ where: { id, institutionId }, select: { id: true, title: true } });
+    if (!book) throw new NotFoundError("Book not found");
+    const copies = await academicDb().libraryCopy.findMany({
+      where: { bookId: id, institutionId }, orderBy: { accessionCode: "asc" }, select: { id: true, accessionCode: true, status: true },
+    });
+    res.json({ success: true, data: { title: book.title, copies } });
+  } catch (err) { next(err); }
 });
 
 booksRouter.patch("/copies/:copyId/status", async (req: AuthRequest, res: Response, next: NextFunction) => {

@@ -11,6 +11,7 @@ import { startAuditRetentionCron } from "./crons/audit.cron";
 import { startStorageCron } from "./crons/storage.cron";
 import { startHealthMonitorCron } from "./crons/healthMonitor.cron";
 import { startDeadlineReminderCron } from "./crons/deadlineReminder.cron";
+import { startLibraryReminderCron } from "./crons/libraryReminder.cron";
 import { startApiMetricsFlusher } from "./services/systemHealth.service";
 import { startBusWatchdog } from "./services/busAlerts.service";
 
@@ -48,6 +49,7 @@ app.listen(port, async () => {
   startStorageCron();
   startHealthMonitorCron();
   startDeadlineReminderCron();
+  startLibraryReminderCron();
   startApiMetricsFlusher();
   startBusWatchdog(); // admin alert when a bus on a trip stops sending its location
 });

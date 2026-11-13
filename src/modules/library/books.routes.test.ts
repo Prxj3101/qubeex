@@ -8,7 +8,7 @@ jest.mock("../../middlewares/auth.middleware", () => ({ authMiddleware: () => (r
 jest.mock("../../services/audit.service", () => ({ logAudit: jest.fn() }));
 
 const mockBook = { findMany: jest.fn(), count: jest.fn(), create: jest.fn(), updateMany: jest.fn(), findFirst: jest.fn(), deleteMany: jest.fn() };
-const mockCopy = { findFirst: jest.fn(), createMany: jest.fn(), updateMany: jest.fn(), deleteMany: jest.fn() };
+const mockCopy = { findMany: jest.fn(), findFirst: jest.fn(), createMany: jest.fn(), updateMany: jest.fn(), deleteMany: jest.fn() };
 const mockLoan = { count: jest.fn() };
 const db = { libraryBook: mockBook, libraryCopy: mockCopy, libraryLoan: mockLoan, $transaction: (fn: (t: unknown) => unknown) => fn(db) };
 jest.mock("../../utils/academicContext", () => ({ academicDb: () => db }));
@@ -91,4 +91,41 @@ test("a lost copy that is found can be restored to AVAILABLE", async () => {
   mockCopy.updateMany.mockResolvedValue({ count: 1 });
   expect((await request(app).patch(`/books/copies/${id}/status`).send({ status: "AVAILABLE" })).status).toBe(200);
   expect(mockCopy.updateMany.mock.calls[0][0].where).toMatchObject({ id, institutionId: "school-a" });
+});
+
+test("lists a book's copies with their codes and status, scoped to the school", async () => {
+  mockBook.findFirst.mockResolvedValue({ id, title: "Wings of Fire" });
+  mockCopy.findMany.mockResolvedValue([{ id: "c1", accessionCode: "LIB-000001", status: "AVAILABLE" }]);
+  const res = await request(app).get(`/books/${id}/copies`);
+  expect(res.status).toBe(200);
+  expect(res.body.data).toEqual({ title: "Wings of Fire", copies: [{ id: "c1", accessionCode: "LIB-000001", status: "AVAILABLE" }] });
+  expect(mockBook.findFirst.mock.calls[0][0].where).toEqual({ id, institutionId: "school-a" });
+  expect(mockCopy.findMany.mock.calls[0][0].where).toEqual({ bookId: id, institutionId: "school-a" });
+});
+
+test("copies of an unknown book is 404", async () => {
+  mockBook.findFirst.mockResolvedValue(null);
+  expect((await request(app).get(`/books/${id}/copies`)).status).toBe(404);
+  expect(mockCopy.findMany).not.toHaveBeenCalled();
+});
+
+test("labels for a code range are scoped to the school and carry the book title", async () => {
+  mockCopy.findMany.mockResolvedValue([{ accessionCode: "LIB-000001", book: { title: "Wings of Fire" } }, { accessionCode: "LIB-000002", book: { title: "Gitanjali" } }]);
+  const res = await request(app).get("/books/labels?from=lib-000001&to=LIB-000002");
+  expect(res.status).toBe(200);
+  expect(res.body.data).toEqual({ labels: [{ code: "LIB-000001", title: "Wings of Fire" }, { code: "LIB-000002", title: "Gitanjali" }], truncated: false });
+  expect(mockCopy.findMany.mock.calls[0][0].where).toEqual({ institutionId: "school-a", accessionCode: { gte: "LIB-000001", lte: "LIB-000002" } });
+});
+
+test("a label range over 2000 copies is cut off and flagged", async () => {
+  mockCopy.findMany.mockResolvedValue(Array.from({ length: 2001 }, (_, i) => ({ accessionCode: `LIB-${String(i + 1).padStart(6, "0")}`, book: { title: "B" } })));
+  const res = await request(app).get("/books/labels?from=LIB-000001&to=LIB-009999");
+  expect(res.body.data.labels).toHaveLength(2000);
+  expect(res.body.data.truncated).toBe(true);
+  expect(mockCopy.findMany.mock.calls[0][0].take).toBe(2001);
+});
+
+test("a label range needs both ends", async () => {
+  expect((await request(app).get("/books/labels?from=LIB-000001")).status).toBe(400);
+  expect((await request(app).get("/books/labels")).status).toBe(400);
 });

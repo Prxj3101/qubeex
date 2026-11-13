@@ -44,3 +44,26 @@ export const pageSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(200).default(50),
 });
+
+const code = z.string().trim().min(1).max(60);
+export const issueSchema = z.object({ memberCode: code, copyCode: code }).strict();
+export const returnSchema = z.object({ copyCode: code, condition: z.enum(["OK", "DAMAGED", "LOST"]).default("OK") }).strict();
+export const renewSchema = z.object({ copyCode: code }).strict();
+
+export const waiveSchema = z.object({ reason: z.string().trim().min(1).max(200) }).strict();
+export const fineListSchema = z.object({
+  status: z.enum(["PENDING", "PAID", "WAIVED"]).optional(),
+  userId: z.string().trim().min(1).max(100).optional(),
+}).merge(pageSchema);
+
+export const reportPageSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).transform((n) => Math.min(n, 200)).default(50),
+  format: z.enum(["json", "csv"]).default("json"),
+});
+export const dateRangeSchema = z.object({ from: z.coerce.date().optional(), to: z.coerce.date().optional() });
+
+export const labelRangeSchema = z.object({
+  from: z.string().trim().min(1).max(60).transform((v) => v.toUpperCase()),
+  to: z.string().trim().min(1).max(60).transform((v) => v.toUpperCase()),
+});

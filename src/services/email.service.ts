@@ -1110,3 +1110,40 @@ export const sendAdmissionEmail = async ({
         return false;
     }
 };
+
+export const sendLibraryReminderEmail = async ({
+    to,
+    name,
+    institutionName,
+    items,
+}: {
+    to: string;
+    name: string;
+    institutionName: string;
+    items: { title: string; dueLabel: string; overdue: boolean }[];
+}) => {
+    const rows = items
+        .map((i) => `<li style="margin:0 0 6px;"><strong>${escapeHtml(i.title)}</strong> — ${escapeHtml(i.dueLabel)}${i.overdue ? ' <span style="color:#ff8a8a;">(overdue)</span>' : ''}</li>`)
+        .join('');
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'QubeEx <support@qubeex.in>',
+            to,
+            subject: `Library books to return — ${institutionName}`,
+            html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:24px;background:#0F0A1E;color:#fff;font-family:'Segoe UI',Arial,sans-serif;">
+  <h2 style="margin:0 0 12px;">Library reminder</h2>
+  <p style="margin:0 0 10px;line-height:1.6;">Hi ${escapeHtml(name)}, please return these books to the ${escapeHtml(institutionName)} library:</p>
+  <ul style="margin:0 0 14px;padding-left:20px;line-height:1.6;">${rows}</ul>
+  <p style="margin:0;line-height:1.6;color:#aaa;font-size:13px;">This is an automated reminder. Contact the library if you have already returned these books.</p>
+</body>
+</html>`,
+        });
+        if (error) console.error('Resend error (library reminder):', error);
+        else console.log('Library reminder email sent:', data?.id);
+    } catch (err) {
+        console.error('Library reminder email failed:', err);
+    }
+};

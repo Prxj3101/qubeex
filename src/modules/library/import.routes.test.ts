@@ -96,4 +96,5 @@ test("commit creates books and consecutive copy codes for the school", async () 
   expect(copies.map((c: { accessionCode: string }) => c.accessionCode)).toEqual(["LIB-000006", "LIB-000007", "LIB-000008"]);
   expect(copies[0].bookId).toBe(books[0].id);
   expect(copies[2].bookId).toBe(books[1].id);
+  expect(res.body.data).toMatchObject({ books: 2, copies: 3, firstCode: "LIB-000006", lastCode: "LIB-000008" });
 });

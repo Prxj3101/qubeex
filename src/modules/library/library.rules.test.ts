@@ -1,4 +1,4 @@
-import { borrowerTypeForRole, computeDueAt, computeLateFinePaise, normaliseCode, RuleSet } from "./library.rules";
+import { isOverdue, borrowerTypeForRole, computeDueAt, computeLateFinePaise, normaliseCode, RuleSet } from "./library.rules";
 
 const rule: RuleSet = { maxBooks: 2, loanDays: 14, maxRenewals: 1, finePerDayPaise: 200, graceDays: 0, fineCapPaise: null };
 const d = (s: string) => new Date(`${s}T10:00:00.000Z`);
@@ -8,7 +8,15 @@ describe("computeLateFinePaise", () => {
     expect(computeLateFinePaise(d("2026-11-10"), d("2026-11-10"), rule)).toBe(0);
   });
   test("returned later the same day costs nothing", () => {
-    expect(computeLateFinePaise(d("2026-11-10"), new Date("2026-11-10T23:00:00.000Z"), rule)).toBe(0);
+    expect(computeLateFinePaise(d("2026-11-10"), new Date("2026-11-10T12:00:00.000Z"), rule)).toBe(0);
+  });
+  test("days are counted in India time: due Monday 10:00 IST, returned Tuesday 03:00 IST is one day late", () => {
+    const dueMondayMorningIst = new Date("2026-11-10T04:30:00.000Z");
+    const returnedTuesdayEarlyIst = new Date("2026-11-10T21:30:00.000Z");
+    expect(computeLateFinePaise(dueMondayMorningIst, returnedTuesdayEarlyIst, rule)).toBe(200);
+  });
+  test("due Monday 23:00 IST, returned Monday 23:50 IST is still on time", () => {
+    expect(computeLateFinePaise(new Date("2026-11-10T17:30:00.000Z"), new Date("2026-11-10T18:20:00.000Z"), rule)).toBe(0);
   });
   test("grace days absorb a short delay", () => {
     expect(computeLateFinePaise(d("2026-11-10"), d("2026-11-11"), { ...rule, graceDays: 1 })).toBe(0);
@@ -48,5 +56,13 @@ describe("borrowerTypeForRole", () => {
   });
   test("super admin is not a borrower", () => {
     expect(() => borrowerTypeForRole("SUPER_ADMIN")).toThrow();
+  });
+});
+
+describe("isOverdue", () => {
+  test("not overdue on the due day, overdue from the next India day", () => {
+    const due = new Date("2026-11-10T04:30:00.000Z"); // 10:00 IST Monday
+    expect(isOverdue(due, new Date("2026-11-10T17:00:00.000Z"))).toBe(false); // 22:30 IST Monday
+    expect(isOverdue(due, new Date("2026-11-10T19:00:00.000Z"))).toBe(true); // 00:30 IST Tuesday
   });
 });

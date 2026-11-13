@@ -6,6 +6,10 @@ import { requirePermission } from "../../middlewares/requirePermission.middlewar
 import { settingsRouter } from "./settings.routes";
 import { booksRouter } from "./books.routes";
 import { isbnRouter } from "./isbn.routes";
+import { importRouter } from "./import.routes";
+import { circulationRouter } from "./circulation.routes";
+import { finesRouter } from "./fines.routes";
+import { reportsRouter } from "./reports.routes";
 
 export const libraryRouter = Router();
 libraryRouter.use(
@@ -17,3 +21,7 @@ libraryRouter.use(
 libraryRouter.use("/settings", settingsRouter);
 libraryRouter.use("/books", booksRouter);
 libraryRouter.use("/isbn", isbnRouter);
+libraryRouter.use("/import", importRouter);
+libraryRouter.use("/fines", finesRouter);
+libraryRouter.use("/reports", reportsRouter);
+libraryRouter.use("/", circulationRouter);
